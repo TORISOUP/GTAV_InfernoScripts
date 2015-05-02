@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using System.Windows.Forms;
 using GTA;
 using Reactive.Bindings;
@@ -18,23 +20,23 @@ namespace Inferno
 
 
 
-        private static ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>();
+        private static ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
         /// <summary>
         /// プレイや周辺の市民
         /// </summary>
         public static ReadOnlyReactiveProperty<Ped[]> PedsNearPlayer
         {
-            get { return pedsNearPlayer.ToReadOnlyReactiveProperty(); }
+            get { return pedsNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
         }
 
-        private static ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>();
+        private static ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>(Scheduler.Immediate);
 
         /// <summary>
         /// プレイヤ周辺の車両
         /// </summary>
         public static ReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer
         {
-            get { return vehiclesNearPlayer.ToReadOnlyReactiveProperty(); }
+            get { return vehiclesNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
         }
 
 
@@ -70,6 +72,7 @@ namespace Inferno
                 .Select(e => e.EventArgs)
                 .Multicast(OnKeyDownSubject)
                 .Connect();
+
 
             //市民と車両の更新
             OnTickSubject

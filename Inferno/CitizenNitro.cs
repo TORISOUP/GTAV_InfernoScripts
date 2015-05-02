@@ -9,7 +9,7 @@ namespace Inferno
     /// <summary>
     /// 市ニトロ
     /// </summary>
-    internal class CitizenNitro : InfernoScript
+    public class CitizenNitro : InfernoScript
     {
         private bool IsActive = false;
 
@@ -21,7 +21,6 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    Log.Debug("CitizenNitro:" + IsActive);
                 });
 
             CreateTickAsObservable(5000)
@@ -52,7 +51,6 @@ namespace Inferno
             }
             catch (Exception e)
             {
-                Log.Error(e.ToString());
             }
         }
 
