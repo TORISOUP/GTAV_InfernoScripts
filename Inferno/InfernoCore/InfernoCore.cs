@@ -17,12 +17,10 @@ namespace Inferno
     {
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
-
-
-
+    
         private static ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
         /// <summary>
-        /// プレイや周辺の市民
+        /// 周辺市民
         /// </summary>
         public static ReadOnlyReactiveProperty<Ped[]> PedsNearPlayer
         {
@@ -30,9 +28,8 @@ namespace Inferno
         }
 
         private static ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>(Scheduler.Immediate);
-
         /// <summary>
-        /// プレイヤ周辺の車両
+        /// 周辺車両
         /// </summary>
         public static ReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer
         {
@@ -76,6 +73,7 @@ namespace Inferno
 
             //市民と車両の更新
             OnTickSubject
+                .Skip(4).Take(1).Repeat()
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
         }
 
@@ -85,10 +83,10 @@ namespace Inferno
         private void UpdatePedsAndVehiclesList()
         {
             var player = Game.Player.Character;
-            if(player==null || !player.Exists()) return;
+            if(!player.IsSafeExist()) return;
 
-            pedsNearPlayer.Value = World.GetNearbyPeds(player, 1000);
-            vehiclesNearPlayer.Value = World.GetNearbyVehicles(player, 1000);
+            pedsNearPlayer.Value = World.GetNearbyPeds(player, 3000);
+            vehiclesNearPlayer.Value = World.GetNearbyVehicles(player, 3000);
         }
 
     }

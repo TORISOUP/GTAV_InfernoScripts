@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Forms;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 
 namespace Inferno
@@ -11,54 +13,68 @@ namespace Inferno
     /// </summary>
     public class CitizenNitro : InfernoScript
     {
-        private bool IsActive = false;
+        private readonly string Keyword = "cnitro";
+        private readonly int interval = 3000;
+        private readonly int probability = 5;
 
-        private readonly int[] VelocityList = new[] {-70, -50, -30, 30, 50, 70, 100};
+        private bool _isActive = false;
+        private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("cnitro")
+            //キーワードが入力されたらON／OFFを切り替える
+            CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    IsActive = !IsActive;
+                    _isActive = !_isActive;
                 });
 
-            CreateTickAsObservable(5000)
-                .Where(_ => IsActive)
+            //interval間隔で実行
+            CreateTickAsObservable(interval)
+                .Where(_ => _isActive)
                 .Subscribe(_ => CitizenNitroAction());
         }
 
         /// <summary>
-        /// ニトロ処理本体
+        /// ニトロ対象の選別
         /// </summary>
         private void CitizenNitroAction()
         {
             try
             {
-                var nitroAvailableVeles =
-                    CachedPeds
-                        .Where(x => x != null && x.Exists() && x.IsAlive && x.IsInVehicle())
-                        .Select(x => x.CurrentVehicle)
-                        .Where(x => x != null && x.Exists() && x.IsDriveable);
+                //車の運転手を取れないので市民から車を取得する
+                var nitroAvailableVeles = CachedPeds
+                    .Where(x => x.IsSafeExist() && x != Game.Player.Character && x.IsAlive && x.IsInVehicle())
+                    .Select(x => x.CurrentVehicle)
+                    .Where(x => x.IsSafeExist() && x.IsAlive);
 
                 foreach (var veh in nitroAvailableVeles)
                 {
-                    if (random.Next(0, 100) <= 30)
+                    if (Random.Next(0, 100) <= probability)
                     {
                         NitroVehicle(veh);
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
+                //nice catch!
             }
         }
 
-        void NitroVehicle(Vehicle vehicle)
+        /// <summary>
+        /// 車をニトロする
+        /// </summary>
+        /// <param name="vehicle"></param>
+        private void NitroVehicle(Vehicle vehicle)
         {
-            if (vehicle == null || !vehicle.Exists()) { return; }
 
-            vehicle.Speed += VelocityList[random.Next(0,VelocityList.Length)];
+            if (!vehicle.IsSafeExist())
+            {
+                return;
+            }
+
+            vehicle.Speed += _velocities[Random.Next(0, _velocities.Length)];
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
@@ -69,7 +85,7 @@ namespace Inferno
                 0.0f,
                 true,
                 true,
-                1.0f
+                0.1f
             });
         }
     }

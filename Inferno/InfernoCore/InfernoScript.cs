@@ -7,23 +7,24 @@ using GTA;
 
 namespace Inferno
 {
+    /// <summary>
+    /// インフェルノスクリプトの基底
+    /// </summary>
     public abstract class InfernoScript : Script
     {
+        protected Random Random = new Random();
 
         private Ped[] _cachedPeds = new Ped[0];
+        /// <summary>
+        /// キャッシュされたプレイヤ周辺の市民
+        /// </summary>
+        public ReadOnlyCollection<Ped> CachedPeds { get { return Array.AsReadOnly(_cachedPeds??new Ped[0]); } }
+
         private Vehicle[] _cachedVehicles = new Vehicle[0];
-
-        protected Random random;
-
         /// <summary>
-        /// プレイヤ周辺の市民
+        /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
-        public ReadOnlyCollection<Ped> CachedPeds { get { return Array.AsReadOnly(_cachedPeds); } }
-       
-        /// <summary>
-        /// プレイヤ周辺の車両
-        /// </summary>
-        public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles); } }
+        public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]); } }
 
 
         protected InfernoScript()
@@ -33,6 +34,9 @@ namespace Inferno
             Setup();
         }
 
+        /// <summary>
+        /// 初期化処理はここに書く
+        /// </summary>
         protected abstract void Setup();
 
         /// <summary>
@@ -51,8 +55,9 @@ namespace Inferno
                 .Select(e => e.KeyCode.ToString())
                 .Buffer(keyword.Length, 1)
                 .Select(x => x.Aggregate((p, c) => p + c))
-                .Where(x => x == keyword.ToUpper())
+                .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_=>Unit.Default)
+                .Take(1).Repeat() //1回動作したらBufferをクリア
                 .Publish()
                 .RefCount();
         }

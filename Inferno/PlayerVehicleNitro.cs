@@ -12,6 +12,10 @@ using Inferno;
 
 namespace ToriScript.Inferno
 {
+    /// <summary>
+    /// プレイヤ用ニトロ
+    /// TODO:発動条件を変える
+    /// </summary>
     public class PlayerVehicleNitro : Script
     {
         public PlayerVehicleNitro()
