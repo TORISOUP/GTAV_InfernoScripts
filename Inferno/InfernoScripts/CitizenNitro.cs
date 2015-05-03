@@ -43,10 +43,12 @@ namespace Inferno
             try
             {
                 //車の運転手を取れないので市民から車を取得する
+                var playerVehicle = this.GetPlayerVehicle();
+
                 var nitroAvailableVeles = CachedPeds
-                    .Where(x => x.IsSafeExist() && x != Game.Player.Character && x.IsAlive && x.IsInVehicle())
+                    .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInVehicle())
                     .Select(x => x.CurrentVehicle)
-                    .Where(x => x.IsSafeExist() && x.IsAlive);
+                    .Where(x => x.IsSafeExist() && x.IsAlive && x.IsSameEntity(playerVehicle));
 
                 foreach (var veh in nitroAvailableVeles)
                 {

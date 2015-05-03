@@ -3,7 +3,7 @@ using GTA;
 
 namespace Inferno
 {
-    public static class ScriptExtensions
+    public static class ExtensionMethods
     {
         public static Vehicle GetPlayerVehicle(this Script script)
         {
@@ -20,5 +20,15 @@ namespace Inferno
         {
             return entity != null && Entity.Exists(entity);
         }
+
+        /// <summary>
+        /// 同じEntityであるかチェックする
+        /// </summary>
+        public static bool IsSameEntity(this Entity x, Entity y)
+        {
+            if (x == null || y == null) return false;
+            return x.ID == y.ID;
+        }
+
     }
 }
