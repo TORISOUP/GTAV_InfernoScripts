@@ -27,16 +27,31 @@ namespace Inferno
         public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]); } }
 
 
-        public IObservable<Unit> OnTickAsObservable
-        {
-            get { return InfernoCore.OnTickAsObservable; }
-        } 
+        /// <summary>
+        /// 一定間隔のTickイベント
+        /// </summary>
+        public IObservable<Unit> OnTickAsObservable { get; private set; } 
 
+        /// <summary>
+        /// スクリプトのTickイベントの実行頻度[ms]
+        /// </summary>
+        protected virtual int TickInterval { get { return 1000; } }
 
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
         protected InfernoScript()
         {
+            //キャッシュが変更されたら反映する
             InfernoCore.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
             InfernoCore.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
+
+            //TickイベントをObservable化しておく
+            Interval = TickInterval;
+            OnTickAsObservable = 
+                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+
             Setup();
         }
 
@@ -69,9 +84,9 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 100ms単位でのTickイベントを生成する
+        /// 100ms単位でのTickイベントをInfernoCore.OnTickAsObservableから生成する
         /// </summary>
-        /// <param name="millsecond"></param>
+        /// <param name="millsecond">ミリ秒(100ミリ秒単位で指定）</param>
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {

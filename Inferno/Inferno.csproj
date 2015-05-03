@@ -57,12 +57,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CitizenNitro.cs" />
-    <Compile Include="DeathSoundEffect.cs" />
-    <Compile Include="ExtensionMethods\ScriptExtensions.cs" />
-    <Compile Include="InfernoCore\InfernoCore.cs" />
-    <Compile Include="InfernoCore\InfernoScript.cs" />
-    <Compile Include="PlayerVehicleNitro.cs" />
+    <Compile Include="InfernoScripts\CitizenNitro.cs" />
+    <Compile Include="InfernoScripts\DeathSoundEffect.cs" />
+    <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
+    <Compile Include="InfernoScripts\PlayerVehicleNitro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

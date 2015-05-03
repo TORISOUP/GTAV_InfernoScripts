@@ -14,11 +14,18 @@ namespace Inferno
     public class CitizenNitro : InfernoScript
     {
         private readonly string Keyword = "cnitro";
-        private readonly int interval = 3000;
         private readonly int probability = 5;
 
         private bool _isActive = false;
         private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
+
+        /// <summary>
+        /// スクリプトの実行間隔　３秒
+        /// </summary>
+        protected override int TickInterval
+        {
+            get { return 3000; }
+        }
 
         protected override void Setup()
         {
@@ -30,7 +37,7 @@ namespace Inferno
                 });
 
             //interval間隔で実行
-            CreateTickAsObservable(interval)
+            OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => CitizenNitroAction());
         }

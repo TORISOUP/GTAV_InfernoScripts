@@ -13,6 +13,7 @@ namespace Inferno
     {
         private string[] filePath;
         private SoundPlayer soundPlayer;
+
         protected override void Setup()
         {
             filePath = LoadWavFiles(@"scripts/Pichun");

@@ -44,9 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Inferno\ExtensionMethods\ScriptExtensions.cs">
-      <Link>ExtensionMethods\ScriptExtensions.cs</Link>
-    </Compile>
     <Compile Include="ChaosScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
