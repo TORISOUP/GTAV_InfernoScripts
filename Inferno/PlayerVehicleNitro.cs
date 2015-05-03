@@ -31,7 +31,7 @@ namespace ToriScript.Inferno
 
             var vehicle = this.GetPlayerVehicle();
             
-            NitroVehicle(vehicle,Game.Player.Character);
+         //   NitroVehicle(vehicle,Game.Player.Character);
          
         }
 

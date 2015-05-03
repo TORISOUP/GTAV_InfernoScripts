@@ -27,6 +27,12 @@ namespace Inferno
         public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]); } }
 
 
+        public IObservable<Unit> OnTickAsObservable
+        {
+            get { return InfernoCore.OnTickAsObservable; }
+        } 
+
+
         protected InfernoScript()
         {
             InfernoCore.PedsNearPlayer.Subscribe(x => _cachedPeds = x);

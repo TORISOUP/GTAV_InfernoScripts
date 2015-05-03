@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CitizenNitro.cs" />
+    <Compile Include="DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ScriptExtensions.cs" />
     <Compile Include="InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoCore\InfernoScript.cs" />
