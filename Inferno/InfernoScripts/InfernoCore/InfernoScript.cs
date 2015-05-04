@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -105,6 +106,24 @@ namespace Inferno
                 .Publish().RefCount();
         }
 
+        protected uint StartCoroutine(IEnumerator coroutine)
+        {
+          return InfernoCore.Instance.AddCrotoutine(coroutine);
+        }
+
+        /// <summary>
+        /// 指定秒数待機するIEnumerable
+        /// </summary>
+        /// <param name="secound"></param>
+        /// <returns></returns>
+        protected IEnumerable WaitForSecound(float secound)
+        {
+            var waitLoopCount = (int)(secound * 10);
+            for (var i = 0; i < waitLoopCount; i++)
+            {
+                yield return i;
+            }
+        }
 
     }
 }

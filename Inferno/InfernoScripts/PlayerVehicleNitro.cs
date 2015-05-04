@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -16,15 +17,8 @@ namespace ToriScript.Inferno
     /// プレイヤ用ニトロ
     /// TODO:発動条件を変える
     /// </summary>
-    public class PlayerVehicleNitro : Script
+    public class PlayerVehicleNitro : InfernoScript
     {
-        public PlayerVehicleNitro()
-        {
-            KeyDown += PlayerVehicleNitro_KeyDown;
-        }
-
- 
-
         void PlayerVehicleNitro_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode != Keys.O) return;;
@@ -41,25 +35,7 @@ namespace ToriScript.Inferno
 
             vehicle.Speed += 70;
 
-     
-            Observable.Return(Unit.Default)
-                .Do(_ =>
-                {
-                    if (driver != null)
-                    {
-                        driver.IsInvincible = true;
-                    }
-                    vehicle.IsInvincible = true;
-                })
-                .Delay(TimeSpan.FromSeconds(3))
-                .Subscribe(_ =>
-                {
-                    if (driver != null)
-                    {
-                        driver.IsInvincible = false;
-                    }
-                    vehicle.IsInvincible = false;
-                });
+            StartCoroutine(InvincibleSwitch(driver, vehicle));
 
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
@@ -75,6 +51,40 @@ namespace ToriScript.Inferno
             });
         }
 
+        /// <summary>
+        /// 市民と車両を無敵にして３秒後に戻す
+        /// </summary>
+        IEnumerator InvincibleSwitch(Ped driver,Vehicle vehicle)
+        {
+            if (driver.IsSafeExist())
+            {
+                driver.IsInvincible = true;
+            }
+            if (vehicle.IsSafeExist())
+            {
+                vehicle.IsInvincible = true;
+            }
 
+            //3秒待機
+            foreach (var s in WaitForSecound(3))
+            {
+                yield return s;
+            }
+
+            if (driver.IsSafeExist())
+            {
+                driver.IsInvincible = false;
+            }
+            if (vehicle.IsSafeExist())
+            {
+                vehicle.IsInvincible = false;
+            }
+        }
+
+
+        protected override void Setup()
+        {
+            KeyDown += PlayerVehicleNitro_KeyDown;
+        }
     }
 }
