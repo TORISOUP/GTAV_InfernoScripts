@@ -41,6 +41,7 @@ namespace Inferno
             OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => CitizenNitroAction());
+
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Inferno
                 var nitroAvailableVeles = CachedPeds
                     .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInVehicle())
                     .Select(x => x.CurrentVehicle)
-                    .Where(x => x.IsSafeExist() && x.IsAlive && x.IsSameEntity(playerVehicle));
+                    .Where(x => x.IsSafeExist() && x.IsAlive && !x.IsSameEntity(playerVehicle));
 
                 foreach (var veh in nitroAvailableVeles)
                 {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using GTA;
 
@@ -49,9 +50,10 @@ namespace Inferno
 
             //TickイベントをObservable化しておく
             Interval = TickInterval;
-            OnTickAsObservable = 
-                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+            OnTickAsObservable =
+                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h,
+                    Scheduler.Immediate)
+                    .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
 
             Setup();
         }
@@ -116,7 +118,7 @@ namespace Inferno
         /// </summary>
         /// <param name="secound"></param>
         /// <returns></returns>
-        protected IEnumerable WaitForSecound(float secound)
+        protected IEnumerable WaitForSecond(float secound)
         {
             var waitLoopCount = (int)(secound * 10);
             for (var i = 0; i < waitLoopCount; i++)
@@ -133,7 +135,7 @@ namespace Inferno
         public void LogWrite(string message)
         {
 #if DEBUG
-            InfernoCore.Instance.LogWrite(message);
+            InfernoCore.Instance.LogWrite(message + "\r\n");
 #endif
         }
     }

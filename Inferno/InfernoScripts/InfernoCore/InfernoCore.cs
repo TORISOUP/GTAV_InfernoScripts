@@ -76,14 +76,14 @@ namespace Inferno
 
             //100ms周期でイベントを飛ばす
             Interval = 100;
-            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h, Scheduler.Immediate)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
 
             //キー入力
             Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
-                h => KeyDown -= h)
+                h => KeyDown -= h, Scheduler.Immediate)
                 .Select(e => e.EventArgs)
                 .Multicast(OnKeyDownSubject)
                 .Connect();
