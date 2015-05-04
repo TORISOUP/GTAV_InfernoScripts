@@ -43,7 +43,7 @@ namespace Inferno.ChaosMode
             {
                 //市民を取得
                 var pedAvailableVeles = CachedPeds
-                        .Where(x => x.IsSafeExist() && x != Game.Player.Character && x.IsAlive);
+                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(Game.Player.Character) && x.IsAlive);
 
                 foreach (var ped in pedAvailableVeles)
                 {
