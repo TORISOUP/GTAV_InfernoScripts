@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Inferno
 {
@@ -31,6 +32,7 @@ namespace Inferno
             {
                 var id = coroutineIdIndex++;
                 _coroutines.Add(id, coroutine);
+                coroutine.MoveNext();
                 return id;
             }
         }
@@ -55,7 +57,6 @@ namespace Inferno
             var endIdList = new List<uint>();
             foreach (var coroutine in _coroutines)
             {
-
                 if (!coroutine.Value.MoveNext())
                 {
                     endIdList.Add(coroutine.Key);
