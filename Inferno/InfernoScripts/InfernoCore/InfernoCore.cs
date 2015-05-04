@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Windows.Forms;
 using GTA;
+using GTA.Native;
 using Reactive.Bindings;
 
 namespace Inferno
@@ -59,7 +60,64 @@ namespace Inferno
             get { return OnKeyDownSubject.AsObservable(); }
         }
 
-    
+        /// <summary>
+        /// テキスト表示
+        /// </summary>
+        /// <param name="text"></param>
+        public static void SetDrawText(string text)
+        {
+            //フォント指定
+            Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] { 0 });
+            //文字スケール
+            Function.Call(Hash.SET_TEXT_SCALE, new InputArgument[]
+            {
+                0.55f,
+                0.55f
+            });
+            //文字色
+            Function.Call(Hash.SET_TEXT_COLOUR, new InputArgument[]
+            {
+                255,    //R?
+                255,    //G?
+                255,    //B?
+                255     //A?
+            });
+            //中央設置？
+            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { 1 });
+            //中央設置？
+            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[]
+            {
+                1
+            });
+            //文字の影poi
+            Function.Call(Hash.SET_TEXT_DROPSHADOW, new InputArgument[]
+            {
+                0,
+                0,
+                0,
+                0,
+                0
+            });
+            //文字のエッジ
+            Function.Call(Hash.SET_TEXT_EDGE, new InputArgument[]
+            {
+                1,
+                0,
+                0,
+                0,
+                205
+            });
+            //文字の種類？
+            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] { "STRING" });
+            //テキストとして表示する文字
+            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] { text });
+            //テキスト描画
+            Function.Call(Hash._DRAW_TEXT, new InputArgument[]
+            {
+                0.5f,
+                0.5f
+            });
+        }
 
         public InfernoCore()
         {

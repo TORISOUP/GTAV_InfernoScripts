@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Reactive.Bindings;
 
 namespace Inferno
 {
@@ -14,9 +21,9 @@ namespace Inferno
     public class CitizenNitro : InfernoScript
     {
         private readonly string Keyword = "cnitro";
-        private readonly int probability = 5;
+        private readonly int probability = 50;
 
-        private bool _isActive = false;
+        private ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(false);
         private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
 
         /// <summary>
@@ -33,13 +40,29 @@ namespace Inferno
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
+                    _isActive.Value = !_isActive.Value;
                 });
+
+            //テキスト表示
+            _isActive.Subscribe(_ => StartCoroutine(InvincibleSwitch("PedNitro " + _isActive.Value)));
 
             //interval間隔で実行
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenNitroAction());
+        }
+
+        /// <summary>
+        /// テキストを３秒間表示
+        /// </summary>
+        IEnumerator InvincibleSwitch(string str)
+        {
+            //３秒待機
+            foreach (var s in WaitForSecound(3))
+            {
+                InfernoCore.SetDrawText(str);
+                yield return s;
+            }
         }
 
         /// <summary>
