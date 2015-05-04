@@ -57,16 +57,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InfernoScripts\CitizenNitro.cs" />
-    <Compile Include="InfernoScripts\DeathSoundEffect.cs" />
+    <Compile Include="ExtensionMethods\NativeFunctions.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
+    <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\TCPSocketManager.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\GameKey.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
-    <Compile Include="InfernoScripts\PlayerVehicleNitro.cs" />
+    <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
+    <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
