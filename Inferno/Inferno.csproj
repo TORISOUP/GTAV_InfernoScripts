@@ -65,6 +65,7 @@
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\TCPSocketManager.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\GameKey.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
     <Compile Include="InfernoScripts\PlayerVehicleNitro.cs" />

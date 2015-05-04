@@ -1,8 +1,11 @@
 ﻿
+using System;
 using GTA;
+using GTA.Native;
 
 namespace Inferno
 {
+
     public static class ExtensionMethods
     {
         public static Vehicle GetPlayerVehicle(this Script script)
@@ -30,5 +33,10 @@ namespace Inferno
             return x.ID == y.ID;
         }
 
+
+        public static bool IsGamePadPressed(this Script script, GameKey gameKey)
+        {
+            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, new InputArgument[2]{0, (int)gameKey });
+        }
     }
 }

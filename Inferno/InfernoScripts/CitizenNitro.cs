@@ -53,6 +53,7 @@ namespace Inferno
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenNitroAction());
+
         }
 
         /// <summary>

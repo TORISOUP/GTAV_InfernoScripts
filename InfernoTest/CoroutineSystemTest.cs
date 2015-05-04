@@ -30,6 +30,26 @@ namespace InfernoTest
             Assert.AreEqual(10,testCoroutineSystem.RegisteredCoroutineCount);
         }
 
+        bool IsExexuted = false;
+
+        IEnumerator ExecuteEnumerator()
+        {
+            IsExexuted = true;
+            yield return null;
+        }
+
+
+        [TestMethod]
+        public void AddCroutine時に最初のコルーチンが実行される()
+        {
+            IsExexuted = false;
+            Assert.IsFalse(IsExexuted);
+            testCoroutineSystem.AddCrotoutine(ExecuteEnumerator());
+            
+            //登録直後に実行されているはず
+            Assert.IsTrue(IsExexuted);
+        }
+
         [TestMethod]
         public void RemoveCoroutineで該当のCoroutineが削除される()
         {
@@ -77,6 +97,7 @@ namespace InfernoTest
             testCoroutineSystem.RemoveCoroutine(0);
         }
 
+
         [TestMethod]
         public void CoroutineLoopで終了したコルーチンから削除される()
         {
@@ -84,7 +105,7 @@ namespace InfernoTest
             for (var id = 0; id < 3; id++)
             {
                 //それぞれ実行回数の違うコルーチンを登録
-                testCoroutineSystem.AddCrotoutine(testEnumerator(id));
+                testCoroutineSystem.AddCrotoutine(testEnumerator(id+1));
             }
             //登録コルーチン数は3個になっている
             Assert.AreEqual(3, testCoroutineSystem.RegisteredCoroutineCount);

@@ -19,42 +19,43 @@ namespace ToriScript.Inferno
     /// </summary>
     public class PlayerVehicleNitro : InfernoScript
     {
-        void PlayerVehicleNitro_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            if (e.KeyCode != Keys.O) return;;
+        private bool IsNitroOK = true;
+        var vehicle = this.GetPlayerVehicle();
 
-            var vehicle = this.GetPlayerVehicle();
-            //LogWrite("PlayerVehicleNitro\r\n");   
-            //NitroVehicle(vehicle,Game.Player.Character);
+        protected override int TickInterval
+        {
+            get { return 50; }
         }
 
-        void NitroVehicle(Vehicle vehicle,Ped driver)
+        protected override void Setup()
         {
-            if (vehicle == null || !vehicle.Exists()) { return; }
 
-            vehicle.Speed += 70;
+            OnTickAsObservable
+                .Where(
+                    _ =>
+                        IsNitroOK && this.IsGamePadPressed(GameKey.Attack) && this.IsGamePadPressed(GameKey.SeekCover) &&
+                        this.IsGamePadPressed(GameKey.Sprint))
+                .Subscribe(_ => NitroVehicle());
+        }
 
-            StartCoroutine(InvincibleSwitch(driver, vehicle));
 
+        void NitroVehicle()
+        {
+            var driver = this.GetPlayer();
+            var vehicle = this.GetPlayerVehicle();
+            if (!vehicle.IsSafeExist()) { return;}
+            vehicle.Speed += 50;
 
-            Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
-            {
-                vehicle.Position.X,
-                vehicle.Position.Y,
-                vehicle.Position.Z,
-                0,
-                1.0f,
-                true,
-                true,
-                1.0f
-            });
+            NitroAction(driver, vehicle);
         }
 
         /// <summary>
-        /// 市民と車両を無敵にして３秒後に戻す
+        /// ニトロ処理
         /// </summary>
-        IEnumerator InvincibleSwitch(Ped driver,Vehicle vehicle)
+        void NitroAction(Ped driver,Vehicle vehicle)
         {
+            IsNitroOK = false;
+
             if (driver.IsSafeExist())
             {
                 driver.IsInvincible = true;
@@ -66,9 +67,21 @@ namespace ToriScript.Inferno
 
             //3秒待機
             foreach (var s in WaitForSecond(3))
+            Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
-                yield return s;
-            }
+                vehicle.Position.X,
+                vehicle.Position.Y,
+                vehicle.Position.Z,
+                0,
+                1.0f,
+                true,
+                true,
+                1.0f
+            });
+
+            //無敵にしたあと３秒待機
+            Wait(3*1000);
+
 
             if (driver.IsSafeExist())
             {
@@ -78,12 +91,13 @@ namespace ToriScript.Inferno
             {
                 vehicle.IsInvincible = false;
             }
+
+            //元に戻して7秒後にOKにする
+            Wait(7*1000);
+
+            IsNitroOK = true;
         }
 
 
-        protected override void Setup()
-        {
-            KeyDown += PlayerVehicleNitro_KeyDown;
-        }
     }
 }
