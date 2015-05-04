@@ -64,8 +64,6 @@ namespace ToriScript.Inferno
                 vehicle.IsInvincible = true;
             }
 
-            //3秒待機
-            foreach (var s in WaitForSecond(3))
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
                 vehicle.Position.X,
