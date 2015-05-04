@@ -24,7 +24,6 @@ namespace Inferno
         private readonly string Keyword = "cnitro";
         private readonly int probability = 5;
 
-        //private bool _isActive = false;
         public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
         private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
 
@@ -43,7 +42,6 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     _isActive.Value = !_isActive.Value;
-                    LogWrite("CitizenNitro" + _isActive.Value + "\r\n");
                 });
 
             //テキスト表示
@@ -125,7 +123,6 @@ namespace Inferno
                 true,
                 0.1f
             });
-            LogWrite("NitroVehicle()\r\n");
         }
     }
 }
