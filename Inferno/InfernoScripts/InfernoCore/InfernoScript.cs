@@ -125,5 +125,16 @@ namespace Inferno
             }
         }
 
+
+        /// <summary>
+        /// ログをTCPSocker経由で吐く
+        /// </summary>
+        /// <param name="message">ログメッセージ</param>
+        public void LogWrite(string message)
+        {
+#if DEBUG
+            InfernoCore.Instance.LogWrite(message);
+#endif
+        }
     }
 }

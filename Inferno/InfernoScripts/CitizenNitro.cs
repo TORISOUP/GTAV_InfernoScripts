@@ -34,6 +34,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     _isActive = !_isActive;
+                    LogWrite("CitizenNitro:" + _isActive);
                 });
 
             //interval間隔で実行
