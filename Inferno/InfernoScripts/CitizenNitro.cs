@@ -12,6 +12,7 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using Reactive.Bindings;
+using System.Reactive.Concurrency;
 
 namespace Inferno
 {
@@ -21,9 +22,10 @@ namespace Inferno
     public class CitizenNitro : InfernoScript
     {
         private readonly string Keyword = "cnitro";
-        private readonly int probability = 50;
+        private readonly int probability = 5;
 
-        private ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(false);
+        //private bool _isActive = false;
+        public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
         private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
 
         /// <summary>
@@ -41,10 +43,11 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     _isActive.Value = !_isActive.Value;
+                    LogWrite("CitizenNitro" + _isActive.Value + "\r\n");
                 });
 
             //テキスト表示
-            _isActive.Subscribe(_ => StartCoroutine(InvincibleSwitch("PedNitro " + _isActive.Value)));
+            _isActive.Subscribe(_ => StartCoroutine(ShowText("CitizenNitro: " + _isActive)));
 
             //interval間隔で実行
             OnTickAsObservable
@@ -55,12 +58,12 @@ namespace Inferno
         /// <summary>
         /// テキストを３秒間表示
         /// </summary>
-        IEnumerator InvincibleSwitch(string str)
+        IEnumerator ShowText(string str)
         {
             //３秒待機
-            foreach (var s in WaitForSecound(3))
+            foreach (var s in WaitForSecond(3))
             {
-                InfernoCore.SetDrawText(str);
+                DrawText(str);
                 yield return s;
             }
         }
@@ -78,12 +81,13 @@ namespace Inferno
                 var nitroAvailableVeles = CachedPeds
                     .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInVehicle())
                     .Select(x => x.CurrentVehicle)
-                    .Where(x => x.IsSafeExist() && x.IsAlive && x.IsSameEntity(playerVehicle));
+                    .Where(x => x.IsSafeExist() && x.IsAlive && !x.IsSameEntity(playerVehicle));
 
                 foreach (var veh in nitroAvailableVeles)
                 {
                     if (Random.Next(0, 100) <= probability)
                     {
+                        
                         NitroVehicle(veh);
                     }
                 }
@@ -91,6 +95,7 @@ namespace Inferno
             catch
             {
                 //nice catch!
+                LogWrite("CitizenNitroAction()nice catch!\r\n");
             }
         }
 
@@ -119,6 +124,7 @@ namespace Inferno
                 true,
                 0.1f
             });
+            LogWrite("NitroVehicle()\r\n");
         }
     }
 }

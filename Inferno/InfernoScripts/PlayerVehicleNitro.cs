@@ -24,9 +24,8 @@ namespace ToriScript.Inferno
             if (e.KeyCode != Keys.O) return;;
 
             var vehicle = this.GetPlayerVehicle();
-            
-         //   NitroVehicle(vehicle,Game.Player.Character);
-         
+            //LogWrite("PlayerVehicleNitro\r\n");   
+            //NitroVehicle(vehicle,Game.Player.Character);
         }
 
         void NitroVehicle(Vehicle vehicle,Ped driver)
@@ -66,7 +65,7 @@ namespace ToriScript.Inferno
             }
 
             //3秒待機
-            foreach (var s in WaitForSecound(3))
+            foreach (var s in WaitForSecond(3))
             {
                 yield return s;
             }

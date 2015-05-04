@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using Inferno;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,7 +20,6 @@ namespace InfernoTest
         [TestMethod]
         public void AddCroutine時にそれぞれ別のidが連番で割り振られる()
         {
-
             for (uint expected = 0; expected < 10; expected++)
             {
                 var resultId = testCoroutineSystem.AddCrotoutine(testEnumerator(1));

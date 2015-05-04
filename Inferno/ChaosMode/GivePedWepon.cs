@@ -1,12 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Windows.Forms;
+using GTA;
+using GTA.Math;
+using GTA.Native;
 
 namespace Inferno.ChaosMode
 {
-    class GivePedWepon
+    class GivePedWepon : InfernoScript
     {
+        protected override void Setup()
+        {
+            //interval間隔で実行
+            OnTickAsObservable
+                .Subscribe(_ => GetPeds());
+        }
+
+        /// <summary>
+        /// 市民を取得
+        /// </summary>
+        private void GetPeds()
+        {
+            try
+            {
+                //市民を取得
+                var pedAvailableVeles = CachedPeds
+                        .Where(x => x.IsSafeExist() && x != Game.Player.Character && x.IsAlive);
+
+                foreach (var ped in pedAvailableVeles)
+                {
+                    AttachPedWeapon(ped);
+                }
+            }
+            catch
+            {
+                //nice catch!
+            }
+        }
+
+        /// <summary>
+        /// 武器を持たせる処理
+        /// </summary>
+        private unsafe void AttachPedWeapon(Ped ped)
+        {
+            try
+            {
+                ped.Accuracy = 100; //命中率
+                Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD, ped, 0);    //武器を落とさない
+                var weapon = Function.Call<int>(Hash.GET_HASH_KEY, "WEAPON_RPG");   //武器名からハッシュ値取得
+                Function.Call(Hash.GIVE_DELAYED_WEAPON_TO_PED, ped, weapon, 1000, 0);  //指定武器装備
+                Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);  //武器装備
+            }
+            catch(Exception e)
+            {
+                LogWrite("AttachPedWeaponError!" + e.Message + "\r\n");
+            }
+        }
     }
 }

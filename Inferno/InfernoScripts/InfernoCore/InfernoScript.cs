@@ -38,6 +38,11 @@ namespace Inferno
         /// </summary>
         protected virtual int TickInterval { get { return 1000; } }
 
+        public void DrawText(string str)
+        {
+            InfernoCore.SetDrawText(str);
+        }
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -116,7 +121,7 @@ namespace Inferno
         /// </summary>
         /// <param name="secound"></param>
         /// <returns></returns>
-        protected IEnumerable WaitForSecound(float secound)
+        protected IEnumerable WaitForSecond(float secound)
         {
             var waitLoopCount = (int)(secound * 10);
             for (var i = 0; i < waitLoopCount; i++)
@@ -125,5 +130,16 @@ namespace Inferno
             }
         }
 
+
+        /// <summary>
+        /// ログをTCPSocker経由で吐く
+        /// </summary>
+        /// <param name="message">ログメッセージ</param>
+        public void LogWrite(string message)
+        {
+#if DEBUG
+            InfernoCore.Instance.LogWrite(message);
+#endif
+        }
     }
 }
