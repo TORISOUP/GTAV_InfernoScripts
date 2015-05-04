@@ -8,15 +8,29 @@ using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Reactive.Bindings;
+using System.Reactive.Concurrency;
 
 namespace Inferno.ChaosMode
 {
     class GivePedWepon : InfernoScript
     {
+        private readonly string Keyword = "chaos";
+
+        public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
+
         protected override void Setup()
         {
+            //キーワードが入力されたらON／OFFを切り替える
+            CreateInputKeywordAsObservable(Keyword)
+                .Subscribe(_ =>
+                {
+                    _isActive.Value = !_isActive.Value;
+                });
+
             //interval間隔で実行
             OnTickAsObservable
+                .Where(_ => _isActive.Value)
                 .Subscribe(_ => GetPeds());
         }
 

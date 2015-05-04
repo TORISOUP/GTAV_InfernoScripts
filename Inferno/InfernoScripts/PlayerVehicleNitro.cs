@@ -20,7 +20,6 @@ namespace ToriScript.Inferno
     public class PlayerVehicleNitro : InfernoScript
     {
         private bool IsNitroOK = true;
-        var vehicle = this.GetPlayerVehicle();
 
         protected override int TickInterval
         {
