@@ -6,17 +6,26 @@ using System.Threading.Tasks;
 
 namespace Inferno
 {
-	public enum GameKey {
+    public enum GameKey
+    {
         EnterCar = 23,
         Sprint = 21,
         Jump = 22,
         Reload = 45,
         SeekCover = 44,
-		Attack =24 ,
-        ChangeWeapon =37,
+        Attack = 24,
+        ChangeWeapon = 37,
         Aim = 25,
-		LookBehind  = 26,
-		Stealth = 36
-	};
+        LookBehind = 26,
+        Stealth = 36
+    };
+
+    public enum VehicleSeat
+    {
+        Driver = -1,
+        Passenger = 0,
+        LeftRear = 1,
+        RightRear = 2
+    }
 
 }
