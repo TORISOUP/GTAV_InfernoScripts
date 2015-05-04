@@ -68,7 +68,7 @@ namespace Inferno
         /// テキスト表示
         /// </summary>
         /// <param name="text"></param>
-        public static void SetDrawText(string text)
+        public void SetDrawText(string text)
         {
             //フォント指定
             Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] { 0 });
@@ -88,11 +88,6 @@ namespace Inferno
             });
             //中央設置？
             Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { 1 });
-            //中央設置？
-            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[]
-            {
-                1
-            });
             //文字の影poi
             Function.Call(Hash.SET_TEXT_DROPSHADOW, new InputArgument[]
             {
