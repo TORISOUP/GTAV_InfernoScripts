@@ -15,7 +15,7 @@ namespace Inferno
         /// <summary>
         /// コルーチンの辞書
         /// </summary>
-        Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
+        protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
         private uint coroutineIdIndex = 0;
         private Object lockObject = new object();
 
@@ -29,8 +29,9 @@ namespace Inferno
         {
             lock (lockObject)
             {
-                _coroutines.Add(coroutineIdIndex++, coroutine);
-                return coroutineIdIndex;
+                var id = coroutineIdIndex++;
+                _coroutines.Add(id, coroutine);
+                return id;
             }
         }
 
