@@ -19,6 +19,11 @@ namespace Inferno.ChaosMode
 
         public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
 
+        protected override int TickInterval
+        {
+            get { return 500; }
+        }
+
         protected override void Setup()
         {
             //キーワードが入力されたらON／OFFを切り替える
@@ -43,7 +48,7 @@ namespace Inferno.ChaosMode
             {
                 //市民を取得
                 var pedAvailableVeles = CachedPeds
-                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(Game.Player.Character) && x.IsAlive);
+                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(this.GetPlayer()) && x.IsAlive);
 
                 foreach (var ped in pedAvailableVeles)
                 {
@@ -63,9 +68,8 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                ped.Accuracy = 100; //命中率
-                ped.DropWeaponsWhenDead(0);    //武器を落とさない
-                var weapon = this.GetHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
+                ped.SetDropWeaponWhenDead(false);    //武器を落とさない
+                var weapon = this.GetGTAObjectHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
                 ped.GiveWeapon(weapon, 1000);  //指定武器所持
                 ped.EquipmentWeapon(weapon);  //武器装備
             }

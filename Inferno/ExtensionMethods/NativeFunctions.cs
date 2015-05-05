@@ -16,10 +16,10 @@ namespace Inferno
         /// 死亡時に武器を落とすかどうか
         /// </summary>
         /// <param name="ped">市民</param>
-        /// <param name="Flag">0:落とさない 1:落とす</param>
-        public static void DropWeaponsWhenDead(this Ped ped, int Flag)
+        /// <param name="isDrop">false:落とさない true:落とす</param>
+        public static void SetDropWeaponWhenDead(this Ped ped, bool isDrop)
         {
-            Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD, ped, Flag);
+            Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD, ped, isDrop ? 1 : 0);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Inferno
         /// <param name="script"></param>
         /// <param name="str">文字列（武器名等）</param>
         /// <returns>ハッシュ値</returns>
-        public static int GetHashKey(this Script script, string str)
+        public static int GetGTAObjectHashKey(this Script script, string str)
         {
             return Function.Call<int>(Hash.GET_HASH_KEY, str);
         }
@@ -48,7 +48,7 @@ namespace Inferno
         /// 武器を装備する（先に所持していることが必須?）
         /// </summary>
         /// <param name="ped">市民</param>
-        /// <param name="weapon">装備する武器（ハッシュ値）</param>
+        /// <param name="weapon">武器（ハッシュ値）</param>
         public static void EquipmentWeapon(this Ped ped, int weapon)
         {
             Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);
@@ -131,10 +131,10 @@ namespace Inferno
         /// 文字を中央寄せにする
         /// </summary>
         /// <param name="script"></param>
-        /// <param name="Flag">0:左寄せ？1:中央寄せ</param>
-        public static void SetTextCentre(this Script script, int Flag)
+        /// <param name="isCenter">false:左寄せ？true:中央寄せ</param>
+        public static void SetTextCentre(this Script script, bool isCenter)
         {
-            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { Flag });
+            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { isCenter ? 1 : 0 });
         }
 
         /// <summary>
