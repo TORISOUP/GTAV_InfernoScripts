@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Windows.Forms;
 using GTA;
+using GTA.Native;
 using Reactive.Bindings;
 
 namespace Inferno
@@ -63,7 +64,29 @@ namespace Inferno
             get { return OnKeyDownSubject.AsObservable(); }
         }
 
-    
+        /// <summary>
+        /// テキスト表示
+        /// </summary>
+        /// <param name="text"></param>
+        public void SetDrawText(string text)
+        {
+            //フォント指定
+            this.SetTextFont(0);
+            //文字スケール
+            this.SetTextScale(0.55f, 0.55f);
+            //文字色
+            this.SetTextColour(255, 255, 255, 255);
+            //中央寄せにする
+            this.SetTextCentre(true);
+            //文字の影（の色？）
+            this.SetTextDropShadow();
+            //文字のエッジ
+            this.SetTextEdge();
+            //テキストとして表示する文字列
+            this.AddTextString(text);
+            //テキスト描画
+            this.DrawTextInSetPosition(0.5f, 0.5f);
+        }
 
         public InfernoCore()
         {

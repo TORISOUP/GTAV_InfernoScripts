@@ -28,7 +28,6 @@ namespace Inferno
         /// </summary>
         public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]); } }
 
-
         /// <summary>
         /// 一定間隔のTickイベント
         /// </summary>
@@ -38,6 +37,16 @@ namespace Inferno
         /// スクリプトのTickイベントの実行頻度[ms]
         /// </summary>
         protected virtual int TickInterval { get { return 1000; } }
+
+        /// <summary>
+        /// テキスト表示
+        /// </summary>
+        /// <param name="str">表示したい文字列</param>
+        public void DrawText(string str)
+        {
+            InfernoCore core = InfernoCore.Instance;
+            core.SetDrawText(str);
+        }
 
         /// <summary>
         /// コンストラクタ

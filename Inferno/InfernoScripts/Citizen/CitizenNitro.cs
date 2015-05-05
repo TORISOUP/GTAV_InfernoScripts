@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Reactive.Bindings;
+using System.Reactive.Concurrency;
 
 namespace Inferno
 {
@@ -16,7 +24,7 @@ namespace Inferno
         private readonly string Keyword = "cnitro";
         private readonly int probability = 5;
 
-        private bool _isActive = false;
+        public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
         private readonly int[] _velocities = {-70, -50, -30, 30, 50, 70, 100};
 
         /// <summary>
@@ -33,15 +41,30 @@ namespace Inferno
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    LogWrite("CitizenNitro:" + _isActive);
+                    _isActive.Value = !_isActive.Value;
                 });
+
+            //テキスト表示
+            _isActive.Subscribe(_ => StartCoroutine(ShowText("CitizenNitro: " + _isActive)));
 
             //interval間隔で実行
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenNitroAction());
 
+        }
+
+        /// <summary>
+        /// テキストを３秒間表示
+        /// </summary>
+        IEnumerator ShowText(string str)
+        {
+            //３秒待機
+            foreach (var s in WaitForSecond(3))
+            {
+                DrawText(str);
+                yield return s;
+            }
         }
 
         /// <summary>
@@ -63,6 +86,7 @@ namespace Inferno
                 {
                     if (Random.Next(0, 100) <= probability)
                     {
+                        
                         NitroVehicle(veh);
                     }
                 }
@@ -70,6 +94,7 @@ namespace Inferno
             catch
             {
                 //nice catch!
+                LogWrite("CitizenNitroAction()nice catch!\r\n");
             }
         }
 
