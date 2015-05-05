@@ -49,7 +49,7 @@ namespace Inferno
         /// </summary>
         /// <param name="ped">市民</param>
         /// <param name="weapon">武器（ハッシュ値）</param>
-        public static void EquipmentWeapon(this Ped ped, int weapon)
+        public static void EquipWeapon(this Ped ped, int weapon)
         {
             Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);
         }

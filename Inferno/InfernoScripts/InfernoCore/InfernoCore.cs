@@ -77,7 +77,7 @@ namespace Inferno
             //文字色
             this.SetTextColour(255, 255, 255, 255);
             //中央寄せにする
-            this.SetTextCentre(1);
+            this.SetTextCentre(true);
             //文字の影（の色？）
             this.SetTextDropShadow();
             //文字のエッジ

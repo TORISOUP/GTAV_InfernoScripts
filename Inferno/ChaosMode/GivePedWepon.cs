@@ -71,7 +71,7 @@ namespace Inferno.ChaosMode
                 ped.SetDropWeaponWhenDead(false);    //武器を落とさない
                 var weapon = this.GetGTAObjectHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
                 ped.GiveWeapon(weapon, 1000);  //指定武器所持
-                ped.EquipmentWeapon(weapon);  //武器装備
+                ped.EquipWeapon(weapon);  //武器装備
             }
             catch(Exception e)
             {
