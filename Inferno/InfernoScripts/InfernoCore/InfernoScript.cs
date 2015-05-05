@@ -39,9 +39,14 @@ namespace Inferno
         /// </summary>
         protected virtual int TickInterval { get { return 1000; } }
 
+        /// <summary>
+        /// テキスト表示
+        /// </summary>
+        /// <param name="str">表示したい文字列</param>
         public void DrawText(string str)
         {
-            InfernoCore.SetDrawText(str);
+            InfernoCore core = new InfernoCore();
+            core.SetDrawText(str);
         }
 
         /// <summary>

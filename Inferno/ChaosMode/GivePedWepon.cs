@@ -31,13 +31,13 @@ namespace Inferno.ChaosMode
             //interval間隔で実行
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
-                .Subscribe(_ => GetPeds());
+                .Subscribe(_ => GiveWeaponPeds());
         }
 
         /// <summary>
-        /// 市民を取得
+        /// 市民を取得して武器を持たせる
         /// </summary>
-        private void GetPeds()
+        private void GiveWeaponPeds()
         {
             try
             {
@@ -64,10 +64,10 @@ namespace Inferno.ChaosMode
             try
             {
                 ped.Accuracy = 100; //命中率
-                Function.Call(Hash.SET_PED_DROPS_WEAPONS_WHEN_DEAD, ped, 0);    //武器を落とさない
-                var weapon = Function.Call<int>(Hash.GET_HASH_KEY, "WEAPON_RPG");   //武器名からハッシュ値取得
-                Function.Call(Hash.GIVE_DELAYED_WEAPON_TO_PED, ped, weapon, 1000, 0);  //指定武器装備
-                Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);  //武器装備
+                ped.DropWeaponsWhenDead(0);    //武器を落とさない
+                var weapon = this.GetHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
+                ped.GiveWeapon(weapon, 1000);  //指定武器所持
+                ped.EquipmentWeapon(weapon);  //武器装備
             }
             catch(Exception e)
             {
