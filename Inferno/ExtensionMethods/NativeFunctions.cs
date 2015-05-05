@@ -1,5 +1,6 @@
 ﻿using System;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 
 namespace Inferno
@@ -52,6 +53,31 @@ namespace Inferno
         public static void EquipWeapon(this Ped ped, int weapon)
         {
             Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);
+        }
+
+
+        /// <summary>
+        /// 指定座標に攻撃する
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="position">座標</param>
+        /// <param name="duration">攻撃時間[ms]</param>
+        public static void TaskShootAtCoord(this Ped ped,Vector3 position,int duration)
+        {
+            Function.Call(Hash.TASK_SHOOT_AT_COORD,new InputArgument[]
+            {
+                ped,
+                position.X,
+                position.Y,
+                position.Z,
+                duration
+            });
+        }
+
+
+        public static void DestroyEntity(this Entity entity)
+        {
+          //  Function.Call(Hash.DELETE_ENTITY, new InputArgument[] {entity});
         }
 
         /// <summary>

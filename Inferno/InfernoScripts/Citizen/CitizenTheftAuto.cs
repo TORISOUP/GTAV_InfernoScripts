@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
 using System.Reactive.Linq;
-using GTA;
-using GTA.Math;
 
 namespace Inferno
 {
     /// <summary>
     /// 市民の車両強盗
     /// </summary>
-    class CitizenTheftAuto:InfernoScript
+    internal class CitizenTheftAuto : InfernoScript
     {
 
         private bool IsActive = false;
@@ -23,10 +16,12 @@ namespace Inferno
         /// プレイヤの周囲何ｍの市民が対象か
         /// </summary>
         private float PlayerAroundDistance = 300.0f;
+
         /// <summary>
         /// 車両強盗する確率
         /// </summary>
         private readonly int probability = 10;
+
         /// <summary>
         /// 10秒間隔
         /// </summary>
@@ -98,10 +93,10 @@ namespace Inferno
         private VehicleSeat GetRandomSeat()
         {
             return Enum
-            .GetValues(typeof(VehicleSeat))
-            .Cast<VehicleSeat>()
-            .OrderBy(x => Random.Next())
-            .FirstOrDefault();
+                .GetValues(typeof (VehicleSeat))
+                .Cast<VehicleSeat>()
+                .OrderBy(x => Random.Next())
+                .FirstOrDefault();
         }
     }
 }
