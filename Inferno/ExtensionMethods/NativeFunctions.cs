@@ -74,6 +74,24 @@ namespace Inferno
             });
         }
 
+        /// <summary>
+        /// リロード中か
+        /// </summary>
+        /// <param name="ped">市民</param>
+        public static bool IsWeaponReloading(this Ped ped)
+        {
+            return Function.Call<bool>(Hash.IS_PED_RELOADING, ped);
+        }
+
+        /// <summary>
+        /// 市民の攻撃パターン
+        /// ハッシュ値は（http://www.dev-c.com/nativedb/func/edit/ac0631c9）参照
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="pattern">パターン（ハッシュ値）</param>
+        public static void SetPedFiringPattern(this Ped ped, int pattern){
+            Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
+        }
 
         public static void DestroyEntity(this Entity entity)
         {

@@ -11,7 +11,7 @@ using System.Reactive.Concurrency;
 
 namespace Inferno.ChaosMode
 {
-    class GivePedWepon : InfernoScript
+    class PedRiot : InfernoScript
     {
         private readonly string Keyword = "chaos";
 
@@ -19,7 +19,7 @@ namespace Inferno.ChaosMode
 
         protected override int TickInterval
         {
-            get { return 500; }
+            get { return 1000; }
         }
 
         protected override void Setup()
@@ -34,23 +34,23 @@ namespace Inferno.ChaosMode
             //interval間隔で実行
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
-                .Subscribe(_ => GiveWeaponPeds());
+                .Subscribe(_ => PedRiotActive());
         }
 
         /// <summary>
-        /// 市民を取得して武器を持たせる
+        /// 市民を取得して攻撃準備
         /// </summary>
-        private void GiveWeaponPeds()
+        private void PedRiotActive()
         {
             try
             {
                 //市民を取得
                 var pedAvailableVeles = CachedPeds
-                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(this.GetPlayer()) && x.IsAlive);
+                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(this.GetPlayer()) && x.IsAlive && !x.IsWeaponReloading());
 
                 foreach (var ped in pedAvailableVeles)
                 {
-                    AttachPedWeapon(ped);
+                    SetRiot(ped);
                 }
             }
             catch
@@ -60,18 +60,19 @@ namespace Inferno.ChaosMode
         }
 
         /// <summary>
-        /// 武器を持たせる処理
+        /// 攻撃本体
         /// </summary>
-        private void AttachPedWeapon(Ped ped)
+        /// <param name="ped">市民</param>
+        private void SetRiot(Ped ped)
         {
             try
             {
-                ped.SetDropWeaponWhenDead(false);    //武器を落とさない
-                var weapon = this.GetGTAObjectHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
-                ped.GiveWeapon(weapon, 1000);  //指定武器所持
-                ped.EquipWeapon(weapon);  //武器装備
+                //とりあえずプレイヤーを狙うように
+                Ped player = this.GetPlayer();
+                ped.TaskShootAtCoord(new Vector3(player.Position.X,player.Position.Y,player.Position.Z),10000);
+                ped.SetPedFiringPattern(-957453492);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LogWrite("AttachPedWeaponError!" + e.Message + "\r\n");
             }
