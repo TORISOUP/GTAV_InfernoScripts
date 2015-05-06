@@ -11,7 +11,7 @@ using System.Reactive.Concurrency;
 
 namespace Inferno.ChaosMode
 {
-    class PedRiot : InfernoScript
+    class ChaosMode : InfernoScript
     {
         private readonly string Keyword = "chaos";
 
@@ -70,11 +70,11 @@ namespace Inferno.ChaosMode
                 //とりあえずプレイヤーを狙うように
                 Ped player = this.GetPlayer();
                 ped.TaskShootAtCoord(new Vector3(player.Position.X,player.Position.Y,player.Position.Z),10000);
-                ped.SetPedFiringPattern(-957453492);
+                ped.SetPedFiringPattern(-957453492);    //フルオート射撃
             }
             catch (Exception e)
             {
-                LogWrite("AttachPedWeaponError!" + e.Message + "\r\n");
+                LogWrite("SetRiotError!" + e.Message + "\r\n");
             }
         }
     }
