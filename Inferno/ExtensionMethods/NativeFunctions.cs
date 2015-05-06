@@ -85,7 +85,6 @@ namespace Inferno
 
         /// <summary>
         /// 市民の攻撃パターン
-        /// ハッシュ値は（http://www.dev-c.com/nativedb/func/edit/ac0631c9）参照
         /// </summary>
         /// <param name="ped">市民</param>
         /// <param name="pattern">パターン（ハッシュ値）</param>

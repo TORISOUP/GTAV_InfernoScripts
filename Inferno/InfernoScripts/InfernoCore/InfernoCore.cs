@@ -47,7 +47,6 @@ namespace Inferno
             get { return vehiclesNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
         }
 
-
         /// <summary>
         /// 100ms周期のTick
         /// </summary>

@@ -15,7 +15,7 @@ namespace Inferno.ChaosMode
     {
         private readonly string Keyword = "chaos";
 
-        private int _rgpHash;
+        private int _rpgHash;
 
         public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
 
@@ -26,7 +26,6 @@ namespace Inferno.ChaosMode
 
         protected override void Setup()
         {
-            _rgpHash = this.GetGTAObjectHashKey("WEAPON_RPG"); //武器名からハッシュ値取得
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
@@ -49,7 +48,7 @@ namespace Inferno.ChaosMode
             {
                 //市民を取得
                 var pedAvailableVeles = CachedPeds
-                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(this.GetPlayer()) && x.IsAlive);
+                        .Where(x => x.IsSafeExist() && !x.IsSameEntity(this.GetPlayer()) && x.IsAlive && !x.IsWeaponReloading());
 
                 foreach (var ped in pedAvailableVeles)
                 {
@@ -69,9 +68,10 @@ namespace Inferno.ChaosMode
         {
             try
             {
+                _rpgHash = this.GetGTAObjectHashKey(Random.Next(0, 2) == 0 ? "WEAPON_RPG" : "WEAPON_SMG");
                 ped.SetDropWeaponWhenDead(false);    //武器を落とさない
-                ped.GiveWeapon(_rgpHash, 1000);  //指定武器所持
-                ped.EquipWeapon(_rgpHash);  //武器装備
+                ped.GiveWeapon(_rpgHash, 1000);  //指定武器所持
+                ped.EquipWeapon(_rpgHash);  //武器装備
             }
             catch(Exception e)
             {

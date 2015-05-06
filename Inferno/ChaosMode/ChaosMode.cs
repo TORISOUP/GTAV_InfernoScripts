@@ -67,10 +67,11 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                //とりあえずプレイヤーを狙うように
-                Ped player = this.GetPlayer();
-                ped.TaskShootAtCoord(new Vector3(player.Position.X,player.Position.Y,player.Position.Z),10000);
-                ped.SetPedFiringPattern(-957453492);    //フルオート射撃
+                var Target = (CachedPeds[Random.Next(0, CachedPeds.Count)]).IsSameEntity(ped)
+                    ? null : CachedPeds[Random.Next(0, CachedPeds.Count)];
+                if (Target == null) return;
+                ped.TaskShootAtCoord(new Vector3(Target.Position.X,Target.Position.Y,Target.Position.Z),10000);
+                ped.SetPedFiringPattern((int)FiringPattern.FullAuto);    //フルオート射撃
             }
             catch (Exception e)
             {
