@@ -38,6 +38,8 @@ namespace Inferno
         /// </summary>
         protected virtual int TickInterval { get { return 1000; } }
 
+        public IObservable<Unit> OnAllOnCommandObservable { get; private set; } 
+
         /// <summary>
         /// テキスト表示
         /// </summary>
@@ -63,6 +65,8 @@ namespace Inferno
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h,
                     Scheduler.Immediate)
                     .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
 
             Setup();
         }
@@ -144,7 +148,7 @@ namespace Inferno
         public void LogWrite(string message)
         {
 #if DEBUG
-            InfernoCore.Instance.LogWrite(message + "\r\n");
+            InfernoCore.Instance.LogWrite(message + "\n");
 #endif
         }
     }

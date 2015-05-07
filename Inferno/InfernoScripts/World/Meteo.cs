@@ -13,7 +13,7 @@ namespace Inferno
     internal class Meteo : InfernoScript
     {
         private int _rpgHash;
-        private bool IsActive = false;
+        private bool _isActive = false;
         protected override int TickInterval
         {
             get { return 2500; }
@@ -24,10 +24,12 @@ namespace Inferno
             _rpgHash = this.GetGTAObjectHashKey("WEAPON_RPG");
 
             CreateInputKeywordAsObservable("meteo")
-                .Subscribe(_ => IsActive = !IsActive);
+                .Subscribe(_ => _isActive = !_isActive);
+
+            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
             OnTickAsObservable
-                .Where(_ => IsActive)
+                .Where(_ => _isActive)
                 .Subscribe(_ => ShootMeteo());
         }
 
