@@ -58,8 +58,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChaosMode\GivePedWepon.cs" />
     <Compile Include="ChaosMode\ChaosMode.cs" />
+    <Compile Include="ChaosMode\PedChaosCheckera\CharacterChaosChecker.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />

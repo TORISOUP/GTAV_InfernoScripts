@@ -89,7 +89,12 @@ namespace Inferno
         /// <param name="ped">市民</param>
         /// <param name="pattern">パターン（ハッシュ値）</param>
         public static void SetPedFiringPattern(this Ped ped, int pattern){
-            Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
+            Function.Call(Hash.SET_PED_FIRING_PATTERN,new InputArgument[]{ ped, pattern});
+        }
+
+        public static void SetPedShootRate(this Ped ped, int shootRate)
+        {
+            Function.Call(Hash.SET_PED_SHOOT_RATE, new InputArgument[] {ped, shootRate});
         }
 
         public static void DestroyEntity(this Entity entity)

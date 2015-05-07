@@ -10,7 +10,7 @@ namespace Inferno
     internal class CitizenTheftAuto : InfernoScript
     {
 
-        private bool IsActive = false;
+        private bool _isActive = false;
 
         /// <summary>
         /// プレイヤの周囲何ｍの市民が対象か
@@ -35,14 +35,17 @@ namespace Inferno
             CreateInputKeywordAsObservable("robber")
                 .Subscribe(_ =>
                 {
-                    IsActive = !IsActive;
-                    LogWrite(IsActive.ToString());
+                    _isActive = !_isActive;
+                    LogWrite(_isActive.ToString());
 
                 });
 
             OnTickAsObservable
-                .Where(_ => IsActive)
+                .Where(_ => _isActive)
                 .Subscribe(_ => RobberVehicle());
+
+            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+
         }
 
         private void RobberVehicle()
