@@ -11,17 +11,15 @@ using System.Reactive.Concurrency;
 
 namespace Inferno.ChaosMode
 {
-    class GivePedWepon : InfernoScript
+    class ChaosMode : InfernoScript
     {
         private readonly string Keyword = "chaos";
-
-        private int _rpgHash;
 
         public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
 
         protected override int TickInterval
         {
-            get { return 500; }
+            get { return 1000; }
         }
 
         protected override void Setup()
@@ -36,13 +34,13 @@ namespace Inferno.ChaosMode
             //interval間隔で実行
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
-                .Subscribe(_ => GiveWeaponPeds());
+                .Subscribe(_ => PedRiotActive());
         }
 
         /// <summary>
-        /// 市民を取得して武器を持たせる
+        /// 市民を取得して攻撃準備
         /// </summary>
-        private void GiveWeaponPeds()
+        private void PedRiotActive()
         {
             try
             {
@@ -52,7 +50,7 @@ namespace Inferno.ChaosMode
 
                 foreach (var ped in pedAvailableVeles)
                 {
-                    AttachPedWeapon(ped);
+                    SetRiot(ped);
                 }
             }
             catch
@@ -62,20 +60,22 @@ namespace Inferno.ChaosMode
         }
 
         /// <summary>
-        /// 武器を持たせる処理
+        /// 攻撃本体
         /// </summary>
-        private void AttachPedWeapon(Ped ped)
+        /// <param name="ped">市民</param>
+        private void SetRiot(Ped ped)
         {
             try
             {
-                _rpgHash = this.GetGTAObjectHashKey(Random.Next(0, 2) == 0 ? "WEAPON_RPG" : "WEAPON_SMG");
-                ped.SetDropWeaponWhenDead(false);    //武器を落とさない
-                ped.GiveWeapon(_rpgHash, 1000);  //指定武器所持
-                ped.EquipWeapon(_rpgHash);  //武器装備
+                var Target = (CachedPeds[Random.Next(0, CachedPeds.Count)]).IsSameEntity(ped)
+                    ? null : CachedPeds[Random.Next(0, CachedPeds.Count)];
+                if (Target == null) return;
+                ped.TaskShootAtCoord(new Vector3(Target.Position.X,Target.Position.Y,Target.Position.Z),10000);
+                ped.SetPedFiringPattern((int)FiringPattern.FullAuto);    //フルオート射撃
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                LogWrite("AttachPedWeaponError!" + e.Message + "\r\n");
+                LogWrite("SetRiotError!" + e.Message + "\r\n");
             }
         }
     }
