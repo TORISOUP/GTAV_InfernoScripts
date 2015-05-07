@@ -73,6 +73,7 @@
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
+    <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs" />
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
