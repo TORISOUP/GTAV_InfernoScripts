@@ -63,7 +63,7 @@
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
-    <Compile Include="InfernoScripts\Citizen\MAXSPEED.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />

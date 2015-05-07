@@ -117,6 +117,49 @@ namespace Inferno
         }
 
         /// <summary>
+        /// 車両の座席にいる人を取得する
+        /// </summary>
+        /// <param name="vehicle">車両</param>
+        /// <param name="vehicleSeat">座席</param>
+        /// <returns></returns>
+        public static Ped GetPedInVehicleSeat(this Vehicle vehicle, VehicleSeat vehicleSeat)
+        {
+            return Function.Call<Ped>(Hash.GET_PED_IN_VEHICLE_SEAT, new InputArgument[]
+            {
+                vehicle,
+                (int) vehicleSeat,
+            });
+        }
+
+        /// <summary>
+        /// 最大運転速度を設定 
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="MaxDriveSpeed">最大運転速度</param>
+        public static void SetMaxDriveSpeed(this Ped ped, float MaxDriveSpeed)
+        {
+            Function.Call(Hash.SET_DRIVE_TASK_MAX_CRUISE_SPEED, new InputArgument[]
+            {
+                 ped,
+                 MaxDriveSpeed,
+            });
+        }
+
+        /// <summary>
+        /// 運転速度を設定 
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="DriveSpeed">運転速度</param>
+        public static void SetDriveSpeed(this Ped ped, float DriveSpeed)
+        {
+            Function.Call(Hash.SET_DRIVE_TASK_CRUISE_SPEED, new InputArgument[]
+            {
+                 ped,
+                 DriveSpeed,
+            });
+        }
+
+        /// <summary>
         /// 対象がミッション用のエンティティか
         /// </summary>
         /// <param name="entity"></param>
