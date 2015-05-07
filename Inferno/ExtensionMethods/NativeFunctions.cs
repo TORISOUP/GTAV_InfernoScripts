@@ -14,6 +14,40 @@ namespace Inferno
         }
 
         /// <summary>
+        /// プレイヤーIDを取得
+        /// </summary>
+        public static Player GetPlayerId()
+        {
+            return Function.Call<Player>(Hash.PLAYER_ID);
+        }
+
+        /// <summary>
+        /// プレイヤーがラグドール状態になれるかどうか
+        /// </summary>
+        public static void CanPlayerControlRagdoll(this Player player, bool CanControlRagdoll)
+        {
+            Function.Call(Hash.GIVE_PLAYER_RAGDOLL_CONTROL, player, CanControlRagdoll);
+        }
+
+        /// <summary>
+        /// ラグドール状態にする 
+        /// </summary>
+        /// <param name="Xforce">X軸方向の力</param>
+        /// <param name="Yforce">Y軸方向の力</param>
+        /// <param name="Zforce">Z軸方向の力</param>
+        public static void SetPedToRagdoll(this Ped ped, int Xforce, int Yforce, int Zforce)
+        {
+            Function.Call(Hash.SET_PED_TO_RAGDOLL, new InputArgument[]
+            {
+                ped,
+                Xforce,
+                Yforce,
+                Zforce,
+                0, 0, 0,
+            });
+        } 
+
+        /// <summary>
         /// 死亡時に武器を落とすかどうか
         /// </summary>
         /// <param name="ped">市民</param>
