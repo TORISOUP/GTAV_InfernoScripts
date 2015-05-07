@@ -44,6 +44,9 @@ namespace Inferno
                     _isActive.Value = !_isActive.Value;
                 });
 
+            OnAllOnCommandObservable.Subscribe(_ => _isActive.Value = true);
+
+
             //テキスト表示
             _isActive.Subscribe(_ => StartCoroutine(ShowText("CitizenNitro: " + _isActive)));
 
