@@ -11,11 +11,12 @@ namespace Inferno
     {
         private TcpSocketManager tcpSocketManager;
         private string logPath = @"InfernoScript.log";
-
+        private Encoding encoding;
         public DebugLogger()
         {
             tcpSocketManager = new TcpSocketManager();
             tcpSocketManager.ServerStart();
+            encoding = Encoding.GetEncoding("Shift_JIS");
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Inferno
         {
             try
             {
-                using (var w = new StreamWriter(logPath, true,Encoding.UTF8))
+                using (var w = new StreamWriter(logPath, true, encoding))
                 {
                     w.WriteLineAsync(message);
                 }

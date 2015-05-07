@@ -12,12 +12,12 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// ミッションキャラの武器を変更するか
         /// </summary>
-        private bool _isChangeMissonCharacterWeapon;
+        public bool IsChangeMissonCharacterWeapon { get; set; }
 
         /// <summary>
         /// ミッションキャラのカオス化
         /// </summary>
-        private bool _isChaosMissionCharacter;
+        public bool IsChaosMissionCharacter { get; set; }
 
         /// <summary>
         /// キャラクタがカオス化対象であるかの判定を行う
@@ -26,8 +26,8 @@ namespace Inferno.ChaosMode
         /// <param name="isChangeMissonCharacterWeapon">ミッションキャラの武器を変更するか</param>
         public CharacterChaosChecker(bool isChaosMissionCharacter, bool isChangeMissonCharacterWeapon)
         {
-            _isChaosMissionCharacter = isChaosMissionCharacter;
-            _isChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
+            IsChaosMissionCharacter = isChaosMissionCharacter;
+            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
         }
 
 
@@ -35,13 +35,14 @@ namespace Inferno.ChaosMode
         {
 
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer  &&
-                   (!ped.IsPersistent || _isChaosMissionCharacter);
+                   (!ped.IsPersistent || IsChaosMissionCharacter);
         }
 
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer 
-                && (!ped.IsPersistent || _isChangeMissonCharacterWeapon);
+                && (!ped.IsPersistent || IsChangeMissonCharacterWeapon);
         }
+
     }
 }

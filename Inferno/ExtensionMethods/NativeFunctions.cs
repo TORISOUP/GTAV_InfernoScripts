@@ -103,6 +103,49 @@ namespace Inferno
         }
 
         /// <summary>
+        /// ?
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="targetPed"></param>
+        /// <param name="position"></param>
+        /// <param name="duration"></param>
+        public static void DriveByToTarget(this Ped ped,Ped targetPed,Vector3 position,int duration)
+        {
+            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET,new InputArgument[]
+            {
+                ped,
+                targetPed,
+                position.X,
+                position.Y,
+                position.Z,
+                duration
+            });
+        }
+
+        /// <summary>
+        /// ?
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="target"></param>
+        /// <param name="vehicle"></param>
+        public static void TaskDriveBy(this Ped ped,Ped target,Vehicle vehicle)
+        {
+            Function.Call(Hash.TASK_DRIVE_BY,new InputArgument[]
+            {
+                ped,
+                target,
+                vehicle,
+                target.Position.X,
+                target.Position.Y,
+                target.Position.Z,
+                10000,
+                1,
+                1,
+                90
+            });
+        }
+
+        /// <summary>
         /// 車両に乗り込む
         /// </summary>
         /// <param name="ped">市民</param>
@@ -130,6 +173,12 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, new InputArgument[] {entity});
         }
+
+
+        //public static int GetCurrentWeapon(this Ped ped)
+        //{
+        //    return Function.Call<int>(Hash.GET_CURRENT_PED_WEAPON, new InputArgument[] {ped, 0, false});
+        //}
 
         /// <summary>
         /// テキストのフォント指定

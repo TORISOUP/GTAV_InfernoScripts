@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="ChaosMode\ChaosMode.cs" />
     <Compile Include="ChaosMode\PedChaosCheckera\CharacterChaosChecker.cs" />
+    <Compile Include="ChaosMode\WeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
