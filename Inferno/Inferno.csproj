@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -60,10 +61,11 @@
   <ItemGroup>
     <Compile Include="ChaosMode\ChaosMode.cs" />
     <Compile Include="ChaosMode\PedChaosCheckera\CharacterChaosChecker.cs" />
+    <Compile Include="ChaosMode\WeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
@@ -72,8 +74,8 @@
     <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
+    <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
-    <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs" />
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

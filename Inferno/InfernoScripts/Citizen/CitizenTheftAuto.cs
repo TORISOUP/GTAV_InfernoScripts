@@ -36,8 +36,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     _isActive = !_isActive;
-                    LogWrite(_isActive.ToString());
-
+                    DrawText("CitizenRobberVehicle:" + _isActive, 3.0f);
                 });
 
             OnTickAsObservable

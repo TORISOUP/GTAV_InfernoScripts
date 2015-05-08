@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace Inferno
         private bool _isActive = false;
         protected override int TickInterval
         {
-            get { return 2500; }
+            get { return 5000; }
         }
 
         protected override void Setup()
@@ -24,13 +23,20 @@ namespace Inferno
             _rpgHash = this.GetGTAObjectHashKey("WEAPON_RPG");
 
             CreateInputKeywordAsObservable("meteo")
-                .Subscribe(_ => _isActive = !_isActive);
+                .Subscribe(_ =>
+                {
+                    _isActive = !_isActive;
+                    DrawText("Meteo:" + _isActive, 3.0f);
+                });
 
             OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
             OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => ShootMeteo());
+
+            CreateInputKeywordAsObservable("killme")
+                .Subscribe(_ => this.GetPlayer().Kill());
         }
 
         private void ShootMeteo()
@@ -39,7 +45,17 @@ namespace Inferno
             {
                 var player = this.GetPlayer();
                 var playerPosition = player.Position;
-                var createPosition = playerPosition + new Vector3(Random.Next(-40, 40), Random.Next(-40, 40), 100);
+
+                var addPosition = new Vector3(Random.Next(-40, 40), Random.Next(-40, 40), 100);
+
+                if (player.Velocity.Length() < 1.0f && addPosition.Length() < 10.0f)
+                {
+                    addPosition.Normalize();
+                    addPosition *= Random.Next(10, 40);
+                }
+
+                var createPosition = playerPosition + addPosition;
+
                 var ped = World.CreatePed(player.Model, createPosition);
                 ped.MarkAsNoLongerNeeded();
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない

@@ -35,8 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScriptHookVDotNet">
-      <HintPath>..\..\scripthookvdotnet\bin\Debug\ScriptHookVDotNet.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="ScriptHookVDotNet, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ScriptHookVDotNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -61,6 +65,9 @@
       <Project>{66b723b1-4776-448b-947a-1f0792e77f7f}</Project>
       <Name>Inferno</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

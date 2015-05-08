@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using GTA;
 
 namespace Inferno
@@ -38,16 +39,16 @@ namespace Inferno
         /// </summary>
         protected virtual int TickInterval { get { return 1000; } }
 
-        public IObservable<Unit> OnAllOnCommandObservable { get; private set; } 
+        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
         /// <summary>
         /// テキスト表示
         /// </summary>
-        /// <param name="str">表示したい文字列</param>
-        public void DrawText(string str)
+        /// <param name="text">表示したい文字列</param>
+        /// <param name="time">時間[s]</param>
+        public void DrawText(string text, float time)
         {
-            InfernoCore core = InfernoCore.Instance;
-            core.SetDrawText(str);
+            ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
 
         /// <summary>
@@ -126,10 +127,15 @@ namespace Inferno
           return InfernoCore.Instance.AddCrotoutine(coroutine);
         }
 
+        protected void StopCoroutine(uint id)
+        {
+            InfernoCore.Instance.RemoveCoroutine(id);
+        }
+
         /// <summary>
         /// 指定秒数待機するIEnumerable
         /// </summary>
-        /// <param name="secound"></param>
+        /// <param name="secound">秒</param>
         /// <returns></returns>
         protected IEnumerable WaitForSecond(float secound)
         {
