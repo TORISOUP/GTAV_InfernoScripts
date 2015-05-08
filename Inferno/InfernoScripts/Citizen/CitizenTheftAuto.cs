@@ -56,6 +56,7 @@ namespace Inferno
             //TODO: ミッションキャラの除外
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
                                                    && !x.IsSameEntity(this.GetPlayer())
+                                                   && !x.IsPersistent
                                                    && (x.Position - player.Position).Length() <= PlayerAroundDistance);
 
             foreach (var targetPed in targetPeds)
