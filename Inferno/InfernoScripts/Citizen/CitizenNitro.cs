@@ -48,26 +48,13 @@ namespace Inferno
 
 
             //テキスト表示
-            _isActive.Subscribe(_ => StartCoroutine(ShowText("CitizenNitro: " + _isActive)));
+            _isActive.Subscribe(_ => DrawText("CitizenNitro: " + _isActive, 3.0f));
 
             //interval間隔で実行
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenNitroAction());
 
-        }
-
-        /// <summary>
-        /// テキストを３秒間表示
-        /// </summary>
-        IEnumerator ShowText(string str)
-        {
-            //３秒待機
-            foreach (var s in WaitForSecond(3))
-            {
-                DrawText(str);
-                yield return s;
-            }
         }
 
         /// <summary>

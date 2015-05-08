@@ -9,7 +9,8 @@ namespace Inferno.ChaosMode
     public class WeaponProvider
     {
         private Weapon[] shootWeapons;
-        private Weapon[] closeWeapon;
+        private Weapon[] closeWeapons;
+        private Weapon[] allWeapons;
         private Random random;
         public WeaponProvider()
         {
@@ -48,7 +49,7 @@ namespace Inferno.ChaosMode
                 Weapon.STUNGUN,
             };
 
-            closeWeapon = new[]
+            closeWeapons = new[]
             {
                 Weapon.BALL,
                 Weapon.BARBED_WIRE,
@@ -67,6 +68,9 @@ namespace Inferno.ChaosMode
                 Weapon.STICKYBOMB,
                 Weapon.PETROLCAN
             };
+
+            allWeapons = shootWeapons.Concat(closeWeapons).ToArray();
+
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         public Weapon GetRandomCloseWeapon()
         {
-            return closeWeapon[random.Next(0, closeWeapon.Length)];
+            return closeWeapons[random.Next(0, closeWeapons.Length)];
         }
 
         /// <summary>
@@ -93,7 +97,7 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         public Weapon GetRandomWeapon()
         {
-            return (random.Next() % 2) == 0 ? GetRandomShootWeapon() : GetRandomCloseWeapon();
+            return allWeapons[random.Next(0,allWeapons.Length)];
         }
 
         /// <summary>
@@ -114,7 +118,7 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         public bool IsCloseWeapon(Weapon weapon)
         {
-            return closeWeapon.Contains(weapon);
+            return closeWeapons.Contains(weapon);
         }
     }
 }

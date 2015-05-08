@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Windows.Forms;
 using GTA;
 using GTA.Native;
 
@@ -19,6 +20,7 @@ namespace Inferno
             return Game.Player.Character;
         }
 
+
         public static bool IsSafeExist(this Entity entity)
         {
             return entity != null && Entity.Exists(entity);
@@ -32,6 +34,5 @@ namespace Inferno
             if (x == null || y == null) return false;
             return x.ID == y.ID;
         }
-
     }
 }

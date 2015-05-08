@@ -20,6 +20,10 @@ namespace Inferno.ChaosMode
         private Ped[] cachedPedForChaos = new Ped[0];
         private WeaponProvider weaponProvider;
 
+        //デフォルトは全員除外
+        private MissionCharacterTreatmentType currentTreatType =
+            MissionCharacterTreatmentType.ExcludeAllMissionCharacter;
+
         protected override int TickInterval
         {
             get { return 1000; }
@@ -27,7 +31,7 @@ namespace Inferno.ChaosMode
 
         protected override void Setup()
         {
-            chaosChecker = new CharacterChaosChecker(false, true);
+            chaosChecker = new CharacterChaosChecker(MissionCharacterTreatmentType.ExcludeAllMissionCharacter, true);
             weaponProvider = new WeaponProvider();
 
             //キーワードが入力されたらON／OFFを切り替える
@@ -36,11 +40,18 @@ namespace Inferno.ChaosMode
                 {
                     _isActive.Value = !_isActive.Value;
                     chaosedPedList.Clear();
+                    currentTreatType = MissionCharacterTreatmentType.ExcludeAllMissionCharacter;
                 });
 
             //changeでキャラカオスの切り替え（暫定
             CreateInputKeywordAsObservable("change")
-                .Subscribe(_ => chaosChecker.IsChaosMissionCharacter = !chaosChecker.IsChaosMissionCharacter);
+                .Subscribe(_ =>
+                {
+                    currentTreatType
+                        = (MissionCharacterTreatmentType) (((int) currentTreatType + 1)%3);
+                    chaosChecker.MissionCharacterTreatment = currentTreatType;
+                    DrawText("CharacterChaos:" +currentTreatType.ToString(),3.0f);
+                });
 
 
             //interval間隔で市民をカオス化する
@@ -48,7 +59,11 @@ namespace Inferno.ChaosMode
                 .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenChaos());
 
+            _isActive.Subscribe(x =>
+            {
+                DrawText("ChaosMode:" + x, 3.0f);
 
+            });
 
 
         }
