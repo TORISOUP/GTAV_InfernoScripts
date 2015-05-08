@@ -23,7 +23,11 @@ namespace Inferno
             _rpgHash = this.GetGTAObjectHashKey("WEAPON_RPG");
 
             CreateInputKeywordAsObservable("meteo")
-                .Subscribe(_ => _isActive = !_isActive);
+                .Subscribe(_ =>
+                {
+                    _isActive = !_isActive;
+                    DrawText("Meteo:" + _isActive, 3.0f);
+                });
 
             OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 

@@ -42,6 +42,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     _isActive.Value = !_isActive.Value;
+                    DrawText("CitizenNitro:" + _isActive.Value, 3.0f);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => _isActive.Value = true);

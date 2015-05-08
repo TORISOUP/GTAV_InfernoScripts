@@ -48,23 +48,7 @@ namespace Inferno
         /// <param name="time">時間[s]</param>
         public void DrawText(string text, float time)
         {
-            StartCoroutine(ShowTextEnumator(text, time));
-        }
-
-        /// <summary>
-        /// 文字をしばらく画面に表示するコルーチン
-        /// </summary>
-        /// <param name="text">文字列</param>
-        /// <param name="second">時間[s]</param>
-        /// <returns></returns>
-        private IEnumerator ShowTextEnumator(string text, float second)
-        {
-            foreach (var s in WaitForSecond(second))
-            {
-                InfernoCore.Instance.SetDrawText(text);
-                yield return s;
-
-            }
+            ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
 
         /// <summary>
@@ -141,6 +125,11 @@ namespace Inferno
         protected uint StartCoroutine(IEnumerator coroutine)
         {
           return InfernoCore.Instance.AddCrotoutine(coroutine);
+        }
+
+        protected void StopCoroutine(uint id)
+        {
+            InfernoCore.Instance.RemoveCoroutine(id);
         }
 
         /// <summary>

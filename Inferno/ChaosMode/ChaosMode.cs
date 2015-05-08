@@ -40,7 +40,8 @@ namespace Inferno.ChaosMode
                 {
                     _isActive.Value = !_isActive.Value;
                     chaosedPedList.Clear();
-                    currentTreatType = MissionCharacterTreatmentType.ExcludeAllMissionCharacter;
+                    DrawText("ChaosMode:" + _isActive.Value, 3.0f);
+
                 });
 
             //changeでキャラカオスの切り替え（暫定
@@ -50,21 +51,13 @@ namespace Inferno.ChaosMode
                     currentTreatType
                         = (MissionCharacterTreatmentType) (((int) currentTreatType + 1)%3);
                     chaosChecker.MissionCharacterTreatment = currentTreatType;
-                    DrawText("CharacterChaos:" +currentTreatType.ToString(),3.0f);
+                    DrawText("CharacterChaos:" + currentTreatType.ToString(), 3.0f);
                 });
-
 
             //interval間隔で市民をカオス化する
             OnTickAsObservable
                 .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenChaos());
-
-            _isActive.Subscribe(x =>
-            {
-                DrawText("ChaosMode:" + x, 3.0f);
-
-            });
-
 
         }
 
