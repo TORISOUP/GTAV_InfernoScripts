@@ -174,11 +174,16 @@ namespace Inferno
             return Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, new InputArgument[] {entity});
         }
 
+        public static bool HasBeenDamagedBy(this Ped ped, Weapon weapon)
+        {
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, new InputArgument[]
+            {
+                ped,
+                (int)weapon,
+                false
+            });
+        }
 
-        //public static int GetCurrentWeapon(this Ped ped)
-        //{
-        //    return Function.Call<int>(Hash.GET_CURRENT_PED_WEAPON, new InputArgument[] {ped, 0, false});
-        //}
 
         /// <summary>
         /// テキストのフォント指定

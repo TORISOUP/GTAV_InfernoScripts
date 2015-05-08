@@ -63,6 +63,7 @@ namespace Inferno
         private IEnumerator drawTextEnumerator(string text, float time)
         {
             mContainer.Items.Clear();
+            Interval = 0;
             mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
             onDrawStart.OnNext(Unit.Default);
             foreach (var s in WaitForSecond(time))
@@ -71,7 +72,7 @@ namespace Inferno
             }
             onDrawEnd.OnNext(Unit.Default);
             mContainer.Items.Clear();
-            ;
+            Interval = 10000;//表示していない間は遅くする
         }
     }
 }
