@@ -59,8 +59,9 @@ namespace Inferno.ChaosMode
 
             var pedType = (PedList) pedHash;
 
-            //IG_から始まるものはユニークキャラ（？）
-            return pedType.ToString().Contains("IG_");
+            //IG_/CS?から始まるものはユニークキャラ（？）
+            var pedTypeName = pedType.ToString();
+            return pedTypeName.Contains("IG_") || pedTypeName.Contains("CS_");
         }
 
 
