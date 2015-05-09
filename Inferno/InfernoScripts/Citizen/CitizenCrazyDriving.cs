@@ -53,7 +53,7 @@ namespace Inferno
                                                    && !x.IsSameEntity(this.GetPlayerVehicle())
                                                    && !x.IsRequiredForMission()
                                                    && (x.Position - player.Position).Length() <= PlayerAroundDistance)
-                                           .Select(x => x.GetPedOnSeat(VehicleSeat.Driver))
+                                           .Select(x => x.GetPedOnSeat(GTA.VehicleSeat.Driver))
                                            .Where(x => x.IsSafeExist());
 
 
