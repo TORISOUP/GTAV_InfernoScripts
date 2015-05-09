@@ -49,13 +49,12 @@ namespace Inferno
             var playerVehicle = this.GetPlayerVehicle();
 
             //プレイヤ周辺の車
-            var targetVehicles = CachedVehicles.Where(x => x.IsSafeExist()
+            var drivers = CachedVehicles.Where(x => x.IsSafeExist()
                                                    && !x.IsSameEntity(this.GetPlayerVehicle())
                                                    && !x.IsRequiredForMission()
-                                                   && (x.Position - player.Position).Length() <= PlayerAroundDistance);
-
-            var drivers = targetVehicles.Select(x => x.GetPedInVehicleSeat(VehicleSeat.Driver))
-                                        .Where(x => x.IsSafeExist());
+                                                   && (x.Position - player.Position).Length() <= PlayerAroundDistance)
+                                           .Select(x => x.GetPedOnSeat(VehicleSeat.Driver))
+                                           .Where(x => x.IsSafeExist());
 
 
             foreach (var driver in drivers)
@@ -63,7 +62,7 @@ namespace Inferno
                 try
                 {
                     driver.SetMaxDriveSpeed(300.0f);
-                    driver.SetDriveSpeed(300.0f);    
+                    driver.SetDriveSpeed(300.0f);
                 }
                 catch 
                 {

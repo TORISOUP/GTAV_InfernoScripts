@@ -63,6 +63,7 @@
     <Compile Include="ChaosMode\PedChaosCheckera\CharacterChaosChecker.cs" />
     <Compile Include="ChaosMode\WeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
@@ -76,6 +77,9 @@
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
     <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
+    <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,7 +90,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ScriptHookVDotNet.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
