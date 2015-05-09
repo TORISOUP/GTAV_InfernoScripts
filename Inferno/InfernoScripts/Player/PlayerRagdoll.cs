@@ -28,43 +28,39 @@ namespace Inferno
         {
 
             OnTickAsObservable
-                .Where(
-                    _ =>
-                        this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                .Subscribe(_ => SetPlayerRagdoll());
-            OnTickAsObservable
-                .Where(
-                    _ =>
-                        !this.IsGamePadPressed(GameKey.Stealth) || !this.IsGamePadPressed(GameKey.Jump))
-                .Subscribe(_ => UnSetPlayerRagdoll());
+                .Subscribe(_ => 
+                    {
+                        var player = this.GetPlayer();
+                        var PlayerChar = Game.Player;
+                        if (!player.IsSafeExist()) { return; } 
+
+                        if (this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                        {
+                            SetPlayerRagdoll(player, PlayerChar);  
+                        }
+                        else if (RagdollFlag) 
+                        {
+                            UnSetPlayerRagdoll(player, PlayerChar); 
+                        }
+                    });
+
 
         }
 
 
-        void SetPlayerRagdoll()
+        void SetPlayerRagdoll(Ped player, Player PlayerChar)
         {
-            var player = this.GetPlayer();
-            var playerChar = NativeFunctions.GetPlayerId();
-            if (!player.IsSafeExist()) { return;}
-
             RagdollFlag = true;
             player.CanRagdoll = true;
-            playerChar.CanControlRagdoll = true;
-            
-            if (player.IsRagdoll) { return; }
-            player.SetPedToRagdoll(0, 0, 0);
-           
+            PlayerChar.CanControlRagdoll = true;          
+            player.SetToRagdDoll(0, 0, 0);           
         }
 
-        void UnSetPlayerRagdoll()
-        {
-            var player = this.GetPlayer();
-            var playerChar = NativeFunctions.GetPlayerId();
-            if (!player.IsSafeExist() && !RagdollFlag) { return; }
+        void UnSetPlayerRagdoll(Ped player, Player PlayerChar)
+        { 
             RagdollFlag = false;
             player.CanRagdoll = false;
-            playerChar.CanControlRagdoll = false;
-            
+            PlayerChar.CanControlRagdoll = false;
         }
 
     }
