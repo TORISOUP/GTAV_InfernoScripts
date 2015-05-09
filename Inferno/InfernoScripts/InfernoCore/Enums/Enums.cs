@@ -20,6 +20,18 @@ namespace Inferno
         Stealth = 36
     };
 
+    public enum VehicleSeat
+	{
+		None = -3,
+		Any = -2,
+		Driver = -1,
+		Passenger = 0,
+		LeftFront = Driver,
+		RightFront = Passenger,
+		LeftRear = 1,
+		RightRear = 2,
+	};
+
     public enum FiringPattern
     {
         FullAuto = -957453492,
