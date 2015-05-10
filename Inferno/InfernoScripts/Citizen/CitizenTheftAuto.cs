@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Security.Policy;
+using GTA;
 
 namespace Inferno
 {
@@ -44,7 +46,6 @@ namespace Inferno
                 .Subscribe(_ => RobberVehicle());
 
             OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
-
         }
 
         private void RobberVehicle()
@@ -84,7 +85,7 @@ namespace Inferno
 
                     if (!targetVehicle.IsSafeExist()) continue;
 
-                    targetPed.TaskEnterVehicle(targetVehicle, -1, GetRandomSeat());
+                    targetPed.TaskEnterVehicle(targetVehicle, -1, GTA.VehicleSeat.Any);
                 }
                 catch (Exception e)
                 {
@@ -93,13 +94,5 @@ namespace Inferno
             }
         }
 
-        private VehicleSeat GetRandomSeat()
-        {
-            return Enum
-                .GetValues(typeof (VehicleSeat))
-                .Cast<VehicleSeat>()
-                .OrderBy(x => Random.Next())
-                .FirstOrDefault();
-        }
     }
 }

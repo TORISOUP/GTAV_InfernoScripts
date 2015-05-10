@@ -68,10 +68,10 @@ namespace ToriScript.Inferno
                 vehicle.Position.X,
                 vehicle.Position.Y,
                 vehicle.Position.Z,
-                0,
+                -1,
                 1.0f,
                 true,
-                true,
+                false,
                 1.0f
             });
 

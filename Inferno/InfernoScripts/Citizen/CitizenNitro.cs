@@ -108,10 +108,10 @@ namespace Inferno
                 vehicle.Position.X,
                 vehicle.Position.Y,
                 vehicle.Position.Z,
-                0,
+                -1,
                 0.0f,
                 true,
-                true,
+                false,
                 0.1f
             });
         }
