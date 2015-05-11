@@ -71,6 +71,8 @@ namespace Inferno
         {
             //カオスモードMODからカオス化させない
             ped.SetNotChaosPed(true);
+            //市民無敵化
+            ped.IsInvincible = true;
 
             //30秒チェックする
             for (var i = 0; i < 30; i++)
@@ -100,6 +102,16 @@ namespace Inferno
             if (ped.IsSafeExist())
             {
                 ped.SetNotChaosPed(false);
+            }
+
+            //さらに5秒待ってから無敵化解除
+            foreach (var s in WaitForSecond(1.0f))
+            {
+                yield return s;
+            }
+            if (ped.IsSafeExist())
+            {
+                ped.IsInvincible = false;
             }
         }
 

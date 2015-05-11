@@ -136,6 +136,11 @@ namespace Inferno.ChaosMode
 
             try
             {
+                if (ped.IsTaskActive(PedTaskAction.FALL_WITH_PARACHUTE))
+                {
+                    DrawText("Para",1.0f);
+                }
+
                 var nearPeds =
                     cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
                         x => x.IsSafeExist() && !x.IsSameEntity(ped) && (ped.Position - x.Position).Length() < 50)
@@ -149,7 +154,7 @@ namespace Inferno.ChaosMode
                 var randomindex = Random.Next(nearPeds.Length);
                 var target = nearPeds[randomindex];
 
-                ped.Task.ClearSecondary();
+                ped.Task.ClearAll();
                 //ShootAtだとその場で射撃
                 //FightAgainstは戦闘状態にして自律AIとして攻撃
                 ped.Task.FightAgainst(target, 100000);
