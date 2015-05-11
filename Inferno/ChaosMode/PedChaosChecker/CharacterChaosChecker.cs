@@ -30,7 +30,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化して良い</returns>
         public bool IsPedChaosAvailable(Ped ped)
         {
-            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && IsChaosableMissionCharacter(ped);
+            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() && IsChaosableMissionCharacter(ped);
         }
 
         /// <summary>
@@ -43,18 +43,6 @@ namespace Inferno.ChaosMode
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer 
                 && (!ped.IsPersistent || IsChangeMissonCharacterWeapon);
         }
-
-        /// <summary>
-        /// 市民の行動状況を確認してカオス化していいか調べる
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <returns>カオス化してよい</returns>
-        public bool CheckPedTask(Ped ped)
-        {
-            //パラシュート降下中でないなら
-            return !ped.IsTaskActive(PedTaskAction.FALL_WITH_PARACHUTE);
-        }
-
 
         /// <summary>
         /// 対象の市民がユニークキャラであるか

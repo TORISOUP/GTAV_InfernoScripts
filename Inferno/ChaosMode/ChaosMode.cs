@@ -68,7 +68,6 @@ namespace Inferno.ChaosMode
                 var ped in
                     cachedPedForChaos
                         .Where(x => chaosChecker.IsPedChaosAvailable(x)
-                                    && chaosChecker.CheckPedTask(x)
                                     && !chaosedPedList.Contains(x.ID)))
             {
                 chaosedPedList.Add(ped.ID);
@@ -84,7 +83,7 @@ namespace Inferno.ChaosMode
         private IEnumerator ChaosPedAction(Ped ped)
         {
             var pedId = ped.ID;
-
+            
             //武器を与える
             Weapon equipedWeapon = GiveWeaponTpPed(ped);
 
@@ -107,21 +106,17 @@ namespace Inferno.ChaosMode
                     }
                 }
 
-                if (Random.Next(0, 100) < 20)
+                if (Random.Next(0, 100) < 50)
                 {
                     //たまに武器を変える
                     equipedWeapon = GiveWeaponTpPed(ped);
                 }
 
-                if (!ped.IsWeaponReloading())
-                {
-                    //リロード中でなく車から降りているなら攻撃する
-                    PedRiot(ped, equipedWeapon);
-                }
+                //攻撃する
+                PedRiot(ped, equipedWeapon);
 
-
-                //2秒待機
-                foreach (var s in WaitForSecond(2.0f))
+                //5秒待機
+                foreach (var s in WaitForSecond(5.0f))
                 {
                     yield return s;
                 }
@@ -160,6 +155,7 @@ namespace Inferno.ChaosMode
                 ped.Task.FightAgainst(target, 100000);
                 ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
                 ped.SetPedShootRate(100);
+                ped.SetPedKeepTask(true);
 
             }
             catch (Exception e)

@@ -25,7 +25,7 @@ namespace Inferno
 
         protected override int TickInterval
         {
-            get { return 0; }
+            get { return 1000; }
         }
 
         protected override void Setup()
@@ -35,7 +35,7 @@ namespace Inferno
             _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
 
             //テキストが設定されていれば一定時間だけ描画
-            this.OnTickAsObservable
+            this.OnDrawingTickAsObservable
                 .Where(_ => _mContainer.Items.Count > 0)
                 .Subscribe(_ => _mContainer.Draw());
 

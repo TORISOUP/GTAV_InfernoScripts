@@ -32,7 +32,12 @@ namespace Inferno
         /// <summary>
         /// 一定間隔のTickイベント
         /// </summary>
-        public IObservable<Unit> OnTickAsObservable { get; private set; } 
+        public IObservable<Unit> OnTickAsObservable { get; private set; }
+
+        /// <summary>
+        /// 描画用のTickイベント
+        /// </summary>
+        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; } 
 
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
@@ -66,6 +71,8 @@ namespace Inferno
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h,
                     Scheduler.Immediate)
                     .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+
+            OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
 
