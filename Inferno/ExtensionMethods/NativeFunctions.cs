@@ -10,7 +10,7 @@ namespace Inferno
     {
         public static bool IsGamePadPressed(this Script script, GameKey gameKey)
         {
-            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, new InputArgument[2] { 0, (int)gameKey });
+            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
         }
 
         /// <summary>
@@ -64,14 +64,7 @@ namespace Inferno
         /// <param name="duration">攻撃時間[ms]</param>
         public static void TaskShootAtCoord(this Ped ped,Vector3 position,int duration)
         {
-            Function.Call(Hash.TASK_SHOOT_AT_COORD,new InputArgument[]
-            {
-                ped,
-                position.X,
-                position.Y,
-                position.Z,
-                duration
-            });
+            Function.Call(Hash.TASK_SHOOT_AT_COORD, ped, position.X, position.Y, position.Z, duration);
         }
 
         /// <summary>
@@ -89,12 +82,12 @@ namespace Inferno
         /// <param name="ped">市民</param>
         /// <param name="pattern">パターン（ハッシュ値）</param>
         public static void SetPedFiringPattern(this Ped ped, int pattern){
-            Function.Call(Hash.SET_PED_FIRING_PATTERN,new InputArgument[]{ ped, pattern});
+            Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
         }
 
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
-            Function.Call(Hash.SET_PED_SHOOT_RATE, new InputArgument[] {ped, shootRate});
+            Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);
         }
 
         public static void DestroyEntity(this Entity entity)
@@ -111,15 +104,7 @@ namespace Inferno
         /// <param name="duration"></param>
         public static void DriveByToTarget(this Ped ped,Ped targetPed,Vector3 position,int duration)
         {
-            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET,new InputArgument[]
-            {
-                ped,
-                targetPed,
-                position.X,
-                position.Y,
-                position.Z,
-                duration
-            });
+            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET, ped, targetPed, position.X, position.Y, position.Z, duration);
         }
 
         /// <summary>
@@ -130,19 +115,7 @@ namespace Inferno
         /// <param name="vehicle"></param>
         public static void TaskDriveBy(this Ped ped,Ped target,Vehicle vehicle)
         {
-            Function.Call(Hash.TASK_DRIVE_BY,new InputArgument[]
-            {
-                ped,
-                target,
-                vehicle,
-                target.Position.X,
-                target.Position.Y,
-                target.Position.Z,
-                10000,
-                1,
-                1,
-                90
-            });
+            Function.Call(Hash.TASK_DRIVE_BY, ped, target, vehicle, target.Position.X, target.Position.Y, target.Position.Z, 10000, 1, 1, 90);
         }
 
         /// <summary>
@@ -152,17 +125,53 @@ namespace Inferno
         /// <param name="vehicle">車両</param>
         /// <param name="timeout">タイムアウト[ms] この秒数以上かかった場合は車内にワープする</param>
         /// <param name="vehicleSeat">座席</param>
-        public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, VehicleSeat vehicleSeat)
+        public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, GTA.VehicleSeat vehicleSeat)
         {
-            Function.Call(Hash.TASK_ENTER_VEHICLE, new InputArgument[]
-            {
-                ped,
-                vehicle,
-                timeout,
-                (int) vehicleSeat,
-                1, 1, 0
-            });
+            Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int) vehicleSeat, 1, 1, 0);
         }
+
+        /// <summary>
+        /// 市民をドライバとして召喚する
+        /// </summary>
+        /// <param name="vehicle">乗り物</param>
+        /// <returns>生成市民</returns>
+        public static Ped CreateRandomPedAsDriver(this Vehicle vehicle)
+        {
+            return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
+        }
+        
+        /// <summary>
+        /// 市民をランダムに生成する
+        /// </summary>
+        /// <param name="position">座標</param>
+        /// <returns>生成市民</returns>
+        public static Ped CreateRandomPed(Vector3 position)
+        {
+            return Function.Call<Ped>(Hash.CREATE_RANDOM_PED, position.X, position.Y, position.Z);
+        }
+
+        /// <summary>
+        /// ライトを生成する（呼び出した瞬間のみ描画される
+        /// </summary>
+        /// <param name="pos">座標</param>
+        /// <param name="red">0-255</param>
+        /// <param name="green">0-255</param>
+        /// <param name="blue">0-255</param>
+        /// <param name="radius">半径？</param>
+        /// <param name="intensity">強さ</param>
+        public static void CreateLight(Vector3 pos, int red, int green, int blue, float radius, float intensity)
+        {
+            Function.Call(Hash.DRAW_LIGHT_WITH_RANGE,
+                pos.X,
+                pos.Y,
+                pos.Z,
+                255,
+                0,
+                0,
+                5.0f,
+                100.0f);
+        }        
+
 
         /// <summary>
         /// 最大運転速度を設定 
@@ -199,17 +208,12 @@ namespace Inferno
         /// <returns></returns>
         public static bool IsRequiredForMission(this Entity entity)
         {
-            return Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, new InputArgument[] {entity});
+            return Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, entity);
         }
 
         public static bool HasBeenDamagedBy(this Ped ped, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, new InputArgument[]
-            {
-                ped,
-                (int)weapon,
-                false
-            });
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int)weapon, false);
         }
 
 

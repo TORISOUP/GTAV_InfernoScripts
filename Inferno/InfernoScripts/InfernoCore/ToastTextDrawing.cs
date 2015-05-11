@@ -16,10 +16,10 @@ namespace Inferno
     /// </summary>
     public class ToastTextDrawing : InfernoScript
     {
-        private UIContainer mContainer = null;
-        private Subject<Unit> onDrawStart = new Subject<Unit>();
-        private Subject<Unit> onDrawEnd = new Subject<Unit>();
+        private UIContainer _mContainer = null;
         private int coroutineId = -1;
+        //画面表示を消すまでの残りCoroutineループ回数
+        private int currentTickCounter = 0;
 
         public static ToastTextDrawing Instance { get; private set; }
 
@@ -32,14 +32,12 @@ namespace Inferno
         {
             Instance = this;
             //描画エリア
-            mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
 
             //テキストが設定されていれば一定時間だけ描画
             this.OnTickAsObservable
-                .SkipUntil(onDrawStart)
-                .TakeUntil(onDrawEnd)
-                .Repeat()
-                .Subscribe(_ => mContainer.Draw());
+                .Where(_ => _mContainer.Items.Count > 0)
+                .Subscribe(_ => _mContainer.Draw());
 
             this.OnAllOnCommandObservable
                 .Subscribe(_ => DrawText("Inferno:AllOn", 3.0f));
@@ -57,22 +55,21 @@ namespace Inferno
                 //既に実行中のがあれば止める
                 StopCoroutine((uint) coroutineId);
             }
-            StartCoroutine(drawTextEnumerator(text, time));
+            coroutineId = (int) StartCoroutine(drawTextEnumerator(text, time));
         }
 
         private IEnumerator drawTextEnumerator(string text, float time)
         {
-            mContainer.Items.Clear();
+            _mContainer.Items.Clear();
             Interval = 0;
-            mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
-            onDrawStart.OnNext(Unit.Default);
-            foreach (var s in WaitForSecond(time))
+            currentTickCounter = (int)(time * 10); ;
+            _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
+            while (--currentTickCounter > 0)
             {
-                yield return s;
+                yield return currentTickCounter;
             }
-            onDrawEnd.OnNext(Unit.Default);
-            mContainer.Items.Clear();
-            Interval = 10000;//表示していない間は遅くする
+            _mContainer.Items.Clear();
+            Interval = 10000; //表示していない間は遅くする
         }
     }
 }

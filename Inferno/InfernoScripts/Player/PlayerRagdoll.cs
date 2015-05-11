@@ -28,37 +28,37 @@ namespace Inferno
         {
 
             OnTickAsObservable
-                .Subscribe(_ => 
+                    .Where(_ => this.GetPlayer().IsSafeExist())
+                    .Select(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                    .DistinctUntilChanged()
+                    .Subscribe(flag =>
                     {
-                        var player = this.GetPlayer();
-                        var PlayerChar = Game.Player;
-                        if (!player.IsSafeExist()) { return; } 
-
-                        if (this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                        var playerChar = Game.Player;
+ 
+                        if (flag)
                         {
-                            SetPlayerRagdoll(player, PlayerChar);  
+                            SetPlayerRagdoll(playerChar);
                         }
-                        else if (RagdollFlag) 
+                        else
                         {
-                            UnSetPlayerRagdoll(player, PlayerChar); 
+                            UnSetPlayerRagdoll(playerChar);
                         }
                     });
-
-
         }
 
-
-        void SetPlayerRagdoll(Ped player, Player PlayerChar)
+        void SetPlayerRagdoll(Player PlayerChar)
         {
-            RagdollFlag = true;
+            var player = PlayerChar.Character;
+
             player.CanRagdoll = true;
             PlayerChar.CanControlRagdoll = true;          
             player.SetToRagdDoll(0, 0, 0);           
         }
 
-        void UnSetPlayerRagdoll(Ped player, Player PlayerChar)
-        { 
-            RagdollFlag = false;
+        void UnSetPlayerRagdoll(Player PlayerChar)
+        {
+            var player = PlayerChar.Character;
+
             player.CanRagdoll = false;
             PlayerChar.CanControlRagdoll = false;
         }
