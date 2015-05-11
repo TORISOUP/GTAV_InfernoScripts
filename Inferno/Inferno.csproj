@@ -65,6 +65,7 @@
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
+    <Compile Include="InfernoScripts\Citizen\SpawPeds.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />

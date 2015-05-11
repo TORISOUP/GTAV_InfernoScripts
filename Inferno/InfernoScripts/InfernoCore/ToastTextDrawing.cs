@@ -55,21 +55,22 @@ namespace Inferno
                 //既に実行中のがあれば止める
                 StopCoroutine((uint) coroutineId);
             }
-            coroutineId = (int) StartCoroutine(drawTextEnumerator(text, time));
+            coroutineId = (int) StartCoroutine(DrawTextEnumerator(text, time));
+
         }
 
-        private IEnumerator drawTextEnumerator(string text, float time)
+        private IEnumerator DrawTextEnumerator(string text, float time)
         {
             _mContainer.Items.Clear();
-            Interval = 0;
-            currentTickCounter = (int)(time * 10); ;
+            currentTickCounter = (int)(time * 10);
             _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
+
             while (--currentTickCounter > 0)
             {
                 yield return currentTickCounter;
             }
+
             _mContainer.Items.Clear();
-            Interval = 10000; //表示していない間は遅くする
         }
     }
 }

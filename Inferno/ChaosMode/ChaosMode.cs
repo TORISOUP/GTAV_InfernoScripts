@@ -67,7 +67,9 @@ namespace Inferno.ChaosMode
             foreach (
                 var ped in
                     cachedPedForChaos
-                        .Where(x => chaosChecker.IsPedChaosAvailable(x) && !chaosedPedList.Contains(x.ID)))
+                        .Where(x => chaosChecker.IsPedChaosAvailable(x)
+                                    && chaosChecker.CheckPedTask(x)
+                                    && !chaosedPedList.Contains(x.ID)))
             {
                 chaosedPedList.Add(ped.ID);
                 StartCoroutine(ChaosPedAction(ped));

@@ -1165,4 +1165,9 @@ namespace Inferno
         ExcludeAllMissionCharacter = 2
     }
 
+    public enum PedTaskAction
+    {
+        FALL_WITH_PARACHUTE = 334,
+    }
+
 }

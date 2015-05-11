@@ -55,6 +55,11 @@ namespace Inferno
             Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);
         }
 
+        public static bool IsTaskActive(this Ped ped, PedTaskAction task)
+        {
+            return Function.Call<bool>(Hash.GET_IS_TASK_ACTIVE, ped, (int) task);
+        }
+
 
         /// <summary>
         /// 指定座標に攻撃する

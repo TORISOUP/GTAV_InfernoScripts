@@ -45,6 +45,18 @@ namespace Inferno.ChaosMode
         }
 
         /// <summary>
+        /// 市民の行動状況を確認してカオス化していいか調べる
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <returns>カオス化してよい</returns>
+        public bool CheckPedTask(Ped ped)
+        {
+            //パラシュート降下中でないなら
+            return !ped.IsTaskActive(PedTaskAction.FALL_WITH_PARACHUTE);
+        }
+
+
+        /// <summary>
         /// 対象の市民がユニークキャラであるか
         /// </summary>
         /// <param name="ped"></param>
