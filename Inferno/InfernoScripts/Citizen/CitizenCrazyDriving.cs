@@ -34,7 +34,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    LogWrite(IsActive.ToString());
+                    DrawText("CitizenCrazyDriving:" + IsActive, 3.0f);
 
                 });
 
@@ -67,6 +67,7 @@ namespace Inferno
                 catch 
                 {
                     //nice catch!
+                    LogWrite("RunAway()nice catch!\r\n");
                 }
             }
         }
