@@ -139,7 +139,36 @@ namespace Inferno
         {
             return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
         }
-        
+
+
+        /// <summary>
+        /// 最大運転速度を設定 
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="MaxDriveSpeed">最大運転速度</param>
+        public static void SetMaxDriveSpeed(this Ped ped, float MaxDriveSpeed)
+        {
+            Function.Call(Hash.SET_DRIVE_TASK_MAX_CRUISE_SPEED, new InputArgument[]
+            {
+                 ped,
+                 MaxDriveSpeed,
+            });
+        }
+
+        /// <summary>
+        /// 運転速度を設定 
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="DriveSpeed">運転速度</param>
+        public static void SetDriveSpeed(this Ped ped, float DriveSpeed)
+        {
+            Function.Call(Hash.SET_DRIVE_TASK_CRUISE_SPEED, new InputArgument[]
+            {
+                 ped,
+                 DriveSpeed,
+            });
+        }
+
         /// <summary>
         /// 市民をランダムに生成する
         /// </summary>
@@ -170,36 +199,8 @@ namespace Inferno
                 0,
                 5.0f,
                 100.0f);
-        }        
-
-
-        /// <summary>
-        /// 最大運転速度を設定 
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <param name="MaxDriveSpeed">最大運転速度</param>
-        public static void SetMaxDriveSpeed(this Ped ped, float MaxDriveSpeed)
-        {
-            Function.Call(Hash.SET_DRIVE_TASK_MAX_CRUISE_SPEED, new InputArgument[]
-            {
-                 ped,
-                 MaxDriveSpeed,
-            });
         }
 
-        /// <summary>
-        /// 運転速度を設定 
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <param name="DriveSpeed">運転速度</param>
-        public static void SetDriveSpeed(this Ped ped, float DriveSpeed)
-        {
-            Function.Call(Hash.SET_DRIVE_TASK_CRUISE_SPEED, new InputArgument[]
-            {
-                 ped,
-                 DriveSpeed,
-            });
-        }
 
         /// <summary>
         /// 対象がミッション用のエンティティか
