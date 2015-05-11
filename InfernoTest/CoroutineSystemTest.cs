@@ -56,7 +56,7 @@ namespace InfernoTest
             //１０個登録
             for (uint expected = 0; expected < 10; expected++)
             {
-                testCoroutineSystem.AddCrotoutine(testEnumerator(1));
+                testCoroutineSystem.AddCrotoutine(testEnumerator(5));
             }
 
             //IDは１０個全て存在する
@@ -74,6 +74,12 @@ namespace InfernoTest
                     testCoroutineSystem.RemoveCoroutine(id);
                 }
             }
+
+            //除去直後は消えていない
+            Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
+
+            //一度コルーチンを回す
+            testCoroutineSystem.CoroutineLoop();
 
             //登録コルーチン数は５個になっている
             Assert.AreEqual(5, testCoroutineSystem.RegisteredCoroutineCount);
