@@ -60,12 +60,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChaosMode\ChaosMode.cs" />
-    <Compile Include="ChaosMode\PedChaosCheckera\CharacterChaosChecker.cs" />
+    <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs" />
+    <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosController.cs" />
     <Compile Include="ChaosMode\WeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
+    <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />

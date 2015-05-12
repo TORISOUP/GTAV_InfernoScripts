@@ -118,7 +118,17 @@ namespace Inferno
 
             //コルーチン処理
             OnTickSubject
-                .Subscribe(_ => coroutineSystem.CoroutineLoop());
+                .Subscribe(_ =>
+                {
+                    try
+                    {
+                        coroutineSystem.CoroutineLoop();
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.StackTrace);
+                    }
+                });
         }
 
         /// <summary>

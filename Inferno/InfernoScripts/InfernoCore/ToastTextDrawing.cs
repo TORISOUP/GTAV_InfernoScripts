@@ -25,7 +25,7 @@ namespace Inferno
 
         protected override int TickInterval
         {
-            get { return 0; }
+            get { return 1000; }
         }
 
         protected override void Setup()
@@ -35,7 +35,7 @@ namespace Inferno
             _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
 
             //テキストが設定されていれば一定時間だけ描画
-            this.OnTickAsObservable
+            this.OnDrawingTickAsObservable
                 .Where(_ => _mContainer.Items.Count > 0)
                 .Subscribe(_ => _mContainer.Draw());
 
@@ -55,21 +55,22 @@ namespace Inferno
                 //既に実行中のがあれば止める
                 StopCoroutine((uint) coroutineId);
             }
-            coroutineId = (int) StartCoroutine(drawTextEnumerator(text, time));
+            coroutineId = (int) StartCoroutine(DrawTextEnumerator(text, time));
+
         }
 
-        private IEnumerator drawTextEnumerator(string text, float time)
+        private IEnumerator DrawTextEnumerator(string text, float time)
         {
             _mContainer.Items.Clear();
-            Interval = 0;
-            currentTickCounter = (int)(time * 10); ;
+            currentTickCounter = (int)(time * 10);
             _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
+
             while (--currentTickCounter > 0)
             {
                 yield return currentTickCounter;
             }
+
             _mContainer.Items.Clear();
-            Interval = 10000; //表示していない間は遅くする
         }
     }
 }

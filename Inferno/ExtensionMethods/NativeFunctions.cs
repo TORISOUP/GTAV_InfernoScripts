@@ -55,6 +55,27 @@ namespace Inferno
             Function.Call(Hash.SET_CURRENT_PED_WEAPON, ped, weapon, true);
         }
 
+        /// <summary>
+        /// 該当タスクを実行中か調べる
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="task">タスク</param>
+        /// <returns>trueで実行中</returns>
+        public static bool IsTaskActive(this Ped ped, PedTaskAction task)
+        {
+            return Function.Call<bool>(Hash.GET_IS_TASK_ACTIVE, ped, (int) task);
+        }
+
+        /// <summary>
+        /// 市民のタスクを固定する
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="toggle">固定するか</param>
+        public static void SetPedKeepTask(this Ped ped, bool toggle)
+        {
+            Function.Call(Hash.SET_PED_KEEP_TASK,toggle);
+        }
+
 
         /// <summary>
         /// 指定座標に攻撃する
@@ -85,15 +106,42 @@ namespace Inferno
             Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
         }
 
+        /// <summary>
+        /// 市民の所持金をセットする
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="money">金額</param>
+        public static void SetPedMoney(this Ped ped, int money)
+        {
+            Function.Call(Hash.SET_PED_MONEY,ped,money);
+        }
+
+        /// <summary>
+        /// 市民の所持金を取得する
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <returns>金額</returns>
+        public static int GetPedMoney(this Ped ped)
+        {
+            return Function.Call<int>(Hash.GET_PED_MONEY, ped);
+        }
+
+
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
             Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);
         }
 
-        public static void DestroyEntity(this Entity entity)
+        /// <summary>
+        /// 指定座標にパラシュート降下する
+        /// </summary>
+        /// <param name="ped">市民</param>
+        /// <param name="target">目標地点</param>
+        public static void ParachuteTo(this Ped ped, Vector3 target)
         {
-          //  Function.Call(Hash.DELETE_ENTITY, new InputArgument[] {entity});
+            Function.Call(Hash.TASK_PARACHUTE_TO_TARGET, ped, target.X, target.Y, target.Z);
         }
+     
 
         /// <summary>
         /// ?

@@ -19,7 +19,7 @@ namespace Inferno
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
         private uint coroutineIdIndex = 0;
         private Object lockObject = new object();
-
+        private List<uint> stopCoroutineList = new List<uint>(); 
 
         /// <summary>
         /// コルーチンの登録
@@ -43,10 +43,8 @@ namespace Inferno
         /// <param name="id">解除したいコルーチンID</param>
         public void RemoveCoroutine(uint id)
         {
-            lock (lockObject)
-            {
-                _coroutines.Remove(id);
-            }
+            //このタイミングでは消さない
+            stopCoroutineList.Add(id);
         }
 
         /// <summary>
@@ -54,18 +52,29 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
-            var endIdList = new List<uint>();
-            foreach (var coroutine in _coroutines)
+            lock (lockObject)
             {
-                if (!coroutine.Value.MoveNext())
+                //開始前に削除登録されたものを消す
+                foreach (var stopId in stopCoroutineList.ToArray())
                 {
-                    endIdList.Add(coroutine.Key);
+                    _coroutines.Remove(stopId);
                 }
-            }
+                stopCoroutineList.Clear();
 
-            foreach (var id in endIdList)
-            {
-                _coroutines.Remove(id);
+                var endIdList = new List<uint>();
+
+                foreach (var coroutine in _coroutines.ToArray())
+                {
+                    if (!coroutine.Value.MoveNext())
+                    {
+                        endIdList.Add(coroutine.Key);
+                    }
+                }
+
+                foreach (var id in endIdList.ToArray())
+                {
+                    _coroutines.Remove(id);
+                }
             }
         }
     }

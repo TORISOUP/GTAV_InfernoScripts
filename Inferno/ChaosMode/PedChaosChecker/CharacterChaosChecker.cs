@@ -30,7 +30,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化して良い</returns>
         public bool IsPedChaosAvailable(Ped ped)
         {
-            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && IsChaosableMissionCharacter(ped);
+            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() && IsChaosableMissionCharacter(ped);
         }
 
         /// <summary>
