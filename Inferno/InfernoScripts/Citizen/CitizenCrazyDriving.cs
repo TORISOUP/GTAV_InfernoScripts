@@ -64,10 +64,9 @@ namespace Inferno
                     driver.SetMaxDriveSpeed(300.0f);
                     driver.SetDriveSpeed(300.0f);
                 }
-                catch 
+                catch (Exception e)
                 {
-                    //nice catch!
-                    LogWrite("RunAway()nice catch!\r\n");
+                    LogWrite(e.ToString());
                 }
             }
         }
