@@ -68,7 +68,7 @@ namespace Inferno.ChaosMode
 
             //IG/CSから始まるものはユニークキャラ（？）
             var pedTypeName = pedType.ToString();
-            return pedTypeName.StartsWith("Ig") || pedTypeName.Contains("Cs");
+            return pedTypeName.StartsWith("Ig") || pedTypeName.StartsWith("Cs");
         }
 
 
