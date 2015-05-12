@@ -16,9 +16,7 @@ namespace Inferno
     /// プレイヤーの強制ラグドール状態化
     /// </summary>
     public class PlayerRagdoll : InfernoScript
-    {
-        bool RagdollFlag = false;
-
+    { 
         protected override int TickInterval
         {
             get { return 50; }
