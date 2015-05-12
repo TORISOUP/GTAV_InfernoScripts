@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
@@ -129,7 +130,7 @@ namespace Inferno
                 .Publish().RefCount();
         }
 
-        protected uint StartCoroutine(IEnumerator coroutine)
+        protected uint StartCoroutine(IEnumerable<Object> coroutine)
         {
           return InfernoCore.Instance.AddCrotoutine(coroutine);
         }

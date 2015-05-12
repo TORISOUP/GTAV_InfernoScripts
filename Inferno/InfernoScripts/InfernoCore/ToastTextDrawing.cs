@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using GTA;
 using System.Drawing;
@@ -59,7 +60,7 @@ namespace Inferno
 
         }
 
-        private IEnumerator DrawTextEnumerator(string text, float time)
+        private IEnumerable<Object>  DrawTextEnumerator(string text, float time)
         {
             _mContainer.Items.Clear();
             currentTickCounter = (int)(time * 10);

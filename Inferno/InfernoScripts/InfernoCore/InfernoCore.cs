@@ -148,7 +148,7 @@ namespace Inferno
         /// </summary>
         /// <param name="coroutine">コルーチン</param>
         /// <returns>ID</returns>
-        public uint AddCrotoutine(IEnumerator coroutine)
+        public uint AddCrotoutine(IEnumerable<Object> coroutine)
         {
            return coroutineSystem.AddCrotoutine(coroutine);
         }

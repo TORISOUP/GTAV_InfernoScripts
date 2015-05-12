@@ -65,7 +65,7 @@
     <Compile Include="ChaosMode\WeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenTheftAuto.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />

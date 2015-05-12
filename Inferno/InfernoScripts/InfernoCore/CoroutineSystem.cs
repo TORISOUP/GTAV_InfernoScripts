@@ -17,22 +17,25 @@ namespace Inferno
         /// コルーチンの辞書
         /// </summary>
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
-        private uint coroutineIdIndex = 0;
-        private Object lockObject = new object();
-        private List<uint> stopCoroutineList = new List<uint>(); 
+        private uint _coroutineIdIndex = 0;
+        private readonly Object _lockObject = new object();
+        private readonly List<uint> _stopCoroutineList = new List<uint>(); 
 
         /// <summary>
         /// コルーチンの登録
         /// </summary>
         /// <param name="coroutine">登録するコルーチン</param>
         /// <returns></returns>
-        public uint AddCrotoutine(IEnumerator coroutine)
+        public uint AddCrotoutine(IEnumerable<Object> coroutine)
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
-                var id = coroutineIdIndex++;
-                _coroutines.Add(id, coroutine);
-                coroutine.MoveNext();
+                var id = _coroutineIdIndex++;
+                //WaitForSecondsを展開できるように
+                var enumrator = coroutine
+                    .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>) x) : new object[] {x}).GetEnumerator();
+                _coroutines.Add(id, enumrator);
+                enumrator.MoveNext();
                 return id;
             }
         }
@@ -44,7 +47,7 @@ namespace Inferno
         public void RemoveCoroutine(uint id)
         {
             //このタイミングでは消さない
-            stopCoroutineList.Add(id);
+            _stopCoroutineList.Add(id);
         }
 
         /// <summary>
@@ -52,14 +55,14 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
                 //開始前に削除登録されたものを消す
-                foreach (var stopId in stopCoroutineList.ToArray())
+                foreach (var stopId in _stopCoroutineList.ToArray())
                 {
                     _coroutines.Remove(stopId);
                 }
-                stopCoroutineList.Clear();
+                _stopCoroutineList.Clear();
 
                 var endIdList = new List<uint>();
 

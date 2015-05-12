@@ -80,7 +80,7 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerator ChaosPedAction(Ped ped)
+        private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
             var pedId = ped.ID;
             

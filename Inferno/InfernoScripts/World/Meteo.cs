@@ -100,7 +100,7 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerator CreateMeteoLight(Vector3 position, float durationSecond)
+        private IEnumerable<Object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
             meteoLightPositionList.Add(position);
 

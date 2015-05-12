@@ -66,7 +66,7 @@ namespace Inferno
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        IEnumerator PedOnGroundedCheck(Ped ped)
+        IEnumerable<Object>  PedOnGroundedCheck(Ped ped)
         {
             //カオスモードMODからカオス化させない
             ped.SetNotChaosPed(true);
