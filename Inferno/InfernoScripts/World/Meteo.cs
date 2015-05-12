@@ -79,7 +79,7 @@ namespace Inferno
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.GiveWeapon(_rpgHash, 1000); //指定武器所持
                 ped.EquipWeapon(_rpgHash); //武器装備
-
+                ped.IsVisible = false;
                 ped.FreezePosition = true;
                 ped.TaskShootAtCoord(targetPosition, 1000);
 

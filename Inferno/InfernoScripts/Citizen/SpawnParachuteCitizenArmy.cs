@@ -39,7 +39,6 @@ namespace Inferno
             OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => CreateParachutePed());
-
         }
 
         private void CreateParachutePed()
