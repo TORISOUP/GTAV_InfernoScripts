@@ -39,7 +39,6 @@ namespace Inferno
             OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => CreateParachutePed());
-
         }
 
         private void CreateParachutePed()
@@ -67,7 +66,7 @@ namespace Inferno
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        IEnumerator PedOnGroundedCheck(Ped ped)
+        IEnumerable<Object>  PedOnGroundedCheck(Ped ped)
         {
             //カオスモードMODからカオス化させない
             ped.SetNotChaosPed(true);

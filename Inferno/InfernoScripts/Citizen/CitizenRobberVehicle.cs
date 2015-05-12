@@ -9,7 +9,7 @@ namespace Inferno
     /// <summary>
     /// 市民の車両強盗
     /// </summary>
-    internal class CitizenTheftAuto : InfernoScript
+    internal class CitizenRobberVehicle : InfernoScript
     {
 
         private bool _isActive = false;

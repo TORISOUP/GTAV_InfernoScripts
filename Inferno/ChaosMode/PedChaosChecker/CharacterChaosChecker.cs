@@ -1,5 +1,6 @@
 ﻿using System;
 using GTA;
+using GTA.Native;
 
 namespace Inferno.ChaosMode
 {
@@ -47,21 +48,27 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 対象の市民がユニークキャラであるか
         /// </summary>
-        /// <param name="ped"></param>
+        /// <param name="pedHash">ハッシュ値</param>
         /// <returns>trueでユニークキャラ</returns>
-        public static bool IsUniqueCharacter(int pedHash)
+        public bool IsUniqueCharacter(uint pedHash)
         {
-            if (!Enum.IsDefined(typeof (PedList), pedHash))
+            if (!Enum.IsDefined(typeof (PedHash), pedHash))
             {
                 //判定できない時はfalseにする
                 return false;
             }
 
-            var pedType = (PedList) pedHash;
+            var pedType = (PedHash)pedHash;
 
-            //IG_/CS?から始まるものはユニークキャラ（？）
+            //プレイヤキャラならtrue
+            if (pedType == PedHash.Michael || pedType == PedHash.Franklin || pedType == PedHash.Trevor)
+            {
+                return true;
+            }
+
+            //IG/CSから始まるものはユニークキャラ（？）
             var pedTypeName = pedType.ToString();
-            return pedTypeName.Contains("IG_") || pedTypeName.Contains("CS_");
+            return pedTypeName.StartsWith("Ig") || pedTypeName.StartsWith("Cs");
         }
 
 
@@ -80,7 +87,7 @@ namespace Inferno.ChaosMode
                 case MissionCharacterTreatmentType.AllCharacterToChaos:
                     return true;
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
-                    return !IsUniqueCharacter(ped.GetHashCode()); //ユニークキャラじゃないならカオス化
+                    return !IsUniqueCharacter((uint)ped.GetHashCode()); //ユニークキャラじゃないならカオス化
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
                 default:

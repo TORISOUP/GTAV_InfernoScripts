@@ -79,7 +79,7 @@ namespace Inferno
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.GiveWeapon(_rpgHash, 1000); //指定武器所持
                 ped.EquipWeapon(_rpgHash); //武器装備
-
+                ped.IsVisible = false;
                 ped.FreezePosition = true;
                 ped.TaskShootAtCoord(targetPosition, 1000);
 
@@ -100,7 +100,7 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerator CreateMeteoLight(Vector3 position, float durationSecond)
+        private IEnumerable<Object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
             meteoLightPositionList.Add(position);
 
