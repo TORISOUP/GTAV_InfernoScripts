@@ -126,6 +126,15 @@ namespace Inferno
             return Function.Call<int>(Hash.GET_PED_MONEY, ped);
         }
 
+        /// <summary>
+        /// 市民が見えるか
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="isVisible">true:見えるfalse:透明</param>
+        public static void SetVisible(this Entity entity, bool isVisible)
+        {
+            Function.Call(Hash.SET_ENTITY_VISIBLE, entity, isVisible);
+        }
 
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {

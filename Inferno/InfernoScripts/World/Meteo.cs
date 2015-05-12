@@ -81,6 +81,7 @@ namespace Inferno
                 ped.EquipWeapon(_rpgHash); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
+                ped.SetVisible(false);
                 ped.TaskShootAtCoord(targetPosition, 1000);
 
                 //ライト描画
