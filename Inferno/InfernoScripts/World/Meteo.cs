@@ -49,7 +49,7 @@ namespace Inferno
                 
 
             //１秒間隔で落下
-            CreateTickAsObservable(2500)
+            CreateTickAsObservable(1500)
                 .Where(_ => _isActive)
                 .Subscribe(_ => ShootMeteo());
         }

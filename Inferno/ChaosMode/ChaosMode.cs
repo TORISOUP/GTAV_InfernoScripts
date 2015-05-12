@@ -63,7 +63,7 @@ namespace Inferno.ChaosMode
 
         private void CitizenChaos()
         {
-            cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), 1000);
+            cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), 3000);
             foreach (
                 var ped in
                     cachedPedForChaos
@@ -116,7 +116,7 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //5秒待機
-                foreach (var s in WaitForSecond(5.0f))
+                foreach (var s in WaitForSecond(3.0f))
                 {
                     yield return s;
                 }
@@ -136,11 +136,6 @@ namespace Inferno.ChaosMode
 
             try
             {
-                if (ped.IsTaskActive(PedTaskAction.FALL_WITH_PARACHUTE))
-                {
-                    DrawText("Para",1.0f);
-                }
-
                 var nearPeds =
                     cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
                         x => x.IsSafeExist() && !x.IsSameEntity(ped) && (ped.Position - x.Position).Length() < 50)
