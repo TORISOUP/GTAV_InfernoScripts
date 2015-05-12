@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Diagnostics;
+using System.Collections.Generic;
 using Inferno;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace InfernoTest
 {
+
     [TestClass]
     public class CoroutineSystemTest
     {
@@ -22,17 +22,17 @@ namespace InfernoTest
         {
             for (uint expected = 0; expected < 10; expected++)
             {
-                var resultId = testCoroutineSystem.AddCrotoutine(testEnumerator(1));
-                Assert.AreEqual(expected,resultId);
+                var resultId = testCoroutineSystem.AddCrotoutine(testEnumerable(1));
+                Assert.AreEqual(expected, resultId);
             }
 
             //10個登録されている
-            Assert.AreEqual(10,testCoroutineSystem.RegisteredCoroutineCount);
+            Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
         }
 
         bool IsExexuted = false;
 
-        IEnumerator ExecuteEnumerator()
+        IEnumerable<Object> ExecuteEnumerator()
         {
             IsExexuted = true;
             yield return null;
@@ -45,7 +45,7 @@ namespace InfernoTest
             IsExexuted = false;
             Assert.IsFalse(IsExexuted);
             testCoroutineSystem.AddCrotoutine(ExecuteEnumerator());
-            
+
             //登録直後に実行されているはず
             Assert.IsTrue(IsExexuted);
         }
@@ -56,7 +56,7 @@ namespace InfernoTest
             //１０個登録
             for (uint expected = 0; expected < 10; expected++)
             {
-                testCoroutineSystem.AddCrotoutine(testEnumerator(5));
+                testCoroutineSystem.AddCrotoutine(testEnumerable(5));
             }
 
             //IDは１０個全て存在する
@@ -69,7 +69,7 @@ namespace InfernoTest
             //偶数のIDを除去
             for (uint id = 0; id < 10; id++)
             {
-                if (id%2 == 0)
+                if (id % 2 == 0)
                 {
                     testCoroutineSystem.RemoveCoroutine(id);
                 }
@@ -85,7 +85,7 @@ namespace InfernoTest
             Assert.AreEqual(5, testCoroutineSystem.RegisteredCoroutineCount);
             for (uint id = 0; id < 10; id++)
             {
-                if (id%2 == 0)
+                if (id % 2 == 0)
                 {
                     //偶数のキーは存在しない
                     Assert.IsFalse(testCoroutineSystem.IsContains(id));
@@ -111,7 +111,7 @@ namespace InfernoTest
             for (var id = 0; id < 3; id++)
             {
                 //それぞれ実行回数の違うコルーチンを登録
-                testCoroutineSystem.AddCrotoutine(testEnumerator(id+1));
+                testCoroutineSystem.AddCrotoutine(testEnumerable(id + 1));
             }
             //登録コルーチン数は3個になっている
             Assert.AreEqual(3, testCoroutineSystem.RegisteredCoroutineCount);
@@ -136,12 +136,35 @@ namespace InfernoTest
         }
 
 
-        private IEnumerator testEnumerator(int actionCount)
+        [TestMethod]
+        public void NestしたIEnumerableを展開して実行できる()
+        {
+            testCoroutineSystem.AddCrotoutine(nestEnumerable());
+            var i = 0;
+
+            //コルーチンが終了するまでの実行回数を数える
+            while (testCoroutineSystem.RegisteredCoroutineCount > 0)
+            {
+                testCoroutineSystem.CoroutineLoop();
+                i++;
+            }
+
+            Assert.AreEqual(20, i);
+        }
+
+        private IEnumerable<Object> testEnumerable(int actionCount)
         {
             for (int i = 0; i < actionCount; i++)
             {
                 yield return null;
             }
+        }
+
+        private IEnumerable<Object> nestEnumerable()
+        {
+            yield return testEnumerable(5);
+            yield return testEnumerable(10);
+            yield return testEnumerable(5);
         }
     }
 
