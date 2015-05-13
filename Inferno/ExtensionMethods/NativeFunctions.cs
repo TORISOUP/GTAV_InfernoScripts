@@ -126,7 +126,6 @@ namespace Inferno
             return Function.Call<int>(Hash.GET_PED_MONEY, ped);
         }
 
-
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
             Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);

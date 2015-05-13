@@ -86,6 +86,9 @@ namespace Inferno
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 1.0f));
 
+                //Aさん削除
+                StartCoroutine(DeleteMeteoShooter(ped, 5.0f));
+
             }
             catch (Exception ex)
             {
@@ -112,5 +115,17 @@ namespace Inferno
             meteoLightPositionList.Remove(position);
         }
 
+        /// <summary>
+        /// 指定時間後にAさんを削除する
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="durationSecond"></param>
+        /// <returns></returns>
+        private IEnumerable<Object> DeleteMeteoShooter(Ped ped, float durationSecond)
+        {
+            //指定時間待機
+            yield return WaitForSecond(durationSecond);
+            ped.Delete();
+        }
     }
 }
