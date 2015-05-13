@@ -81,7 +81,6 @@ namespace Inferno
                 ped.EquipWeapon(_rpgHash); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
-                ped.SetVisible(false);
                 ped.TaskShootAtCoord(targetPosition, 1000);
 
                 //ライト描画
@@ -124,11 +123,8 @@ namespace Inferno
         /// <returns></returns>
         private IEnumerable<Object> DeleteMeteoShooter(Ped ped, float durationSecond)
         {
-            foreach (var s in WaitForSecond(durationSecond))
-            {
-                yield return s;
-            }
-
+            //指定時間待機
+            yield return WaitForSecond(durationSecond);
             ped.Delete();
         }
     }
