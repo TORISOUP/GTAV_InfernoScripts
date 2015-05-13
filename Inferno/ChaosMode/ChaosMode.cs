@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using GTA;
+using GTA.Native;
 using Reactive.Bindings;
 
 namespace Inferno.ChaosMode
@@ -83,7 +84,19 @@ namespace Inferno.ChaosMode
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
             var pedId = ped.ID;
-            
+            ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
+            ped.SetPedShootRate(100);
+            ped.SetAlertness(0);
+            ped.SetCombatAbility(100);
+            ped.SetCombatRange(100);
+            ped.RegisterHatedTargetsAroundPed(100);
+
+            if (!ped.IsPersistent)
+            {
+                ped.MaxHealth = 2000;
+                ped.Health = 2000;
+            }
+
             //武器を与える
             Weapon equipedWeapon = GiveWeaponTpPed(ped);
 
@@ -96,30 +109,18 @@ namespace Inferno.ChaosMode
                     ;
                 }
 
-                if (ped.IsInVehicle())
-                {
-                    //車にのっているならたまに降りる
-                    if (Random.Next(0, 100) < 20)
-                    {
-                        ped.Task.ClearAll();
-                        ped.Task.LeaveVehicle();
-                    }
-                }
-
-                if (Random.Next(0, 100) < 50)
+                if (Random.Next(0, 100) < 15)
                 {
                     //たまに武器を変える
                     equipedWeapon = GiveWeaponTpPed(ped);
                 }
 
+
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
 
-                //5秒待機
-                foreach (var s in WaitForSecond(3.0f))
-                {
-                    yield return s;
-                }
+                //2秒待機
+                yield return WaitForSecond(2.0f);
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -150,13 +151,25 @@ namespace Inferno.ChaosMode
                 var target = nearPeds[randomindex];
 
                 ped.Task.ClearAll();
-                //ShootAtだとその場で射撃
-                //FightAgainstは戦闘状態にして自律AIとして攻撃
-                ped.Task.FightAgainst(target, 100000);
-                ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
-                ped.SetPedShootRate(100);
-                ped.SetPedKeepTask(true);
 
+                if (ped.IsInVehicle())
+                {
+                    //車に乗っているなら、同じクルマに乗っていない近くの市民がいたら攻撃する
+                    var nearestPeople =
+                        World.GetNearbyPeds(ped, 50)
+                            .FirstOrDefault(x => !x.CurrentVehicle.IsSameEntity(ped.CurrentVehicle));
+                    if (nearestPeople != null)
+                    {
+                        Function.Call(Hash.TASK_COMBAT_PED, ped, nearestPeople, 1, 1);
+                    }
+                }
+                else
+                {
+                    //車に乗っていないなら周辺を攻撃
+                    ped.Task.ShootAt(target, 10000);
+
+                }
+                ped.SetPedKeepTask(true);
             }
             catch (Exception e)
             {
@@ -175,7 +188,7 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                var weapon = weaponProvider.GetRandomWeapon();
+                var weapon = weaponProvider.GetRandomShootWeapon();
                 var weaponhash = (int) weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
@@ -185,7 +198,7 @@ namespace Inferno.ChaosMode
             }
             catch (Exception e)
             {
-                LogWrite("AttachPedWeaponError!" + e.Message + "\r\n");
+                LogWrite("AttachPedWeaponError!" + e.Message);
             }
             return Weapon.UNARMED;
         }

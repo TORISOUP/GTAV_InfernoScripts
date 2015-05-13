@@ -25,7 +25,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-            _rpgHash = this.GetGTAObjectHashKey("WEAPON_RPG");
+            _rpgHash = (int) Weapon.STINGER;
 
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
@@ -81,13 +81,13 @@ namespace Inferno
                 ped.EquipWeapon(_rpgHash); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
-                ped.TaskShootAtCoord(targetPosition, 1000);
-
+                Function.Call((Hash) 1746743299266654598, ped, true);
+    
                 //ライト描画
-                StartCoroutine(CreateMeteoLight(targetPosition, 1.0f));
+                StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
 
                 //Aさん削除
-                StartCoroutine(DeleteMeteoShooter(ped, 5.0f));
+                StartCoroutine(MeteoShoot(ped,targetPosition, 8.0f));
 
             }
             catch (Exception ex)
@@ -105,12 +105,10 @@ namespace Inferno
         /// <returns></returns>
         private IEnumerable<Object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
+
             meteoLightPositionList.Add(position);
 
-            foreach (var s in WaitForSecond(durationSecond))
-            {
-                yield return s;
-            }
+            yield return WaitForSecond(durationSecond);
 
             meteoLightPositionList.Remove(position);
         }
@@ -121,8 +119,11 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<Object> DeleteMeteoShooter(Ped ped, float durationSecond)
+        private IEnumerable<Object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
+            ped.TaskShootAtCoord(targetPosition, 1000);
+            yield return null;
+
             //指定時間待機
             yield return WaitForSecond(durationSecond);
             ped.Delete();

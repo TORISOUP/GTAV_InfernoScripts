@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Security.Policy;
 using GTA;
+using Inferno.ChaosMode;
 
 namespace Inferno
 {
@@ -54,7 +56,6 @@ namespace Inferno
             var playerVehicle = this.GetPlayerVehicle();
 
             //プレイヤの周辺の市民
-            //TODO: ミッションキャラの除外
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
                                                    && !x.IsSameEntity(this.GetPlayer())
                                                    && !x.IsPersistent
@@ -84,8 +85,7 @@ namespace Inferno
 
 
                     if (!targetVehicle.IsSafeExist()) continue;
-
-                    targetPed.TaskEnterVehicle(targetVehicle, -1, GTA.VehicleSeat.Any);
+                    StartCoroutine(RobberVehicleCoroutine(targetPed, targetVehicle));
                 }
                 catch (Exception e)
                 {
@@ -93,6 +93,24 @@ namespace Inferno
                 }
             }
         }
+
+        IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
+        {
+            //カオス化しない
+            ped.SetNotChaosPed(true);
+            ped.Task.ClearAll();
+            ped.TaskEnterVehicle(targetVehicle, -1, GTA.VehicleSeat.Any);
+
+            foreach (var t in WaitForSecond(20))
+            {
+                //20秒間車に乗れたか監視する
+                if(ped.IsInVehicle()) break;
+                yield return null;
+            }
+
+            //カオス化許可
+            ped.SetNotChaosPed(false);
+        } 
 
     }
 }
