@@ -56,7 +56,6 @@ namespace Inferno.ChaosMode
                 Weapon.BAT,
                 Weapon.BZGAS,
                 Weapon.CROWBAR,
-                Weapon.DIGISCANNER,
                 Weapon.DROWNING,
                 Weapon.HAMMER,
                 Weapon.GOLFCLUB,
@@ -66,7 +65,8 @@ namespace Inferno.ChaosMode
                 Weapon.MOLOTOV,
                 Weapon.NIGHTSTICK,
                 Weapon.STICKYBOMB,
-                Weapon.PETROLCAN
+                Weapon.PETROLCAN,
+                Weapon.FLARE,
             };
 
             allWeapons = shootWeapons.Concat(closeWeapons).ToArray();

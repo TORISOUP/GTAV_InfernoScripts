@@ -80,9 +80,8 @@
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
     <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
+    <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
     <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
