@@ -18,7 +18,7 @@ namespace Inferno
     {
 
         private bool IsActive = false;
-        private float PlayerAroundDistance = 200.0f;
+        private float PlayerAroundDistance = 300f;
 
         /// <summary>
         /// 3秒間隔
@@ -61,8 +61,12 @@ namespace Inferno
             {
                 try
                 {
-                    driver.SetMaxDriveSpeed(300.0f);
-                    driver.SetDriveSpeed(300.0f);
+                    driver.DrivingSpeed = 300.0f;
+                    driver.MaxDrivingSpeed = 300.0f;
+                    //var vehicle = driver.CurrentVehicle;
+                    //driver.Task.CruiseWithVehicle(vehicle, 200f, 0xC0025);
+                    driver.DrivingStyle = DrivingStyle.Normal;
+                    //driver.Task.CruiseWithVehicle(vehicle, 300.0f, 6);
                 }
                 catch (Exception e)
                 {

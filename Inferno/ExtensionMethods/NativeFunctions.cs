@@ -190,34 +190,6 @@ namespace Inferno
 
 
         /// <summary>
-        /// 最大運転速度を設定 
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <param name="MaxDriveSpeed">最大運転速度</param>
-        public static void SetMaxDriveSpeed(this Ped ped, float maxDriveSpeed)
-        {
-            Function.Call(Hash.SET_DRIVE_TASK_MAX_CRUISE_SPEED, new InputArgument[]
-            {
-                 ped,
-                 maxDriveSpeed,
-            });
-        }
-
-        /// <summary>
-        /// 運転速度を設定 
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <param name="DriveSpeed">運転速度</param>
-        public static void SetDriveSpeed(this Ped ped, float driveSpeed)
-        {
-            Function.Call(Hash.SET_DRIVE_TASK_CRUISE_SPEED, new InputArgument[]
-            {
-                 ped,
-                 driveSpeed,
-            });
-        }
-
-        /// <summary>
         /// 市民をランダムに生成する
         /// </summary>
         /// <param name="position">座標</param>

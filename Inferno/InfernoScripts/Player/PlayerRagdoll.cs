@@ -59,6 +59,9 @@ namespace Inferno
 
             player.CanRagdoll = false;
             PlayerChar.CanControlRagdoll = false;
+            //後でラグドール状態にならないのを防ぐために
+            player.CanRagdoll = true;
+            PlayerChar.CanControlRagdoll = true;
         }
 
     }
