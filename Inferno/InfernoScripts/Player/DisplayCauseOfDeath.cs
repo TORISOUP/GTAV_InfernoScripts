@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 
 namespace Inferno
@@ -16,17 +18,51 @@ namespace Inferno
     {
         private UIContainer _mContainer;
         private int ScreenHeight;
-        private int ScreenWeight;
+        private int ScreenWidth;
+
+        private Vector2 textPositionScale = new Vector2(0.5f,0.75f);
 
         protected override int TickInterval
         {
-            get { return 300; }
+            get { return 500; }
         }
 
         protected override void Setup()
         {
-           
-            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            var screenResolution = NativeFunctions.GetScreenResolution();
+            ScreenHeight = (int)screenResolution.Y;
+            ScreenWidth = (int)screenResolution.X;
+
+            _mContainer = new UIContainer(
+                new Point(0, 0), new Size(ScreenWidth, ScreenHeight));
+
+            this.OnDrawingTickAsObservable
+                .Where(_ => _mContainer.Items.Count > 0)
+                .Subscribe(_ => _mContainer.Draw());
+
+            this.OnTickAsObservable
+                .Where(_ => this.GetPlayer().IsSafeExist())
+                .Select(x => this.GetPlayer().IsAlive)
+                .DistinctUntilChanged()
+                .Subscribe(isAlive =>
+                {
+                    var player = this.GetPlayer();
+                    _mContainer.Items.Clear();
+                    if (isAlive) return;
+                    
+                    //死んでいたら死因を出す
+                    var damageWeapon = getLastDamageWeapon(this.GetPlayer());
+                    if(damageWeapon==null)return;
+                        
+                    var damageName = damageWeapon.ToString();
+                    if (player.HasBeenDamagedByPed(player)) damageName += "(SUICIDE)";
+                    var text = new UIText(damageName,
+                        new Point((int)(ScreenWidth * textPositionScale.X),(int)(ScreenHeight*textPositionScale.Y)),
+                        1.0f, Color.White, 0, true);
+
+                    _mContainer.Items.Add(text);
+                });
+
         }
 
         /// <summary>

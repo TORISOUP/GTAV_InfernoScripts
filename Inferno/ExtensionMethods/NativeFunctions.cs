@@ -305,6 +305,11 @@ namespace Inferno
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int)weapon, false);
         }
 
+        public static bool HasBeenDamagedByPed(this Ped ped, Ped target)
+        {
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, ped, target, true);
+        }
+
 
         /// <summary>
         /// テキストのフォント指定

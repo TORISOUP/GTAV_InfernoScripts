@@ -23,7 +23,7 @@ namespace Inferno.ChaosMode
 
         //デフォルトは全員除外
         private MissionCharacterTreatmentType currentTreatType =
-            MissionCharacterTreatmentType.ExcludeAllMissionCharacter;
+            MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
         protected override int TickInterval
         {

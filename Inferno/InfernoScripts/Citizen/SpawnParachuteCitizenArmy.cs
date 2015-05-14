@@ -85,11 +85,12 @@ namespace Inferno
                 if(!ped.IsSafeExist()) yield break;
                 if (ped.IsDead) yield break;
 
-                //パラシュート降下タスクが終了していたら監視終了
-                if (!ped.IsTaskActive(PedTaskAction.FALL_WITH_PARACHUTE))
+                //着地していたら監視終了
+                if (!ped.IsInAir)
                 {
                     break;
                 }
+                
             }
 
             //監視終了後１秒待ってからカオス化許可する(アニメーションがおかしくなるのを避けるため)
