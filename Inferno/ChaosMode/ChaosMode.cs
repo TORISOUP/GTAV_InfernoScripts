@@ -166,8 +166,18 @@ namespace Inferno.ChaosMode
                 else
                 {
                     //車に乗っていないなら周辺を攻撃
-                    ped.Task.ShootAt(target, 10000);
-
+                    if (weaponProvider.IsProjectileWeapon(equipWeapon))
+                    {
+                        ped.ThrowProjectile(target.Position);
+                    }
+                    else if (weaponProvider.IsShootWeapon(equipWeapon))
+                    {
+                        ped.Task.ShootAt(target, 10000);
+                    }
+                    else
+                    {
+                        ped.Task.FightAgainst(target, 10000);
+                    }
                 }
                 ped.SetPedKeepTask(true);
             }
@@ -188,7 +198,9 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                var weapon = weaponProvider.GetRandomShootWeapon();
+                var weapon = Random.Next(0, 2) % 2 == 0 
+                    ? weaponProvider.GetRandomShootWeapon() 
+                    : weaponProvider.GetRandomProjectileWeapon();
                 var weaponhash = (int) weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない

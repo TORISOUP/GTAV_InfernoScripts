@@ -284,6 +284,11 @@ namespace Inferno
                 100.0f);
         }
 
+        public static void ThrowProjectile(this Ped ped, Vector3 vector3)
+        {
+            Function.Call(Hash.TASK_THROW_PROJECTILE, ped, vector3.X, vector3.Y, vector3.Z);
+        }
+
 
         /// <summary>
         /// 対象がミッション用のエンティティか
@@ -414,6 +419,15 @@ namespace Inferno
                 x,
                 y
             });
+        }
+
+        unsafe public static Vector2 GetScreenResolution()
+        {
+            int w=0;
+            int h=0;
+            
+            Function.Call(Hash.GET_SCREEN_RESOLUTION, &w, &h);
+            return new Vector2(w, h);
         }
 
         /// <summary>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GTA;
+using GTA.Native;
 
 namespace Inferno
 {
@@ -12,6 +14,10 @@ namespace Inferno
     /// </summary>
     class DisplayCauseOfDeath : InfernoScript
     {
+        private UIContainer _mContainer;
+        private int ScreenHeight;
+        private int ScreenWeight;
+
         protected override int TickInterval
         {
             get { return 300; }
@@ -19,7 +25,8 @@ namespace Inferno
 
         protected override void Setup()
         {
-            //TODO: 死亡時に画面に表示する
+           
+            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
         }
 
         /// <summary>

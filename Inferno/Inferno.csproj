@@ -73,7 +73,6 @@
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Debug\TCPSocketManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
     <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
+    <Compile Include="InfernoScripts\World\HitoHanabi.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

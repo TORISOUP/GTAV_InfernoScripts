@@ -87,7 +87,7 @@ namespace Inferno.ChaosMode
                 case MissionCharacterTreatmentType.AllCharacterToChaos:
                     return true;
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
-                    return !IsUniqueCharacter((uint)ped.GetHashCode()); //ユニークキャラじゃないならカオス化
+                    return !IsUniqueCharacter((uint)ped.Model.Hash); //ユニークキャラじゃないならカオス化
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
                 default:
