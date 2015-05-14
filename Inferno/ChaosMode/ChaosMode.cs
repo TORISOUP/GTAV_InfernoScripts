@@ -103,13 +103,18 @@ namespace Inferno.ChaosMode
             //以下2秒間隔でループ
             do
             {
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 if (!chaosChecker.IsPedChaosAvailable(ped))
                 {
                     break;
                     ;
                 }
 
-                if (Random.Next(0, 100) < 15)
+                if (Random.Next(0, 100) < 30)
                 {
                     //たまに武器を変える
                     equipedWeapon = GiveWeaponTpPed(ped);
@@ -119,8 +124,8 @@ namespace Inferno.ChaosMode
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
 
-                //2秒待機
-                yield return WaitForSecond(2.0f);
+                //適当に待機
+                yield return WaitForSecond(1 + (float) Random.NextDouble()*5);
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -198,9 +203,7 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                var weapon = Random.Next(0, 2) % 2 == 0 
-                    ? weaponProvider.GetRandomShootWeapon() 
-                    : weaponProvider.GetRandomProjectileWeapon();
+                var weapon = weaponProvider.GetRandomWeapon();
                 var weaponhash = (int) weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
