@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Security.Policy;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Hash = GTA.Native.Hash;
 
 namespace Inferno
 {
@@ -126,7 +128,6 @@ namespace Inferno
             return Function.Call<int>(Hash.GET_PED_MONEY, ped);
         }
 
-
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
             Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);
@@ -186,6 +187,69 @@ namespace Inferno
         public static Ped CreateRandomPedAsDriver(this Vehicle vehicle)
         {
             return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
+        }
+
+
+        /// <summary>
+        /// 警戒心？
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="alertness"></param>
+        public static void SetAlertness(this Ped ped, int alertness)
+        {
+            Function.Call(Hash.SET_PED_ALERTNESS,ped,alertness);
+        }
+
+        /// <summary>
+        /// 戦闘スキル？
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="ability"></param>
+        public static void SetCombatAbility(this Ped ped, int ability)
+        {
+            Function.Call(Hash.SET_PED_COMBAT_ABILITY, ped, ability);
+        }
+
+        /// <summary>
+        /// 戦闘範囲？
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="range"></param>
+        public static void SetCombatRange(this Ped ped, int range)
+        {
+            Function.Call(Hash.SET_PED_COMBAT_RANGE, ped, range);
+        }
+
+        /// <summary>
+        /// 攻撃してきた対象を攻撃する？
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="range"></param>
+        public static void RegisterHatedTargetsAroundPed(this Ped ped, int range)
+        {
+            Function.Call(Hash.REGISTER_HATED_TARGETS_AROUND_PED, ped, range);
+        }
+
+        /// <summary>
+        ///　警官とし設定する
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="isPed"></param>
+        public static void SetAsCop(this Ped ped, bool isPed)
+        {
+            Function.Call(Hash.SET_PED_AS_COP, ped, isPed);
+        }
+
+        /// <summary>
+        /// 戦闘状態にする
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="target"></param>
+        /// <param name="unk1"></param>
+        /// <param name="unk2"></param>
+        public static void TaskCombat(this Ped ped,Ped target,bool unk1,bool unk2)
+        {
+            Function.Call(Hash.TASK_COMBAT_PED, ped, target, unk1, unk2);
         }
 
 
