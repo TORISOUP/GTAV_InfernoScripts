@@ -9,24 +9,15 @@ namespace Inferno
 {
     public class DebugLogger
     {
-        private TcpSocketManager tcpSocketManager;
         private string logPath = @"InfernoScript.log";
         private Encoding encoding;
         public DebugLogger()
         {
-            tcpSocketManager = new TcpSocketManager();
-            tcpSocketManager.ServerStart();
+  
             encoding = Encoding.GetEncoding("Shift_JIS");
         }
 
-        /// <summary>
-        /// メッセージをブロードキャストする
-        /// </summary>
-        /// <param name="message"></param>
-        private void WriteToTCP(string message)
-        {
-            tcpSocketManager.SendToAll(message);
-        }
+
 
         /// <summary>
         /// テキストに書き出す
@@ -52,7 +43,6 @@ namespace Inferno
         public void Log(string message)
         {
             var sendMessage = String.Format("[{0}] {1}", DateTime.Now, message);
-            WriteToTCP(sendMessage);
             WriteToText(sendMessage);
         }
 

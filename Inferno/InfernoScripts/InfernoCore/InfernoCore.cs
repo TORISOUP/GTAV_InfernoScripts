@@ -18,9 +18,7 @@ namespace Inferno
     /// </summary>
     public sealed class InfernoCore : Script
     {
-#if DEBUG
         private DebugLogger _debugLogger;
-#endif
 
         public static InfernoCore Instance { get; private set; }
 
@@ -91,10 +89,7 @@ namespace Inferno
         {
             Instance = this;
             coroutineSystem = new CoroutineSystem();
-
-#if DEBUG
             _debugLogger = new DebugLogger();
-#endif
 
             //100ms周期でイベントを飛ばす
             Interval = 100;
@@ -164,9 +159,7 @@ namespace Inferno
 
         public void LogWrite(string message)
         {
-#if DEBUG
             _debugLogger.Log(message);
-#endif
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Inferno.ChaosMode
 
         //デフォルトは全員除外
         private MissionCharacterTreatmentType currentTreatType =
-            MissionCharacterTreatmentType.ExcludeAllMissionCharacter;
+            MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
         protected override int TickInterval
         {
@@ -103,13 +103,18 @@ namespace Inferno.ChaosMode
             //以下2秒間隔でループ
             do
             {
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 if (!chaosChecker.IsPedChaosAvailable(ped))
                 {
                     break;
                     ;
                 }
 
-                if (Random.Next(0, 100) < 15)
+                if (Random.Next(0, 100) < 30)
                 {
                     //たまに武器を変える
                     equipedWeapon = GiveWeaponTpPed(ped);
@@ -119,8 +124,8 @@ namespace Inferno.ChaosMode
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
 
-                //2秒待機
-                yield return WaitForSecond(2.0f);
+                //適当に待機
+                yield return WaitForSecond(1 + (float) Random.NextDouble()*5);
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -166,8 +171,18 @@ namespace Inferno.ChaosMode
                 else
                 {
                     //車に乗っていないなら周辺を攻撃
-                    ped.Task.ShootAt(target, 10000);
-
+                    if (weaponProvider.IsProjectileWeapon(equipWeapon))
+                    {
+                        ped.ThrowProjectile(target.Position);
+                    }
+                    else if (weaponProvider.IsShootWeapon(equipWeapon))
+                    {
+                        ped.Task.ShootAt(target, 10000);
+                    }
+                    else
+                    {
+                        ped.Task.FightAgainst(target, 10000);
+                    }
                 }
                 ped.SetPedKeepTask(true);
             }
@@ -188,7 +203,7 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                var weapon = weaponProvider.GetRandomShootWeapon();
+                var weapon = weaponProvider.GetRandomWeapon();
                 var weaponhash = (int) weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない

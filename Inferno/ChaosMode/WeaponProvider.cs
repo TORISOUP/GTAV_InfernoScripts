@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,7 +10,8 @@ namespace Inferno.ChaosMode
     public class WeaponProvider
     {
         private Weapon[] shootWeapons;
-        private Weapon[] closeWeapons;
+        private Weapon[] closedWeapons;
+        private Weapon[] projectileWeapons;
         private Weapon[] allWeapons;
         private Random random;
         public WeaponProvider()
@@ -49,27 +51,32 @@ namespace Inferno.ChaosMode
                 Weapon.STUNGUN,
             };
 
-            closeWeapons = new[]
+            closedWeapons = new[]
             {
-                Weapon.BALL,
                 Weapon.BARBED_WIRE,
                 Weapon.BAT,
-                Weapon.BZGAS,
                 Weapon.CROWBAR,
                 Weapon.DROWNING,
                 Weapon.HAMMER,
                 Weapon.GOLFCLUB,
-                Weapon.GRENADE,
-                Weapon.BALL,
                 Weapon.KNIFE,
-                Weapon.MOLOTOV,
                 Weapon.NIGHTSTICK,
-                Weapon.STICKYBOMB,
                 Weapon.PETROLCAN,
-                Weapon.FLARE,
+               
             };
 
-            allWeapons = shootWeapons.Concat(closeWeapons).ToArray();
+            projectileWeapons = new[]
+            {
+                Weapon.BALL,
+                Weapon.BZGAS,
+                Weapon.GRENADE,
+                Weapon.MOLOTOV,
+                Weapon.STICKYBOMB,
+                Weapon.FLARE,
+                Weapon.SMOKEGRENADE,
+            };
+
+            allWeapons = shootWeapons.Concat(closedWeapons).Concat(projectileWeapons).ToArray();
 
         }
 
@@ -88,7 +95,16 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         public Weapon GetRandomCloseWeapon()
         {
-            return closeWeapons[random.Next(0, closeWeapons.Length)];
+            return closedWeapons[random.Next(0, closedWeapons.Length)];
+        }
+
+        /// <summary>
+        /// ランダムに投擲系の武器を取得する
+        /// </summary>
+        /// <returns></returns>
+        public Weapon GetRandomProjectileWeapon()
+        {
+            return projectileWeapons[random.Next(0, projectileWeapons.Length)];
         }
 
         /// <summary>
@@ -99,6 +115,7 @@ namespace Inferno.ChaosMode
         {
             return allWeapons[random.Next(0,allWeapons.Length)];
         }
+
 
         /// <summary>
         /// 射撃系の武器であるか
@@ -118,7 +135,12 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         public bool IsCloseWeapon(Weapon weapon)
         {
-            return closeWeapons.Contains(weapon);
+            return closedWeapons.Contains(weapon);
+        }
+
+        public bool IsProjectileWeapon(Weapon weapon)
+        {
+            return projectileWeapons.Contains(weapon);
         }
     }
 }
