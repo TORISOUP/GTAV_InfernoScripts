@@ -12,7 +12,7 @@ namespace Inferno
     {
         public static bool IsGamePadPressed(this Script script, GameKey gameKey)
         {
-            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
+            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int) gameKey);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Inferno
         /// <param name="toggle">固定するか</param>
         public static void SetPedKeepTask(this Ped ped, bool toggle)
         {
-            Function.Call(Hash.SET_PED_KEEP_TASK,toggle);
+            Function.Call(Hash.SET_PED_KEEP_TASK, toggle);
         }
 
 
@@ -85,7 +85,7 @@ namespace Inferno
         /// <param name="ped">市民</param>
         /// <param name="position">座標</param>
         /// <param name="duration">攻撃時間[ms]</param>
-        public static void TaskShootAtCoord(this Ped ped,Vector3 position,int duration)
+        public static void TaskShootAtCoord(this Ped ped, Vector3 position, int duration)
         {
             Function.Call(Hash.TASK_SHOOT_AT_COORD, ped, position.X, position.Y, position.Z, duration);
         }
@@ -104,7 +104,8 @@ namespace Inferno
         /// </summary>
         /// <param name="ped">市民</param>
         /// <param name="pattern">パターン（ハッシュ値）</param>
-        public static void SetPedFiringPattern(this Ped ped, int pattern){
+        public static void SetPedFiringPattern(this Ped ped, int pattern)
+        {
             Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
         }
 
@@ -115,7 +116,7 @@ namespace Inferno
         /// <param name="money">金額</param>
         public static void SetPedMoney(this Ped ped, int money)
         {
-            Function.Call(Hash.SET_PED_MONEY,ped,money);
+            Function.Call(Hash.SET_PED_MONEY, ped, money);
         }
 
         /// <summary>
@@ -142,7 +143,7 @@ namespace Inferno
         {
             Function.Call(Hash.TASK_PARACHUTE_TO_TARGET, ped, target.X, target.Y, target.Z);
         }
-     
+
 
         /// <summary>
         /// ?
@@ -151,9 +152,9 @@ namespace Inferno
         /// <param name="targetPed"></param>
         /// <param name="position"></param>
         /// <param name="duration"></param>
-        public static void DriveByToTarget(this Ped ped,Ped targetPed,Vector3 position,int duration)
+        public static void DriveByToTarget(this Ped ped, Ped targetPed, int duration)
         {
-            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET, ped, targetPed, position.X, position.Y, position.Z, duration);
+            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET, ped, targetPed, ped.CurrentVehicle, 0, 8, 250);
         }
 
         /// <summary>
@@ -162,9 +163,10 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="target"></param>
         /// <param name="vehicle"></param>
-        public static void TaskDriveBy(this Ped ped,Ped target,Vehicle vehicle)
+        public static void TaskDriveBy(this Ped ped, Ped target, Vehicle vehicle)
         {
-            Function.Call(Hash.TASK_DRIVE_BY, ped, target, vehicle, target.Position.X, target.Position.Y, target.Position.Z, 10000, 1, 1, 90);
+            Function.Call(Hash.TASK_DRIVE_BY, ped, target, vehicle, target.Position.X, target.Position.Y,
+                target.Position.Z, 10000, 1, 1, 90);
         }
 
         /// <summary>
@@ -196,7 +198,7 @@ namespace Inferno
         /// <param name="alertness"></param>
         public static void SetAlertness(this Ped ped, int alertness)
         {
-            Function.Call(Hash.SET_PED_ALERTNESS,ped,alertness);
+            Function.Call(Hash.SET_PED_ALERTNESS, ped, alertness);
         }
 
         /// <summary>
@@ -246,7 +248,7 @@ namespace Inferno
         /// <param name="target"></param>
         /// <param name="unk1"></param>
         /// <param name="unk2"></param>
-        public static void TaskCombat(this Ped ped,Ped target,bool unk1,bool unk2)
+        public static void TaskCombat(this Ped ped, Ped target, bool unk1, bool unk2)
         {
             Function.Call(Hash.TASK_COMBAT_PED, ped, target, unk1, unk2);
         }
@@ -277,9 +279,9 @@ namespace Inferno
                 pos.X,
                 pos.Y,
                 pos.Z,
-                255,
-                0,
-                0,
+                red,
+                green,
+                blue,
                 5.0f,
                 100.0f);
         }
@@ -302,7 +304,7 @@ namespace Inferno
 
         public static bool HasBeenDamagedBy(this Ped ped, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int)weapon, false);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int) weapon, false);
         }
 
         public static bool HasBeenDamagedByPed(this Ped ped, Ped target)
@@ -318,7 +320,7 @@ namespace Inferno
         /// <param name="font">フォント指定</param>
         public static void SetTextFont(this Script script, int font)
         {
-            Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] { font });
+            Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] {font});
         }
 
         /// <summary>
@@ -348,10 +350,10 @@ namespace Inferno
         {
             Function.Call(Hash.SET_TEXT_COLOUR, new InputArgument[]
             {
-                Red,        //R?
-                Green,      //G?
-                Blue,       //B?
-                Alpha       //A?
+                Red, //R?
+                Green, //G?
+                Blue, //B?
+                Alpha //A?
             });
         }
 
@@ -362,7 +364,7 @@ namespace Inferno
         /// <param name="isCenter">false:左寄せ？true:中央寄せ</param>
         public static void SetTextCentre(this Script script, bool isCenter)
         {
-            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { isCenter ? 1 : 0 });
+            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] {isCenter ? 1 : 0});
         }
 
         /// <summary>
@@ -406,9 +408,9 @@ namespace Inferno
         public static void AddTextString(this Script script, string str)
         {
             //文字の種類?
-            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] { "STRING" });
+            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] {"STRING"});
             //テキストとして表示する文字列
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] { str });
+            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] {str});
         }
 
         /// <summary>
@@ -426,11 +428,11 @@ namespace Inferno
             });
         }
 
-        unsafe public static Vector2 GetScreenResolution()
+        public static unsafe Vector2 GetScreenResolution()
         {
-            int w=0;
-            int h=0;
-            
+            int w = 0;
+            int h = 0;
+
             Function.Call(Hash.GET_SCREEN_RESOLUTION, &w, &h);
             return new Vector2(w, h);
         }
@@ -444,12 +446,17 @@ namespace Inferno
             Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, new InputArgument[] {ped});
         }
 
-        public static void SetToRagdDoll(this Ped ped,float forceX=0,float forceY=0,float forceZ=0)
+        public static void SetToRagdDoll(this Ped ped, float forceX = 0, float forceY = 0, float forceZ = 0)
         {
-            Function.Call(Hash.SET_PED_TO_RAGDOLL,new InputArgument[]
+            Function.Call(Hash.SET_PED_TO_RAGDOLL, new InputArgument[]
             {
-                ped,forceX,forceY,forceZ,true,true,true
+                ped, forceX, forceY, forceZ, true, true, true
             });
         }
+
+        public static int GetClockHours()
+        {
+            return Function.Call<int>(Hash.GET_CLOCK_HOURS);
         }
+    }
 }

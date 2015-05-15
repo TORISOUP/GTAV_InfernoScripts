@@ -48,7 +48,6 @@ namespace Inferno
             OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
 
-
             //interval間隔で実行
             OnTickAsObservable
                 .Where(_ => _isActive)

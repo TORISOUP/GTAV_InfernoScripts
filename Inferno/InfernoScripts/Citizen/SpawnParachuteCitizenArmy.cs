@@ -76,7 +76,7 @@ namespace Inferno
             //30秒チェックする
             for (var i = 0; i < 30; i++)
             {
-                foreach (var t in WaitForSecond(1.0f))
+                foreach (var t in WaitForSeconds(1.0f))
                 {
                     yield return t;
                 }
@@ -94,7 +94,7 @@ namespace Inferno
             }
 
             //監視終了後１秒待ってからカオス化許可する(アニメーションがおかしくなるのを避けるため)
-            foreach (var s in WaitForSecond(1.0f))
+            foreach (var s in WaitForSeconds(1.0f))
             {
                 yield return s;
             }
@@ -105,7 +105,7 @@ namespace Inferno
             }
 
             //さらに5秒待ってから無敵化解除
-            foreach (var s in WaitForSecond(1.0f))
+            foreach (var s in WaitForSeconds(1.0f))
             {
                 yield return s;
             }

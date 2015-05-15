@@ -15,17 +15,30 @@ namespace Inferno
 
         private int _rpgHash;
         private bool _isActive = false;
-        private List<Vector3> meteoLightPositionList = new List<Vector3>(); 
+        private List<Vector3> meteoLightPositionList = new List<Vector3>();
+        /// <summary>
+        /// 夜間はマーカの色を薄くする
+        /// </summary>
+        private bool IsNightMode
+        {
+            get
+            {
+                var hour = NativeFunctions.GetClockHours();
+                return hour >= 17 && hour <= 6;
+            }
+        }
+
+        private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
         //OnTickAsObservableはライト描画用に使う
         protected override int TickInterval
         {
-            get { return 0; }
+            get { return 1500; }
         }
 
         protected override void Setup()
         {
-            _rpgHash = (int) Weapon.STINGER;
+            _rpgHash = (int) Weapon.RPG;
 
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
@@ -37,19 +50,20 @@ namespace Inferno
             OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
             //落下地点マーカ描画
-            OnTickAsObservable
+            OnDrawingTickAsObservable
                 .Where(_ => meteoLightPositionList.Count > 0)
                 .Subscribe(_ =>
                 {
+                    var insensity = IsNightMode ? 0.3f : 20.0f;
                     foreach (var point in meteoLightPositionList)
                     {
-                        NativeFunctions.CreateLight(point, 255, 0, 0, 0.8f, 5);
+
+                        NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
                     }
                 });
                 
 
-            //１秒間隔で落下
-            CreateTickAsObservable(1500)
+            OnTickAsObservable
                 .Where(_ => _isActive)
                 .Subscribe(_ => ShootMeteo());
         }
@@ -60,13 +74,13 @@ namespace Inferno
             {
                 var player = this.GetPlayer();
                 var playerPosition = player.Position;
+                var range = 30;
+                var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);
 
-                var addPosition = new Vector3(Random.Next(-40, 40), Random.Next(-40, 40), 0);
-
-                if (player.Velocity.Length() < 1.0f && addPosition.Length() < 10.0f)
+                if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)
                 {
                     addPosition.Normalize();
-                    addPosition *= Random.Next(10, 40);
+                    addPosition *= Random.Next(10, 30);
                 }
 
                 var targetPosition = playerPosition + addPosition; 
@@ -108,7 +122,7 @@ namespace Inferno
 
             meteoLightPositionList.Add(position);
 
-            yield return WaitForSecond(durationSecond);
+            yield return WaitForSeconds(durationSecond);
 
             meteoLightPositionList.Remove(position);
         }
@@ -122,10 +136,8 @@ namespace Inferno
         private IEnumerable<Object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
             ped.TaskShootAtCoord(targetPosition, 1000);
-            yield return null;
-
-            //指定時間待機
-            yield return WaitForSecond(durationSecond);
+            yield return WaitForSeconds(durationSecond);
+            if(!ped.IsSafeExist()) yield break;
             ped.Delete();
         }
     }

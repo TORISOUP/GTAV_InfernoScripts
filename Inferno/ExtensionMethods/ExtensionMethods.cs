@@ -35,12 +35,22 @@ namespace Inferno
         }
 
         /// <summary>
+        /// プレイヤが乗車している車両であるか
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <returns></returns>
+        public static bool IsPlayerVehicle(this Vehicle vehicle)
+        {
+            return vehicle == Game.Player.Character.CurrentVehicle
+        }
+
+        /// <summary>
         /// 同じEntityであるかチェックする
         /// </summary>
         public static bool IsSameEntity(this Entity x, Entity y)
         {
             if (x == null || y == null) return false;
-            return x.ID == y.ID;
+            return x.Handle == y.Handle;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Windows.Forms;
 using GTA;
 using GTA.Native;
 using Reactive.Bindings;
@@ -25,6 +26,8 @@ namespace Inferno.ChaosMode
         private MissionCharacterTreatmentType currentTreatType =
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
+        private MissionCharacterTreatmentType nextTreatType;
+
         protected override int TickInterval
         {
             get { return 1000; }
@@ -41,18 +44,33 @@ namespace Inferno.ChaosMode
                 {
                     _isActive.Value = !_isActive.Value;
                     chaosedPedList.Clear();
-                    DrawText("ChaosMode:" + _isActive.Value, 3.0f);
+                    if (_isActive.Value)
+                    {
+                        DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
+                    }
+                    else
+                    {
+                        DrawText("ChaosMode:Off", 3.0f);
+                    }
 
                 });
 
-            //changeでキャラカオスの切り替え（暫定
-            CreateInputKeywordAsObservable("change")
+            nextTreatType = currentTreatType;
+
+            //F7でキャラカオスの切り替え（暫定
+            OnKeyDownAsObservable
+                .Where(x=> _isActive.Value && x.KeyCode == Keys.F7)
+                .Do(_ =>
+                {
+                   nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
+                    DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.0f);
+                })
+                .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
-                    currentTreatType
-                        = (MissionCharacterTreatmentType) (((int) currentTreatType + 1)%3);
-                    chaosChecker.MissionCharacterTreatment = currentTreatType;
-                    DrawText("CharacterChaos:" + currentTreatType.ToString(), 3.0f);
+                    currentTreatType = nextTreatType;
+                    chaosChecker.MissionCharacterTreatment = nextTreatType;
+                    DrawText("CharacterChaos:" + currentTreatType.ToString() + "[OK]", 3.0f);
                 });
 
             //interval間隔で市民をカオス化する
@@ -64,14 +82,12 @@ namespace Inferno.ChaosMode
 
         private void CitizenChaos()
         {
+
             cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), 3000);
-            foreach (
-                var ped in
-                    cachedPedForChaos
-                        .Where(x => chaosChecker.IsPedChaosAvailable(x)
-                                    && !chaosedPedList.Contains(x.ID)))
+            foreach (var ped in cachedPedForChaos.Where(x => chaosChecker.IsPedChaosAvailable(x)
+                                                             && !chaosedPedList.Contains(x.Handle)))
             {
-                chaosedPedList.Add(ped.ID);
+                chaosedPedList.Add(ped.Handle);
                 StartCoroutine(ChaosPedAction(ped));
             }
         }
@@ -83,7 +99,7 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
-            var pedId = ped.ID;
+            var pedId = ped.Handle;
             ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
             ped.SetPedShootRate(100);
             ped.SetAlertness(0);
@@ -111,7 +127,6 @@ namespace Inferno.ChaosMode
                 if (!chaosChecker.IsPedChaosAvailable(ped))
                 {
                     break;
-                    ;
                 }
 
                 if (Random.Next(0, 100) < 30)
@@ -125,7 +140,7 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                yield return WaitForSecond(1 + (float) Random.NextDouble()*5);
+                yield return WaitForSeconds(1 + (float) Random.NextDouble()*5);
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -160,12 +175,12 @@ namespace Inferno.ChaosMode
                 if (ped.IsInVehicle())
                 {
                     //車に乗っているなら、同じクルマに乗っていない近くの市民がいたら攻撃する
-                    var nearestPeople =
+                    var nearestPed =
                         World.GetNearbyPeds(ped, 50)
                             .FirstOrDefault(x => !x.CurrentVehicle.IsSameEntity(ped.CurrentVehicle));
-                    if (nearestPeople != null)
+                    if (nearestPed != null)
                     {
-                        Function.Call(Hash.TASK_COMBAT_PED, ped, nearestPeople, 1, 1);
+                        ped.Task.FightAgainst(nearestPed);
                     }
                 }
                 else
@@ -181,7 +196,7 @@ namespace Inferno.ChaosMode
                     }
                     else
                     {
-                        ped.Task.FightAgainst(target, 10000);
+                        ped.Task.FightAgainst(target, 1000);
                     }
                 }
                 ped.SetPedKeepTask(true);

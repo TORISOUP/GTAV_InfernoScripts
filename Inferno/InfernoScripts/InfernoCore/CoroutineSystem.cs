@@ -55,6 +55,8 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
+            KeyValuePair<uint, IEnumerator>[] coroutineArray;
+
             lock (_lockObject)
             {
                 //開始前に削除登録されたものを消す
@@ -63,17 +65,20 @@ namespace Inferno
                     _coroutines.Remove(stopId);
                 }
                 _stopCoroutineList.Clear();
+                coroutineArray = _coroutines.ToArray();
+            }
 
-                var endIdList = new List<uint>();
+            var endIdList = new List<uint>();
 
-                foreach (var coroutine in _coroutines.ToArray())
+            foreach (var coroutine in coroutineArray)
+            {
+                if (!coroutine.Value.MoveNext())
                 {
-                    if (!coroutine.Value.MoveNext())
-                    {
-                        endIdList.Add(coroutine.Key);
-                    }
+                    endIdList.Add(coroutine.Key);
                 }
-
+            }
+            lock (_lockObject)
+            {
                 foreach (var id in endIdList.ToArray())
                 {
                     _coroutines.Remove(id);

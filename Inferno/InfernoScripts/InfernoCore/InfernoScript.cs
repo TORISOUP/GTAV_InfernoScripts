@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using GTA;
 
 namespace Inferno
@@ -38,7 +39,9 @@ namespace Inferno
         /// <summary>
         /// 描画用のTickイベント
         /// </summary>
-        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; } 
+        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
+
+        public IObservable<KeyEventArgs> OnKeyDownAsObservable => InfernoCore.OnKeyDownAsObservable;
 
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
@@ -145,7 +148,7 @@ namespace Inferno
         /// </summary>
         /// <param name="secound">秒</param>
         /// <returns></returns>
-        protected IEnumerable WaitForSecond(float secound)
+        protected IEnumerable WaitForSeconds(float secound)
         {
             var waitLoopCount = (int)(secound * 10);
             for (var i = 0; i < waitLoopCount; i++)

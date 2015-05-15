@@ -18,7 +18,7 @@ namespace ToriScript.Inferno
     /// </summary>
     public class PlayerVehicleNitro : InfernoScript
     {
-        private bool IsNitroOK = true;
+        private bool _isNitroOk = true;
 
         protected override int TickInterval
         {
@@ -31,7 +31,7 @@ namespace ToriScript.Inferno
             OnTickAsObservable
                 .Where(
                     _ =>
-                        IsNitroOK && this.IsGamePadPressed(GameKey.Attack) && this.IsGamePadPressed(GameKey.SeekCover) &&
+                        _isNitroOk && this.IsGamePadPressed(GameKey.Attack) && this.IsGamePadPressed(GameKey.SeekCover) &&
                         this.IsGamePadPressed(GameKey.Sprint))
                 .Subscribe(_ => NitroVehicle());
         }
@@ -52,7 +52,7 @@ namespace ToriScript.Inferno
         /// </summary>
         void NitroAction(Ped driver,Vehicle vehicle)
         {
-            IsNitroOK = false;
+            _isNitroOk = false;
 
             if (driver.IsSafeExist())
             {
@@ -75,10 +75,13 @@ namespace ToriScript.Inferno
                 1.0f
             });
 
-            //無敵にしたあと３秒待機
-            Wait(3*1000);
+            StartCoroutine(NitroAfterTreatment(driver, vehicle));
+        }
 
-
+        IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
+        {
+            yield return WaitForSeconds(3);
+            
             if (driver.IsSafeExist())
             {
                 driver.IsInvincible = false;
@@ -88,10 +91,9 @@ namespace ToriScript.Inferno
                 vehicle.IsInvincible = false;
             }
 
-            //元に戻して7秒後にOKにする
-            Wait(7*1000);
+            yield return WaitForSeconds(7);
 
-            IsNitroOK = true;
+            _isNitroOk = true;
         }
 
 

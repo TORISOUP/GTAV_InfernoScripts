@@ -101,7 +101,7 @@ namespace Inferno
             ped.Task.ClearAll();
             ped.TaskEnterVehicle(targetVehicle, -1, GTA.VehicleSeat.Any);
 
-            foreach (var t in WaitForSecond(20))
+            foreach (var t in WaitForSeconds(20))
             {
                 //20秒間車に乗れたか監視する
                 if(ped.IsInVehicle()) break;
