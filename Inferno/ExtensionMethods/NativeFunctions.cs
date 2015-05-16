@@ -169,6 +169,18 @@ namespace Inferno
         }
 
         /// <summary>
+        /// 指定地に乗り物を移動させる
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="ped"></param>
+        /// <param name="waypoint"></param>
+        /// <param name="speed"></param>
+        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed)
+        {
+            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, 0xC00AB, -1);
+        }
+
+        /// <summary>
         /// 市民をドライバとして召喚する
         /// </summary>
         /// <param name="vehicle">乗り物</param>
