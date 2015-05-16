@@ -191,6 +191,7 @@ namespace Inferno
             return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
         }
 
+
         /// <summary>
         /// 警戒心？
         /// </summary>
