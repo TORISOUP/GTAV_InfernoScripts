@@ -116,7 +116,7 @@ namespace Inferno.ChaosMode
             //武器を与える
             Weapon equipedWeapon = GiveWeaponTpPed(ped);
 
-            //以下2秒間隔でループ
+            //以下ループ
             do
             {
                 if (!ped.IsSafeExist())
@@ -154,9 +154,9 @@ namespace Inferno.ChaosMode
         /// <param name="equipWeapon">装備中の武器（最終的には直接取得できるようにしたい)</param>
         private void PedRiot(Ped ped, Weapon equipWeapon)
         {
-
             try
             {
+                //ターゲットになりうる市民
                 var nearPeds =
                     cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
                         x => x.IsSafeExist() && !x.IsSameEntity(ped) && (ped.Position - x.Position).Length() < 50)
@@ -174,14 +174,8 @@ namespace Inferno.ChaosMode
 
                 if (ped.IsInVehicle())
                 {
-                    //車に乗っているなら、同じクルマに乗っていない近くの市民がいたら攻撃する
-                    var nearestPed =
-                        World.GetNearbyPeds(ped, 50)
-                            .FirstOrDefault(x => !x.CurrentVehicle.IsSameEntity(ped.CurrentVehicle));
-                    if (nearestPed != null)
-                    {
-                        ped.Task.FightAgainst(nearestPed);
-                    }
+                    var p = target.Position;
+                    Function.Call(Hash.TASK_DRIVE_BY,ped,0,0,p.X,p.Y,p.Z,10000.0,0,0,(int)FiringPattern.BurstFire);
                 }
                 else
                 {
@@ -218,8 +212,12 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                var weapon = weaponProvider.GetRandomWeapon();
-                var weaponhash = (int) weapon;
+                //車に乗っているなら車用の武器を渡す
+                var weapon = ped.IsInVehicle()
+                    ? weaponProvider.GetRandomInVehicleWeapon()
+                    : weaponProvider.GetRandomWeaponExcludeClosedWeapon();
+
+                var weaponhash = (int)weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.GiveWeapon(weaponhash, 1000); //指定武器所持

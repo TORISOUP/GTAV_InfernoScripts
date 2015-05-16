@@ -95,7 +95,6 @@ namespace Inferno
                 ped.EquipWeapon(_rpgHash); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
-                Function.Call((Hash) 1746743299266654598, ped, true);
     
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));

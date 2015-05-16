@@ -38,6 +38,8 @@ namespace Inferno
 
                 });
 
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
             OnTickAsObservable
                 .Where(_ => IsActive)
                 .Subscribe(_ => RunAway());
