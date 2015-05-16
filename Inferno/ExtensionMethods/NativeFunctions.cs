@@ -144,29 +144,16 @@ namespace Inferno
             Function.Call(Hash.TASK_PARACHUTE_TO_TARGET, ped, target.X, target.Y, target.Z);
         }
 
-
-        /// <summary>
-        /// ?
-        /// </summary>
-        /// <param name="ped"></param>
-        /// <param name="targetPed"></param>
-        /// <param name="position"></param>
-        /// <param name="duration"></param>
-        public static void DriveByToTarget(this Ped ped, Ped targetPed, int duration)
-        {
-            Function.Call(Hash.SET_DRIVEBY_TASK_TARGET, ped, targetPed, ped.CurrentVehicle, 0, 8, 250);
-        }
-
         /// <summary>
         /// ?
         /// </summary>
         /// <param name="ped"></param>
         /// <param name="target"></param>
         /// <param name="vehicle"></param>
-        public static void TaskDriveBy(this Ped ped, Ped target, Vehicle vehicle)
+        public static void TaskDriveBy(this Ped ped, Ped target, FiringPattern firingPattern)
         {
-            Function.Call(Hash.TASK_DRIVE_BY, ped, target, vehicle, target.Position.X, target.Position.Y,
-                target.Position.Z, 10000, 1, 1, 90);
+            var p = target.Position;
+            Function.Call(Hash.TASK_DRIVE_BY, ped, 0, 0, p.X, p.Y, p.Z, 10000.0, 0, 0, (int)firingPattern);
         }
 
         /// <summary>

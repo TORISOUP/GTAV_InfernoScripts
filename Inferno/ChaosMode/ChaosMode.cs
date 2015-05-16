@@ -174,8 +174,7 @@ namespace Inferno.ChaosMode
 
                 if (ped.IsInVehicle())
                 {
-                    var p = target.Position;
-                    Function.Call(Hash.TASK_DRIVE_BY,ped,0,0,p.X,p.Y,p.Z,10000.0,0,0,(int)FiringPattern.BurstFire);
+                    ped.TaskDriveBy(target,FiringPattern.BurstFire);
                 }
                 else
                 {
