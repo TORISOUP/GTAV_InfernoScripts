@@ -97,7 +97,7 @@ namespace Inferno
                 ped.FreezePosition = true;
     
                 //ライト描画
-                StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
+                StartCoroutine(CreateMeteoLight(targetPosition, 3.0f));
 
                 //Aさん削除
                 StartCoroutine(MeteoShoot(ped,targetPosition, 8.0f));
