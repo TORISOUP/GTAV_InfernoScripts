@@ -41,7 +41,7 @@ namespace Inferno
         /// <returns></returns>
         public static bool IsPlayerVehicle(this Vehicle vehicle)
         {
-            return vehicle == Game.Player.Character.CurrentVehicle
+            return vehicle == Game.Player.Character.CurrentVehicle;
         }
 
         /// <summary>
