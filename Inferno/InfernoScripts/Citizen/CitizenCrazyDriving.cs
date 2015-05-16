@@ -63,10 +63,7 @@ namespace Inferno
                 {
                     driver.DrivingSpeed = 300.0f;
                     driver.MaxDrivingSpeed = 300.0f;
-                    //var vehicle = driver.CurrentVehicle;
-                    //driver.Task.CruiseWithVehicle(vehicle, 200f, 0xC0025);
-                    driver.DrivingStyle = DrivingStyle.Normal;
-                    //driver.Task.CruiseWithVehicle(vehicle, 300.0f, 6);
+                    driver.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
                 }
                 catch (Exception e)
                 {
