@@ -30,7 +30,7 @@ namespace Inferno
         {
             lock (_lockObject)
             {
-                var id = _coroutineIdIndex++;
+                var id = unchecked (_coroutineIdIndex++);
                 //WaitForSecondsを展開できるように
                 var enumrator = coroutine
                     .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>) x) : new object[] {x}).GetEnumerator();

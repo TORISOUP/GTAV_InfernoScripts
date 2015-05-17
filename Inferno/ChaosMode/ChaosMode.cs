@@ -28,10 +28,7 @@ namespace Inferno.ChaosMode
 
         private MissionCharacterTreatmentType nextTreatType;
 
-        protected override int TickInterval
-        {
-            get { return 1000; }
-        }
+        protected override int TickInterval => 1000;
 
         protected override void Setup()
         {
@@ -78,14 +75,19 @@ namespace Inferno.ChaosMode
                 .Where(_ => _isActive.Value)
                 .Subscribe(_ => CitizenChaos());
 
+            OnTickAsObservable
+                .Select(_ => this.GetPlayer().IsDead)
+                .DistinctUntilChanged()
+                .Where(x => x)
+                .Subscribe(_ => chaosedPedList.Clear());
+
         }
 
         private void CitizenChaos()
         {
 
             cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), 3000);
-            foreach (var ped in cachedPedForChaos.Where(x => chaosChecker.IsPedChaosAvailable(x)
-                                                             && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in cachedPedForChaos.Where(x => !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 StartCoroutine(ChaosPedAction(ped));
@@ -100,21 +102,29 @@ namespace Inferno.ChaosMode
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
             var pedId = ped.Handle;
-            ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
-            ped.SetPedShootRate(100);
-            ped.SetAlertness(0);
-            ped.SetCombatAbility(100);
-            ped.SetCombatRange(100);
-            ped.RegisterHatedTargetsAroundPed(100);
 
-            if (!ped.IsPersistent)
-            {
-                ped.MaxHealth = 2000;
-                ped.Health = 2000;
-            }
 
             //武器を与える
             Weapon equipedWeapon = GiveWeaponTpPed(ped);
+
+            //ここでカオス化して良いか検査する
+            if (!chaosChecker.IsPedChaosAvailable(ped))
+            {
+               yield break;
+            }
+            
+            if (!ped.IsRequiredForMission())
+            {
+                ped.MaxHealth = 2000;
+                ped.Health = 2000;
+                ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
+                ped.SetPedShootRate(100);
+                ped.SetAlertness(0);
+                ped.SetCombatAbility(100);
+                ped.SetCombatRange(100);
+                ped.RegisterHatedTargetsAroundPed(100);
+
+            }
 
             //以下ループ
             do
@@ -174,7 +184,8 @@ namespace Inferno.ChaosMode
 
                 if (ped.IsInVehicle())
                 {
-                    ped.TaskDriveBy(target,FiringPattern.BurstFire);
+                    //TODO:車から投擲物を投げる方法を調べる
+                   ped.TaskDriveBy(target,FiringPattern.BurstFireDriveby);
                 }
                 else
                 {
@@ -212,7 +223,7 @@ namespace Inferno.ChaosMode
             try
             {
                 //車に乗っているなら車用の武器を渡す
-                var weapon = ped.IsInVehicle()
+                var weapon =  ped.IsInVehicle()
                     ? weaponProvider.GetRandomInVehicleWeapon()
                     : weaponProvider.GetRandomWeaponExcludeClosedWeapon();
 

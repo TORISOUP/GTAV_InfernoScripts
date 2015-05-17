@@ -80,7 +80,7 @@ namespace Inferno.ChaosMode
         private bool IsChaosableMissionCharacter(Ped ped)
         {
             //ミッションキャラじゃないならtrue
-            if (!ped.IsPersistent) return true;
+            if (!ped.IsRequiredForMission()) return true;
 
             switch (MissionCharacterTreatment)
             {

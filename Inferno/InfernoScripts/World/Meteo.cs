@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.ChaosMode;
 
 namespace Inferno
 {
@@ -31,10 +32,7 @@ namespace Inferno
         private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
         //OnTickAsObservableはライト描画用に使う
-        protected override int TickInterval
-        {
-            get { return 1500; }
-        }
+        protected override int TickInterval => 1500;
 
         protected override void Setup()
         {
@@ -91,6 +89,7 @@ namespace Inferno
                 var ped = NativeFunctions.CreateRandomPed(createPosition);
                 ped.MarkAsNoLongerNeeded();
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
+                ped.SetNotChaosPed(true);
                 ped.GiveWeapon(_rpgHash, 1000); //指定武器所持
                 ped.EquipWeapon(_rpgHash); //武器装備
                 ped.IsVisible = false;
@@ -116,7 +115,7 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<Object>  CreateMeteoLight(Vector3 position, float durationSecond)
+        private IEnumerable<object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
 
             meteoLightPositionList.Add(position);
@@ -132,7 +131,7 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<Object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
+        private IEnumerable<object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
             ped.TaskShootAtCoord(targetPosition, 1000);
             yield return WaitForSeconds(durationSecond);
