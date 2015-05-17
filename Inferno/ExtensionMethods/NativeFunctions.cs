@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Security.Policy;
 using GTA;
 using GTA.Math;
@@ -418,11 +419,7 @@ namespace Inferno
 
         public static unsafe Vector2 GetScreenResolution()
         {
-            int w = 0;
-            int h = 0;
-
-            Function.Call(Hash.GET_SCREEN_RESOLUTION, &w, &h);
-            return new Vector2(w, h);
+            return new Vector2(UI.WIDTH, UI.HEIGHT);
         }
 
         /// <summary>

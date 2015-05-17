@@ -60,7 +60,7 @@ namespace Inferno.ChaosMode
                 .Do(_ =>
                 {
                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
-                    DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.0f);
+                    DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
@@ -169,7 +169,7 @@ namespace Inferno.ChaosMode
                 //ターゲットになりうる市民
                 var nearPeds =
                     cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
-                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && (ped.Position - x.Position).Length() < 50)
+                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && (ped.Position - x.Position).Length() < 50)
                         .ToArray();
 
                 if (nearPeds.Length == 0)
