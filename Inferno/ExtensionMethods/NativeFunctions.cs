@@ -190,6 +190,38 @@ namespace Inferno
             return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
         }
 
+        /// <summary>
+        /// ランダムな市民を召喚
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public static Ped CreateRandomPed(this Script script, Vector3 pos)
+        {
+            return Function.Call<Ped>(Hash.CREATE_RANDOM_PED, pos.X, pos.Y, pos.Z);
+        }
+
+        /// <summary>
+        /// 市民を車にワープ
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="vehicle"></param>
+        /// <param name="vehicleSeat"></param>
+        public static void SetIntoVehicle(this Ped ped, Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        {
+            Function.Call(Hash.SET_PED_INTO_VEHICLE, ped, vehicle, (int)vehicleSeat);
+
+        }
+
+        /// <summary>
+        /// 車の席が開いてるかどうか
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="vehicleSeat"></param>
+        public static bool IsSeatFree(this Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        {
+            return Function.Call<bool>(Hash.IS_VEHICLE_SEAT_FREE, vehicle, (int)vehicleSeat);
+        }
 
         /// <summary>
         /// 警戒心？
