@@ -53,7 +53,7 @@ namespace Inferno
         }
         
         /// <summary>
-        /// 体力とアーマー回復させるべきかどうか
+        /// 体力とアーマーを回復させるタイミングかどうか
         /// </summary>
         private bool CheckSupplyFlag()
         {
@@ -73,8 +73,11 @@ namespace Inferno
                 return true;
             }
             return false;
-        } 
+        }
 
+        /// <summary>
+        /// 体力とアーマー回復
+        /// </summary>
         private void SupplyArmorAndHealth()
         {
             var player = this.GetPlayer();
