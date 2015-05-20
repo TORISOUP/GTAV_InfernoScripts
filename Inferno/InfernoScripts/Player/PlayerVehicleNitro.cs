@@ -10,7 +10,7 @@ using GTA;
 using GTA.Native;
 using Inferno;
 
-namespace ToriScript.Inferno
+namespace Inferno
 {
     /// <summary>
     /// プレイヤ用ニトロ

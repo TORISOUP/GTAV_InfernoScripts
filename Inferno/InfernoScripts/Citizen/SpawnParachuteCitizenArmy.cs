@@ -20,10 +20,7 @@ namespace Inferno
 
         private bool _isActive = false;
 
-        protected override int TickInterval
-        {
-            get { return 3000; }
-        }
+        protected override int TickInterval => 5000;
 
         protected override void Setup()
         {

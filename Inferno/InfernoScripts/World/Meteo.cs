@@ -31,8 +31,7 @@ namespace Inferno
 
         private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
-        //OnTickAsObservableはライト描画用に使う
-        protected override int TickInterval => 1500;
+        protected override int TickInterval => 3000;
 
         protected override void Setup()
         {
@@ -87,6 +86,7 @@ namespace Inferno
                
 
                 var ped = NativeFunctions.CreateRandomPed(createPosition);
+                if(!ped.IsSafeExist()) return;
                 ped.MarkAsNoLongerNeeded();
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.SetNotChaosPed(true);
