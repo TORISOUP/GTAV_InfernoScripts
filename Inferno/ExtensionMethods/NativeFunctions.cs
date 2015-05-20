@@ -191,17 +191,6 @@ namespace Inferno
         }
 
         /// <summary>
-        /// ランダムな市民を召喚
-        /// </summary>
-        /// <param name="script"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public static Ped CreateRandomPed(this Script script, Vector3 pos)
-        {
-            return Function.Call<Ped>(Hash.CREATE_RANDOM_PED, pos.X, pos.Y, pos.Z);
-        }
-
-        /// <summary>
         /// 市民を車にワープ
         /// </summary>
         /// <param name="ped"></param>

@@ -34,14 +34,34 @@ namespace Inferno.InfernoScripts.World
                     }
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => {
+            OnAllOnCommandObservable.Subscribe(_ =>
+            {
                 _isActive = true;
                 SpawnHeli();
             });
 
+            //ヘリの移動処理
             CreateTickAsObservable(0)
                 .Where(_ => _isActive)
                 .Subscribe(_ => MoveHeli());
+
+            //40秒ごとにヘリが壊れてないかor離れすぎてないかを調べる
+            CreateTickAsObservable(40000)
+                .Where(_ => _isActive && !_Heli.IsAlive)
+                .Subscribe(_ => {
+                    SpawnHeli();
+                    var player = this.GetPlayer();
+                    var playerPosition = player.Position;
+                    //離れ過ぎてたらワープ
+                    if (playerPosition.Length() - _Heli.Position.Length() > 100.0f || playerPosition.Length() - _Heli.Position.Length() < -100.0f)
+                    {
+                        var heliPosition = playerPosition;
+                        heliPosition.Z += 20.0f;
+                        _Heli.Position = heliPosition;
+                        _Heli.Rotation = player.Rotation;
+                        _Heli.Speed += player.Velocity.Length();
+                    }
+                });
         }
 
         /// <summary>
@@ -55,24 +75,11 @@ namespace Inferno.InfernoScripts.World
                     var player = this.GetPlayer();
                     var playerPosition = player.Position;
                     _Heli.DriveTo(_HeliDrive, playerPosition, 100.0f);
-                    //離れ過ぎたらワープ
-                    if (playerPosition.Length() - _Heli.Position.Length() > 100.0f || playerPosition.Length() - _Heli.Position.Length() < -100.0f)
-                    {
-                        playerPosition.Z += 20.0f;
-                        _Heli.Position = playerPosition;
-                        _Heli.Rotation = player.Rotation;
-                        _Heli.Speed += player.Velocity.Length();
-                    }
                     //市民が降りてたら新たに乗車させ直し
                     if (_Heli.IsSeatFree(VehicleSeat.Any)){
                         CreatePedIntoHeli(playerPosition);
                     }
                 }
-                else
-                {
-                    //壊れていたら再度作成
-                    SpawnHeli();
-                } 
             }
             catch (Exception ex)
             {
@@ -89,15 +96,17 @@ namespace Inferno.InfernoScripts.World
             {
                 var player = this.GetPlayer();
                 var playerPosition = player.Position;
-                playerPosition.Z += 40.0f;
-                _Heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, playerPosition);
+                var SpawnHeliPosition = playerPosition;
+                SpawnHeliPosition.Z += 40.0f;
+                _Heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, SpawnHeliPosition);
                 _HeliDrive = _Heli.CreateRandomPedAsDriver();
-                for(int i = 0; i < 4; i++)
+                _Heli.MaxHealth = 3000;
+                _Heli.Health = 3000;
+                for (int i = 0; i < 4; i++)
                 {
-                    CreatePedIntoHeli(playerPosition);
+                    CreatePedIntoHeli(SpawnHeliPosition);
                 }
-                _HeliDrive.MarkAsNoLongerNeeded();
-                _HeliDrive.SetNotChaosPed(false);
+                _HeliDrive.SetNotChaosPed(true);
             }
             catch (Exception ex)
             {
@@ -111,7 +120,7 @@ namespace Inferno.InfernoScripts.World
         /// <param name="playerPosition"></param>
         private void CreatePedIntoHeli(GTA.Math.Vector3 playerPosition)
         {
-            var ped = this.CreateRandomPed(playerPosition);
+            var ped = NativeFunctions.CreateRandomPed(playerPosition);
             ped.MarkAsNoLongerNeeded();
             ped.SetIntoVehicle(_Heli, GTA.VehicleSeat.Any);
             ped.SetNotChaosPed(false);
