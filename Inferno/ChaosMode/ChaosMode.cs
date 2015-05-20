@@ -122,7 +122,9 @@ namespace Inferno.ChaosMode
                 ped.SetCombatAbility(100);
                 ped.SetCombatRange(100);
                 ped.RegisterHatedTargetsAroundPed(100);
-
+                Function.Call(Hash.TASK_SET_BLOCKING_OF_NON_TEMPORARY_EVENTS, ped, true);
+                Function.Call(Hash.SET_PED_FLEE_ATTRIBUTES, ped, 0, 0);
+                Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped, 17, 1);
             }
 
             //以下ループ
@@ -180,6 +182,7 @@ namespace Inferno.ChaosMode
                 var target = nearPeds[randomindex];
 
                 ped.Task.ClearAll();
+                Function.Call(Hash.TASK_SET_BLOCKING_OF_NON_TEMPORARY_EVENTS, ped, true);
 
                 if (ped.IsInVehicle())
                 {
@@ -221,6 +224,8 @@ namespace Inferno.ChaosMode
         {
             try
             {
+                if (!ped.IsSafeExist()) return Weapon.UNARMED;
+
                 //車に乗っているなら車用の武器を渡す
                 var weapon =  ped.IsInVehicle()
                     ? weaponProvider.GetRandomInVehicleWeapon()

@@ -76,6 +76,8 @@ namespace Inferno
         /// <param name="toggle">固定するか</param>
         public static void SetPedKeepTask(this Ped ped, bool toggle)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_KEEP_TASK, toggle);
         }
 
@@ -88,6 +90,8 @@ namespace Inferno
         /// <param name="duration">攻撃時間[ms]</param>
         public static void TaskShootAtCoord(this Ped ped, Vector3 position, int duration)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.TASK_SHOOT_AT_COORD, ped, position.X, position.Y, position.Z, duration);
         }
 
@@ -107,6 +111,8 @@ namespace Inferno
         /// <param name="pattern">パターン（ハッシュ値）</param>
         public static void SetPedFiringPattern(this Ped ped, int pattern)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
         }
 
@@ -132,6 +138,8 @@ namespace Inferno
 
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);
         }
 
@@ -142,6 +150,8 @@ namespace Inferno
         /// <param name="target">目標地点</param>
         public static void ParachuteTo(this Ped ped, Vector3 target)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.TASK_PARACHUTE_TO_TARGET, ped, target.X, target.Y, target.Z);
         }
 
@@ -153,6 +163,7 @@ namespace Inferno
         /// <param name="vehicle"></param>
         public static void TaskDriveBy(this Ped ped, Ped target, FiringPattern firingPattern)
         {
+            if(!ped.IsSafeExist() || !target.IsSafeExist()) return;
             var p = target.Position;
             Function.Call(Hash.TASK_DRIVE_BY, ped, 0, 0, p.X, p.Y, p.Z, 10000.0, 0, 0, (int)firingPattern);
         }
@@ -166,6 +177,7 @@ namespace Inferno
         /// <param name="vehicleSeat">座席</param>
         public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, GTA.VehicleSeat vehicleSeat)
         {
+            if (!ped.IsSafeExist() || !vehicle.IsSafeExist()) return;
             Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int) vehicleSeat, 1, 1, 0);
         }
 
@@ -187,6 +199,8 @@ namespace Inferno
         /// <param name="alertness"></param>
         public static void SetAlertness(this Ped ped, int alertness)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_ALERTNESS, ped, alertness);
         }
 
@@ -197,6 +211,8 @@ namespace Inferno
         /// <param name="ability"></param>
         public static void SetCombatAbility(this Ped ped, int ability)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_COMBAT_ABILITY, ped, ability);
         }
 
@@ -207,6 +223,8 @@ namespace Inferno
         /// <param name="range"></param>
         public static void SetCombatRange(this Ped ped, int range)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_COMBAT_RANGE, ped, range);
         }
 
@@ -217,6 +235,8 @@ namespace Inferno
         /// <param name="range"></param>
         public static void RegisterHatedTargetsAroundPed(this Ped ped, int range)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.REGISTER_HATED_TARGETS_AROUND_PED, ped, range);
         }
 
@@ -227,6 +247,8 @@ namespace Inferno
         /// <param name="isPed"></param>
         public static void SetAsCop(this Ped ped, bool isPed)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.SET_PED_AS_COP, ped, isPed);
         }
 
@@ -239,6 +261,8 @@ namespace Inferno
         /// <param name="unk2"></param>
         public static void TaskCombat(this Ped ped, Ped target, bool unk1, bool unk2)
         {
+            if (!ped.IsSafeExist()) return;
+
             Function.Call(Hash.TASK_COMBAT_PED, ped, target, unk1, unk2);
         }
 
@@ -277,6 +301,7 @@ namespace Inferno
 
         public static void ThrowProjectile(this Ped ped, Vector3 vector3)
         {
+            if (!ped.IsSafeExist()) return;
             Function.Call(Hash.TASK_THROW_PROJECTILE, ped, vector3.X, vector3.Y, vector3.Z);
         }
 

@@ -66,12 +66,11 @@ namespace Inferno
         IEnumerable<Object>  PedOnGroundedCheck(Ped ped)
         {
             //カオスモードMODからカオス化させない
-            ped.SetNotChaosPed(true);
+        //    ped.SetNotChaosPed(true);
             //市民無敵化
             ped.IsInvincible = true;
 
-            //30秒チェックする
-            for (var i = 0; i < 30; i++)
+            for (var i = 0; i < 10; i++)
             {
                 foreach (var t in WaitForSeconds(1.0f))
                 {
@@ -98,16 +97,7 @@ namespace Inferno
             
             if (ped.IsSafeExist())
             {
-                ped.SetNotChaosPed(false);
-            }
-
-            //さらに5秒待ってから無敵化解除
-            foreach (var s in WaitForSeconds(1.0f))
-            {
-                yield return s;
-            }
-            if (ped.IsSafeExist())
-            {
+            //    ped.SetNotChaosPed(false);
                 ped.IsInvincible = false;
             }
         }
