@@ -70,6 +70,8 @@ namespace Inferno
             try
             {
                 var player = this.GetPlayer();
+                if(!player.IsSafeExist()) return;
+
                 var playerPosition = player.Position;
                 var range = 30;
                 var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);

@@ -87,7 +87,7 @@ namespace Inferno.ChaosMode
         {
 
             cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), 3000);
-            foreach (var ped in cachedPedForChaos.Where(x => !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in cachedPedForChaos.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 StartCoroutine(ChaosPedAction(ped));
@@ -102,7 +102,6 @@ namespace Inferno.ChaosMode
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
             var pedId = ped.Handle;
-
 
             //武器を与える
             Weapon equipedWeapon = GiveWeaponTpPed(ped);
