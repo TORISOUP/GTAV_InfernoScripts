@@ -131,11 +131,18 @@ namespace Inferno
         /// </summary>
         private void UpdatePedsAndVehiclesList()
         {
-            var player = Game.Player.Character;
-            if(!player.IsSafeExist()) return;
+            try
+            {
+                var player = Game.Player.Character;
+                if (!player.IsSafeExist()) return;
 
-            pedsNearPlayer.Value = World.GetNearbyPeds(player, 3000);
-            vehiclesNearPlayer.Value = World.GetNearbyVehicles(player, 3000);
+                pedsNearPlayer.Value = World.GetNearbyPeds(player, 1500);
+                vehiclesNearPlayer.Value = World.GetNearbyVehicles(player, 1500);
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.StackTrace);
+            }
         }
 
         /// <summary>

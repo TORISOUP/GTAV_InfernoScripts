@@ -18,8 +18,8 @@ namespace Inferno
     {
         public static DrawingCore Instance { get; private set; }
 
-
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
+
         /// <summary>
         /// 100ms周期のTick
         /// </summary>

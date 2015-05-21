@@ -88,7 +88,7 @@ namespace Inferno.ChaosMode
                 Weapon.COMBATPISTOL,
                 Weapon.MICROSMG,
                 Weapon.SAWNOFFSHOTGUN,
-                Weapon.STICKYBOMB
+                Weapon.STUNGUN,
             };
 
             allWeapons = shootWeapons.Concat(closedWeapons).Concat(projectileWeapons).ToArray();

@@ -10,7 +10,7 @@ using GTA;
 using GTA.Native;
 using Inferno;
 
-namespace ToriScript.Inferno
+namespace Inferno
 {
     /// <summary>
     /// プレイヤ用ニトロ
@@ -20,10 +20,7 @@ namespace ToriScript.Inferno
     {
         private bool _isNitroOk = true;
 
-        protected override int TickInterval
-        {
-            get { return 50; }
-        }
+        protected override int TickInterval => 50;
 
         protected override void Setup()
         {
