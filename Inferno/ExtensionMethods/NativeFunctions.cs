@@ -226,6 +226,23 @@ namespace Inferno
         }
 
         /// <summary>
+        /// エンティティの耐性設定
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="bulletProof"></param>
+        /// <param name="fireProof"></param>
+        /// <param name="explosionProof"></param>
+        /// <param name="collisionProof"></param>
+        /// <param name="meleeProof"></param>
+        /// <param name="unk1">不明</param>
+        /// <param name="unk2">不明</param>
+        /// <param name="unk3">不明</param>
+        public static void SetProofs(this Entity entity, bool bulletProof, bool fireProof, bool explosionProof, bool collisionProof, bool meleeProof, bool unk1, bool unk2, bool unk3)
+        {
+            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof, meleeProof, unk1, unk2, unk3);
+        }
+
+        /// <summary>
         /// 警戒心？
         /// </summary>
         /// <param name="ped"></param>

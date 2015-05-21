@@ -47,19 +47,27 @@ namespace Inferno.InfernoScripts.World
 
             //40秒ごとにヘリが壊れてないかor離れすぎてないかを調べる
             CreateTickAsObservable(40000)
-                .Where(_ => _isActive && !_Heli.IsAlive)
-                .Subscribe(_ => {
-                    SpawnHeli();
-                    var player = this.GetPlayer();
-                    var playerPosition = player.Position;
-                    //離れ過ぎてたらワープ
-                    if (playerPosition.Length() - _Heli.Position.Length() > 100.0f || playerPosition.Length() - _Heli.Position.Length() < -100.0f)
+                .Where(_ => _isActive)
+                .Subscribe(_ =>
+                {
+                    if (!_Heli.IsAlive)
                     {
-                        var heliPosition = playerPosition;
-                        heliPosition.Z += 20.0f;
-                        _Heli.Position = heliPosition;
-                        _Heli.Rotation = player.Rotation;
-                        _Heli.Speed += player.Velocity.Length();
+                        _Heli.MarkAsNoLongerNeeded();
+                        _HeliDrive.MarkAsNoLongerNeeded();
+                        SpawnHeli();
+                    }
+                    else
+                    {
+                        var player = this.GetPlayer();
+                        var playerPosition = player.Position;
+                        //離れ過ぎてたら生成し直し
+                        if (playerPosition.Length() - _Heli.Position.Length() > 100.0f || playerPosition.Length() - _Heli.Position.Length() < -100.0f)
+                        {
+                            _Heli.PetrolTankHealth = -1;
+                            _Heli.MarkAsNoLongerNeeded();
+                            _HeliDrive.MarkAsNoLongerNeeded();
+                            SpawnHeli();
+                        }
                     }
                 });
         }
@@ -99,6 +107,7 @@ namespace Inferno.InfernoScripts.World
                 var SpawnHeliPosition = playerPosition;
                 SpawnHeliPosition.Z += 40.0f;
                 _Heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, SpawnHeliPosition);
+                _Heli.SetProofs(false, false, true, true, false, false, false, false);
                 _HeliDrive = _Heli.CreateRandomPedAsDriver();
                 _Heli.MaxHealth = 3000;
                 _Heli.Health = 3000;
