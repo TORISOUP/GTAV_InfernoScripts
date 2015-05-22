@@ -28,17 +28,9 @@ namespace Inferno.InfernoScripts.World
                 {
                     _isActive = !_isActive;
                     DrawText("ChaosHeli:" + _isActive, 3.0f);
-                    if (_isActive)
-                    {
-                        SpawnHeli();
-                    }
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ =>
-            {
-                _isActive = true;
-                SpawnHeli();
-            });
+            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
             //ヘリの移動処理
             CreateTickAsObservable(0)
@@ -52,6 +44,8 @@ namespace Inferno.InfernoScripts.World
                 {
                     if (!_Heli.IsAlive)
                     {
+                        _HeliDrive.Health = -1;
+                        _HeliDrive.MarkAsNoLongerNeeded();
                         _Heli.MarkAsNoLongerNeeded();
                         _HeliDrive.MarkAsNoLongerNeeded();
                         SpawnHeli();
@@ -61,15 +55,30 @@ namespace Inferno.InfernoScripts.World
                         var player = this.GetPlayer();
                         var playerPosition = player.Position;
                         //離れ過ぎてたら生成し直し
-                        if (playerPosition.Length() - _Heli.Position.Length() > 100.0f || playerPosition.Length() - _Heli.Position.Length() < -100.0f)
+                        if (playerPosition.Length() - _Heli.Position.Length() > 200.0f || playerPosition.Length() - _Heli.Position.Length() < -200.0f)
                         {
+                            _HeliDrive.Health = -1;
+                            _HeliDrive.MarkAsNoLongerNeeded();
                             _Heli.PetrolTankHealth = -1;
                             _Heli.MarkAsNoLongerNeeded();
-                            _HeliDrive.MarkAsNoLongerNeeded();
                             SpawnHeli();
                         }
                     }
                 });
+
+            OnTickAsObservable
+                    .Select(_ => this.GetPlayer())
+                    .Where(p => p.IsSafeExist() && _Heli.IsSafeExist() && _isActive)
+                    .Select(p => !p.IsAlive)
+                    .DistinctUntilChanged()
+                    .Where(isAlive => !isAlive)
+                    .Subscribe(_ => {
+                        _HeliDrive.Health = -1;
+                        _HeliDrive.MarkAsNoLongerNeeded();
+                        _Heli.PetrolTankHealth = -1;
+                        _Heli.MarkAsNoLongerNeeded();
+                        SpawnHeli();
+                    });
         }
 
         /// <summary>
@@ -109,6 +118,7 @@ namespace Inferno.InfernoScripts.World
                 _Heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, SpawnHeliPosition);
                 _Heli.SetProofs(false, false, true, true, false, false, false, false);
                 _HeliDrive = _Heli.CreateRandomPedAsDriver();
+                _HeliDrive.SetProofs(true, true, true, true, true, true, true, true);
                 _Heli.MaxHealth = 3000;
                 _Heli.Health = 3000;
                 for (int i = 0; i < 4; i++)
