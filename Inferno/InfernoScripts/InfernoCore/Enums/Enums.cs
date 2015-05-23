@@ -451,7 +451,7 @@
     /// </summary>
     public enum MissionCharacterTreatmentType
     {
-        AllCharacterToChaos = 0,
+        AffectAllCharacter = 0,
         ExcludeUniqueCharacter = 1,
         ExcludeAllMissionCharacter = 2
     }

@@ -12,6 +12,36 @@ namespace InfernoTest
     [TestClass]
     public class ChaosModeSettingTest
     {
+        [TestMethod]
+        public void DefaultMissionCharacterTreatmentを正しく設定できる()
+        {
+            var dto = new ChaosModeSettingDTO();
+
+            //0はAffectAllCharacter
+            dto.DefaultMissionCharacterTreatment = 0;
+            Assert.AreEqual(MissionCharacterTreatmentType.AffectAllCharacter
+                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+
+            //1はExcludeUniqueCharacter
+            dto.DefaultMissionCharacterTreatment = 1;
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter
+                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+
+            //2はExcludeAllMissionCharacter
+            dto.DefaultMissionCharacterTreatment = 2;
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter
+                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+        }
+
+        [TestMethod]
+        public void 不正なDefaultMissionCharacterTreatmentはExcludeUniqueCharacterになる()
+        {
+            var dto = new ChaosModeSettingDTO();
+            dto.DefaultMissionCharacterTreatment = -1;
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter
+                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+        }
+
 
         #region EnableWeaponListFilterTest
 
