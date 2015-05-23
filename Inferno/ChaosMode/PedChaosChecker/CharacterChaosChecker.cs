@@ -42,7 +42,7 @@ namespace Inferno.ChaosMode
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer 
-                && (!ped.IsPersistent || IsChangeMissonCharacterWeapon);
+                && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Inferno.ChaosMode
 
             switch (MissionCharacterTreatment)
             {
-                case MissionCharacterTreatmentType.AllCharacterToChaos:
+                case MissionCharacterTreatmentType.AffectAllCharacter:
                     return true;
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
                     return !IsUniqueCharacter((uint)ped.Model.Hash); //ユニークキャラじゃないならカオス化
