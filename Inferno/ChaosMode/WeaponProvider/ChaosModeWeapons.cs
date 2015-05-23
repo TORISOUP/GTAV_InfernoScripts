@@ -8,21 +8,19 @@ using System.Threading.Tasks;
 namespace Inferno.ChaosMode.WeaponProvider
 {
     /// <summary>
-    /// 全ての武器リストから武器を取得する
+    /// 有効な武器一覧を管理する
     /// </summary>
-    public class AllWeaponProvider : IWeaponProvider
+    public class ChaosModeWeapons
     {
-        protected Weapon[] ShootWeapons;
-        protected Weapon[] ClosedWeapons;
-        protected Weapon[] ProjectileWeapons;
-        protected Weapon[] ExcludeClosedWeapons; //近接系武器以外
-        protected Weapon[] InVehicleWeapons; //ドライブバイ可能な武器
-        protected Weapon[] AllWeapons;
-        protected Random Random;
+        public Weapon[] ShootWeapons { get; }
+        public Weapon[] ClosedWeapons { get; }
+        public Weapon[] ProjectileWeapons { get; }
+        public Weapon[] ExcludeClosedWeapons { get; }
+        public Weapon[] DriveByWeapons { get; }
+        public Weapon[] AllWeapons { get; }
 
-        public AllWeaponProvider()
+        public ChaosModeWeapons()
         {
-            Random = new Random();
             //射撃系の武器
             ShootWeapons = new[]
             {
@@ -69,7 +67,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.KNIFE,
                 Weapon.NIGHTSTICK,
                 Weapon.PETROLCAN,
-               
+
             };
 
             //投げる系
@@ -85,7 +83,7 @@ namespace Inferno.ChaosMode.WeaponProvider
             };
 
             //ドライブバイ
-            InVehicleWeapons = new[]
+            DriveByWeapons = new[]
             {
                 Weapon.PISTOL,
                 Weapon.APPISTOL,
@@ -97,50 +95,6 @@ namespace Inferno.ChaosMode.WeaponProvider
 
             AllWeapons = ShootWeapons.Concat(ClosedWeapons).Concat(ProjectileWeapons).ToArray();
             ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).ToArray();
-        }
-
-        /// <summary>
-        /// 遠距離攻撃系の武器のみをランダムに取得
-        /// </summary>
-        /// <returns></returns>
-        public Weapon GetRandomWeaponExcludeClosedWeapon()
-        {
-            return ExcludeClosedWeapons[Random.Next(0, ExcludeClosedWeapons.Length)];
-        }
-
-        /// <summary>
-        /// ドライブバイ用の武器
-        /// </summary>
-        /// <returns></returns>
-        public Weapon GetRandomDriveByWeapon()
-        {
-            return InVehicleWeapons[Random.Next(0, InVehicleWeapons.Length)];
-        }
-
-        /// <summary>
-        /// 射撃系の武器であるか
-        /// </summary>
-        /// <param name="weapon"></param>
-        /// <returns></returns>
-        public bool IsShootWeapon(Weapon weapon)
-        {
-            return ShootWeapons.Contains(weapon);
-        }
-
-
-        /// <summary>
-        /// 近接系の武器であるか
-        /// </summary>
-        /// <param name="weapon"></param>
-        /// <returns></returns>
-        public bool IsCloseWeapon(Weapon weapon)
-        {
-            return ClosedWeapons.Contains(weapon);
-        }
-
-        public bool IsProjectileWeapon(Weapon weapon)
-        {
-            return ProjectileWeapons.Contains(weapon);
         }
     }
 }

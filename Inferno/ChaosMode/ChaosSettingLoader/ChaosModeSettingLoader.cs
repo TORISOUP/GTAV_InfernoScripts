@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.ChaosMode
 {
@@ -60,7 +61,12 @@ namespace Inferno.ChaosMode
         /// <returns>結果</returns>
         protected virtual string ReadFile(string filePath)
         {
-            if (!File.Exists(filePath)) return "";
+            if (!File.Exists(filePath))
+            {
+                //存在しないならデフォルト設定ファイルを生成する
+                CreateDefaultSettingFile(filePath);
+                return "";
+            }
             var readString = "";
             try
             {
@@ -75,6 +81,40 @@ namespace Inferno.ChaosMode
                 ChaosModeDebugLogger.Log(e.StackTrace);
             }
             return readString;
+        }
+
+        /// <summary>
+        /// デフォルトの設定ファイルを生成する
+        /// </summary>
+        protected void CreateDefaultSettingFile(string filePath)
+        {
+            var directoryPath = Path.GetDirectoryName(filePath);
+            //存在しないならディレクトリを作る
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            //デフォルト設定を吐き出す
+            var jss = new JavaScriptSerializer();
+            var dto = new ChaosModeSettingDTO();
+            var chaosModeWeapons = new ChaosModeWeapons();
+            dto.WeaponList = chaosModeWeapons.ExcludeClosedWeapons.Select(x => x.ToString()).ToArray();
+            dto.WeaponListForDriveBy = chaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray();
+            
+            try
+            {
+                using (var w = new StreamWriter(filePath,false,_encoding))
+                {
+                    var json = jss.Serialize(dto);
+                    w.WriteAsync(json);
+                }
+            }
+            catch (Exception e)
+            {
+                ChaosModeDebugLogger.Log(e.Message);
+                ChaosModeDebugLogger.Log(e.StackTrace);
+            }
         }
         
     }
