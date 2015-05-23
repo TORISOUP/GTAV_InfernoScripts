@@ -20,7 +20,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
+                    "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbabillity\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -29,6 +29,7 @@ namespace InfernoTest
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter,result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(50,result.Interval);
             Assert.AreEqual(60,result.ShootAccuracy);
+            Assert.AreEqual(100,result.WeaponChangeProbabillity);
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
@@ -42,7 +43,7 @@ namespace InfernoTest
         {
             //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
             var testLoader =
-                new TestChaosModeSettingLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                new TestChaosModeSettingLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -56,6 +57,7 @@ namespace InfernoTest
             Assert.AreEqual(100, result.Radius);
             Assert.AreEqual(50, result.Interval);
             Assert.AreEqual(60, result.ShootAccuracy);
+            Assert.AreEqual(100, result.WeaponChangeProbabillity);
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
@@ -73,6 +75,7 @@ namespace InfernoTest
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
@@ -86,7 +89,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbabillity\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"AttackPlayerCorrectionProbabillity\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(1000, result.Radius);
@@ -95,6 +98,7 @@ namespace InfernoTest
                 result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
@@ -113,6 +117,7 @@ namespace InfernoTest
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);

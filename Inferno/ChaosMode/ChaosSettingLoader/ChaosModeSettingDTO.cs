@@ -22,5 +22,6 @@ namespace Inferno.ChaosMode
         public string[] WeaponListForDriveBy { get; set; } = new[] { "" };
         public bool IsStupidShooting { get; set; } = true;
         public int ShootAccuracy { get; set; } = 100;
+        public int WeaponChangeProbabillity { get; set; } = 30;
     }
 }

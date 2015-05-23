@@ -42,7 +42,7 @@ namespace Inferno.ChaosMode
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer 
-                && (!ped.IsPersistent || IsChangeMissonCharacterWeapon);
+                && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
         }
 
         /// <summary>

@@ -51,9 +51,7 @@ namespace Inferno.ChaosMode
                 //例外発生時はデフォルトの設定ファイルを返す
                 return new ChaosModeSetting(new ChaosModeSettingDTO());
             }
-
         }
-        
 
         /// <summary>
         /// ファイルから中身のstringを読み取る

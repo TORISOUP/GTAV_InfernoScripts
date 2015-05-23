@@ -66,9 +66,11 @@
     <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs" />
     <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs" />
     <Compile Include="ChaosMode\ChaosSettingLoader\ExstensionsMethods.cs" />
+    <Compile Include="ChaosMode\IWeaponProvider.cs" />
     <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs" />
     <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosController.cs" />
-    <Compile Include="ChaosMode\WeaponProvider.cs" />
+    <Compile Include="ChaosMode\WeaponProvider\AllWeaponProvider.cs" />
+    <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />

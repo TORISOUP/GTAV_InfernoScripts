@@ -52,6 +52,10 @@ namespace Inferno.ChaosMode
         /// 攻撃の命中精度(0-100%)
         /// </summary>
         public int ShootAccuracy { get; private set; }
+        /// <summary>
+        /// 市民の武器を変更する確率
+        /// </summary>
+        public int WeaponChangeProbabillity { get; private set; }
 
         /// <summary>
         /// カオスモード設定ファイルを生成
@@ -69,6 +73,7 @@ namespace Inferno.ChaosMode
             IsStupidShooting = dto.IsStupidShooting;
             AttackPlayerCorrectionProbabillity = dto.AttackPlayerCorrectionProbabillity.Clamp(0, 100);
             ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
+            WeaponChangeProbabillity = dto.WeaponChangeProbabillity.Clamp(0, 100);
 
             //ミッションキャラクタの扱い
             DefaultMissionCharacterTreatment =
