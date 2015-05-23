@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using GTA.Native;
 
 namespace Inferno.ChaosMode
@@ -26,6 +27,8 @@ namespace Inferno.ChaosMode
         /// <param name="dto">DTOから生成する</param>
         public ChaosModeSetting(ChaosModeSettingDTO dto)
         {
+            if (dto == null) { dto = new ChaosModeSettingDTO();}
+
             //バリデーション処理
             Radius = dto.Radius.Clamp(1, 3000);
             Interval = dto.Interval.Clamp(10, 60000);

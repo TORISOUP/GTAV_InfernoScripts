@@ -17,7 +17,7 @@ namespace Inferno.ChaosMode
         public bool IsChangeMissionCharacterWeapon { get; set; } = true;
         public int DefaultMissionCharacterTreatment { get; set; } = 1;
         public bool IsAttackPlayerCorrectionEnabled { get; set; } = false;
-        public int AttackPlayerCorrectionProbabillity { get; set; } = 50;
+        public int AttackPlayerCorrectionProbabillity { get; set; } = 100;
         public string[] WeaponList { get; set; } = new[] {""};
         public bool IsStupidShooting { get; set; } = true;
         public int ShootAccuracy { get; set; } = 100;

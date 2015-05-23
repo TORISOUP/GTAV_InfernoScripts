@@ -37,8 +37,19 @@ namespace Inferno.ChaosMode
             var readJson = ReadFile(filePath);
 
             var jss = new JavaScriptSerializer();
-            var dto = jss.Deserialize<ChaosModeSettingDTO>(readJson);
-            return new ChaosModeSetting(dto);
+            try
+            {
+                var dto = jss.Deserialize<ChaosModeSettingDTO>(readJson);
+                return new ChaosModeSetting(dto);
+            }
+            catch (Exception e)
+            {
+                _debugLogger.Log(e.Message);
+                _debugLogger.Log(e.StackTrace);
+                //例外発生時はデフォルトの設定ファイルを返す
+                return new ChaosModeSetting(new ChaosModeSettingDTO());
+            }
+
         }
         
 
@@ -47,7 +58,7 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="filePath">ファイルパス</param>
         /// <returns>結果</returns>
-        protected string ReadFile(string filePath)
+        protected virtual string ReadFile(string filePath)
         {
             if (!File.Exists(filePath)) return "";
             var readString = "";
