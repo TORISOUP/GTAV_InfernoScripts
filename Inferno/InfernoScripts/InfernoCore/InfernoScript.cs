@@ -79,8 +79,14 @@ namespace Inferno
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
-
-            Setup();
+            try
+            {
+                Setup();
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.ToString());
+            }
         }
 
         /// <summary>

@@ -29,10 +29,7 @@ namespace Inferno
         /// <summary>
         /// 10秒間隔
         /// </summary>
-        protected override int TickInterval
-        {
-            get { return 10000; }
-        }
+        protected override int TickInterval => 10000;
 
         protected override void Setup()
         {
@@ -96,6 +93,7 @@ namespace Inferno
 
         IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
         {
+            if (!ped.IsSafeExist()) yield break;
             //カオス化しない
             ped.SetNotChaosPed(true);
             ped.Task.ClearAll();
@@ -104,6 +102,7 @@ namespace Inferno
             foreach (var t in WaitForSeconds(20))
             {
                 //20秒間車に乗れたか監視する
+                if(!ped.IsSafeExist()) yield break;
                 if(ped.IsInVehicle()) break;
                 yield return null;
             }

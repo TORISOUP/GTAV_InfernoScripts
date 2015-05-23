@@ -12,6 +12,8 @@ namespace Inferno.ChaosMode
         private Weapon[] shootWeapons;
         private Weapon[] closedWeapons;
         private Weapon[] projectileWeapons;
+        private Weapon[] excludeClosedWeapons; //近接系武器以外
+        private Weapon[] inVehicleWeapons; //ドライブバイ可能な武器
         private Weapon[] allWeapons;
         private Random random;
         public WeaponProvider()
@@ -51,6 +53,7 @@ namespace Inferno.ChaosMode
                 Weapon.STUNGUN,
             };
 
+            //近距離系
             closedWeapons = new[]
             {
                 Weapon.BARBED_WIRE,
@@ -65,6 +68,7 @@ namespace Inferno.ChaosMode
                
             };
 
+            //投げる系
             projectileWeapons = new[]
             {
                 Weapon.BALL,
@@ -73,11 +77,22 @@ namespace Inferno.ChaosMode
                 Weapon.MOLOTOV,
                 Weapon.STICKYBOMB,
                 Weapon.FLARE,
-                Weapon.SMOKEGRENADE,
+                Weapon.SMOKEGRENADE
+            };
+
+            //ドライブバイ
+            inVehicleWeapons = new[]
+            {
+                Weapon.PISTOL,
+                Weapon.APPISTOL,
+                Weapon.COMBATPISTOL,
+                Weapon.MICROSMG,
+                Weapon.SAWNOFFSHOTGUN,
+                Weapon.STUNGUN,
             };
 
             allWeapons = shootWeapons.Concat(closedWeapons).Concat(projectileWeapons).ToArray();
-
+            excludeClosedWeapons = shootWeapons.Concat(projectileWeapons).ToArray();
         }
 
         /// <summary>
@@ -116,6 +131,23 @@ namespace Inferno.ChaosMode
             return allWeapons[random.Next(0,allWeapons.Length)];
         }
 
+        /// <summary>
+        /// 遠距離攻撃系の武器のみをランダムに取得
+        /// </summary>
+        /// <returns></returns>
+        public Weapon GetRandomWeaponExcludeClosedWeapon()
+        {
+            return excludeClosedWeapons[random.Next(0, excludeClosedWeapons.Length)];
+        }
+
+        /// <summary>
+        /// ドライブバイ用の武器
+        /// </summary>
+        /// <returns></returns>
+        public Weapon GetRandomInVehicleWeapon()
+        {
+            return inVehicleWeapons[random.Next(0, inVehicleWeapons.Length)];
+        }
 
         /// <summary>
         /// 射撃系の武器であるか

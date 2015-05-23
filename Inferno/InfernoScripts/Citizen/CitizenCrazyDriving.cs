@@ -38,6 +38,8 @@ namespace Inferno
 
                 });
 
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
             OnTickAsObservable
                 .Where(_ => IsActive)
                 .Subscribe(_ => RunAway());
@@ -46,7 +48,6 @@ namespace Inferno
         private void RunAway()
         {
             var player = this.GetPlayer();
-            var playerVehicle = this.GetPlayerVehicle();
 
             //プレイヤ周辺の車
             var drivers = CachedVehicles.Where(x => x.IsSafeExist()
@@ -61,8 +62,8 @@ namespace Inferno
             {
                 try
                 {
-                    driver.DrivingSpeed = 300.0f;
-                    driver.MaxDrivingSpeed = 300.0f;
+                    driver.DrivingSpeed = 100.0f;
+                    driver.MaxDrivingSpeed = 100.0f;
                     driver.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
                 }
                 catch (Exception e)
