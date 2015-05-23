@@ -11,14 +11,46 @@ namespace Inferno.ChaosMode
     /// </summary>
     public class ChaosModeSetting
     {
+        /// <summary>
+        /// カオスモードの有効半径
+        /// </summary>
         public int Radius { get; private set; }
+        /// <summary>
+        /// 市民をカオス化する間隔
+        /// </summary>
         public int Interval { get; private set; }
+        /// <summary>
+        /// ミッションキャラクタの武器を上書きするか（DefaultMissionCharacterTreatment設定は無視して上書きされる）
+        /// </summary>
         public bool IsChangeMissionCharacterWeapon { get; private set; }
+        /// <summary>
+        /// ミッションキャラクタの扱い
+        /// </summary>
         public MissionCharacterTreatmentType DefaultMissionCharacterTreatment { get; private set; }
+        /// <summary>
+        /// 市民がプレイヤを優先して狙うようにするか
+        /// </summary>
         public bool IsAttackPlayerCorrectionEnabled { get; private set; }
+        /// <summary>
+        /// 市民がプレイヤをどれくらいの割合で狙ってくるか（0～100%）
+        /// IsAttackPlayerCorrectionEnabledがTrueの場合のみ有効
+        /// </summary>
         public int AttackPlayerCorrectionProbabillity { get; private set; }
+        /// <summary>
+        /// 乗車中ではない市民が使用する武器リスト
+        /// </summary>
         public Weapon[] WeaponList { get; private set; }
+        /// <summary>
+        /// ドライブバイで使用する武器リスト
+        /// </summary>
+        public Weapon[] WeaponListForDriveBy { get; private set; }
+        /// <summary>
+        /// Falseにすると市民がカバーアクションを取りながら攻撃するようになる
+        /// </summary>
         public bool IsStupidShooting { get; private set; }
+        /// <summary>
+        /// 攻撃の命中精度(0-100%)
+        /// </summary>
         public int ShootAccuracy { get; private set; }
 
         /// <summary>
@@ -45,6 +77,7 @@ namespace Inferno.ChaosMode
                     : (MissionCharacterTreatmentType) dto.DefaultMissionCharacterTreatment;
 
             WeaponList = EnableWeaponListFilter(dto.WeaponList);
+            WeaponListForDriveBy = EnableWeaponListFilter(dto.WeaponListForDriveBy);
         }
 
         /// <summary>

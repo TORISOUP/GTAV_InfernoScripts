@@ -20,7 +20,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -33,12 +33,14 @@ namespace InfernoTest
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
             CollectionAssert.AreEqual(new Weapon[] {Weapon.BAT, Weapon.RPG}, result.WeaponList);
+            CollectionAssert.AreEqual(new Weapon[] { Weapon.MICROSMG }, result.WeaponListForDriveBy);
+
         }
 
         [TestMethod]
         public void 一部パラメータが抜けていてもデフォルト値で上書きされたChaosSettingが生成できる()
         {
-            //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentが未設定
+            //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
             var testLoader =
                 new TestChaosModeSettingLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
@@ -47,6 +49,8 @@ namespace InfernoTest
             //設定されていない要素はデフォルト値
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
+            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
 
             //それ以外はjsonの通り
             Assert.AreEqual(100, result.Radius);
@@ -56,6 +60,7 @@ namespace InfernoTest
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
             CollectionAssert.AreEqual(new Weapon[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
+
         }
 
         [TestMethod]
@@ -73,6 +78,7 @@ namespace InfernoTest
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
+            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }
 
         [TestMethod]
@@ -94,6 +100,7 @@ namespace InfernoTest
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = ((Weapon[]) Enum.GetValues(typeof (Weapon)));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
+            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }
 
         [TestMethod]
@@ -111,6 +118,7 @@ namespace InfernoTest
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
+            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }
 
         /// <summary>
