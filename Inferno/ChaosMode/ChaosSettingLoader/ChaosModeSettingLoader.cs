@@ -15,14 +15,16 @@ namespace Inferno.ChaosMode
     public class ChaosModeSettingLoader
     {
         readonly Encoding _encoding = Encoding.GetEncoding("Shift_JIS");
-        private readonly DebugLogger _debugLogger;
+        private DebugLogger _debugLogger;
 
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        public ChaosModeSettingLoader()
+        protected virtual DebugLogger ChaosModeDebugLogger
         {
-            _debugLogger = new DebugLogger(@"ChaosMod.log");
+            get
+            {
+                if (_debugLogger != null) return _debugLogger;
+                _debugLogger = new DebugLogger(@"ChaosMod.log");
+                return _debugLogger;
+            }
         }
 
     
@@ -44,8 +46,8 @@ namespace Inferno.ChaosMode
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                ChaosModeDebugLogger.Log(e.Message);
+                ChaosModeDebugLogger.Log(e.StackTrace);
                 //例外発生時はデフォルトの設定ファイルを返す
                 return new ChaosModeSetting(new ChaosModeSettingDTO());
             }
@@ -71,8 +73,8 @@ namespace Inferno.ChaosMode
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                ChaosModeDebugLogger.Log(e.Message);
+                ChaosModeDebugLogger.Log(e.StackTrace);
             }
             return readString;
         }

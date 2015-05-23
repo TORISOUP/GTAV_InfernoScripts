@@ -5,6 +5,7 @@ using System.Linq;
 using Inferno;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Inferno.ChaosMode;
+using Moq;
 
 namespace InfernoTest
 {
@@ -18,7 +19,7 @@ namespace InfernoTest
         public void 全て正常値が設定されたJosonからChaosSettingが生成できる()
         {
             var testLoader =
-                new TestLoader(
+                new TestChaosModeSettingLoader(
                     "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
@@ -39,7 +40,7 @@ namespace InfernoTest
         {
             //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentが未設定
             var testLoader =
-                new TestLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                new TestChaosModeSettingLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -60,7 +61,7 @@ namespace InfernoTest
         [TestMethod]
         public void 不正なjsonが渡された場合はデフォルト値の設定ファイルになる()
         {
-            var testLoader = new TestLoader("{AAA,BBB}"); //jsonの文法違反
+            var testLoader = new TestChaosModeSettingLoader("{AAA,BBB}"); //jsonの文法違反
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(1000, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
@@ -78,7 +79,7 @@ namespace InfernoTest
         public void jsonの型が一致しない場合はデフォルト値の設定ファイルになる()
         {
             var testLoader =
-                new TestLoader(
+                new TestChaosModeSettingLoader(
                     "{\"AttackPlayerCorrectionProbabillity\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
@@ -98,7 +99,7 @@ namespace InfernoTest
         [TestMethod]
         public void 空文字列だった場合はデフォルト値のChaosSettingが生成される()
         {
-            var testLoader = new TestLoader("");
+            var testLoader = new TestChaosModeSettingLoader("");
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(1000, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
@@ -115,13 +116,29 @@ namespace InfernoTest
         /// <summary>
         /// テスト用ローダー
         /// </summary>
-        private class TestLoader : ChaosModeSettingLoader
+        private class TestChaosModeSettingLoader : ChaosModeSettingLoader
         {
             private readonly string _readJson;
 
-            public TestLoader(string readJson)
+            /// <summary>
+            /// コンストラクタで渡された文字列をファイルから読み込んだjsonとして扱う
+            /// </summary>
+            /// <param name="readJson">json文字列</param>
+            public TestChaosModeSettingLoader(string readJson)
             {
                 _readJson = readJson;
+            }
+
+            /// <summary>
+            /// テスト時はログを吐かないようにMockに挿し替える
+            /// </summary>
+            protected override DebugLogger ChaosModeDebugLogger
+            {
+                get
+                {
+                    var mockDebugLogger = new Mock<DebugLogger>("");
+                    return mockDebugLogger.Object;
+                }
             }
 
             protected override string ReadFile(string filePath)
