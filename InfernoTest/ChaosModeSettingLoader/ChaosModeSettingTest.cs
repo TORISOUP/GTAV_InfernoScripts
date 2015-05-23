@@ -73,30 +73,23 @@ namespace InfernoTest
         }
 
         [TestMethod]
-        public void 空配列を渡すと全てのWeaponの配列が生成できる()
+        public void 空配列を渡すと空のWeaponの配列が生成される()
         {
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon))).OrderBy(x=>x.ToString()).ToArray();
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
             var testData = new String[0];
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
-            //数は全ての武器数と同じ
-            Assert.AreEqual(allWeapons.Length, resutl.Length);
-            //同じ配列になるはず
-            Assert.IsTrue( allWeapons.SequenceEqual(resutl.OrderBy(x=>x.ToString())));
+            Assert.AreEqual(0, resutl.Length);
+
         }
 
         [TestMethod]
-        public void nullを渡すと全てのWeaponの配列が生成できる()
+        public void nullを渡すと空のWeaponの配列が生成される()
         {
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon))).OrderBy(x => x.ToString()).ToArray();
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
             var resutl = testSetting.TestEnableWeaponListFilter(null);
 
-            //数は全ての武器数と同じ
-            Assert.AreEqual(allWeapons.Length, resutl.Length);
-            //同じ配列になるはず
-            Assert.IsTrue(allWeapons.SequenceEqual(resutl.OrderBy(x => x.ToString())));
+            Assert.AreEqual(0, resutl.Length);
         }
 
         [TestMethod]

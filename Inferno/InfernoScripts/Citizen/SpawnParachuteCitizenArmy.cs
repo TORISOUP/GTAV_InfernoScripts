@@ -67,13 +67,10 @@ namespace Inferno
         {
             //市民無敵化
             ped.IsInvincible = true;
-
+            ped.SetNotChaosPed(true);
             for (var i = 0; i < 10; i++)
             {
-                foreach (var t in WaitForSeconds(1.0f))
-                {
-                    yield return t;
-                }
+                yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
                 if(!ped.IsSafeExist()) yield break;
@@ -95,6 +92,7 @@ namespace Inferno
             
             if (ped.IsSafeExist())
             {
+                ped.SetNotChaosPed(false);
                 ped.IsInvincible = false;
             }
         }

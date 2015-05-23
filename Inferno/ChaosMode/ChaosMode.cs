@@ -50,7 +50,7 @@ namespace Inferno.ChaosMode
         protected override void Setup()
         {
             var chaosSettingLoader = new ChaosModeSettingLoader();
-            var chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"/scripts/chaosmode/default.conf");
+            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"./scripts/chaosmode/default.conf");
 
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
@@ -165,12 +165,9 @@ namespace Inferno.ChaosMode
                 ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
                 ped.SetPedShootRate(100);
                 ped.Accuracy = chaosModeSetting.ShootAccuracy;
-                ped.SetAlertness(0);
-                ped.SetCombatAbility(100);
-                ped.SetCombatRange(100);
-                ped.RegisterHatedTargetsAroundPed(100);
-                ped.SetFleeAttributes(0, 0);
-                ped.SetCombatAttributes(17, 1);
+                ped.SetCombatAbility(1000);
+                ped.SetCombatRange(1000);
+                ped.RegisterHatedTargetsAroundPed(500);
             }
 
             //以下ループ
@@ -243,6 +240,7 @@ namespace Inferno.ChaosMode
                 if(!target.IsSafeExist()) return;
 
                 ped.Task.ClearAll();
+                ped.TaskSetBlockingOfNonTemporaryEvents(true);
 
                 if (ped.IsInVehicle())
                 {
@@ -251,29 +249,27 @@ namespace Inferno.ChaosMode
                 }
                 else
                 {
-                    if (weaponProvider.IsProjectileWeapon(equipWeapon))
+                    if (chaosModeSetting.IsStupidShooting)
                     {
-                        ped.ThrowProjectile(target.Position);
-                    }
-                    else if (weaponProvider.IsShootWeapon(equipWeapon))
-                    {
-                        if (chaosModeSetting.IsStupidShooting)
+                        if (weaponProvider.IsProjectileWeapon(equipWeapon))
                         {
-                            //IsStupidShootingならその場で射撃する
+                            ped.ThrowProjectile(target.Position);
+                        }
+                        else if (weaponProvider.IsShootWeapon(equipWeapon))
+                        {
                             ped.Task.ShootAt(target, 10000);
                         }
                         else
                         {
-                            ped.Task.FightAgainst(target, 1000);
+                            ped.Task.FightAgainst(target, 60000);
                         }
                     }
                     else
                     {
-                        ped.Task.FightAgainst(target, 1000);
+                        ped.Task.FightAgainst(target, 60000);
                     }
                 }
                 ped.SetPedKeepTask(true);
-                ped.TaskSetBlockingOfNonTemporaryEvents(true);
             }
             catch (Exception e)
             {

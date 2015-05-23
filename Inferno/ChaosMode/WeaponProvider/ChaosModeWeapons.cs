@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
+using GTA.Native;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
@@ -30,8 +31,8 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.ASSAULTRIFLE,
                 Weapon.ASSAULTSHOTGUN,
                 Weapon.ASSAULTSMG,
-                Weapon.BLEEDING,
                 Weapon.BULLPUPSHOTGUN,
+                Weapon.BULLPURIFLE,
                 Weapon.CARBINERIFLE,
                 Weapon.COMBATMG,
                 Weapon.COMBATPISTOL,
@@ -40,10 +41,15 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.GRENADELAUNCHER,
                 Weapon.GRENADELAUNCHER_SMOKE,
                 Weapon.HEAVYSNIPER,
+                Weapon.HEAVYPISTOL,
+                Weapon.HEAVYSHOTGUN,
                 Weapon.FIREEXTINGUISHER,
+                Weapon.FIREWORK,
                 Weapon.MG,
                 Weapon.MICROSMG,
                 Weapon.MINIGUN,
+                Weapon.MUSCKET,
+                Weapon.MARKSMANRIFE,
                 Weapon.PISTOL,
                 Weapon.PISTOL50,
                 Weapon.PUMPSHOTGUN,
@@ -79,7 +85,8 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.MOLOTOV,
                 Weapon.STICKYBOMB,
                 Weapon.FLARE,
-                Weapon.SMOKEGRENADE
+                Weapon.SMOKEGRENADE,
+                Weapon.PROXIMITYMINE
             };
 
             //ドライブバイ

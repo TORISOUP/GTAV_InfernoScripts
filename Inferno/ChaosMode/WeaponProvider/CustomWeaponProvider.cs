@@ -40,7 +40,9 @@ namespace Inferno.ChaosMode.WeaponProvider
         /// <returns></returns>
         public Weapon GetRandomWeaponExcludeClosedWeapon()
         {
-            return CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)];
+            return CustomExcludeClosedWeapons.Length > 0 
+                ? CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)] 
+                : Weapon.UNARMED;
         }
 
         /// <summary>
@@ -49,7 +51,9 @@ namespace Inferno.ChaosMode.WeaponProvider
         /// <returns></returns>
         public Weapon GetRandomDriveByWeapon()
         {
-            return CustomDriveByWeapons[_random.Next(0, CustomDriveByWeapons.Length)];
+            return CustomDriveByWeapons.Length > 0
+                            ? CustomDriveByWeapons[_random.Next(0, CustomDriveByWeapons.Length)]
+                            : Weapon.UNARMED;
         }
 
         /// <summary>

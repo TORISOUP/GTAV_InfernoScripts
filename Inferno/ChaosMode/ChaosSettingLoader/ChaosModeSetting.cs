@@ -87,7 +87,6 @@ namespace Inferno.ChaosMode
 
         /// <summary>
         /// weaponlistから有効な武器のみを抽出する
-        /// weaponListが空の場合は全ての武器リストとして返す
         /// </summary>
         /// <param name="weaponList"></param>
         /// <returns></returns>
@@ -96,7 +95,7 @@ namespace Inferno.ChaosMode
             var allWeapons = ((Weapon[]) Enum.GetValues(typeof (Weapon)));
             if (weaponList == null || weaponList.Length == 0)
             {
-                return allWeapons;
+                return new Weapon[0];
             }
             var enableWeapons = allWeapons.Where(x => weaponList.Contains(x.ToString())).ToArray();
             return enableWeapons.Length > 0 ? enableWeapons : allWeapons;
