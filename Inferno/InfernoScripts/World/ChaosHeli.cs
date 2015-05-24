@@ -131,8 +131,7 @@ namespace Inferno.InfernoScripts.World
 
                     _HeliDrive = _Heli.CreateRandomPedAsDriver();
                     _HeliDrive.SetProofs(true, true, true, true, true, true, true, true);
-                    CreatePedIntoHeli(SpawnHeliPosition);
-                    _HeliDrive.SetNotChaosPed(true);
+                    _HeliDrive.SetNotChaosPed(true);      
                 }
             }
             catch (Exception ex)
@@ -162,9 +161,9 @@ namespace Inferno.InfernoScripts.World
         /// ヘリ内にランダムな市民作成と乗車
         /// </summary>
         /// <param name="playerPosition"></param>
-        private void CreatePedIntoHeli(GTA.Math.Vector3 playerPosition)
+        private void CreatePedIntoHeli(GTA.Math.Vector3 position)
         {
-            var ped = NativeFunctions.CreateRandomPed(playerPosition);
+            var ped = NativeFunctions.CreateRandomPed(position);
             ped.MarkAsNoLongerNeeded();
             ped.SetIntoVehicle(_Heli, GTA.VehicleSeat.Any);
             ped.SetNotChaosPed(false);
