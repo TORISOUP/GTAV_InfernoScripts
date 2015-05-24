@@ -9,12 +9,12 @@ namespace Inferno
 {
     public class DebugLogger
     {
-        private string logPath = @"InfernoScript.log";
-        private Encoding encoding;
-        public DebugLogger()
+        private readonly string _logPath;
+        private readonly Encoding _encoding;
+        public DebugLogger(string logPath)
         {
-  
-            encoding = Encoding.GetEncoding("Shift_JIS");
+            this._logPath = logPath;
+            _encoding = Encoding.GetEncoding("Shift_JIS");
         }
 
 
@@ -27,7 +27,7 @@ namespace Inferno
         {
             try
             {
-                using (var w = new StreamWriter(logPath, true, encoding))
+                using (var w = new StreamWriter(_logPath, true, _encoding))
                 {
                     w.WriteLineAsync(message);
                 }

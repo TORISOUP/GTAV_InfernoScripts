@@ -42,7 +42,7 @@ namespace Inferno
         {
             var playerPosition = this.GetPlayer().Position;
 
-            //プレイヤの50m上空100m以内の範囲に生成する
+            //プレイヤの50m上空に生成する
             var ped = NativeFunctions.CreateRandomPed(playerPosition + new Vector3(0, 0, 50).AroundRandom2D(50));
             
             if(!ped.IsSafeExist()) return;
@@ -65,17 +65,12 @@ namespace Inferno
         /// <returns></returns>
         IEnumerable<Object>  PedOnGroundedCheck(Ped ped)
         {
-            //カオスモードMODからカオス化させない
-        //    ped.SetNotChaosPed(true);
             //市民無敵化
             ped.IsInvincible = true;
-
+            ped.SetNotChaosPed(true);
             for (var i = 0; i < 10; i++)
             {
-                foreach (var t in WaitForSeconds(1.0f))
-                {
-                    yield return t;
-                }
+                yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
                 if(!ped.IsSafeExist()) yield break;
@@ -97,7 +92,7 @@ namespace Inferno
             
             if (ped.IsSafeExist())
             {
-            //    ped.SetNotChaosPed(false);
+                ped.SetNotChaosPed(false);
                 ped.IsInvincible = false;
             }
         }
