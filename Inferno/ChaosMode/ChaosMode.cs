@@ -147,10 +147,11 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
+            if (!ped.IsSafeExist()) yield break;
             var pedId = ped.Handle;
             
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
-            Weapon equipedWeapon = GiveWeaponTpPed(ped);
+            var equipedWeapon = GiveWeaponTpPed(ped);
 
             //ここでカオス化して良いか検査する
             if (!chaosChecker.IsPedChaosAvailable(ped))
@@ -162,13 +163,14 @@ namespace Inferno.ChaosMode
             {
                 ped.MaxHealth = 2000;
                 ped.Health = 2000;
-                ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
                 ped.SetPedShootRate(100);
                 ped.Accuracy = chaosModeSetting.ShootAccuracy;
                 ped.SetCombatAbility(1000);
                 ped.SetCombatRange(1000);
+                //攻撃を受けたら反撃する
                 ped.RegisterHatedTargetsAroundPed(500);
             }
+            ped.TaskSetBlockingOfNonTemporaryEvents(false);
 
             //以下ループ
             do
@@ -236,6 +238,7 @@ namespace Inferno.ChaosMode
         {
             try
             {
+                if(!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
                 if(!target.IsSafeExist()) return;
 
@@ -269,6 +272,7 @@ namespace Inferno.ChaosMode
                         ped.Task.FightAgainst(target, 60000);
                     }
                 }
+                ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
                 ped.SetPedKeepTask(true);
             }
             catch (Exception e)
