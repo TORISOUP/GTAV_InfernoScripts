@@ -162,13 +162,13 @@ namespace Inferno.ChaosMode
             {
                 ped.MaxHealth = 2000;
                 ped.Health = 2000;
-                ped.SetPedFiringPattern((int) FiringPattern.FullAuto);
                 ped.SetPedShootRate(100);
                 ped.Accuracy = chaosModeSetting.ShootAccuracy;
                 ped.SetCombatAbility(1000);
                 ped.SetCombatRange(1000);
                 ped.RegisterHatedTargetsAroundPed(500);
             }
+            ped.TaskSetBlockingOfNonTemporaryEvents(false);
 
             //以下ループ
             do
@@ -269,6 +269,7 @@ namespace Inferno.ChaosMode
                         ped.Task.FightAgainst(target, 60000);
                     }
                 }
+                ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
                 ped.SetPedKeepTask(true);
             }
             catch (Exception e)
