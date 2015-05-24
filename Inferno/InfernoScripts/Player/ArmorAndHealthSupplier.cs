@@ -40,16 +40,22 @@ namespace Inferno
 
             OnTickAsObservable
                 .Where(_ => isActive)
-                .Subscribe(_ => 
+                .Subscribe(_ =>
                     {
                         var player = this.GetPlayer();
 
                         if (player.IsSafeExist())
                         {
-                            if (CheckSupplyFlag()) { supplyFlag = true; }
+                            if (CheckSupplyFlag())
+                            {
+                                supplyFlag = true;
+                                if (!isSuppliedOnMission) { isSuppliedOnMission = true; }
+                            }
                             if ((supplyFlag && player.IsAlive)) { SupplyArmorAndHealth(); }
-                        }                        
-                    });                  
+                        }
+                    });
+
+
         }
         
         /// <summary>
@@ -58,18 +64,14 @@ namespace Inferno
         private bool CheckSupplyFlag()
         {
             var player = this.GetPlayer();
-            var missionFlag = GetMissionFlag();
 
-            if (!missionFlag) { isSuppliedOnMission = false; }
-
-            if (!player.IsAlive)
+            if (player.IsSafeExist() && !player.IsAlive)
             {
                 return true;
             }
 
-            if (missionFlag && !isSuppliedOnMission)
+            if (GetMissionFlag() && !isSuppliedOnMission)
             {
-                isSuppliedOnMission = true; 
                 return true;
             }
             return false;
