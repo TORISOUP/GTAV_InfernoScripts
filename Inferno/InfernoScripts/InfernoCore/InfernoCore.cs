@@ -89,7 +89,7 @@ namespace Inferno
         {
             Instance = this;
             coroutineSystem = new CoroutineSystem();
-            _debugLogger = new DebugLogger();
+            _debugLogger = new DebugLogger(@"InfernoScript.log");
 
             //100ms周期でイベントを飛ばす
             Interval = 100;

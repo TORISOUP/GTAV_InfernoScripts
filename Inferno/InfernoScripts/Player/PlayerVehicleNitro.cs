@@ -39,7 +39,14 @@ namespace Inferno
             var driver = this.GetPlayer();
             var vehicle = this.GetPlayerVehicle();
             if (!vehicle.IsSafeExist()) { return;}
-            vehicle.Speed += 50;
+            if (this.IsGamePadPressed(GameKey.Stealth))
+            {
+                vehicle.Speed -= 50;
+            }
+            else
+            {
+                vehicle.Speed += 50;
+            }
 
             NitroAction(driver, vehicle);
         }
@@ -91,6 +98,7 @@ namespace Inferno
             yield return WaitForSeconds(7);
 
             _isNitroOk = true;
+            DrawText("Nitro:OK", 2.0f);
         }
 
 

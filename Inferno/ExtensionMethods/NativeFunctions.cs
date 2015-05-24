@@ -316,6 +316,20 @@ namespace Inferno
             Function.Call(Hash.TASK_COMBAT_PED, ped, target, unk1, unk2);
         }
 
+        public static void TaskSetBlockingOfNonTemporaryEvents(this Ped ped, bool isBlocking)
+        {
+            Function.Call(Hash.TASK_SET_BLOCKING_OF_NON_TEMPORARY_EVENTS, ped, isBlocking);
+        }
+
+        public static void SetFleeAttributes(this Ped ped, int unk1, int unk2)
+        {
+            Function.Call(Hash.SET_PED_FLEE_ATTRIBUTES, ped, unk1, unk2);
+        }
+
+        public static void SetCombatAttributes(this Ped ped, int unk1, int unk2)
+        {
+            Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped, unk1, unk2);
+        }
 
         /// <summary>
         /// 市民をランダムに生成する
