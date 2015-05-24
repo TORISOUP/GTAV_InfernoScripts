@@ -42,8 +42,10 @@ namespace Inferno
         {
             var playerPosition = this.GetPlayer().Position;
 
-            //プレイヤの50m上空に生成する
-            var ped = NativeFunctions.CreateRandomPed(playerPosition + new Vector3(0, 0, 50).AroundRandom2D(50));
+            var velocity = this.GetPlayer().Velocity;
+            //プレイヤが移動中ならその進行先に生成する
+            var ped =
+                NativeFunctions.CreateRandomPed(playerPosition + 3*velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
             
             if(!ped.IsSafeExist()) return;
 
