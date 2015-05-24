@@ -47,12 +47,12 @@ namespace Inferno.InfernoScripts.World
                 .Where(_ => _isActive)
                 .Subscribe(_ => MoveHeli());
 
-            //40秒ごとにヘリが壊れてないかor離れすぎてないかを調べる
+            //40秒ごとにヘリが墜落or離れすぎてないかを調べる
             CreateTickAsObservable(40000)
                 .Where(_ => _isActive)
                 .Subscribe(_ =>
                 {
-                    if (!_Heli.IsSafeExist() || _Heli.IsDead)
+                if (!_Heli.IsSafeExist() || _Heli.IsDead || !_Heli.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist())
                     {
                         ReSpawnHeli();
                     }
