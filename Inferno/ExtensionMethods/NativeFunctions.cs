@@ -204,6 +204,16 @@ namespace Inferno
         }
 
         /// <summary>
+        /// ヘリからラペリング降下させる
+        /// </summary>
+        /// <param name="ped"></param>
+        public static void TaskRappelFromHeli(this Ped ped)
+        {
+            Function.Call(Hash.TASK_RAPPEL_FROM_HELI, ped, 10.0f);
+
+        }
+
+        /// <summary>
         /// 市民を車にワープ
         /// </summary>
         /// <param name="ped"></param>
