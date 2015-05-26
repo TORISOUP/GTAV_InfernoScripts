@@ -470,11 +470,11 @@ namespace Inferno
             Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, new InputArgument[] {ped});
         }
 
-        public static void SetToRagdDoll(this Ped ped, float forceX = 0, float forceY = 0, float forceZ = 0)
+        public static void SetToRagdoll(this Ped ped, int time1 = 0, int ragdollType = 0, int time2 = 0)
         {
             Function.Call(Hash.SET_PED_TO_RAGDOLL, new InputArgument[]
             {
-                ped, forceX, forceY, forceZ, true, true, true
+                ped, time1, time2, ragdollType, true, true, true
             });
         }
 
