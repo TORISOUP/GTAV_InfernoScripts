@@ -13,10 +13,11 @@ using GTA.Native;
 namespace Inferno
 {
     /// <summary>
-    /// プレイヤーの強制ラグドール状態化
+    /// プレイヤーの強制ラグドール状態化(脱力)
     /// </summary>
     public class PlayerRagdoll : InfernoScript
-    { 
+    {
+        bool ragdollFlag = false;
         protected override int TickInterval
         {
             get { return 50; }
@@ -24,38 +25,40 @@ namespace Inferno
 
         protected override void Setup()
         {
-
             OnTickAsObservable
                     .Where(_ => this.GetPlayer().IsSafeExist())
                     .Select(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                    .DistinctUntilChanged()
                     .Subscribe(flag =>
                     {
                         var playerChar = Game.Player;
- 
+
                         if (flag)
                         {
                             SetPlayerRagdoll(playerChar);
                         }
                         else
                         {
-                            UnSetPlayerRagdoll(playerChar);
+                            if (ragdollFlag) { UnSetPlayerRagdoll(playerChar); }
                         }
                     });
+
         }
 
         void SetPlayerRagdoll(Player PlayerChar)
         {
             var player = PlayerChar.Character;
+            ragdollFlag = true;
 
             player.CanRagdoll = true;
             PlayerChar.CanControlRagdoll = true;          
-            player.SetToRagdDoll(0, 0, 0);           
+            PlayerChar.CanControlCharacter = true;
+            player.SetToRagdoll(1000000); //時間指定しないとブルブル動く
         }
 
         void UnSetPlayerRagdoll(Player PlayerChar)
         {
             var player = PlayerChar.Character;
+            ragdollFlag = false;
 
             player.CanRagdoll = false;
             PlayerChar.CanControlRagdoll = false;
