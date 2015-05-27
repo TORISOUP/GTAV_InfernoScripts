@@ -35,10 +35,15 @@ namespace Inferno
                         if (flag)
                         {
                             SetPlayerRagdoll(playerChar);
+                            ragdollFlag = true;
                         }
                         else
                         {
-                            if (ragdollFlag) { UnSetPlayerRagdoll(playerChar); }
+                            if (ragdollFlag)
+                            {
+                                UnSetPlayerRagdoll(playerChar);
+                                ragdollFlag = false;
+                            }
                         }
                     });
 
@@ -47,7 +52,6 @@ namespace Inferno
         void SetPlayerRagdoll(Player PlayerChar)
         {
             var player = PlayerChar.Character;
-            ragdollFlag = true;
 
             player.CanRagdoll = true;
             PlayerChar.CanControlRagdoll = true;          
@@ -58,7 +62,6 @@ namespace Inferno
         void UnSetPlayerRagdoll(Player PlayerChar)
         {
             var player = PlayerChar.Character;
-            ragdollFlag = false;
 
             player.CanRagdoll = false;
             PlayerChar.CanControlRagdoll = false;
