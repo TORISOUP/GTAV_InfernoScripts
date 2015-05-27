@@ -17,10 +17,14 @@ namespace Inferno.InfernoScripts.World
         private Vehicle _Heli = null;
         private Ped _HeliDrive = null;
 
+        /// <summary>
+        /// ラぺリング降下関連のコルーチン
+        /// </summary>
+        private HashSet<int> chaosHeliIntoPedList = new HashSet<int>();
         private List<uint> coroutineIds = new List<uint>();
 
         //ヘリのドライバー以外の座席
-        private readonly List<VehicleSeat> vehicleSeat = new List<VehicleSeat> { VehicleSeat.LeftRear, VehicleSeat.RightRear };
+        private readonly List<VehicleSeat> vehicleSeat = new List<VehicleSeat> { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
 
         protected override void Setup()
         {
@@ -28,6 +32,7 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     _isActive = !_isActive;
+                    chaosHeliIntoPedList.Clear();
                     StopAllChaosHeliCoroutine();
                     DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
                     if (_isActive){
@@ -40,8 +45,9 @@ namespace Inferno.InfernoScripts.World
             OnAllOnCommandObservable
                 .Subscribe(_ =>
                 {
-                    _isActive = true;
+                    _isActive = true; 
                     if (!_Heli.IsSafeExist()){
+                        chaosHeliIntoPedList.Clear();
                         SpawnHeli();
                     }
                 });
@@ -94,9 +100,10 @@ namespace Inferno.InfernoScripts.World
                 //座席にいる市民取得
                 var ped = _Heli.GetPedOnSeat(seat);
 
-                if (ped.IsSafeExist())
+                if (ped.IsSafeExist() && !chaosHeliIntoPedList.Contains(ped.Handle))
                 {
                     //ラペリング降下のコルーチン
+                    chaosHeliIntoPedList.Add(ped.Handle);
                     var id = StartCoroutine(PassengerRapeling(ped));
                     coroutineIds.Add(id);
                 }
@@ -134,29 +141,32 @@ namespace Inferno.InfernoScripts.World
 
             if (Random.Next(0, 100) > 5) yield break;
 
+            var pedId = ped.Handle;
+
             //プレイヤーの位置取得
             var playerPosition = this.GetPlayer().Position;
 
-            if (_Heli.IsInRangeOf(playerPosition, 30.0f))
-            {
-                ped.TaskRappelFromHeli();
-            }
-            else
-            {
-                
-                yield break;
-            }
-
+            //一定時間降下するのを見守る
             for (var i = 0; i < 20; i++)
             {
                 yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
-                if (!ped.IsSafeExist()) yield break;
-                if (ped.IsDead) yield break;
+                if (!ped.IsSafeExist()) break;
+                if (ped.IsDead) break;
 
                 //着地していたら監視終了
                 if (!ped.IsInAir)
+                {
+                    break;
+                }
+
+                //プレイヤーの近くなら降下させる
+                if (_Heli.IsInRangeOf(playerPosition, 30.0f))
+                {
+                    ped.TaskRappelFromHeli();
+                }
+                else
                 {
                     break;
                 }
@@ -167,6 +177,8 @@ namespace Inferno.InfernoScripts.World
             {
                 ped.MarkAsNoLongerNeeded();
             }
+
+            chaosHeliIntoPedList.Remove(pedId);
 
         }
 
@@ -229,16 +241,30 @@ namespace Inferno.InfernoScripts.World
         }
 
         /// <summary>
-        /// ヘリとドライバーの開放
+        /// ヘリとドライバーと同乗者の開放
         /// </summary>
         private void ReleasePedAndHeli()
         {
             if (_Heli.IsSafeExist())
             {
+                //ヘリの解放前に座席に座っている市民を解放する
+                foreach (var seat in vehicleSeat)
+                {
+                    //座席にいる市民取得
+                    var ped = _Heli.GetPedOnSeat(seat);
+                    if (ped.IsSafeExist())
+                    {
+                        ped.MarkAsNoLongerNeeded();
+                    }
+                }
+                //ヘリ解放
                 _Heli.MarkAsNoLongerNeeded();
             }
             if (_HeliDrive.IsSafeExist())
             {
+                //無敵化解除
+                _HeliDrive.SetProofs(false, false, false, false, false, false, false, false);
+                //ヘリのドライバー解放
                 _HeliDrive.MarkAsNoLongerNeeded();
             }
             _Heli = null;
