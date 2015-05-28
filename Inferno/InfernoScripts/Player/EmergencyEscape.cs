@@ -38,7 +38,7 @@ namespace Inferno
 
             player.ClearTasksImmediately();
             player.Position += new Vector3(0,0,0.5f);
-            player.SetToRagdDoll(Random.Next(-5000, 5000), Random.Next(-5000, 5000), Random.Next(-5000, 5000));
+            player.SetToRagdoll();
             player.ApplyForce(new Vector3(0, 0, 8.0f));
             
         }

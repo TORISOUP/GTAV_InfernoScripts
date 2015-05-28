@@ -59,6 +59,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.SNIPERRIFLE,
                 Weapon.STINGER,
                 Weapon.STUNGUN,
+                Weapon.PETROLCAN,
             };
 
             //近距離系
@@ -72,7 +73,6 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.GOLFCLUB,
                 Weapon.KNIFE,
                 Weapon.NIGHTSTICK,
-                Weapon.PETROLCAN,
 
             };
 
