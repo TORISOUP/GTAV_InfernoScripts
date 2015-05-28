@@ -13,8 +13,6 @@ namespace Inferno
 {
     internal class Meteo : InfernoScript
     {
-
-        private int _rpgHash;
         private bool _isActive = false;
         private List<Vector3> meteoLightPositionList = new List<Vector3>();
         /// <summary>
@@ -31,11 +29,10 @@ namespace Inferno
 
         private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
-        protected override int TickInterval => 3000;
+        protected override int TickInterval => 2500;
 
         protected override void Setup()
         {
-            _rpgHash = (int) Weapon.RPG;
 
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
@@ -82,18 +79,21 @@ namespace Inferno
                     addPosition *= Random.Next(10, 30);
                 }
 
-                var targetPosition = playerPosition + addPosition; 
+                var targetPosition = playerPosition + addPosition;
+                var direction = new Vector3(1,0,2);
+                direction.Normalize();
+                var createPosition = targetPosition + direction*100;
 
-                var createPosition = targetPosition + new Vector3(50, 0, 100);
-               
+                //たまに花火
+                var weapon = Random.Next(0, 100) < 3 ? (int)Weapon.FIREWORK : (int)Weapon.RPG;
 
                 var ped = NativeFunctions.CreateRandomPed(createPosition);
                 if(!ped.IsSafeExist()) return;
                 ped.MarkAsNoLongerNeeded();
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.SetNotChaosPed(true);
-                ped.GiveWeapon(_rpgHash, 1000); //指定武器所持
-                ped.EquipWeapon(_rpgHash); //武器装備
+                ped.GiveWeapon(weapon, 1000); //指定武器所持
+                ped.EquipWeapon(weapon); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
     
