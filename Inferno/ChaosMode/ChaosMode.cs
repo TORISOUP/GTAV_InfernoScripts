@@ -161,17 +161,8 @@ namespace Inferno.ChaosMode
 
             if (!ped.IsRequiredForMission())
             {
-                ped.MaxHealth = 2000;
-                ped.Health = 2000;
-                ped.SetPedShootRate(100);
-                ped.Accuracy = chaosModeSetting.ShootAccuracy;
-                ped.SetCombatAbility(1000);
-                ped.SetCombatRange(1000);
-                //攻撃を受けたら反撃する
-                ped.RegisterHatedTargetsAroundPed(500);
+                SetPedStatus(ped);
             }
-            ped.TaskSetBlockingOfNonTemporaryEvents(false);
-
             //以下ループ
             do
             {
@@ -229,6 +220,28 @@ namespace Inferno.ChaosMode
             return nearPeds[randomindex];
         }
 
+        private void SetPedStatus(Ped ped)
+        {
+            //FIBミッションからのコピペ（詳細不明）
+            ped.SetCombatAttributes(9,0);
+            ped.SetCombatAttributes(1, 0);
+            ped.SetCombatAttributes(3, 1);
+            ped.SetCombatAttributes(29, 1);
+
+            ped.MaxHealth = 2000;
+            ped.Health = 2000;
+            ped.SetPedShootRate(100);
+            ped.Accuracy = chaosModeSetting.ShootAccuracy;
+            //戦闘能力？
+            ped.SetCombatAbility(1000);
+            //戦闘範囲
+            ped.SetCombatRange(1000);
+            //攻撃を受けたら反撃する
+            ped.RegisterHatedTargetsAroundPed(500);
+            //タスクを中断しない
+            ped.TaskSetBlockingOfNonTemporaryEvents(false);
+        }
+
         /// <summary>
         /// 市民を暴徒化する
         /// </summary>
@@ -243,7 +256,8 @@ namespace Inferno.ChaosMode
                 if(!target.IsSafeExist()) return;
 
                 ped.Task.ClearAll();
-                ped.TaskSetBlockingOfNonTemporaryEvents(true);
+                ped.TaskSetBlockingOfNonTemporaryEvents(false);
+                ped.SetPedKeepTask(true);
 
                 if (ped.IsInVehicle())
                 {
@@ -282,6 +296,7 @@ namespace Inferno.ChaosMode
             }
         }
 
+      
 
         /// <summary>
         /// 市民に武器をもたせる
