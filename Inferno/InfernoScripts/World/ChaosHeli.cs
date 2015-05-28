@@ -15,7 +15,7 @@ namespace Inferno.InfernoScripts.World
 
         private bool _isActive = false;
         private Vehicle _Heli = null;
-        private Ped _HeliDrive = null;
+        private Ped _heliDriver = null;
 
         /// <summary>
         /// ラぺリング降下関連のコルーチン
@@ -53,10 +53,7 @@ namespace Inferno.InfernoScripts.World
                 });
 
             //ヘリの各種処理
-            CreateTickAsObservable(500)
-                .Where(_ => _isActive)
-                .Subscribe(_ => ChaosHeliTasks());
-
+            StartCoroutine(ChaosHeliTasks());
 
             //40秒ごとにヘリが墜落or離れすぎてないかを調べる
             CreateTickAsObservable(40000)
@@ -90,22 +87,25 @@ namespace Inferno.InfernoScripts.World
                     .Subscribe(_ => ReSpawnHeli());
         }
 
-        private void ChaosHeliTasks()
+        private IEnumerable<Object> ChaosHeliTasks()
         {
-            MoveHeli();
-            ReSpawnPassenger();
-            foreach (var seat in vehicleSeat)
+            while (true)
             {
-
-                //座席にいる市民取得
-                var ped = _Heli.GetPedOnSeat(seat);
-
-                if (ped.IsSafeExist() && !chaosHeliIntoPedList.Contains(ped.Handle))
+                yield return WaitForSeconds(1);
+                if (!_isActive) continue;
+                if (_Heli.IsSafeExist() && _Heli.IsAlive) continue;
+                MoveHeli();
+                ReSpawnPassenger();
+                //各座席ごとの処理
+                foreach(var seat in vehicleSeat)
                 {
-                    //ラペリング降下のコルーチン
-                    chaosHeliIntoPedList.Add(ped.Handle);
-                    var id = StartCoroutine(PassengerRapeling(ped));
-                    coroutineIds.Add(id);
+                    //座席にいる市民取得
+                    var ped = _Heli.GetPedOnSeat(seat);
+
+                    if (ped.IsSafeExist()) {
+                        var id = StartCoroutine(PassengerRapeling(ped));
+                        coroutineIds.Add(id);
+                    }
                 }
             }
         }
@@ -116,11 +116,11 @@ namespace Inferno.InfernoScripts.World
         private void MoveHeli(){
             try
             {
-                if (_Heli.IsSafeExist() && _Heli.IsAlive && _HeliDrive.IsAlive)
+                if (_heliDriver.IsAlive)
                 {
                     var player = this.GetPlayer();
                     var playerPosition = player.Position;
-                    _Heli.DriveTo(_HeliDrive, playerPosition, 100.0f);
+                    _Heli.DriveTo(_heliDriver, playerPosition, 100.0f);
                 }
             }
             catch (Exception ex)
@@ -219,20 +219,18 @@ namespace Inferno.InfernoScripts.World
                 var SpawnHeliPosition = playerPosition;
                 SpawnHeliPosition.Z += 40.0f;
                 _Heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, SpawnHeliPosition);
-                if (_Heli.IsSafeExist())
-                {
+                if (!_Heli.IsSafeExist()) return;
                     _Heli.SetProofs(false, false, true, true, false, false, false, false);
                     _Heli.MaxHealth = 3000;
                     _Heli.Health = 3000;
 
-                    _HeliDrive = _Heli.CreateRandomPedAsDriver();
-                    _HeliDrive.SetProofs(true, true, true, true, true, true, true, true);
-                    _HeliDrive.SetNotChaosPed(true);
+                    _heliDriver = _Heli.CreateRandomPedAsDriver();
+                    _heliDriver.SetProofs(true, true, true, true, true, true, true, true);
+                    _heliDriver.SetNotChaosPed(true);
 
                     CreatePassenger(VehicleSeat.Passenger);
                     CreatePassenger(VehicleSeat.LeftRear);
                     CreatePassenger(VehicleSeat.RightRear);
-                }
             }
             catch (Exception ex)
             {
@@ -260,15 +258,15 @@ namespace Inferno.InfernoScripts.World
                 //ヘリ解放
                 _Heli.MarkAsNoLongerNeeded();
             }
-            if (_HeliDrive.IsSafeExist())
+            if (_heliDriver.IsSafeExist())
             {
                 //無敵化解除
-                _HeliDrive.SetProofs(false, false, false, false, false, false, false, false);
+                _heliDriver.SetProofs(false, false, false, false, false, false, false, false);
                 //ヘリのドライバー解放
-                _HeliDrive.MarkAsNoLongerNeeded();
+                _heliDriver.MarkAsNoLongerNeeded();
             }
             _Heli = null;
-            _HeliDrive = null;
+            _heliDriver = null;
         }
 
         /// <summary>
