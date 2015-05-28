@@ -12,7 +12,6 @@ namespace Inferno
 {
     class ArmorAndHealthSupplier : InfernoScript
     {
-        bool hasPlayerWasted = false; 
         bool isActive = false;
 
         /// <summary>
@@ -39,25 +38,11 @@ namespace Inferno
                 .Where(_ => isActive)
                 .Select(_ => this.GetPlayer())
                 .Where(p => p.IsSafeExist())
-                .Select(p => p.IsDead)
+                .Select(p => GetMissionFlag() || p.IsAlive)
                 .DistinctUntilChanged()
-                .Subscribe(flag =>
-                {
-                    if  (flag) { hasPlayerWasted = true; }
-                });
-
-            OnTickAsObservable
-                .Where(_ => isActive)
-                .Select(_ => this.GetPlayer())
-                .Where(p => p.IsSafeExist())
-                .Select(p => GetMissionFlag() || (p.IsAlive && hasPlayerWasted))
-                .DistinctUntilChanged()
+                .Skip(1) //ONにした時の判定は無視する
                 .Where(flag => flag)
-                .Subscribe(_ =>
-                {
-                    SupplyArmorAndHealth();
-                    hasPlayerWasted = false;
-                });
+                .Subscribe(_ => SupplyArmorAndHealth());
         }
         
         /// <summary>
