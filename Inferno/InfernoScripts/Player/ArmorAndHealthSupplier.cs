@@ -38,6 +38,7 @@ namespace Inferno
             OnTickAsObservable
                 .Where(_ => _isActive)
                 .Select(_ => GetMissionFlag())
+                .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealth());
 
