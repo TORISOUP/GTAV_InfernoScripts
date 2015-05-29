@@ -12,7 +12,7 @@ namespace Inferno
 {
     class ArmorAndHealthSupplier : InfernoScript
     {
-        bool isActive = false;
+        bool _isActive = false;
 
         /// <summary>
         /// 0.1秒間隔
@@ -28,20 +28,26 @@ namespace Inferno
             CreateInputKeywordAsObservable("armor")
                 .Subscribe(_ =>
                 {
-                    isActive = !isActive;
-                    DrawText("SupplyArmorAndHealth:" + isActive, 3.0f);
+                    _isActive = !_isActive;
+                    DrawText("SupplyArmorAndHealth:" + _isActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
+            //ミッションが始まった時
             OnTickAsObservable
-                .Where(_ => isActive)
-                .Select(_ => this.GetPlayer())
-                .Where(p => p.IsSafeExist())
-                .Select(p => GetMissionFlag() || p.IsAlive)
+                .Where(_ => _isActive)
+                .Select(_ => GetMissionFlag())
+                .Where(x => x)
+                .Subscribe(_ => SupplyArmorAndHealth());
+
+            //プレイヤが復活した時
+            OnTickAsObservable
+                .Where(_ => _isActive && this.GetPlayer().IsSafeExist())
+                .Select(_ => this.GetPlayer().IsAlive)
                 .DistinctUntilChanged()
-                .Skip(1) //ONにした時の判定は無視する
-                .Where(flag => flag)
+                .Skip(1) //ONにした直後の判定結果は無視
+                .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealth());
         }
         
@@ -67,9 +73,7 @@ namespace Inferno
         /// (Player.IsOnMissionはミッションを始められる状態かどうかの判定)
         public bool GetMissionFlag()
         {
-            var _missionFlag = Function.Call<int>(Hash.GET_MISSION_FLAG);
-            if (_missionFlag != 0) { return true; }
-            else { return false; }
+            return Function.Call<int>(Hash.GET_MISSION_FLAG) != 0;
         }
     }
 }
