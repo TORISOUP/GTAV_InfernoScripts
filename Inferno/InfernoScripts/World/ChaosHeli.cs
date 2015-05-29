@@ -31,7 +31,7 @@ namespace Inferno.InfernoScripts.World
                     StopAllChaosHeliCoroutine();
                     DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
                     if (_isActive){
-                        SpawnHeli();
+                        CreateChaosHeli();
                     }else{
                         ReleasePedAndHeli();
                     }
@@ -42,68 +42,64 @@ namespace Inferno.InfernoScripts.World
                 {
                     _isActive = true; 
                     if (!_Heli.IsSafeExist()){
-                        SpawnHeli();
+                        CreateChaosHeli();
                     }
                 });
 
-            //40秒ごとにヘリが墜落or離れすぎてないかを調べる
-            CreateTickAsObservable(40000)
-                .Where(_ => _isActive)
+            //ヘリのリセット処理
+            var onPlayerRevivalAsObservable = CreateTickAsObservable(2000)
+             .Select(_ => this.GetPlayer())
+             .Where(p => p.IsSafeExist() && _isActive)
+             .Select(p => p.IsAlive)
+             .DistinctUntilChanged()
+             .Where(isAlive => isAlive);
+
+            var intervalCheck = CreateTickAsObservable(40000).Where(_ => _isActive);
+
+            intervalCheck 
+                .Merge(onPlayerRevivalAsObservable.Select(_ => System.Reactive.Unit.Default))
                 .Subscribe(_ =>
                 {
-                    if (!_Heli.IsSafeExist() || _Heli.IsDead || !_Heli.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist())
+                    var player = this.GetPlayer();
+                    var playerPosition = player.Position;
+                    if (_Heli.IsDead || !_Heli.IsInRangeOf(player.Position, 200.0f))
                     {
-                        ReSpawnHeli();
-                    }
-                    else
-                    {
-                        var player = this.GetPlayer();
-                        var playerPosition = player.Position;
-                        //離れ過ぎてたら生成し直し
-                        if (!_Heli.IsInRangeOf(player.Position, 200.0f))
-                        {
-                            _Heli.PetrolTankHealth = -1.0f;
-                            ReSpawnHeli();
-                        }
+                        ResetHeli();
                     }
                 });
-
-            //病院から復活したらヘリ再生成
-            CreateTickAsObservable(2000)
-                .Select(_ => this.GetPlayer())
-                .Where(p => p.IsSafeExist() && _isActive)
-                .Select(p => p.IsAlive)
-                .DistinctUntilChanged()
-                .Where(isAlive => isAlive)
-                .Subscribe(_ => ReSpawnHeli());
-
-            //ヘリの各種処理
-            CreateTickAsObservable(500)
-                .Select(p => _isActive)
-                .DistinctUntilChanged()
-                .Where(_isActive => _isActive)
-                .Subscribe(_ => StartCoroutine(ChaosHeliTasks()));
-
-
         }
 
-        private IEnumerable<Object> ChaosHeliTasks()
+        private IEnumerable<Object> ChaosHeliCoroutine()
         {
-            if (!_isActive) yield break;
-
-            if (!_Heli.IsSafeExist() || !_Heli.IsAlive) yield break;
-
-            MoveHeli();
-            ReSpawnPassenger();
-            //各座席ごとの処理
-            foreach(var seat in vehicleSeat)
+            //ヘリが存在かつMODが有効の間回り続けるコルーチン
+            while (true)
             {
-                //座席にいる市民取得
-                var ped = _Heli.GetPedOnSeat(seat);
+                if (!_isActive) yield break;
 
-                //ラペリング降下のコルーチン
-                var id = StartCoroutine(PassengerRapeling(ped));
-                coroutineIds.Add(id);
+                if (!_Heli.IsSafeExist() || _Heli.IsDead) yield break;
+
+                MoveHeli();
+                SpawnPassengersToEmptySeat();
+
+                //プレイヤーの位置取得
+                var playerPosition = this.GetPlayer().Position;
+
+                //各座席ごとの処理
+                foreach (var seat in vehicleSeat)
+                {
+                    //座席にいる市民取得
+                    var ped = _Heli.GetPedOnSeat(seat);
+
+                    //ラペリング降下の判定
+                    if (seat != VehicleSeat.Passenger && ped.IsSafeExist() && _Heli.IsSafeExist() && Random.Next(0, 100) > 5 && _Heli.IsInRangeOf(playerPosition, 30.0f))
+                    {
+                        //ラペリング降下のコルーチン
+                        var id = StartCoroutine(PassengerRapeling(ped));
+                        coroutineIds.Add(id);
+                    }
+                }
+
+                yield return WaitForSeconds(1);
             }
         }
 
@@ -133,25 +129,8 @@ namespace Inferno.InfernoScripts.World
         /// <returns></returns>
         private IEnumerable<Object> PassengerRapeling(Ped ped)
         {
-            if (!ped.IsSafeExist()) yield break;
-            if (!_Heli.IsSafeExist()) yield break;
-
-            if (Random.Next(0, 100) > 5) yield break;
-
-            var pedId = ped.Handle;
-
-            //プレイヤーの位置取得
-            var playerPosition = this.GetPlayer().Position;
-
-            //プレイヤーの近くなら降下させる
-            if (_Heli.IsInRangeOf(playerPosition, 30.0f))
-            {
-                ped.TaskRappelFromHeli();
-            }
-            else
-            {
-                yield break;
-            }
+            //ラペリング降下させる
+            ped.TaskRappelFromHeli();
 
             //一定時間降下するのを見守る
             for (var i = 0; i < 20; i++)
@@ -176,24 +155,24 @@ namespace Inferno.InfernoScripts.World
         }
 
         /// <summary>
-        /// ヘリの再生成
+        /// ヘリのリセット
         /// </summary>
-        private void ReSpawnHeli()
+        private void ResetHeli()
         {
             StopAllChaosHeliCoroutine();
             ReleasePedAndHeli();
-            SpawnHeli();
+            CreateChaosHeli();
         }
 
         /// <summary>
-        /// 同乗者再生成
+        /// 同乗者生成
         /// </summary>
-        private void ReSpawnPassenger()
+        private void SpawnPassengersToEmptySeat()
         {
             foreach (var seat in vehicleSeat)
             {
-                //座席に誰もいなかったら市民再生成
-                if (_Heli.IsSeatFree(seat))
+                //ヘリが存在し座席に誰もいなかったら市民再生成
+                if (_Heli.IsSafeExist() && _Heli.IsSeatFree(seat))
                 {
                     CreatePassenger(seat);
                 }
@@ -201,9 +180,9 @@ namespace Inferno.InfernoScripts.World
         }
 
         /// <summary>
-        /// ヘリ召喚
+        /// カオスヘリ生成
         /// </summary>
-        private void SpawnHeli()
+        private void CreateChaosHeli()
         {
             try
             {
@@ -221,9 +200,11 @@ namespace Inferno.InfernoScripts.World
                 _heliDriver.SetProofs(true, true, true, true, true, true, true, true);
                 _heliDriver.SetNotChaosPed(true);
 
-                CreatePassenger(VehicleSeat.Passenger);
-                CreatePassenger(VehicleSeat.LeftRear);
-                CreatePassenger(VehicleSeat.RightRear);
+                SpawnPassengersToEmptySeat();
+
+                //カオスヘリのコルーチン開始
+                var id = StartCoroutine(ChaosHeliCoroutine());
+                coroutineIds.Add(id);
 
             }
             catch (Exception ex)
