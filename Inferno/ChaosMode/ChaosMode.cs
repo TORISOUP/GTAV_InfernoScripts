@@ -161,17 +161,8 @@ namespace Inferno.ChaosMode
 
             if (!ped.IsRequiredForMission())
             {
-                ped.MaxHealth = 2000;
-                ped.Health = 2000;
-                ped.SetPedShootRate(100);
-                ped.Accuracy = chaosModeSetting.ShootAccuracy;
-                ped.SetCombatAbility(1000);
-                ped.SetCombatRange(1000);
-                //攻撃を受けたら反撃する
-                ped.RegisterHatedTargetsAroundPed(500);
+                SetPedStatus(ped);
             }
-            ped.TaskSetBlockingOfNonTemporaryEvents(false);
-
             //以下ループ
             do
             {
@@ -215,18 +206,40 @@ namespace Inferno.ChaosMode
                 return this.GetPlayer();
             }
 
-            //周辺市民からランダムに選ぶ
-            var nearPeds =
-                cachedPedForChaos.Concat(new Ped[] { this.GetPlayer() }).Where(
-                    x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && (ped.Position - x.Position).Length() < 50)
+            //100m以内の市民
+            var aroundPeds =
+                cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
+                    x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
+                    
+            //100m以内の市民のうち、より近い人を3人選出
+            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(3).ToArray();
 
-            if (nearPeds.Length == 0)
-            {
-                return null;
-            }
+            if (nearPeds.Length == 0) return null;
             var randomindex = Random.Next(nearPeds.Length);
             return nearPeds[randomindex];
+        }
+
+        private void SetPedStatus(Ped ped)
+        {
+            //FIBミッションからのコピペ（詳細不明）
+            ped.SetCombatAttributes(9,0);
+            ped.SetCombatAttributes(1, 0);
+            ped.SetCombatAttributes(3, 1);
+            ped.SetCombatAttributes(29, 1);
+
+            ped.MaxHealth = 2000;
+            ped.Health = 2000;
+            ped.SetPedShootRate(100);
+            ped.Accuracy = chaosModeSetting.ShootAccuracy;
+            //戦闘能力？
+            ped.SetCombatAbility(1000);
+            //戦闘範囲
+            ped.SetCombatRange(1000);
+            //攻撃を受けたら反撃する
+            ped.RegisterHatedTargetsAroundPed(500);
+            //タスクを中断しない
+            ped.TaskSetBlockingOfNonTemporaryEvents(false);
         }
 
         /// <summary>
@@ -243,7 +256,8 @@ namespace Inferno.ChaosMode
                 if(!target.IsSafeExist()) return;
 
                 ped.Task.ClearAll();
-                ped.TaskSetBlockingOfNonTemporaryEvents(true);
+                ped.TaskSetBlockingOfNonTemporaryEvents(false);
+                ped.SetPedKeepTask(true);
 
                 if (ped.IsInVehicle())
                 {
@@ -282,6 +296,7 @@ namespace Inferno.ChaosMode
             }
         }
 
+      
 
         /// <summary>
         /// 市民に武器をもたせる

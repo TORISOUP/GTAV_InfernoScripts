@@ -19,17 +19,17 @@ namespace Inferno
         /// <summary>
         /// プレイヤの周囲何ｍの市民が対象か
         /// </summary>
-        private float PlayerAroundDistance = 300.0f;
+        private float PlayerAroundDistance = 100.0f;
 
         /// <summary>
         /// 車両強盗する確率
         /// </summary>
-        private readonly int probability = 10;
+        private readonly int probability = 20;
 
         /// <summary>
-        /// 10秒間隔
+        /// 5秒間隔
         /// </summary>
-        protected override int TickInterval => 10000;
+        protected override int TickInterval => 5000;
 
         protected override void Setup()
         {
@@ -55,24 +55,21 @@ namespace Inferno
             //プレイヤの周辺の市民
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
                                                    && !x.IsSameEntity(this.GetPlayer())
-                                                   && !x.IsPersistent
-                                                   && (x.Position - player.Position).Length() <= PlayerAroundDistance);
+                                                   && !x.IsRequiredForMission()
+                                                   && x.IsInRangeOf(player.Position,PlayerAroundDistance));
 
             foreach (var targetPed in targetPeds)
             {
                 try
                 {
-                    //10%の確率で強盗する
+                    //確率で強盗する
                     if (Random.Next(0, 100) > probability)
                     {
                         continue;
                     }
 
-                    //市民から10m以内の車が対象
-                    var targetVehicle =
-                        CachedVehicles.FirstOrDefault(
-                            x => x.IsSafeExist()
-                                 && (x.Position - targetPed.Position).Length() < 20.0f);
+                    //市民周辺の車が対象
+                    var targetVehicle = World.GetNearbyVehicles(targetPed, 20).FirstOrDefault();
 
                     //30%の確率でプレイヤの車を盗むように変更
                     if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
@@ -96,9 +93,9 @@ namespace Inferno
             if (!ped.IsSafeExist()) yield break;
             //カオス化しない
             ped.SetNotChaosPed(true);
+            ped.TaskSetBlockingOfNonTemporaryEvents(false);
             ped.Task.ClearAll();
-            ped.TaskEnterVehicle(targetVehicle, -1, GTA.VehicleSeat.Any);
-
+            ped.Task.EnterVehicle(targetVehicle,VehicleSeat.Any,30*1000);
             foreach (var t in WaitForSeconds(20))
             {
                 //20秒間車に乗れたか監視する
@@ -106,6 +103,7 @@ namespace Inferno
                 if(ped.IsInVehicle()) break;
                 yield return null;
             }
+            ped.TaskSetBlockingOfNonTemporaryEvents(true);
 
             //カオス化許可
             ped.SetNotChaosPed(false);
