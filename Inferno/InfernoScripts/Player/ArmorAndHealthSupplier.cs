@@ -58,9 +58,6 @@ namespace Inferno
         private void SupplyArmorAndHealth()
         {
             var player = this.GetPlayer();
-
-            DrawText("The armor was supplied.", 3.0f);
-
             var maxHealth = player.MaxHealth;
             var maxArmor = Game.Player.GetPlayerMaxArmor();
             player.Health = maxHealth;
