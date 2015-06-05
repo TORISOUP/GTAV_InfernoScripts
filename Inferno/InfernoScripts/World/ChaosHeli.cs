@@ -17,6 +17,7 @@ namespace Inferno.InfernoScripts.World
         private Vehicle _Heli = null;
         private Ped _heliDriver = null;
 
+        private HashSet<VehicleSeat> rapelingToPedInSeatList = new HashSet<VehicleSeat>();
         private List<uint> coroutineIds = new List<uint>();
 
         //ヘリのドライバー以外の座席
@@ -28,6 +29,7 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     _isActive = !_isActive;
+                    rapelingToPedInSeatList.Clear();
                     StopAllChaosHeliCoroutine();
                     DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
                     if (_isActive){
@@ -42,6 +44,7 @@ namespace Inferno.InfernoScripts.World
                 {
                     _isActive = true; 
                     if (!_Heli.IsSafeExist()){
+                        rapelingToPedInSeatList.Clear();
                         CreateChaosHeli();
                     }
                 });
@@ -74,9 +77,9 @@ namespace Inferno.InfernoScripts.World
             //ヘリが存在かつMODが有効の間回り続けるコルーチン
             while (true)
             {
-                if (!_isActive) yield break;
+                if (!_isActive) break;
 
-                if (!_Heli.IsSafeExist() || _Heli.IsDead) yield break;
+                if (!_Heli.IsSafeExist() || _Heli.IsDead) break;
 
                 MoveHeli();
                 SpawnPassengersToEmptySeat();
@@ -91,16 +94,18 @@ namespace Inferno.InfernoScripts.World
                     var ped = _Heli.GetPedOnSeat(seat);
 
                     //ラペリング降下の判定
-                    if (seat != VehicleSeat.Passenger && ped.IsSafeExist() && _Heli.IsSafeExist() && Random.Next(0, 100) > 5 && _Heli.IsInRangeOf(playerPosition, 30.0f))
+                    if (seat != VehicleSeat.Passenger && ped.IsSafeExist() && _Heli.IsSafeExist() && Random.Next(0, 100) > 5 && _Heli.IsInRangeOf(playerPosition, 30.0f) && !rapelingToPedInSeatList.Contains(seat))
                     {
+                        rapelingToPedInSeatList.Add(seat);
                         //ラペリング降下のコルーチン
-                        var id = StartCoroutine(PassengerRapeling(ped));
+                        var id = StartCoroutine(PassengerRapeling(ped,seat));
                         coroutineIds.Add(id);
                     }
                 }
 
                 yield return WaitForSeconds(1);
             }
+            ReleasePedAndHeli();
         }
 
         /// <summary>
@@ -109,7 +114,7 @@ namespace Inferno.InfernoScripts.World
         private void MoveHeli(){
             try
             {
-                if (_heliDriver.IsAlive)
+                if (_heliDriver.IsSafeExist() && _heliDriver.IsAlive)
                 {
                     var player = this.GetPlayer();
                     var playerPosition = player.Position;
@@ -127,8 +132,9 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerable<Object> PassengerRapeling(Ped ped)
+        private IEnumerable<Object> PassengerRapeling(Ped ped, VehicleSeat seat)
         {
+
             //ラペリング降下させる
             ped.TaskRappelFromHeli();
 
@@ -138,8 +144,7 @@ namespace Inferno.InfernoScripts.World
                 yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
-                if (!ped.IsSafeExist()) break;
-                if (ped.IsDead) break;
+                if (!ped.IsSafeExist() || ped.IsDead) break;
 
                 //着地していたら監視終了
                 if (!ped.IsInAir)
@@ -148,10 +153,14 @@ namespace Inferno.InfernoScripts.World
                 }
             }
 
+            yield return WaitForSeconds(3);
+
             if (ped.IsSafeExist())
             {
                 ped.MarkAsNoLongerNeeded();
             }
+
+            rapelingToPedInSeatList.Remove(seat);
         }
 
         /// <summary>
@@ -230,16 +239,20 @@ namespace Inferno.InfernoScripts.World
                         ped.MarkAsNoLongerNeeded();
                     }
                 }
+
+                //ドライバー開放
+                if (_heliDriver.IsSafeExist())
+                {
+                    //無敵化解除
+                    _heliDriver.SetProofs(false, false, false, false, false, false, false, false);
+                    //ヘリのドライバー解放
+                    _heliDriver.MarkAsNoLongerNeeded();
+                }
+
                 //ヘリ解放
                 _Heli.MarkAsNoLongerNeeded();
             }
-            if (_heliDriver.IsSafeExist())
-            {
-                //無敵化解除
-                _heliDriver.SetProofs(false, false, false, false, false, false, false, false);
-                //ヘリのドライバー解放
-                _heliDriver.MarkAsNoLongerNeeded();
-            }
+            
             _Heli = null;
             _heliDriver = null;
         }
@@ -254,6 +267,7 @@ namespace Inferno.InfernoScripts.World
                 StopCoroutine(id);
             }
             coroutineIds.Clear();
+            rapelingToPedInSeatList.Clear();
         }
 
         /// <summary>
