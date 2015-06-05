@@ -379,6 +379,10 @@ namespace Inferno
             Function.Call(Hash.TASK_THROW_PROJECTILE, ped, vector3.X, vector3.Y, vector3.Z);
         }
 
+        public static int GetPlayerMaxArmor(this Player player)
+        {
+            return Function.Call<int>(Hash.GET_PLAYER_MAX_ARMOUR, player);
+        }
 
         /// <summary>
         /// 対象がミッション用のエンティティか
