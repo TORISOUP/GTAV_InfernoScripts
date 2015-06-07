@@ -95,6 +95,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
+    <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

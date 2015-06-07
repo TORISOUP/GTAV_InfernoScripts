@@ -182,6 +182,18 @@ namespace Inferno
         }
 
         /// <summary>
+        /// 指定地に乗り物を移動させる
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="ped"></param>
+        /// <param name="waypoint"></param>
+        /// <param name="speed"></param>
+        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed)
+        {
+            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, 0xC00AB, -1);
+        }
+
+        /// <summary>
         /// 市民をドライバとして召喚する
         /// </summary>
         /// <param name="vehicle">乗り物</param>
@@ -191,6 +203,54 @@ namespace Inferno
             return Function.Call<Ped>(Hash.CREATE_RANDOM_PED_AS_DRIVER, vehicle, true);
         }
 
+        /// <summary>
+        /// ヘリからラペリング降下させる
+        /// </summary>
+        /// <param name="ped"></param>
+        public static void TaskRappelFromHeli(this Ped ped)
+        {
+            Function.Call(Hash.TASK_RAPPEL_FROM_HELI, ped, 10.0f);
+
+        }
+
+        /// <summary>
+        /// 市民を車にワープ
+        /// </summary>
+        /// <param name="ped"></param>
+        /// <param name="vehicle"></param>
+        /// <param name="vehicleSeat"></param>
+        public static void SetIntoVehicle(this Ped ped, Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        {
+            Function.Call(Hash.SET_PED_INTO_VEHICLE, ped, vehicle, (int)vehicleSeat);
+
+        }
+
+        /// <summary>
+        /// 車の席が開いてるかどうか
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="vehicleSeat"></param>
+        public static bool IsSeatFree(this Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        {
+            return Function.Call<bool>(Hash.IS_VEHICLE_SEAT_FREE, vehicle, (int)vehicleSeat);
+        }
+
+        /// <summary>
+        /// エンティティの耐性設定
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="bulletProof"></param>
+        /// <param name="fireProof"></param>
+        /// <param name="explosionProof"></param>
+        /// <param name="collisionProof"></param>
+        /// <param name="meleeProof"></param>
+        /// <param name="unk1">不明</param>
+        /// <param name="unk2">不明</param>
+        /// <param name="unk3">不明</param>
+        public static void SetProofs(this Entity entity, bool bulletProof, bool fireProof, bool explosionProof, bool collisionProof, bool meleeProof, bool unk1, bool unk2, bool unk3)
+        {
+            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof, meleeProof, unk1, unk2, unk3);
+        }
 
         /// <summary>
         /// 警戒心？
