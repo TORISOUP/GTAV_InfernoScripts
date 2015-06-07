@@ -29,7 +29,7 @@ namespace Inferno
 
         private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
-        protected override int TickInterval => 2500;
+        protected override int TickInterval => 1000;
 
         protected override void Setup()
         {
@@ -58,7 +58,7 @@ namespace Inferno
                 
 
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => _isActive && Random.Next(0,100) <= 30)
                 .Subscribe(_ => ShootMeteo());
         }
 

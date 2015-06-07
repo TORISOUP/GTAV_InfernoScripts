@@ -147,6 +147,8 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
+            yield return RandomWait();
+
             if (!ped.IsSafeExist()) yield break;
             var pedId = ped.Handle;
             
@@ -185,7 +187,7 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                yield return WaitForSeconds(1 + (float) Random.NextDouble()*5);
+                yield return WaitForSeconds(3 + (float) Random.NextDouble()*5);
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 

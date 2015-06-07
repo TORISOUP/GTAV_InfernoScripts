@@ -163,6 +163,19 @@ namespace Inferno
             }
         }
 
+        /// <summary>
+        /// 0-10回待機してコルーチンの処理を分散する
+        /// </summary>
+        /// <returns></returns>
+        protected IEnumerable RandomWait()
+        {
+            var waitLoopCount = Random.Next(0, 10);
+            for (var i = 0; i < waitLoopCount; i++)
+            {
+                yield return i;
+            }
+        } 
+
 
         /// <summary>
         /// ログをTCPSocker経由で吐く

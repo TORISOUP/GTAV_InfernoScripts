@@ -188,9 +188,9 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="waypoint"></param>
         /// <param name="speed"></param>
-        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed)
+        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed,DrivingStyle drivingStyle)
         {
-            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, 0xC00AB, -1);
+            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, (int)drivingStyle, -1);
         }
 
         /// <summary>
@@ -209,6 +209,7 @@ namespace Inferno
         /// <param name="ped"></param>
         public static void TaskRappelFromHeli(this Ped ped)
         {
+            if(!ped.IsSafeExist()) return;
             Function.Call(Hash.TASK_RAPPEL_FROM_HELI, ped, 10.0f);
 
         }
