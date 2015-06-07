@@ -72,7 +72,14 @@ namespace Inferno
 
             foreach (var coroutine in coroutineArray)
             {
-                if (!coroutine.Value.MoveNext())
+                try
+                {
+                    if (!coroutine.Value.MoveNext())
+                    {
+                        endIdList.Add(coroutine.Key);
+                    }
+                }
+                catch (Exception e)
                 {
                     endIdList.Add(coroutine.Key);
                 }

@@ -53,7 +53,7 @@ namespace Inferno.InfernoScripts.World
                 });
 
             //ヘリのリセット処理
-            var onPlayerRevivalAsObservable = CreateTickAsObservable(100)
+            var onPlayerRevivalAsObservable = CreateTickAsObservable(2000)
                 .Where(_=> _isActive)
                 .Select(_ => this.GetPlayer())
                 .Where(p => p.IsSafeExist())
@@ -88,12 +88,9 @@ namespace Inferno.InfernoScripts.World
                 var playerPos = this.GetPlayer().Position;
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
-
-                var isNearPlayer = _heli.IsInRangeOf(playerPos, 30);
                 MoveHeli(_heliDriver, playerPos);
                 
                 SpawnPassengersToEmptySeat();
-
 
                 //各座席ごとの処理
                 foreach (var seat in vehicleSeat)
