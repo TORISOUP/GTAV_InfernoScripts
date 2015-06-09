@@ -224,6 +224,7 @@ namespace Inferno.ChaosMode
 
         private void SetPedStatus(Ped ped)
         {
+            if(!ped.IsSafeExist()) return;
             //FIBミッションからのコピペ（詳細不明）
             ped.SetCombatAttributes(9,0);
             ped.SetCombatAttributes(1, 0);
