@@ -144,9 +144,10 @@ namespace Inferno.InfernoScripts.World
         /// <param name="targetPosition">目標地点</param>
         private void MoveHeli(Ped heliDriver,Vector3 targetPosition)
         {
-
-            if (!_heliDriver.IsSafeExist() || !_heliDriver.IsAlive) return;            
             var player = this.GetPlayer();
+            if (!_heli.IsSafeExist() || !player.IsSafeExist() || !heliDriver.IsSafeExist() || !heliDriver.IsAlive)
+                return;       
+            
             var playerPosition = player.Position;
 
             //プレイヤの近くにいる場合はゆっくり飛行
