@@ -15,17 +15,6 @@ namespace Inferno
     {
         private bool _isActive = false;
         private List<Vector3> meteoLightPositionList = new List<Vector3>();
-        /// <summary>
-        /// 夜間はマーカの色を薄くする
-        /// </summary>
-        private bool IsNightMode
-        {
-            get
-            {
-                var hour = NativeFunctions.GetClockHours();
-                return hour >= 17 && hour <= 6;
-            }
-        }
 
         private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
 
@@ -48,10 +37,9 @@ namespace Inferno
                 .Where(_ => meteoLightPositionList.Count > 0)
                 .Subscribe(_ =>
                 {
-                    var insensity = IsNightMode ? 0.3f : 20.0f;
-                    foreach (var point in meteoLightPositionList)
+                    var insensity = 10;
+                    foreach (var point in meteoLightPositionList.ToArray())
                     {
-
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
                     }
                 });
