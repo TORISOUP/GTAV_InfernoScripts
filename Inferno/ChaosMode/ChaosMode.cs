@@ -171,7 +171,7 @@ namespace Inferno.ChaosMode
             {
                 if (!ped.IsSafeExist())
                 {
-                    yield break;
+                    break;
                 }
 
                 if (!chaosChecker.IsPedChaosAvailable(ped))
@@ -184,6 +184,9 @@ namespace Inferno.ChaosMode
                 {
                     equipedWeapon = GiveWeaponTpPed(ped);
                 }
+
+                yield return RandomWait();
+
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
 
