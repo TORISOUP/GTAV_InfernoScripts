@@ -32,7 +32,7 @@ namespace Inferno
         {
             Instance = this;
 
-            Interval = 0;
+            Interval = 10;
             Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h, Scheduler.Immediate)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)

@@ -41,6 +41,10 @@ namespace Inferno
         /// <returns></returns>
         public static bool IsPlayerVehicle(this Vehicle vehicle)
         {
+            if (!vehicle.IsSafeExist())
+            {
+              return false;
+            }
             return vehicle == Game.Player.Character.CurrentVehicle;
         }
 

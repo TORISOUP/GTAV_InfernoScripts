@@ -119,7 +119,7 @@ namespace Inferno.ChaosMode
         private void CitizenChaos()
         {
             //まだ処理をしていない市民に対してコルーチンを回す
-            cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer(), chaosModeSetting.Radius);
+            cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer() , chaosModeSetting.Radius);
             foreach (var ped in cachedPedForChaos.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
@@ -147,6 +147,7 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
+            yield return null;
             yield return RandomWait();
 
             if (!ped.IsSafeExist()) yield break;
@@ -257,11 +258,10 @@ namespace Inferno.ChaosMode
                 if(!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
                 if(!target.IsSafeExist()) return;
-
-                ped.Task.ClearAll();
                 ped.TaskSetBlockingOfNonTemporaryEvents(false);
+                ped.Task.ClearAll();
                 ped.SetPedKeepTask(true);
-
+                ped.AlwaysKeepTask = true;
                 if (ped.IsInVehicle())
                 {
                     //TODO:車から投擲物を投げる方法を調べる

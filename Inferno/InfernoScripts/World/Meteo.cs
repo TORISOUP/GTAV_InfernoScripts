@@ -22,7 +22,6 @@ namespace Inferno
 
         protected override void Setup()
         {
-
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
                 {

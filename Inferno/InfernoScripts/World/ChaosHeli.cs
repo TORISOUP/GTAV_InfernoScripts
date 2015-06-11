@@ -37,8 +37,9 @@ namespace Inferno.InfernoScripts.World
                     StopAllChaosHeliCoroutine();
                     DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
                     if (_isActive){
-                        CreateChaosHeli();
-                    }else{
+                        ResetHeli();
+                    }
+                    else{
                         ReleasePedAndHeli();
                     }
                 });
@@ -49,7 +50,7 @@ namespace Inferno.InfernoScripts.World
                     _isActive = true;
                     if (_heli.IsSafeExist()) return;
                     rapelingToPedInSeatList.Clear();
-                    CreateChaosHeli();
+                    ResetHeli();
                 });
 
             //ヘリのリセット処理
@@ -89,17 +90,21 @@ namespace Inferno.InfernoScripts.World
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
                 MoveHeli(_heliDriver, playerPos);
-                
+
+                yield return WaitForSeconds(1);
+
                 SpawnPassengersToEmptySeat();
+
+                yield return WaitForSeconds(1);
 
                 //各座席ごとの処理
                 foreach (var seat in vehicleSeat)
                 {
                     if (!CheckRapeling(_heli, seat)) continue;
                     var ped = _heli.GetPedOnSeat(seat);
-                    if(!ped.IsSafeExist()) continue;
+                    if (!ped.IsSafeExist()) continue;
 
-                    if (Random.Next(100) <=30 && rapelingToPedInSeatList.Add(seat))
+                    if (Random.Next(100) <= 30 && rapelingToPedInSeatList.Add(seat))
                     {
                         //ラペリング降下のコルーチン
                         var id = StartCoroutine(PassengerRapeling(ped, seat));
@@ -152,6 +157,7 @@ namespace Inferno.InfernoScripts.World
 
             //プレイヤの近くにいる場合はゆっくり飛行
             var speed = _heliDriver.IsInRangeOf(targetPosition, 50) ? 10 : 100;
+            _heliDriver.Task.ClearAll();
             _heli.DriveTo(_heliDriver, playerPosition, speed, DrivingStyle.Normal);
 
         }
@@ -288,8 +294,9 @@ namespace Inferno.InfernoScripts.World
                 }
 
                 //ヘリ解放
-                _heli.MarkAsNoLongerNeeded();
                 _heli.PetrolTankHealth = -1;
+                _heli.MarkAsNoLongerNeeded();
+                
             }
             
             _heli = null;
