@@ -135,7 +135,7 @@ namespace Inferno.InfernoScripts.World
             var playerPosition = playerPed.Position;
             
             //プレイヤの近くならラペリングする
-            return heli.IsInRangeOf(playerPosition, 30.0f);
+            return heli.IsInRangeOf(playerPosition, 50.0f);
         }
 
         /// <summary>
@@ -151,11 +151,19 @@ namespace Inferno.InfernoScripts.World
             
             var playerPosition = player.Position;
 
-            //プレイヤの近くにいる場合はゆっくり飛行
-            var speed = _heliDriver.IsInRangeOf(targetPosition, 50) ? 10 : 100;
-            _heliDriver.Task.ClearAll();
-            _heli.DriveTo(_heliDriver, playerPosition, speed, DrivingStyle.Normal);
 
+            if (_heli.IsInRangeOf(targetPosition, 30))
+            {
+               //プレイヤに本当に近い場合は何もしない
+               _heliDriver.Task.ClearAll();
+            }
+            else
+            { 
+                //プレイヤの近くにいる場合はゆっくり飛行
+                var speed = _heli.IsInRangeOf(targetPosition, 100) ? 10 : 100;
+                _heliDriver.Task.ClearSecondary();
+                _heli.DriveTo(_heliDriver, playerPosition, speed, DrivingStyle.Normal);
+            }
         }
 
         /// <summary>
