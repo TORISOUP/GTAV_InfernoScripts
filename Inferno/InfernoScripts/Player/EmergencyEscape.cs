@@ -23,7 +23,7 @@ namespace Inferno
         {
             //TODO:GmaeKey入力周りの修正
             OnTickAsObservable
-                .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.EnterCar))
+                .Where(_ => this.IsGamePadPressed(GameKey.VehicleHorn) && this.IsGamePadPressed(GameKey.VehicleExit))
                 .Subscribe(_ => EscapeVehicle());
         }
 
