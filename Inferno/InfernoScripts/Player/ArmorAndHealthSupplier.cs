@@ -37,7 +37,7 @@ namespace Inferno
             //ミッションが始まった時
             OnTickAsObservable
                 .Where(_ => _isActive)
-                .Select(_ => GetMissionFlag())
+                .Select(_ => Game.MissionFlag)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealth());
@@ -62,16 +62,6 @@ namespace Inferno
             var maxArmor = Game.Player.GetPlayerMaxArmor();
             player.Health = maxHealth;
             player.Armor = maxArmor;
-        }
-
-
-        /// <summary>
-        /// 現在ミッション中かどうか 
-        /// </summary>
-        /// (Player.IsOnMissionはミッションを始められる状態かどうかの判定)
-        public bool GetMissionFlag()
-        {
-            return Function.Call<int>(Hash.GET_MISSION_FLAG) != 0;
         }
     }
 }
