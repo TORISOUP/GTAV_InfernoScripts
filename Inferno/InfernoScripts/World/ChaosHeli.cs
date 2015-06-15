@@ -55,8 +55,8 @@ namespace Inferno.InfernoScripts.World
 
             //ヘリのリセット処理
             var onPlayerRevivalAsObservable = CreateTickAsObservable(2000)
-                .Where(_=> _isActive)
-                .Select(_ => this.GetPlayer())
+                .Where(_=> _isActive && playerPed.IsSafeExist())
+                .Select(_ => playerPed)
                 .Where(p => p.IsSafeExist())
                 .Select(p => p.IsAlive)
                 .DistinctUntilChanged().Publish().RefCount();
@@ -70,7 +70,7 @@ namespace Inferno.InfernoScripts.World
                 .Merge(onPlayerRevivalAsObservable.Select(_ => Unit.Default))
                 .Subscribe(_ =>
                 {
-                    var player = this.GetPlayer();
+                    var player = playerPed;
                     if(!player.IsSafeExist()) return;
                     if (!_heli.IsSafeExist() || _heli.IsDead || !_heli.IsInRangeOf(player.Position, 200.0f))
                     {
@@ -86,7 +86,9 @@ namespace Inferno.InfernoScripts.World
             //ヘリが存在かつMODが有効の間回り続けるコルーチン
             while (_isActive && _heli.IsSafeExist() && _heli.IsAlive)
             {
-                var playerPos = this.GetPlayer().Position;
+                if(!playerPed.IsSafeExist()) break;
+
+                var playerPos = playerPed.Position;
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
                 MoveHeli(_heliDriver, playerPos);
@@ -134,9 +136,9 @@ namespace Inferno.InfernoScripts.World
             //現在ラペリング中ならできない
             if (rapelingToPedInSeatList.Contains(seat)) return false;
             var ped = heli.GetPedOnSeat(seat);
-            if (!ped.IsSafeExist() || !ped.IsAlive) return false;
+            if (!ped.IsSafeExist() || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
 
-            var playerPosition = this.GetPlayer().Position;
+            var playerPosition = playerPed.Position;
             
             //プレイヤの近くならラペリングする
             return heli.IsInRangeOf(playerPosition, 30.0f);
@@ -149,7 +151,7 @@ namespace Inferno.InfernoScripts.World
         /// <param name="targetPosition">目標地点</param>
         private void MoveHeli(Ped heliDriver,Vector3 targetPosition)
         {
-            var player = this.GetPlayer();
+            var player = playerPed;
             if (!_heli.IsSafeExist() || !player.IsSafeExist() || !heliDriver.IsSafeExist() || !heliDriver.IsAlive)
                 return;       
             
@@ -235,7 +237,8 @@ namespace Inferno.InfernoScripts.World
         {
             try
             {
-                var player = this.GetPlayer();
+                if(!playerPed.IsSafeExist()) return;
+                var player = playerPed;
                 var playerPosition = player.Position;
                 var spawnHeliPosition = playerPosition + new Vector3(0,0,40);
                 var heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, spawnHeliPosition);

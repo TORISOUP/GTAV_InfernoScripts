@@ -14,7 +14,7 @@ namespace Inferno
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("killme")
-                .Subscribe(_ => this.GetPlayer().Kill());
+                .Subscribe(_ => playerPed.Kill());
         }
     }
 }

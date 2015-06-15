@@ -36,6 +36,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
     <Reference Include="ReactiveProperty">
       <HintPath>..\packages\ReactiveProperty.2.2\lib\net45\ReactiveProperty.dll</HintPath>

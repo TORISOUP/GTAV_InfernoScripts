@@ -41,21 +41,20 @@ namespace Inferno
                 .Subscribe(_ => _mContainer.Draw());
 
             this.OnTickAsObservable
-                .Where(_ => this.GetPlayer().IsSafeExist())
-                .Select(x => this.GetPlayer().IsAlive)
+                .Where(_ => playerPed.IsSafeExist())
+                .Select(x => playerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Subscribe(isAlive =>
                 {
-                    var player = this.GetPlayer();
                     _mContainer.Items.Clear();
                     if (isAlive) return;
                     
                     //死んでいたら死因を出す
-                    var damageWeapon = getLastDamageWeapon(this.GetPlayer());
+                    var damageWeapon = getLastDamageWeapon(playerPed);
                     if(damageWeapon==null)return;
                         
                     var damageName = damageWeapon.ToString();
-                    if (player.HasBeenDamagedByPed(player)) damageName += "(SUICIDE)";
+                    if (playerPed.HasBeenDamagedByPed(playerPed)) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
                         new Point((int)(ScreenWidth * textPositionScale.X),(int)(ScreenHeight*textPositionScale.Y)),
                         1.0f, Color.White, 0, true);

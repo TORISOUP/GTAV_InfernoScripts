@@ -34,11 +34,15 @@ namespace Inferno
         }
 
 
-        void NitroVehicle()
+        private void NitroVehicle()
         {
-            var driver = this.GetPlayer();
+            var driver = playerPed;
+            if (!driver.IsSafeExist()) return;
             var vehicle = this.GetPlayerVehicle();
-            if (!vehicle.IsSafeExist()) { return;}
+            if (!vehicle.IsSafeExist())
+            {
+                return;
+            }
             if (this.IsGamePadPressed(GameKey.Stealth))
             {
                 vehicle.Speed -= 50;

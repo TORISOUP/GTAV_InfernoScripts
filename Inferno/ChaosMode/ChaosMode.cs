@@ -105,7 +105,8 @@ namespace Inferno.ChaosMode
 
             //プレイヤが死んだらリセット
             OnTickAsObservable
-                .Select(_ => this.GetPlayer().IsDead)
+                .Where(_=> playerPed.IsSafeExist())
+                .Select(_ => playerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ =>
@@ -118,8 +119,10 @@ namespace Inferno.ChaosMode
 
         private void CitizenChaos()
         {
+            if(!playerPed.IsSafeExist())return;
+
             //まだ処理をしていない市民に対してコルーチンを回す
-            cachedPedForChaos = World.GetNearbyPeds(this.GetPlayer() , chaosModeSetting.Radius);
+            cachedPedForChaos = World.GetNearbyPeds(playerPed, chaosModeSetting.Radius);
             foreach (var ped in cachedPedForChaos.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
@@ -169,7 +172,12 @@ namespace Inferno.ChaosMode
             //以下ループ
             do
             {
-                if (!ped.IsSafeExist())
+                if (!ped.IsSafeExist() || !playerPed.IsSafeExist())
+                {
+                    break;
+                }
+
+                if (!ped.IsInRangeOf(playerPed.Position, chaosModeSetting.Radius))
                 {
                     break;
                 }
@@ -209,12 +217,12 @@ namespace Inferno.ChaosMode
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
                 Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
             {
-                return this.GetPlayer();
+                return playerPed;
             }
 
             //100m以内の市民
             var aroundPeds =
-                cachedPedForChaos.Concat(new Ped[] {this.GetPlayer()}).Where(
+                cachedPedForChaos.Concat(new Ped[] { playerPed }).Where(
                     x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
                     

@@ -30,7 +30,7 @@ namespace Inferno
             {
                 //プレイヤが死亡したら再生
                 OnTickAsObservable
-                    .Select(_ => this.GetPlayer())
+                    .Select(_ => playerPed)
                     .Where(p => p.IsSafeExist())
                     .Select(p => p.IsAlive)
                     .DistinctUntilChanged()

@@ -16,7 +16,7 @@ namespace Inferno
         private bool _isActive = false;
         private List<Vector3> meteoLightPositionList = new List<Vector3>();
 
-        private bool IsPlayerMoveSlowly => this.GetPlayer().Velocity.Length() < 5.0f;
+        private bool IsPlayerMoveSlowly => playerPed.Velocity.Length() < 5.0f;
 
         protected override int TickInterval => 1000;
 
@@ -53,7 +53,7 @@ namespace Inferno
         {
             try
             {
-                var player = this.GetPlayer();
+                var player = playerPed;
                 if(!player.IsSafeExist()) return;
 
                 var playerPosition = player.Position;

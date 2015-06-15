@@ -14,7 +14,7 @@ namespace Inferno
     /// <summary>
     /// 市民の運転スピード上限増加
     /// </summary>
-    class CitizenCrazyDriving : InfernoScript
+    internal class CitizenCrazyDriving : InfernoScript
     {
 
         private bool IsActive = false;
@@ -47,15 +47,15 @@ namespace Inferno
 
         private void RunAway()
         {
-            var player = this.GetPlayer();
+            if (!playerPed.IsSafeExist()) return;
 
             //プレイヤ周辺の車
             var drivers = CachedVehicles.Where(x => x.IsSafeExist()
-                                                   && !x.IsSameEntity(this.GetPlayerVehicle())
-                                                   && !x.IsRequiredForMission()
-                                                   && (x.Position - player.Position).Length() <= PlayerAroundDistance)
-                                           .Select(x => x.GetPedOnSeat(GTA.VehicleSeat.Driver))
-                                           .Where(x => x.IsSafeExist());
+                                                    && !x.IsSameEntity(this.GetPlayerVehicle())
+                                                    && !x.IsRequiredForMission()
+                                                    && (x.Position - playerPed.Position).Length() <= PlayerAroundDistance)
+                .Select(x => x.GetPedOnSeat(GTA.VehicleSeat.Driver))
+                .Where(x => x.IsSafeExist());
 
 
             foreach (var driver in drivers)

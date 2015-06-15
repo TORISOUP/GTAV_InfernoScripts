@@ -49,14 +49,15 @@ namespace Inferno
 
         private void RobberVehicle()
         {
-            var player = this.GetPlayer();
+            if(!playerPed.IsSafeExist())return;
+
             var playerVehicle = this.GetPlayerVehicle();
 
             //プレイヤの周辺の市民
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
-                                                   && !x.IsSameEntity(this.GetPlayer())
+                                                   && !x.IsSameEntity(playerPed)
                                                    && !x.IsRequiredForMission()
-                                                   && x.IsInRangeOf(player.Position,PlayerAroundDistance));
+                                                   && x.IsInRangeOf(playerPed.Position,PlayerAroundDistance));
 
             foreach (var targetPed in targetPeds)
             {
@@ -69,7 +70,7 @@ namespace Inferno
                     }
 
                     //市民周辺の車が対象
-                    var targetVehicle = World.GetNearbyVehicles(targetPed, 20).FirstOrDefault();
+                    var targetVehicle = World.GetNearbyVehicles(targetPed, 40).FirstOrDefault();
 
                     //30%の確率でプレイヤの車を盗むように変更
                     if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
@@ -95,13 +96,15 @@ namespace Inferno
             ped.SetNotChaosPed(true);
             ped.TaskSetBlockingOfNonTemporaryEvents(false);
             ped.Task.ClearAll();
-            ped.Task.EnterVehicle(targetVehicle,VehicleSeat.Any,30*1000);
-            foreach (var t in WaitForSeconds(20))
+            ped.SetPedKeepTask(true);
+            ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
+
+            foreach (var t in Enumerable.Range(0,20))
             {
                 //20秒間車に乗れたか監視する
                 if(!ped.IsSafeExist()) yield break;
                 if(ped.IsInVehicle()) break;
-                yield return null;
+                yield return WaitForSeconds(1);
             }
             ped.TaskSetBlockingOfNonTemporaryEvents(true);
 

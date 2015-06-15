@@ -30,7 +30,7 @@ namespace Inferno
         //車に乗ってたら緊急脱出する
         private void EscapeVehicle()
         {
-            var player = this.GetPlayer();
+            var player = playerPed;
             if(!player.IsInVehicle()) return;
 
             Game.Player.CanControlRagdoll = true;

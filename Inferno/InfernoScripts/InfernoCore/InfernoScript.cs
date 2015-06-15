@@ -19,17 +19,22 @@ namespace Inferno
     {
         protected Random Random = new Random();
 
+        /// <summary>
+        /// プレイヤのped
+        /// </summary>
+        protected Ped playerPed { get; private set; }
+
         private Ped[] _cachedPeds = new Ped[0];
         /// <summary>
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
-        public ReadOnlyCollection<Ped> CachedPeds { get { return Array.AsReadOnly(_cachedPeds??new Ped[0]); } }
+        public ReadOnlyCollection<Ped> CachedPeds => Array.AsReadOnly(_cachedPeds??new Ped[0]);
 
         private Vehicle[] _cachedVehicles = new Vehicle[0];
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
-        public ReadOnlyCollection<Vehicle> CachedVehicles { get { return Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]); } }
+        public ReadOnlyCollection<Vehicle> CachedVehicles => Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]);
 
         /// <summary>
         /// 一定間隔のTickイベント
@@ -46,7 +51,7 @@ namespace Inferno
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
         /// </summary>
-        protected virtual int TickInterval { get { return 1000; } }
+        protected virtual int TickInterval => 1000;
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
@@ -65,10 +70,15 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
-            //キャッシュが変更されたら反映する
-            InfernoCore.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
-            InfernoCore.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
-
+            Observable.Interval(TimeSpan.FromMilliseconds(1))
+                .FirstAsync(_ => InfernoCore.Instance != null)
+                .Subscribe(_ =>
+                {
+                    InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
+                    InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => playerPed = x);
+                });
+            
             //TickイベントをObservable化しておく
             Interval = TickInterval;
             OnTickAsObservable =

@@ -27,23 +27,27 @@ namespace Inferno
 
         private CoroutineSystem coroutineSystem;
 
-        private static ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
+        private ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
         /// <summary>
         /// 周辺市民
         /// </summary>
-        public static ReadOnlyReactiveProperty<Ped[]> PedsNearPlayer
+        public ReadOnlyReactiveProperty<Ped[]> PedsNearPlayer
         {
             get { return pedsNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
         }
 
-        private static ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>(Scheduler.Immediate);
+        private ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>(Scheduler.Immediate);
         /// <summary>
         /// 周辺車両
         /// </summary>
-        public static ReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer
+        public ReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer
         {
             get { return vehiclesNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
         }
+
+        private ReactiveProperty<Ped> playerPed = new ReactiveProperty<Ped>(Scheduler.Immediate);
+
+        public ReadOnlyReactiveProperty<Ped> PlayerPed => playerPed.ToReadOnlyReactiveProperty(); 
 
         /// <summary>
         /// 100ms周期のTick
@@ -133,11 +137,12 @@ namespace Inferno
         {
             try
             {
-                var player = Game.Player.Character;
-                if (!player.IsSafeExist()) return;
-
-                pedsNearPlayer.Value = World.GetNearbyPeds(player, 1500);
-                vehiclesNearPlayer.Value = World.GetNearbyVehicles(player, 1500);
+                var player = Game.Player;
+                var ped = player?.Character;
+                if (!ped.IsSafeExist()) return;
+                playerPed.Value = ped;
+                pedsNearPlayer.Value = World.GetNearbyPeds(ped, 500);
+                vehiclesNearPlayer.Value = World.GetNearbyVehicles(ped, 500);
             }
             catch (Exception e)
             {
