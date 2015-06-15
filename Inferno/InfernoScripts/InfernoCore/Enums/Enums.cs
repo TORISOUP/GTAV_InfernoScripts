@@ -11,7 +11,17 @@
         ChangeWeapon = 37,
         Aim = 25,
         LookBehind = 26,
-        Stealth = 36
+        Stealth = 36,
+        Cover = 44,
+        VehicleAim = 68,
+        VehicleAttack = 69,
+        VehicleAccelerate = 71,
+        VehicleBrake = 72,
+        VehicleDuck = 73,
+        VehicleExit = 75,
+        VehicleHandbrake = 76,
+        VehicleHorn = 86,
+        VehicleLookBehind = 79
     };
 
     public enum FiringPattern

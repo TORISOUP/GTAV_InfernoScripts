@@ -28,8 +28,8 @@ namespace Inferno
             OnTickAsObservable
                 .Where(
                     _ =>
-                        _isNitroOk && this.IsGamePadPressed(GameKey.Attack) && this.IsGamePadPressed(GameKey.SeekCover) &&
-                        this.IsGamePadPressed(GameKey.Sprint))
+                        _isNitroOk && this.IsGamePadPressed(GameKey.VehicleAccelerate) && this.IsGamePadPressed(GameKey.VehicleHandbrake) &&
+                        this.IsGamePadPressed(GameKey.VehicleDuck))
                 .Subscribe(_ => NitroVehicle());
         }
 
@@ -43,7 +43,7 @@ namespace Inferno
             {
                 return;
             }
-            if (this.IsGamePadPressed(GameKey.Stealth))
+            if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
                 vehicle.Speed -= 50;
             }
