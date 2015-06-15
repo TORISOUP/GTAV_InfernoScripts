@@ -32,14 +32,18 @@ namespace Inferno
         {
             var player = playerPed;
             if(!player.IsInVehicle()) return;
+            var playerVec = player.CurrentVehicle;
+            if(!playerVec.IsSafeExist())return;
 
             Game.Player.CanControlRagdoll = true;
             player.CanRagdoll = true;
 
+
+
             player.ClearTasksImmediately();
             player.Position += new Vector3(0,0,0.5f);
             player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, 8.0f));
+            player.ApplyForce(new Vector3(0, 0, 8.0f) + playerVec.Velocity);
             
         }
     }

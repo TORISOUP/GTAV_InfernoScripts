@@ -47,7 +47,7 @@ namespace Inferno
 
         private ReactiveProperty<Ped> playerPed = new ReactiveProperty<Ped>(Scheduler.Immediate);
 
-        public ReadOnlyReactiveProperty<Ped> PlayerPed => playerPed.ToReadOnlyReactiveProperty(); 
+        public ReadOnlyReactiveProperty<Ped> PlayerPed => playerPed.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); 
 
         /// <summary>
         /// 100ms周期のTick

@@ -54,20 +54,14 @@ namespace Inferno.InfernoScripts.World
                 });
 
             //ヘリのリセット処理
-            var onPlayerRevivalAsObservable = CreateTickAsObservable(2000)
+           CreateTickAsObservable(2000)
                 .Where(_=> _isActive && playerPed.IsSafeExist())
-                .Select(_ => playerPed)
-                .Where(p => p.IsSafeExist())
-                .Select(p => p.IsAlive)
-                .DistinctUntilChanged().Publish().RefCount();
-
-            onPlayerRevivalAsObservable
+                .Select(_ => playerPed.IsAlive)
                 .Where(x => !x)
-                .Subscribe(_ => ReleasePedAndHeli());
+                .Subscribe(_ => ResetHeli());
 
             OnTickAsObservable
                 .Where(_=>_isActive) 
-                .Merge(onPlayerRevivalAsObservable.Select(_ => Unit.Default))
                 .Subscribe(_ =>
                 {
                     var player = playerPed;
@@ -297,13 +291,11 @@ namespace Inferno.InfernoScripts.World
                 }
 
                 //ヘリ解放
-                _heli.PetrolTankHealth = -1;
+                _heli.SetProofs(false, false, false, false, false, false, false, false);
                 _heli.MarkAsNoLongerNeeded();
-                
+                _heli.PetrolTankHealth = -100;
             }
             
-            _heli = null;
-            _heliDriver = null;
         }
 
         /// <summary>

@@ -398,7 +398,7 @@ namespace Inferno
 
         public static bool HasBeenDamagedBy(this Ped ped, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int) weapon, 1);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int) weapon, -1);
         }
 
         public static bool HasBeenDamagedByPed(this Ped ped, Ped target)

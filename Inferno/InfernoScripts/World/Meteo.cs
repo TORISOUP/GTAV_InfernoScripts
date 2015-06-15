@@ -45,7 +45,7 @@ namespace Inferno
                 
 
             OnTickAsObservable
-                .Where(_ => _isActive && Random.Next(0,100) <= 30)
+                .Where(_ => _isActive && Random.Next(0,100) <= 50)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -123,6 +123,7 @@ namespace Inferno
         private IEnumerable<object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
             ped.TaskShootAtCoord(targetPosition, 1000);
+            ped.Task.ClearSecondary();
             yield return WaitForSeconds(durationSecond);
             if(!ped.IsSafeExist()) yield break;
             ped.Delete();
