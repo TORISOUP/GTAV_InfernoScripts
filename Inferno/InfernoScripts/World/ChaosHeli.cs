@@ -87,11 +87,7 @@ namespace Inferno.InfernoScripts.World
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
                 MoveHeli(_heliDriver, playerPos);
 
-                yield return WaitForSeconds(1);
-
                 SpawnPassengersToEmptySeat();
-
-                yield return WaitForSeconds(1);
 
                 //各座席ごとの処理
                 foreach (var seat in vehicleSeat)
@@ -154,15 +150,12 @@ namespace Inferno.InfernoScripts.World
 
             if (_heli.IsInRangeOf(targetPosition, 30))
             {
-               //プレイヤに本当に近い場合は何もしない
+               //プレイヤに近い場合は何もしない
                _heliDriver.Task.ClearAll();
             }
             else
             { 
-                //プレイヤの近くにいる場合はゆっくり飛行
-                var speed = _heli.IsInRangeOf(targetPosition, 100) ? 10 : 100;
-                _heliDriver.Task.ClearSecondary();
-                _heli.DriveTo(_heliDriver, playerPosition, speed, DrivingStyle.Normal);
+                _heli.DriveTo(_heliDriver, playerPosition, 100, DrivingStyle.IgnoreLights);
             }
         }
 
