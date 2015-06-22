@@ -66,8 +66,7 @@ namespace Inferno
                 var playerVehicle = this.GetPlayerVehicle();
 
                 var nitroAvailableVeles = CachedVehicles
-                    .Where(
-                        x => x != playerVehicle && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
+                    .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
 
                 foreach (var veh in nitroAvailableVeles)
                 {
@@ -78,10 +77,10 @@ namespace Inferno
                     }
                 }
             }
-            catch
+            catch(Exception e)
             {
                 //nice catch!
-                LogWrite("CitizenNitroAction()nice catch!\r\n");
+                LogWrite(e.ToString());
             }
         }
 
