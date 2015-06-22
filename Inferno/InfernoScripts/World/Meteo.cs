@@ -76,13 +76,15 @@ namespace Inferno
 
                 var ped = NativeFunctions.CreateRandomPed(createPosition);
                 if(!ped.IsSafeExist()) return;
+                ped.MarkAsNoLongerNeeded();
+                if (!ped.IsSafeExist()) return;
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.SetNotChaosPed(true);
                 ped.GiveWeapon(weapon, 1000); //指定武器所持
                 ped.EquipWeapon(weapon); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
-    
+
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.5f));
 
@@ -120,7 +122,7 @@ namespace Inferno
         /// <returns></returns>
         private IEnumerable<object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
-            ped.MarkAsNoLongerNeeded();
+            if (!ped.IsSafeExist()) yield break;
             ped.TaskShootAtCoord(targetPosition, 1000);
             yield return WaitForSeconds(durationSecond);
             if(!ped.IsSafeExist()) yield break;

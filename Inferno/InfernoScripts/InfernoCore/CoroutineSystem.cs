@@ -19,7 +19,13 @@ namespace Inferno
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
         private uint _coroutineIdIndex = 0;
         private readonly Object _lockObject = new object();
-        private readonly List<uint> _stopCoroutineList = new List<uint>(); 
+        private readonly List<uint> _stopCoroutineList = new List<uint>();
+        private readonly DebugLogger logger;
+
+        public CoroutineSystem(DebugLogger logger = null)
+        {
+            this.logger = logger;
+        }
 
         /// <summary>
         /// コルーチンの登録
@@ -81,6 +87,7 @@ namespace Inferno
                 }
                 catch (Exception e)
                 {
+                    logger?.Log(e.ToString());
                     endIdList.Add(coroutine.Key);
                 }
             }
