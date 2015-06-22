@@ -17,10 +17,12 @@ namespace Inferno
         /// コルーチンの辞書
         /// </summary>
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
+
         private uint _coroutineIdIndex = 0;
         private readonly Object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
         private readonly DebugLogger logger;
+        private readonly int _shardCount = 4; //シャードID
 
         public CoroutineSystem(DebugLogger logger = null)
         {
@@ -56,10 +58,12 @@ namespace Inferno
             _stopCoroutineList.Add(id);
         }
 
+
         /// <summary>
-        /// コルーチン処理
+        /// コルーチンの処理を行う
         /// </summary>
-        public void CoroutineLoop()
+        /// <param name="shardId">シャードID(0～3)</param>
+        public void CoroutineLoop(int shardId)
         {
             KeyValuePair<uint, IEnumerator>[] coroutineArray;
 
@@ -76,7 +80,7 @@ namespace Inferno
 
             var endIdList = new List<uint>();
 
-            foreach (var coroutine in coroutineArray)
+            foreach (var coroutine in coroutineArray.Where(x => x.Key%4 == shardId))
             {
                 try
                 {

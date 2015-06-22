@@ -26,7 +26,7 @@ namespace Inferno
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
 
         private CoroutineSystem coroutineSystem;
-
+        private int _currentShardId = 0;
         private ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
         /// <summary>
         /// 周辺市民
@@ -50,7 +50,7 @@ namespace Inferno
         public ReadOnlyReactiveProperty<Ped> PlayerPed => playerPed.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); 
 
         /// <summary>
-        /// 100ms周期のTick
+        /// 25ms周期のTick
         /// </summary>
         public static IObservable<Unit> OnTickAsObservable
         {
@@ -65,30 +65,6 @@ namespace Inferno
             get { return OnKeyDownSubject.AsObservable(); }
         }
 
-        /// <summary>
-        /// テキスト表示
-        /// </summary>
-        /// <param name="text"></param>
-        public void SetDrawText(string text)
-        {
-            //フォント指定
-            this.SetTextFont(0);
-            //文字スケール
-            this.SetTextScale(0.55f, 0.55f);
-            //文字色
-            this.SetTextColour(255, 255, 255, 255);
-            //中央寄せにする
-            this.SetTextCentre(true);
-            //文字の影（の色？）
-            this.SetTextDropShadow();
-            //文字のエッジ
-            this.SetTextEdge();
-            //テキストとして表示する文字列
-            this.AddTextString(text);
-            //テキスト描画
-            this.DrawTextInSetPosition(0.5f, 0.5f);
-        }
-
         public InfernoCore()
         {
             Instance = this;
@@ -96,8 +72,8 @@ namespace Inferno
             _debugLogger = new DebugLogger(@"InfernoScript.log");
             coroutineSystem = new CoroutineSystem(_debugLogger);
 
-            //100ms周期でイベントを飛ばす
-            Interval = 100;
+            //25ms周期でイベントを飛ばす
+            Interval = 25;
             Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h, Scheduler.Immediate)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
@@ -113,7 +89,7 @@ namespace Inferno
 
             //市民と車両の更新
             OnTickSubject
-                .Skip(4).Take(1).Repeat()
+                .Skip(9).Take(1).Repeat()
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
 
             //コルーチン処理
@@ -122,7 +98,9 @@ namespace Inferno
                 {
                     try
                     {
-                        coroutineSystem.CoroutineLoop();
+                        //コルーチンは4分割されて実行される
+                        coroutineSystem.CoroutineLoop(_currentShardId);
+                        _currentShardId = (_currentShardId + 1)%4;
                     }
                     catch (Exception e)
                     {
