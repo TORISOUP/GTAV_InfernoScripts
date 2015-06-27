@@ -165,7 +165,7 @@ namespace Inferno.ChaosMode
                yield break;
             }
 
-            if (!ped.IsRequiredForMission())
+            if (ped.IsSafeExist() && !ped.IsRequiredForMission())
             {
                 SetPedStatus(ped);
             }

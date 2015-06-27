@@ -79,6 +79,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化</returns>
         private bool IsChaosableMissionCharacter(Ped ped)
         {
+            if (!ped.IsSafeExist()) return false;
             //ミッションキャラじゃないならtrue
             if (!ped.IsRequiredForMission()) return true;
 
