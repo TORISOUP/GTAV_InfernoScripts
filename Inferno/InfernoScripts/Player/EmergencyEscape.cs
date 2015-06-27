@@ -21,7 +21,6 @@ namespace Inferno
 
         protected override void Setup()
         {
-            //TODO:GmaeKey入力周りの修正
             OnTickAsObservable
                 .Where(_ => this.IsGamePadPressed(GameKey.VehicleHorn) && this.IsGamePadPressed(GameKey.VehicleExit))
                 .Subscribe(_ => EscapeVehicle());
@@ -37,8 +36,6 @@ namespace Inferno
 
             Game.Player.CanControlRagdoll = true;
             player.CanRagdoll = true;
-
-
 
             player.ClearTasksImmediately();
             player.Position += new Vector3(0,0,0.5f);

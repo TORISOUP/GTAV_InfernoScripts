@@ -26,11 +26,6 @@ namespace Inferno.ChaosMode
         private List<uint> coroutineIds = new List<uint>(); 
 
         /// <summary>
-        /// 周辺市民
-        /// </summary>
-        private Ped[] cachedPedForChaos = new Ped[0];
-
-        /// <summary>
         /// WeaponProvider
         /// </summary>
         private IWeaponProvider weaponProvider;
@@ -100,7 +95,7 @@ namespace Inferno.ChaosMode
 
             //interval間隔で市民をカオス化する
             OnTickAsObservable
-                .Where(_ => _isActive.Value)
+                .Where(_ => _isActive.Value && playerPed.IsSafeExist() && playerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
@@ -122,8 +117,8 @@ namespace Inferno.ChaosMode
             if(!playerPed.IsSafeExist())return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
-            cachedPedForChaos = World.GetNearbyPeds(playerPed, chaosModeSetting.Radius);
-            foreach (var ped in cachedPedForChaos.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
+            var nearPeds = World.GetNearbyPeds(playerPed, chaosModeSetting.Radius, 100);
+            foreach (var ped in nearPeds.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 var id = StartCoroutine(ChaosPedAction(ped));
@@ -150,7 +145,6 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object>  ChaosPedAction(Ped ped)
         {
-            yield return null;
             yield return RandomWait();
 
             if (!ped.IsSafeExist()) yield break;
@@ -162,7 +156,8 @@ namespace Inferno.ChaosMode
             //ここでカオス化して良いか検査する
             if (!chaosChecker.IsPedChaosAvailable(ped))
             {
-               yield break;
+                chaosedPedList.Remove(pedId);
+                yield break;
             }
 
             if (ped.IsSafeExist() && !ped.IsRequiredForMission())
@@ -213,6 +208,8 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private Ped GetTargetPed(Ped ped)
         {
+            if (!ped.IsSafeExist() || !playerPed.IsSafeExist()) return null;
+
             //プレイヤへの攻撃補正が設定されているならプレイヤを攻撃対象にする
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
                 Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
@@ -222,12 +219,12 @@ namespace Inferno.ChaosMode
 
             //100m以内の市民
             var aroundPeds =
-                cachedPedForChaos.Concat(new Ped[] { playerPed }).Where(
+                CachedPeds.Concat(new[] { playerPed }).Where(
                     x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
                     
-            //100m以内の市民のうち、より近い人を3人選出
-            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(3).ToArray();
+            //100m以内の市民のうち、より近い人を選出
+            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(5).ToArray();
 
             if (nearPeds.Length == 0) return null;
             var randomindex = Random.Next(nearPeds.Length);

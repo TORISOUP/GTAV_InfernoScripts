@@ -127,7 +127,7 @@ namespace Inferno.InfernoScripts.World
             //現在ラペリング中ならできない
             if (rapelingToPedInSeatList.Contains(seat)) return false;
             var ped = heli.GetPedOnSeat(seat);
-            if (!ped.IsSafeExist() || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
+            if (!ped.IsSafeExist() || !ped.IsHuman || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
 
             var playerPosition = playerPed.Position;
             
@@ -185,16 +185,13 @@ namespace Inferno.InfernoScripts.World
                 yield return WaitForSeconds(1);
             }
 
-            yield return WaitForSeconds(1);
             rapelingToPedInSeatList.Remove(seat);
 
-            if (ped.IsSafeExist())
-            {
-                ped.IsInvincible = false;
-                ped.Health = 100;
-                ped.MarkAsNoLongerNeeded();
-            }
+            if (!ped.IsSafeExist()) yield break;
 
+            ped.IsInvincible = false;
+            ped.Health = 100;
+            ped.MarkAsNoLongerNeeded();
         }
 
         /// <summary>
@@ -241,7 +238,7 @@ namespace Inferno.InfernoScripts.World
                 _heli = heli;
 
                 _heliDriver = _heli.CreateRandomPedAsDriver();
-                if (_heliDriver.IsSafeExist())
+                if (_heliDriver.IsSafeExist() && _heliDriver.IsHuman)
                 {
                     _heliDriver.SetProofs(true, true, true, true, true, true, true, true);
                     _heliDriver.SetNotChaosPed(true);
@@ -266,34 +263,32 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private void ReleasePedAndHeli()
         {
-            if (_heli.IsSafeExist())
-            {
-                //ヘリの解放前に座席に座っている市民を解放する
-                foreach (var seat in vehicleSeat)
-                {
-                    //座席にいる市民取得
-                    var ped = _heli.GetPedOnSeat(seat);
-                    if (ped.IsSafeExist())
-                    {
-                        ped.MarkAsNoLongerNeeded();
-                    }
-                }
-
-                //ドライバー開放
-                if (_heliDriver.IsSafeExist())
-                {
-                    //無敵化解除
-                    _heliDriver.SetProofs(false, false, false, false, false, false, false, false);
-                    //ヘリのドライバー解放
-                    _heliDriver.MarkAsNoLongerNeeded();
-                }
-
-                //ヘリ解放
-                _heli.SetProofs(false, false, false, false, false, false, false, false);
-                _heli.MarkAsNoLongerNeeded();
-                _heli.PetrolTankHealth = -100;
-            }
+            if (!_heli.IsSafeExist()) return;
             
+            //ヘリの解放前に座席に座っている市民を解放する
+            foreach (var seat in vehicleSeat)
+            {
+                //座席にいる市民取得
+                var ped = _heli.GetPedOnSeat(seat);
+                if (ped.IsSafeExist())
+                {
+                    ped.MarkAsNoLongerNeeded();
+                }
+            }
+
+            //ドライバー開放
+            if (_heliDriver.IsSafeExist())
+            {
+                //無敵化解除
+                _heliDriver.SetProofs(false, false, false, false, false, false, false, false);
+                //ヘリのドライバー解放
+                _heliDriver.MarkAsNoLongerNeeded();
+            }
+
+            //ヘリ解放
+            _heli.SetProofs(false, false, false, false, false, false, false, false);
+            _heli.PetrolTankHealth = -100;
+            _heli.MarkAsNoLongerNeeded();
         }
 
         /// <summary>

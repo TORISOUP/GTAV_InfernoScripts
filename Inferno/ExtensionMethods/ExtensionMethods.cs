@@ -47,7 +47,7 @@ namespace Inferno
         /// </summary>
         public static bool IsSameEntity(this Entity x, Entity y)
         {
-            if (x == null || y == null) return false;
+            if (!x.IsSafeExist() || !y.IsSafeExist()) return false;
             return x.Handle == y.Handle;
         }
 

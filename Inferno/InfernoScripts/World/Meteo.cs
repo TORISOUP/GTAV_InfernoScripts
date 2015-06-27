@@ -86,7 +86,7 @@ namespace Inferno
                 ped.FreezePosition = true;
 
                 //ライト描画
-                StartCoroutine(CreateMeteoLight(targetPosition, 2.5f));
+                StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
 
                 //Aさん削除
                 StartCoroutine(MeteoShoot(ped,targetPosition, 8.0f));
@@ -124,6 +124,9 @@ namespace Inferno
         {
             if (!ped.IsSafeExist()) yield break;
             ped.TaskShootAtCoord(targetPosition, 1000);
+            yield return null;
+            if (!ped.IsSafeExist()) yield break;
+            ped.Task.ClearAllImmediately();
             yield return WaitForSeconds(durationSecond);
             if(!ped.IsSafeExist()) yield break;
             ped.Delete();
