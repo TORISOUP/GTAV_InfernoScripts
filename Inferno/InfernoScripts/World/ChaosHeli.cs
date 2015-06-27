@@ -141,13 +141,9 @@ namespace Inferno.InfernoScripts.World
         /// <param name="targetPosition">目標地点</param>
         private void MoveHeli(Ped heliDriver,Vector3 targetPosition)
         {
-            var player = playerPed;
-            if (!_heli.IsSafeExist() || !player.IsSafeExist() || !heliDriver.IsSafeExist() || !heliDriver.IsAlive)
+            if (!_heli.IsSafeExist() || !heliDriver.IsSafeExist() || !heliDriver.IsAlive)
                 return;       
             
-            var playerPosition = player.Position;
-
-
             if (_heli.IsInRangeOf(targetPosition, 30))
             {
                //プレイヤに近い場合は何もしない
@@ -155,7 +151,7 @@ namespace Inferno.InfernoScripts.World
             }
             else
             { 
-                _heli.DriveTo(_heliDriver, playerPosition, 100, DrivingStyle.IgnoreLights);
+                _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
             }
         }
 
