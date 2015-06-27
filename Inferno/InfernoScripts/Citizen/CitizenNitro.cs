@@ -22,10 +22,10 @@ namespace Inferno
     public class CitizenNitro : InfernoScript
     {
         private readonly string Keyword = "cnitro";
-        private readonly int probability = 10;
+        private readonly int probability = 5;
 
         public bool _isActive = false;
-        private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100,200};
+        private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100};
 
         /// <summary>
         /// スクリプトの実行間隔　３秒
