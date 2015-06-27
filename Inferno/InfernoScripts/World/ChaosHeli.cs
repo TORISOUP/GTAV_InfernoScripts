@@ -96,15 +96,16 @@ namespace Inferno.InfernoScripts.World
                     var ped = _heli.GetPedOnSeat(seat);
                     if (!ped.IsSafeExist()) continue;
 
-                    if (Random.Next(100) <= 30 && rapelingToPedInSeatList.Add(seat))
+                    if (Random.Next(100) <= 30 && !rapelingToPedInSeatList.Contains(seat))
                     {
                         //ラペリング降下のコルーチン
                         var id = StartCoroutine(PassengerRapeling(ped, seat));
                         coroutineIds.Add(id);
+                        rapelingToPedInSeatList.Add(seat);
                     }
                 }
 
-                yield return WaitForSeconds(1);
+                yield return WaitForSeconds(3);
             }
             ReleasePedAndHeli();
         }
