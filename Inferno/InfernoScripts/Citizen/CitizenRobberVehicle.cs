@@ -106,6 +106,9 @@ namespace Inferno
                 if(ped.IsInVehicle()) break;
                 yield return WaitForSeconds(1);
             }
+
+            if (!ped.IsSafeExist())yield break;
+            
             ped.TaskSetBlockingOfNonTemporaryEvents(true);
 
             //カオス化許可
