@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
 
 namespace Inferno
@@ -33,11 +28,10 @@ namespace Inferno
             Instance = this;
 
             Interval = 10;
-            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h, Scheduler.Immediate)
+            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
-
         }
     }
 }

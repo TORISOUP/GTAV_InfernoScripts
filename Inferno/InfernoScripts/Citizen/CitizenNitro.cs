@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Subjects;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using GTA;
-using GTA.Math;
 using GTA.Native;
-using Reactive.Bindings;
-using System.Reactive.Concurrency;
 
 namespace Inferno
 {

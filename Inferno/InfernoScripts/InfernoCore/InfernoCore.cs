@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using System.Windows.Forms;
 using GTA;
 using GTA.Native;
-using Reactive.Bindings;
+
 
 namespace Inferno
 {
@@ -27,43 +25,31 @@ namespace Inferno
 
         private CoroutineSystem coroutineSystem;
         private int _currentShardId = 0;
-        private ReactiveProperty<Ped[]> pedsNearPlayer = new ReactiveProperty<Ped[]>(Scheduler.Immediate);
+        private readonly BehaviorSubject<Ped[]> _pedsNearPlayer = new BehaviorSubject<Ped[]>(default(Ped[]));
         /// <summary>
         /// 周辺市民
         /// </summary>
-        public ReadOnlyReactiveProperty<Ped[]> PedsNearPlayer
-        {
-            get { return pedsNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
-        }
+        public IObservable<Ped[]> PedsNearPlayer => _pedsNearPlayer.AsObservable();
 
-        private ReactiveProperty<Vehicle[]> vehiclesNearPlayer = new ReactiveProperty<Vehicle[]>(Scheduler.Immediate);
+        private readonly BehaviorSubject<Vehicle[]> _vehiclesNearPlayer = new BehaviorSubject<Vehicle[]>(default(Vehicle[]));
         /// <summary>
         /// 周辺車両
         /// </summary>
-        public ReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer
-        {
-            get { return vehiclesNearPlayer.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); }
-        }
+        public IObservable<Vehicle[]> VehicleNearPlayer => _vehiclesNearPlayer.AsObservable();
 
-        private ReactiveProperty<Ped> playerPed = new ReactiveProperty<Ped>(Scheduler.Immediate);
+        private BehaviorSubject<Ped> playerPed = new BehaviorSubject<Ped>(default(Ped));
 
-        public ReadOnlyReactiveProperty<Ped> PlayerPed => playerPed.ToReadOnlyReactiveProperty(eventScheduler: Scheduler.Immediate); 
+        public IObservable<Ped> PlayerPed => playerPed.AsObservable(); 
 
         /// <summary>
         /// 25ms周期のTick
         /// </summary>
-        public static IObservable<Unit> OnTickAsObservable
-        {
-            get { return OnTickSubject.AsObservable(); }
-        }
+        public static IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
 
         /// <summary>
         /// キー入力
         /// </summary>
-        public static IObservable<KeyEventArgs> OnKeyDownAsObservable 
-        {
-            get { return OnKeyDownSubject.AsObservable(); }
-        }
+        public static IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
 
         public InfernoCore()
         {
@@ -74,14 +60,14 @@ namespace Inferno
 
             //25ms周期でイベントを飛ばす
             Interval = 25;
-            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h, Scheduler.Immediate)
+            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
 
             //キー入力
             Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
-                h => KeyDown -= h, Scheduler.Immediate)
+                h => KeyDown -= h)
                 .Select(e => e.EventArgs)
                 .Multicast(OnKeyDownSubject)
                 .Connect();
@@ -119,9 +105,9 @@ namespace Inferno
                 var player = Game.Player;
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
-                playerPed.Value = ped;
-                pedsNearPlayer.Value = World.GetNearbyPeds(ped, 500, 300);
-                vehiclesNearPlayer.Value = World.GetNearbyVehicles(ped, 500, 300);
+                playerPed.OnNext(ped);
+                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500, 300));
+                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500, 300));
             }
             catch (Exception e)
             {

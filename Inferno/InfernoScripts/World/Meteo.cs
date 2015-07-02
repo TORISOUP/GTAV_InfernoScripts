@@ -20,6 +20,8 @@ namespace Inferno
 
         protected override int TickInterval => 1000;
 
+        private static int count = 0;
+
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("meteo")
@@ -53,6 +55,7 @@ namespace Inferno
         {
             try
             {
+
                 var player = playerPed;
                 if(!player.IsSafeExist()) return;
 
@@ -63,7 +66,7 @@ namespace Inferno
                 if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)
                 {
                     addPosition.Normalize();
-                    addPosition *= Random.Next(10, 30);
+                    addPosition *= Random.Next(10, 20);
                 }
 
                 var targetPosition = playerPosition + addPosition;
@@ -80,10 +83,11 @@ namespace Inferno
                 if (!ped.IsSafeExist()) return;
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
                 ped.SetNotChaosPed(true);
-                ped.GiveWeapon(weapon, 1000); //指定武器所持
+                ped.GiveWeapon(weapon, 1); //指定武器所持
                 ped.EquipWeapon(weapon); //武器装備
                 ped.IsVisible = false;
                 ped.FreezePosition = true;
+                ped.SetPedFiringPattern((int)FiringPattern.SingleShot);
 
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
@@ -122,11 +126,7 @@ namespace Inferno
         /// <returns></returns>
         private IEnumerable<object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
         {
-            if (!ped.IsSafeExist()) yield break;
             ped.TaskShootAtCoord(targetPosition, 1000);
-            yield return null;
-            if (!ped.IsSafeExist()) yield break;
-            ped.Task.ClearAllImmediately();
             yield return WaitForSeconds(durationSecond);
             if(!ped.IsSafeExist()) yield break;
             ped.Delete();

@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 using GTA;
-using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
-using Reactive.Bindings;
 
 namespace Inferno.ChaosMode
 {
     internal class ChaosMode : InfernoScript
     {
         private readonly string Keyword = "chaos";
-        public ReactiveProperty<bool> _isActive = new ReactiveProperty<bool>(Scheduler.Immediate);
+        public bool _isActive = false;
         private CharacterChaosChecker chaosChecker;
 
         /// <summary>
@@ -56,10 +51,10 @@ namespace Inferno.ChaosMode
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive.Value = !_isActive.Value;
+                    _isActive = !_isActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
-                    if (_isActive.Value)
+                    if (_isActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
                     }
@@ -74,7 +69,7 @@ namespace Inferno.ChaosMode
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
-                .Where(x=> _isActive.Value && x.KeyCode == Keys.F7)
+                .Where(x=> _isActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
@@ -95,7 +90,7 @@ namespace Inferno.ChaosMode
 
             //interval間隔で市民をカオス化する
             OnTickAsObservable
-                .Where(_ => _isActive.Value && playerPed.IsSafeExist() && playerPed.IsAlive)
+                .Where(_ => _isActive && playerPed.IsSafeExist() && playerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット

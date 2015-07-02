@@ -71,7 +71,8 @@ namespace Inferno
         protected InfernoScript()
         {
             Observable.Interval(TimeSpan.FromMilliseconds(1))
-                .FirstAsync(_ => InfernoCore.Instance != null)
+                .Where(_ => InfernoCore.Instance != null)
+                .Take(1)
                 .Subscribe(_ =>
                 {
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
@@ -82,8 +83,7 @@ namespace Inferno
             //TickイベントをObservable化しておく
             Interval = TickInterval;
             OnTickAsObservable =
-                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h,
-                    Scheduler.Immediate)
+                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                     .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
