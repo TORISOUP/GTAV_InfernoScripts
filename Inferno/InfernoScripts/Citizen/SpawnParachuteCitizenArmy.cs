@@ -30,7 +30,7 @@ namespace Inferno
                     DrawText("SpawnParachuteCitizenArmy:" + _isActive, 3.0f);
                 });
 
-           // OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
 
             OnTickAsObservable
                 .Where(_ => _isActive)

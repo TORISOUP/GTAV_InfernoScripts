@@ -12,7 +12,7 @@ namespace Inferno
     public class CitizenNitro : InfernoScript
     {
         private readonly string Keyword = "cnitro";
-        private readonly int probability = 5;
+        private readonly int probability = 7;
 
         public bool _isActive = false;
         private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100};
@@ -20,10 +20,7 @@ namespace Inferno
         /// <summary>
         /// スクリプトの実行間隔　３秒
         /// </summary>
-        protected override int TickInterval
-        {
-            get { return 3000; }
-        }
+        protected override int TickInterval => 3000;
 
         protected override void Setup()
         {
