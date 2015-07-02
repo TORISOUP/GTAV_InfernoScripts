@@ -5,15 +5,14 @@ GTAV カオスMOD & インフェルノMOD
 
 MIT Licenseで公開します。
 
-導入方法
+導入方法（開発者向け）
 ====
 
 下記を参照設定に追加してください
 
 * [ScriptHookVDotNet.dll](http://gtaforums.com/topic/789907-vrel-community-script-hook-v-net/)
-* [ReactiveExtensions](https://www.nuget.org/packages/Rx-Main/)
-* [ReactiveProperty](https://www.nuget.org/packages/ReactiveProperty/)
+* [ReactiveExtensions](https://www.nuget.org/packages/Rx-Main/1.0.11226)(バージョンに注意)
 
-ReactiveProperty  
-Copyright (c) 2015 neuecc, xin9le, okazuki
-https://github.com/runceel/ReactiveProperty/blob/master/LICENSE.txt
+ビルド済みファイル（β0.2)
+===
+* [InfernoMOD](http://torisoup.net/gtav/InfernoMOD.zip)
