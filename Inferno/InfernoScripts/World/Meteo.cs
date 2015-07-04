@@ -14,7 +14,7 @@ namespace Inferno
     internal class Meteo : InfernoScript
     {
         private bool _isActive = false;
-        private List<Vector3> meteoLightPositionList = new List<Vector3>();
+        private readonly List<Vector3> meteoLightPositionList = new List<Vector3>();
 
         private bool IsPlayerMoveSlowly => playerPed.Velocity.Length() < 5.0f;
 
@@ -55,7 +55,6 @@ namespace Inferno
         {
             try
             {
-
                 var player = playerPed;
                 if(!player.IsSafeExist()) return;
 

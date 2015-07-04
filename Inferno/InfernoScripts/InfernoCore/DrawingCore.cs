@@ -18,10 +18,7 @@ namespace Inferno
         /// <summary>
         /// 100ms周期のTick
         /// </summary>
-        public static IObservable<Unit> OnDrawingTickAsObservable
-        {
-            get { return OnTickSubject.AsObservable(); }
-        }
+        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
 
         public DrawingCore()
         {

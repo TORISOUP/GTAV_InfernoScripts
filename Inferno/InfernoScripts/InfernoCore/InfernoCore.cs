@@ -65,6 +65,9 @@ namespace Inferno
                 .Multicast(OnTickSubject)
                 .Connect();
 
+            //コルーチンは直接イベントフックする
+            Tick += CoroutineLoop;
+
             //キー入力
             Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
                 h => KeyDown -= h)
@@ -74,26 +77,25 @@ namespace Inferno
 
 
             //市民と車両の更新
-            OnTickSubject
-                .Skip(9).Take(1).Repeat()
+            Observable.Interval(TimeSpan.FromMilliseconds(1000))
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
 
-            //コルーチン処理
-            OnTickSubject
-                .Subscribe(_ =>
-                {
-                    try
-                    {
-                        //コルーチンは4分割されて実行される
-                        coroutineSystem.CoroutineLoop(_currentShardId);
-                        _currentShardId = (_currentShardId + 1)%4;
-                    }
-                    catch (Exception e)
-                    {
-                        LogWrite(e.StackTrace);
-                    }
-                });
         }
+
+        private void CoroutineLoop(object sender, EventArgs e)
+        {
+            try
+            {
+                //コルーチンは4分割されて実行される
+                coroutineSystem.CoroutineLoop(_currentShardId);
+                _currentShardId = (_currentShardId + 1) % 4;
+            }
+            catch (Exception ex)
+            {
+                LogWrite(ex.StackTrace);
+            }
+        }
+
 
         /// <summary>
         /// 市民と車両のキャッシュ
