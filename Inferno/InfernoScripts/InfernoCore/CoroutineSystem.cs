@@ -54,8 +54,11 @@ namespace Inferno
         /// <param name="id">解除したいコルーチンID</param>
         public void RemoveCoroutine(uint id)
         {
-            //このタイミングでは消さない
-            _stopCoroutineList.Add(id);
+            lock (_lockObject)
+            {
+                //このタイミングでは消さない
+                _stopCoroutineList.Add(id);
+            }
         }
 
 

@@ -54,7 +54,7 @@ namespace Inferno
         public InfernoCore()
         {
             Instance = this;
-            
+
             _debugLogger = new DebugLogger(@"InfernoScript.log");
             coroutineSystem = new CoroutineSystem(_debugLogger);
 
@@ -78,8 +78,8 @@ namespace Inferno
 
             //市民と車両の更新
             Observable.Interval(TimeSpan.FromMilliseconds(1000))
+                .Where(_ => !Game.IsPaused)
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
-
         }
 
         private void CoroutineLoop(object sender, EventArgs e)
