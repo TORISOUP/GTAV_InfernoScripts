@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Windows;
-using GTA;
 using System.Drawing;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Point = System.Drawing.Point;
-using Size = System.Drawing.Size;
+using GTA;
 
 namespace Inferno
 {
@@ -18,16 +12,13 @@ namespace Inferno
     public class ToastTextDrawing : InfernoScript
     {
         private UIContainer _mContainer = null;
-        private int coroutineId = -1;
+        private int _coroutineId = -1;
         //画面表示を消すまでの残りCoroutineループ回数
-        private int currentTickCounter = 0;
+        private int _currentTickCounter = 0;
 
         public static ToastTextDrawing Instance { get; private set; }
 
-        protected override int TickInterval
-        {
-            get { return 1000; }
-        }
+        protected override int TickInterval => 1000;
 
         protected override void Setup()
         {
@@ -51,24 +42,24 @@ namespace Inferno
         /// <param name="time">時間</param>
         public void DrawDebugText(string text, float time)
         {
-            if (coroutineId >= 0)
+            if (_coroutineId >= 0)
             {
                 //既に実行中のがあれば止める
-                StopCoroutine((uint) coroutineId);
+                StopCoroutine((uint) _coroutineId);
             }
-            coroutineId = (int) StartCoroutine(DrawTextEnumerator(text, time));
+            _coroutineId = (int) StartCoroutine(DrawTextEnumerator(text, time));
 
         }
 
         private IEnumerable<Object>  DrawTextEnumerator(string text, float time)
         {
             _mContainer.Items.Clear();
-            currentTickCounter = (int)(time * 10);
+            _currentTickCounter = (int)(time * 10);
             _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
 
-            while (--currentTickCounter > 0)
+            while (--_currentTickCounter > 0)
             {
-                yield return currentTickCounter;
+                yield return _currentTickCounter;
             }
 
             _mContainer.Items.Clear();

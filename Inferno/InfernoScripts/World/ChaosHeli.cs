@@ -81,10 +81,10 @@ namespace Inferno.InfernoScripts.World
             {
                 if(!playerPed.IsSafeExist()) break;
 
-                var playerPos = playerPed.Position;
+                var targetPosition = playerPed.Position + new Vector3(0, 0, 10);
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
-                MoveHeli(_heliDriver, playerPos);
+                MoveHeli(_heliDriver, targetPosition);
 
                 SpawnPassengersToEmptySeat();
 
@@ -104,7 +104,7 @@ namespace Inferno.InfernoScripts.World
                     }
                 }
 
-                yield return WaitForSeconds(3);
+                yield return WaitForSeconds(1);
             }
             ReleasePedAndHeli();
         }
