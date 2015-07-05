@@ -104,6 +104,7 @@ namespace Inferno.ChaosMode
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
                 });
+
         }
 
 

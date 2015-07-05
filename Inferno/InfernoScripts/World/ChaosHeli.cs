@@ -18,7 +18,7 @@ namespace Inferno.InfernoScripts.World
         private Vehicle _heli = null;
         private Ped _heliDriver = null;
 
-        private HashSet<VehicleSeat> rapelingToPedInSeatList = new HashSet<VehicleSeat>();
+        private List<int> rapelingToPedInSeatList = new List<int>();
         private List<uint> coroutineIds = new List<uint>();
 
         //ヘリのドライバー以外の座席
@@ -79,7 +79,7 @@ namespace Inferno.InfernoScripts.World
             //ヘリが存在かつMODが有効の間回り続けるコルーチン
             while (_isActive && _heli.IsSafeExist() && _heli.IsAlive)
             {
-                if(!playerPed.IsSafeExist()) break;
+                if (!playerPed.IsSafeExist()) break;
 
                 var targetPosition = playerPed.Position + new Vector3(0, 0, 10);
 
@@ -95,12 +95,12 @@ namespace Inferno.InfernoScripts.World
                     var ped = _heli.GetPedOnSeat(seat);
                     if (!ped.IsSafeExist()) continue;
 
-                    if (Random.Next(100) <= 30 && !rapelingToPedInSeatList.Contains(seat))
+                    if (true)
                     {
                         //ラペリング降下のコルーチン
                         var id = StartCoroutine(PassengerRapeling(ped, seat));
                         coroutineIds.Add(id);
-                        rapelingToPedInSeatList.Add(seat);
+                        rapelingToPedInSeatList.Add((int)seat);
                     }
                 }
 
@@ -124,7 +124,7 @@ namespace Inferno.InfernoScripts.World
             //助手席はラペリングできない
             if(seat== VehicleSeat.Passenger) return false;
             //現在ラペリング中ならできない
-            if (rapelingToPedInSeatList.Contains(seat)) return false;
+            if (rapelingToPedInSeatList.Contains((int)seat)) return false;
             var ped = heli.GetPedOnSeat(seat);
             if (!ped.IsSafeExist() || !ped.IsHuman || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
 
@@ -171,21 +171,20 @@ namespace Inferno.InfernoScripts.World
             ped.IsInvincible = true;
 
             //一定時間降下するのを見守る
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 5; i++)
             {
                 //市民が消えていたり死んでたら監視終了
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
                 //着地していたら監視終了
-                if (!ped.IsInAir)
+                if (!ped.IsInAir && !ped.IsInVehicle())
                 {
                     break;
                 }
                 yield return WaitForSeconds(1);
             }
-
-            rapelingToPedInSeatList.Remove(seat);
-
+            rapelingToPedInSeatList.Remove((int)seat);
+            DrawText("RapelingEnd:"+seat,1.0f);
             if (!ped.IsSafeExist()) yield break;
 
             ped.IsInvincible = false;

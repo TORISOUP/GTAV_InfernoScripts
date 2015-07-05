@@ -77,8 +77,8 @@ namespace Inferno
 
 
             //市民と車両の更新
-            Observable.Interval(TimeSpan.FromMilliseconds(1000))
-                .Where(_ => !Game.IsPaused)
+            OnTickAsObservable
+                .Skip(9).Take(1).Repeat()
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
         }
 
