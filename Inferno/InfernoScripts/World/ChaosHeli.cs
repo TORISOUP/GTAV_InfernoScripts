@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive;
 using System.Text;
@@ -95,7 +96,7 @@ namespace Inferno.InfernoScripts.World
                     var ped = _heli.GetPedOnSeat(seat);
                     if (!ped.IsSafeExist()) continue;
 
-                    if (true)
+                    if (Random.Next(100) <= 30 && !rapelingToPedInSeatList.Contains((int)seat))
                     {
                         //ラペリング降下のコルーチン
                         var id = StartCoroutine(PassengerRapeling(ped, seat));
@@ -162,8 +163,6 @@ namespace Inferno.InfernoScripts.World
         /// <returns></returns>
         private IEnumerable<Object> PassengerRapeling(Ped ped, VehicleSeat seat)
         {
-            yield return RandomWait();
-
             if(!ped.IsSafeExist()) yield break;
             //ラペリング降下させる
             ped.TaskRappelFromHeli();
@@ -171,20 +170,15 @@ namespace Inferno.InfernoScripts.World
             ped.IsInvincible = true;
 
             //一定時間降下するのを見守る
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 10; i++)
             {
                 //市民が消えていたり死んでたら監視終了
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
-                //着地していたら監視終了
-                if (!ped.IsInAir && !ped.IsInVehicle())
-                {
-                    break;
-                }
                 yield return WaitForSeconds(1);
             }
             rapelingToPedInSeatList.Remove((int)seat);
-            DrawText("RapelingEnd:"+seat,1.0f);
+
             if (!ped.IsSafeExist()) yield break;
 
             ped.IsInvincible = false;
@@ -261,16 +255,18 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private void ReleasePedAndHeli()
         {
-            if (!_heli.IsSafeExist()) return;
             
             //ヘリの解放前に座席に座っている市民を解放する
             foreach (var seat in vehicleSeat)
             {
-                //座席にいる市民取得
-                var ped = _heli.GetPedOnSeat(seat);
-                if (ped.IsSafeExist())
+                if (_heli.IsSafeExist())
                 {
-                    ped.MarkAsNoLongerNeeded();
+                    //座席にいる市民取得
+                    var ped = _heli.GetPedOnSeat(seat);
+                    if (ped.IsSafeExist())
+                    {
+                        ped.MarkAsNoLongerNeeded();
+                    }
                 }
             }
 
@@ -282,11 +278,13 @@ namespace Inferno.InfernoScripts.World
                 //ヘリのドライバー解放
                 _heliDriver.MarkAsNoLongerNeeded();
             }
-
-            //ヘリ解放
-            _heli.SetProofs(false, false, false, false, false, false, false, false);
-            _heli.PetrolTankHealth = -100;
-            _heli.MarkAsNoLongerNeeded();
+            if (_heli.IsSafeExist())
+            {
+                //ヘリ解放
+                _heli.SetProofs(false, false, false, false, false, false, false, false);
+                _heli.PetrolTankHealth = -100;
+                _heli.MarkAsNoLongerNeeded();
+            }
         }
 
         /// <summary>
