@@ -17,8 +17,6 @@ namespace Inferno
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
 
-        protected override int TickInterval => 5000;
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("carmy")
@@ -30,7 +28,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
+            CreateTickAsObservable(5000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => CreateParachutePed());
         }

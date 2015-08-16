@@ -14,11 +14,6 @@ namespace Inferno
     /// </summary>
     public class EmergencyEscape : InfernoScript
     {
-        protected override int TickInterval
-        {
-            get { return 100; }
-        }
-
         protected override void Setup()
         {
             OnTickAsObservable

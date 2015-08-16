@@ -17,8 +17,6 @@ namespace Inferno
 
         private bool IsPlayerMoveSlowly => playerPed.Velocity.Length() < 5.0f;
 
-        protected override int TickInterval => 1000;
-
         private static int count = 0;
 
         protected override void Setup()
@@ -43,10 +41,10 @@ namespace Inferno
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
                     }
                 });
-                
 
-            OnTickAsObservable
-                .Where(_ => IsActive && Random.Next(0,100) <= 30)
+
+            CreateTickAsObservable(1000)
+               .Where(_ => IsActive && Random.Next(0,100) <= 30)
                 .Subscribe(_ => ShootMeteo());
         }
 

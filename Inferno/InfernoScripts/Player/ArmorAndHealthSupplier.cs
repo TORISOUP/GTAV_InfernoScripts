@@ -11,13 +11,6 @@ namespace Inferno
 {
     class ArmorAndHealthSupplier : InfernoScript
     {
-        /// <summary>
-        /// 0.1秒間隔
-        /// </summary>
-        protected override int TickInterval
-        {
-            get { return 100; }
-        }
 
         protected override void Setup()
         {

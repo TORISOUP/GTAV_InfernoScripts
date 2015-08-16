@@ -53,8 +53,9 @@ namespace Inferno
 
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
+        /// コルーチンの実行間隔も影響を受けるので注意
         /// </summary>
-        protected virtual int TickInterval => 1000;
+        protected  virtual int TickInterval => 100;
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
@@ -97,10 +98,8 @@ namespace Inferno
 
             coroutineSystem = new CoroutineSystem();
 
-            //コルーチンの実行
-            Observable.Timer(TimeSpan.FromMilliseconds(100))
-                .ObserveOn(Scheduler.CurrentThread)
-                .Where(_ => !Game.IsPaused)
+            ////コルーチンの実行
+            OnTickAsObservable
                 .Subscribe(_ => coroutineSystem.CoroutineLoop(0));
 
             try
@@ -142,21 +141,20 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 100ms単位でのTickイベントをInfernoCore.OnTickAsObservableから生成する
+        /// 100ms単位でのTickイベントをOnTickAsObservableから生成する
         /// </summary>
         /// <param name="millsecond">ミリ秒(100ミリ秒単位で指定）</param>
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {
-            var skipCount = (millsecond/100) - 1;
+            var skipCount = (millsecond/TickInterval) - 1;
 
             if (skipCount <= 0)
             {
-                return InfernoCore.OnTickAsObservable;
+                return OnTickAsObservable;
             }
 
-            return InfernoCore
-                .OnTickAsObservable
+            return OnTickAsObservable
                 .Skip(skipCount)
                 .Take(1)
                 .Repeat()
@@ -183,7 +181,8 @@ namespace Inferno
         /// <returns></returns>
         protected IEnumerable WaitForSeconds(float secound)
         {
-            var waitLoopCount = (int)(secound * 10);
+            var tick = TickInterval > 0 ? TickInterval : 10;
+            var waitLoopCount = (int) (secound*1000/tick);
             for (var i = 0; i < waitLoopCount; i++)
             {
                 yield return i;

@@ -24,11 +24,6 @@ namespace Inferno
         /// </summary>
         private readonly int probability = 20;
 
-        /// <summary>
-        /// 5秒間隔
-        /// </summary>
-        protected override int TickInterval => 5000;
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("robber")
@@ -38,7 +33,7 @@ namespace Inferno
                     DrawText("CitizenRobberVehicle:" + IsActive, 3.0f);
                 });
 
-            OnTickAsObservable
+            CreateTickAsObservable(5000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => RobberVehicle());
 

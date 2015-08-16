@@ -15,11 +15,6 @@ namespace Inferno
         private readonly int probability = 7;
         private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100};
 
-        /// <summary>
-        /// スクリプトの実行間隔　３秒
-        /// </summary>
-        protected override int TickInterval => 3000;
-
         protected override void Setup()
         {
             //キーワードが入力されたらON／OFFを切り替える
@@ -34,7 +29,7 @@ namespace Inferno
 
 
             //interval間隔で実行
-            OnTickAsObservable
+            CreateTickAsObservable(3000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => CitizenNitroAction());
 

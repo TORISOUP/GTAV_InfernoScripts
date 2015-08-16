@@ -21,8 +21,6 @@ namespace Inferno.InfernoScripts.World
         //ヘリのドライバー以外の座席
         private readonly List<VehicleSeat> vehicleSeat = new List<VehicleSeat> { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
 
-        protected override int TickInterval => 40*1000;
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("cheli")
@@ -54,8 +52,8 @@ namespace Inferno.InfernoScripts.World
                 .Where(x => !x)
                 .Subscribe(_ => ResetHeli());
 
-            OnTickAsObservable
-                .Where(_=>IsActive) 
+            CreateTickAsObservable(40*1000)
+               .Where(_=>IsActive) 
                 .Subscribe(_ =>
                 {
                     var player = playerPed;

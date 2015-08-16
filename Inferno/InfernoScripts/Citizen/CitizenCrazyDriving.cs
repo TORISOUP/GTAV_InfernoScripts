@@ -18,10 +18,7 @@ namespace Inferno
     {
         private readonly float PlayerAroundDistance = 300f;
         private List<Entity> affectPeds = new List<Entity>(); 
-        /// <summary>
-        /// 3秒間隔
-        /// </summary>
-        protected override int TickInterval => 3000;
+
 
         protected override void Setup()
         {
@@ -35,7 +32,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
+            CreateTickAsObservable(3000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => RunAway());
         }

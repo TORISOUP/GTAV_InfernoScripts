@@ -21,10 +21,6 @@ namespace Inferno
 
         private Vector2 textPositionScale = new Vector2(0.5f,0.75f);
 
-        protected override int TickInterval
-        {
-            get { return 500; }
-        }
 
         protected override void Setup()
         {
@@ -39,8 +35,8 @@ namespace Inferno
                 .Where(_ => _mContainer.Items.Count > 0)
                 .Subscribe(_ => _mContainer.Draw());
 
-            this.OnTickAsObservable
-                .Where(_ => playerPed.IsSafeExist())
+            CreateTickAsObservable(500)
+               .Where(_ => playerPed.IsSafeExist())
                 .Select(x => playerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Subscribe(isAlive =>

@@ -13,7 +13,6 @@ namespace Inferno
     /// </summary>
     class CitizenVehicleBomb:InfernoScript
     {
-        protected override int TickInterval => 5000;
         private float probability = 10;
 
         protected override void Setup()
@@ -28,9 +27,9 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
+            CreateTickAsObservable(5000)
                 .Where(_ => IsActive)
-                .Subscribe(_ =>VehicleBombAction());
+                .Subscribe(_ => VehicleBombAction());
         }
 
         void VehicleBombAction()
