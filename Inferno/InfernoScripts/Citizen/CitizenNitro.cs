@@ -13,8 +13,6 @@ namespace Inferno
     {
         private readonly string Keyword = "cnitro";
         private readonly int probability = 7;
-
-        public bool _isActive = false;
         private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100};
 
         /// <summary>
@@ -28,16 +26,16 @@ namespace Inferno
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("CitizenNitro:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("CitizenNitro:" + IsActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
 
             //interval間隔で実行
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => IsActive)
                 .Subscribe(_ => CitizenNitroAction());
 
         }

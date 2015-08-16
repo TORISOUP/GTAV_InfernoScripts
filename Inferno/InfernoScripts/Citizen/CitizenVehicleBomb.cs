@@ -14,7 +14,6 @@ namespace Inferno
     class CitizenVehicleBomb:InfernoScript
     {
         protected override int TickInterval => 5000;
-        private bool _isActive = false;
         private float probability = 10;
 
         protected override void Setup()
@@ -23,14 +22,14 @@ namespace Inferno
             CreateInputKeywordAsObservable("vbomb")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("VehicleBomb:"+_isActive,3.0f);
+                    IsActive = !IsActive;
+                    DrawText("VehicleBomb:"+IsActive,3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => IsActive)
                 .Subscribe(_ =>VehicleBombAction());
         }
 

@@ -14,8 +14,6 @@ namespace Inferno.InfernoScripts.World
 {
     class ChaosHeli : InfernoScript
     {
-
-        private bool _isActive = false;
         private Vehicle _heli = null;
         private Ped _heliDriver = null;
         private List<uint> coroutineIds = new List<uint>();
@@ -30,10 +28,10 @@ namespace Inferno.InfernoScripts.World
             CreateInputKeywordAsObservable("cheli")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
+                    IsActive = !IsActive;
                     StopAllChaosHeliCoroutine();
-                    DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
-                    if (_isActive){
+                    DrawText("ChaosHeli:" + (IsActive ? "ON" : "OFF"), 3.0f);
+                    if (IsActive){
                         ResetHeli();
                     }
                     else{
@@ -44,20 +42,20 @@ namespace Inferno.InfernoScripts.World
             OnAllOnCommandObservable
                 .Subscribe(_ =>
                 {
-                    _isActive = true;
+                    IsActive = true;
                     if (_heli.IsSafeExist()) return;
                     ResetHeli();
                 });
 
             //ヘリのリセット処理
            CreateTickAsObservable(2000)
-                .Where(_=> _isActive && playerPed.IsSafeExist())
+                .Where(_=> IsActive && playerPed.IsSafeExist())
                 .Select(_ => playerPed.IsAlive)
                 .Where(x => !x)
                 .Subscribe(_ => ResetHeli());
 
             OnTickAsObservable
-                .Where(_=>_isActive) 
+                .Where(_=>IsActive) 
                 .Subscribe(_ =>
                 {
                     var player = playerPed;
@@ -74,7 +72,7 @@ namespace Inferno.InfernoScripts.World
             yield return RandomWait();
 
             //ヘリが存在かつMODが有効の間回り続けるコルーチン
-            while (_isActive && _heli.IsSafeExist() && _heli.IsAlive)
+            while (IsActive && _heli.IsSafeExist() && _heli.IsAlive)
             {
                 if (!playerPed.IsSafeExist()) break;
 
@@ -186,7 +184,6 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private void ResetHeli()
         {
-            DrawText("Reset Heli", 3.0f);
             StopAllChaosHeliCoroutine();
             ReleasePedAndHeli();
             CreateChaosHeli();

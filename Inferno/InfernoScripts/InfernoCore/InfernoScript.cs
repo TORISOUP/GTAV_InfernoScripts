@@ -20,6 +20,8 @@ namespace Inferno
     {
         protected Random Random = new Random();
 
+        protected bool IsActive = false;
+
         /// <summary>
         /// プレイヤのped
         /// </summary>

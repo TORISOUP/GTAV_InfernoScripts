@@ -13,7 +13,6 @@ namespace Inferno
 {
     internal class Meteo : InfernoScript
     {
-        private bool _isActive = false;
         private readonly List<Vector3> meteoLightPositionList = new List<Vector3>();
 
         private bool IsPlayerMoveSlowly => playerPed.Velocity.Length() < 5.0f;
@@ -27,11 +26,11 @@ namespace Inferno
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("Meteo:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("Meteo:" + IsActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             //落下地点マーカ描画
             OnDrawingTickAsObservable
@@ -47,7 +46,7 @@ namespace Inferno
                 
 
             OnTickAsObservable
-                .Where(_ => _isActive && Random.Next(0,100) <= 30)
+                .Where(_ => IsActive && Random.Next(0,100) <= 30)
                 .Subscribe(_ => ShootMeteo());
         }
 

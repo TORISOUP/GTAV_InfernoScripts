@@ -11,7 +11,6 @@ namespace Inferno.ChaosMode
     internal class ChaosMode : InfernoScript
     {
         private readonly string Keyword = "chaos";
-        public bool _isActive = false;
         private CharacterChaosChecker chaosChecker;
 
         /// <summary>
@@ -51,10 +50,10 @@ namespace Inferno.ChaosMode
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
+                    IsActive = !IsActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
-                    if (_isActive)
+                    if (IsActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
                     }
@@ -69,7 +68,7 @@ namespace Inferno.ChaosMode
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
-                .Where(x=> _isActive && x.KeyCode == Keys.F7)
+                .Where(x=> IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
@@ -90,7 +89,7 @@ namespace Inferno.ChaosMode
 
             //interval間隔で市民をカオス化する
             OnTickAsObservable
-                .Where(_ => _isActive && playerPed.IsSafeExist() && playerPed.IsAlive)
+                .Where(_ => IsActive && playerPed.IsSafeExist() && playerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
