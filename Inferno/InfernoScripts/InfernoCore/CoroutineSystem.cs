@@ -22,7 +22,6 @@ namespace Inferno
         private readonly Object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
         private readonly DebugLogger logger;
-        private readonly int _shardCount = 1; //シャードID
 
         public CoroutineSystem(DebugLogger logger = null)
         {
@@ -66,7 +65,7 @@ namespace Inferno
         /// コルーチンの処理を行う
         /// </summary>
         /// <param name="shardId">シャードID(0～3)</param>
-        public void CoroutineLoop(int shardId)
+        public void CoroutineLoop()
         {
             KeyValuePair<uint, IEnumerator>[] coroutineArray;
 
@@ -83,7 +82,7 @@ namespace Inferno
 
             var endIdList = new List<uint>();
 
-            foreach (var coroutine in coroutineArray.Where(x => x.Key%4 == shardId))
+            foreach (var coroutine in coroutineArray)
             {
                 try
                 {

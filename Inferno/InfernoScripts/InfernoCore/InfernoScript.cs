@@ -100,7 +100,7 @@ namespace Inferno
 
             ////コルーチンの実行
             OnTickAsObservable
-                .Subscribe(_ => coroutineSystem.CoroutineLoop(0));
+                .Subscribe(_ => coroutineSystem.CoroutineLoop());
 
             try
             {

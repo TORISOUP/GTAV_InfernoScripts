@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -108,9 +109,7 @@ namespace Inferno
         private IEnumerable<object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
             meteoLightPositionList.Add(position);
-
             yield return WaitForSeconds(durationSecond);
-
             meteoLightPositionList.Remove(position);
         }
 
