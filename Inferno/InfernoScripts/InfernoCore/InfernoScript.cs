@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GTA;
@@ -55,6 +56,8 @@ namespace Inferno
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
+        private CoroutineSystem coroutineSystem;
+
         /// <summary>
         /// テキスト表示
         /// </summary>
@@ -89,6 +92,15 @@ namespace Inferno
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+
+            coroutineSystem = new CoroutineSystem();
+
+            //コルーチンの実行
+            Observable.Timer(TimeSpan.FromMilliseconds(100))
+                .ObserveOn(Scheduler.CurrentThread)
+                .Where(_ => !Game.IsPaused)
+                .Subscribe(_ => coroutineSystem.CoroutineLoop(0));
+
             try
             {
                 Setup();
@@ -134,7 +146,7 @@ namespace Inferno
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {
-            var skipCount = (millsecond/50) - 1;
+            var skipCount = (millsecond/100) - 1;
 
             if (skipCount <= 0)
             {
@@ -151,12 +163,15 @@ namespace Inferno
 
         protected uint StartCoroutine(IEnumerable<Object> coroutine)
         {
-          return InfernoCore.Instance.AddCrotoutine(coroutine);
+            return coroutineSystem.AddCrotoutine(coroutine);
         }
 
         protected void StopCoroutine(uint id)
         {
-            InfernoCore.Instance.RemoveCoroutine(id);
+            if (coroutineSystem != null)
+            {
+                coroutineSystem.RemoveCoroutine(id);
+            }
         }
 
         /// <summary>

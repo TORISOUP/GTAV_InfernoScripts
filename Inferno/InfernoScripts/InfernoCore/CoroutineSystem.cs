@@ -22,7 +22,7 @@ namespace Inferno
         private readonly Object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
         private readonly DebugLogger logger;
-        private readonly int _shardCount = 2; //シャードID
+        private readonly int _shardCount = 1; //シャードID
 
         public CoroutineSystem(DebugLogger logger = null)
         {
