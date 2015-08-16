@@ -58,8 +58,8 @@ namespace Inferno
             _debugLogger = new DebugLogger(@"InfernoScript.log");
             coroutineSystem = new CoroutineSystem(_debugLogger);
 
-            //25ms周期でイベントを飛ばす
-            Interval = 25;
+            //50ms周期でイベントを飛ばす
+            Interval = 50;
             Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
@@ -78,7 +78,7 @@ namespace Inferno
 
             //市民と車両の更新
             OnTickAsObservable
-                .Skip(9).Take(1).Repeat()
+                .Skip(4).Take(1).Repeat()
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
         }
 
@@ -88,7 +88,7 @@ namespace Inferno
             {
                 //コルーチンは4分割されて実行される
                 coroutineSystem.CoroutineLoop(_currentShardId);
-                _currentShardId = (_currentShardId + 1) % 4;
+                _currentShardId = (_currentShardId + 1) % 2;
             }
             catch (Exception ex)
             {

@@ -134,7 +134,7 @@ namespace Inferno
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {
-            var skipCount = (millsecond/100) - 1;
+            var skipCount = (millsecond/50) - 1;
 
             if (skipCount <= 0)
             {
