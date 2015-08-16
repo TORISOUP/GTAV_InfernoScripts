@@ -18,10 +18,8 @@ namespace Inferno.InfernoScripts.World
         private bool _isActive = false;
         private Vehicle _heli = null;
         private Ped _heliDriver = null;
-
-        private List<int> rapelingToPedInSeatList = new List<int>();
         private List<uint> coroutineIds = new List<uint>();
-
+        private HashSet<Ped> raperingPedList = new HashSet<Ped>();  
         //ヘリのドライバー以外の座席
         private readonly List<VehicleSeat> vehicleSeat = new List<VehicleSeat> { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
 
@@ -33,7 +31,6 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     _isActive = !_isActive;
-                    rapelingToPedInSeatList.Clear();
                     StopAllChaosHeliCoroutine();
                     DrawText("ChaosHeli:" + (_isActive ? "ON" : "OFF"), 3.0f);
                     if (_isActive){
@@ -49,7 +46,6 @@ namespace Inferno.InfernoScripts.World
                 {
                     _isActive = true;
                     if (_heli.IsSafeExist()) return;
-                    rapelingToPedInSeatList.Clear();
                     ResetHeli();
                 });
 
@@ -95,13 +91,13 @@ namespace Inferno.InfernoScripts.World
                     if (!CheckRapeling(_heli, seat)) continue;
                     var ped = _heli.GetPedOnSeat(seat);
                     if (!ped.IsSafeExist()) continue;
-
-                    if (Random.Next(100) <= 30 && !rapelingToPedInSeatList.Contains((int)seat))
+                    if(raperingPedList.Contains(ped)) continue;
+                    if (Random.Next(100) <= 30)
                     {
                         //ラペリング降下のコルーチン
                         var id = StartCoroutine(PassengerRapeling(ped, seat));
+                        raperingPedList.Add(ped);
                         coroutineIds.Add(id);
-                        rapelingToPedInSeatList.Add((int)seat);
                     }
                 }
 
@@ -125,7 +121,6 @@ namespace Inferno.InfernoScripts.World
             //助手席はラペリングできない
             if(seat== VehicleSeat.Passenger) return false;
             //現在ラペリング中ならできない
-            if (rapelingToPedInSeatList.Contains((int)seat)) return false;
             var ped = heli.GetPedOnSeat(seat);
             if (!ped.IsSafeExist() || !ped.IsHuman || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
 
@@ -151,7 +146,8 @@ namespace Inferno.InfernoScripts.World
                _heliDriver.Task.ClearAll();
             }
             else
-            { 
+            {
+                _heliDriver.Task.ClearAll();
                 _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
             }
         }
@@ -177,7 +173,6 @@ namespace Inferno.InfernoScripts.World
 
                 yield return WaitForSeconds(1);
             }
-            rapelingToPedInSeatList.Remove((int)seat);
 
             if (!ped.IsSafeExist()) yield break;
 
@@ -191,9 +186,11 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private void ResetHeli()
         {
+            DrawText("Reset Heli", 3.0f);
             StopAllChaosHeliCoroutine();
             ReleasePedAndHeli();
             CreateChaosHeli();
+            raperingPedList.Clear();
         }
 
         /// <summary>
@@ -297,7 +294,6 @@ namespace Inferno.InfernoScripts.World
                 StopCoroutine(id);
             }
             coroutineIds.Clear();
-            rapelingToPedInSeatList.Clear();
         }
 
         /// <summary>
