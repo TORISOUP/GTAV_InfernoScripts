@@ -45,8 +45,8 @@ namespace Inferno
                     if (isAlive) return;
                     
                     //死んでいたら死因を出す
-                    var damageWeapon = getCauseOfDeath(playerPed);
-                    if(damageWeapon==null)return;
+                    var damageWeapon = playerPed.GetCauseOfDeath();
+                    if(damageWeapon==0)return;
                         
                     var damageName = damageWeapon.ToString();
                     if (playerPed.GetKiller() == playerPed) damageName += "(SUICIDE)";
@@ -57,23 +57,6 @@ namespace Inferno
                     _mContainer.Items.Add(text);
                 });
 
-        }
-
-        /// <summary>
-        /// 死因を取得する
-        /// </summary>
-        /// <param name="ped">市民</param>
-        /// <returns>死因</returns>
-        private Weapon? getCauseOfDeath(Ped ped)
-        {
-            foreach (Weapon w in Enum.GetValues(typeof(Weapon)))
-            {
-                if (ped.GetCauseOfDeath() == w)
-                {
-                    return w;
-                }
-            }
-            return null;
         }
     }
 }
