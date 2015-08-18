@@ -17,23 +17,19 @@ namespace Inferno
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
 
-        private bool _isActive = false;
-
-        protected override int TickInterval => 5000;
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("carmy")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("SpawnParachuteCitizenArmy:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("SpawnParachuteCitizenArmy:" + IsActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
-                .Where(_ => _isActive)
+            CreateTickAsObservable(5000)
+                .Where(_ => IsActive)
                 .Subscribe(_ => CreateParachutePed());
         }
 

@@ -18,8 +18,6 @@ namespace Inferno
 
         public static ToastTextDrawing Instance { get; private set; }
 
-        protected override int TickInterval => 1000;
-
         protected override void Setup()
         {
             Instance = this;

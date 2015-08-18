@@ -56,17 +56,13 @@ namespace Inferno
             Instance = this;
 
             _debugLogger = new DebugLogger(@"InfernoScript.log");
-            coroutineSystem = new CoroutineSystem(_debugLogger);
 
-            //25ms周期でイベントを飛ばす
-            Interval = 25;
+            //100ms周期でイベントを飛ばす
+            Interval = 100;
             Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
-
-            //コルーチンは直接イベントフックする
-            Tick += CoroutineLoop;
 
             //キー入力
             Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
@@ -78,24 +74,8 @@ namespace Inferno
 
             //市民と車両の更新
             OnTickAsObservable
-                .Skip(9).Take(1).Repeat()
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
         }
-
-        private void CoroutineLoop(object sender, EventArgs e)
-        {
-            try
-            {
-                //コルーチンは4分割されて実行される
-                coroutineSystem.CoroutineLoop(_currentShardId);
-                _currentShardId = (_currentShardId + 1) % 4;
-            }
-            catch (Exception ex)
-            {
-                LogWrite(ex.StackTrace);
-            }
-        }
-
 
         /// <summary>
         /// 市民と車両のキャッシュ
@@ -117,24 +97,6 @@ namespace Inferno
             }
         }
 
-        /// <summary>
-        /// コルーチンの登録
-        /// </summary>
-        /// <param name="coroutine">コルーチン</param>
-        /// <returns>ID</returns>
-        public uint AddCrotoutine(IEnumerable<Object> coroutine)
-        {
-           return coroutineSystem.AddCrotoutine(coroutine);
-        }
-
-        /// <summary>
-        /// コルーチンの登録解除
-        /// </summary>
-        /// <param name="id">解除したいコルーチンID</param>
-        public void RemoveCoroutine(uint id)
-        {
-            coroutineSystem.RemoveCoroutine(id);
-        }
 
         public void LogWrite(string message)
         {

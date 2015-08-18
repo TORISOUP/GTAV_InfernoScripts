@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GTA;
@@ -18,6 +19,8 @@ namespace Inferno
     public abstract class InfernoScript : Script
     {
         protected Random Random = new Random();
+
+        protected bool IsActive = false;
 
         /// <summary>
         /// プレイヤのped
@@ -50,10 +53,13 @@ namespace Inferno
 
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
+        /// コルーチンの実行間隔も影響を受けるので注意
         /// </summary>
-        protected virtual int TickInterval => 1000;
+        protected  virtual int TickInterval => 100;
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+
+        private CoroutineSystem coroutineSystem;
 
         /// <summary>
         /// テキスト表示
@@ -89,6 +95,18 @@ namespace Inferno
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+
+            coroutineSystem = new CoroutineSystem();
+
+            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 10)*10))
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    ////コルーチンの実行
+                    OnTickAsObservable
+                        .Subscribe(x => coroutineSystem.CoroutineLoop());
+                });
+
             try
             {
                 Setup();
@@ -128,21 +146,20 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 100ms単位でのTickイベントをInfernoCore.OnTickAsObservableから生成する
+        /// 100ms単位でのTickイベントをOnTickAsObservableから生成する
         /// </summary>
         /// <param name="millsecond">ミリ秒(100ミリ秒単位で指定）</param>
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {
-            var skipCount = (millsecond/100) - 1;
+            var skipCount = (millsecond/TickInterval) - 1;
 
             if (skipCount <= 0)
             {
-                return InfernoCore.OnTickAsObservable;
+                return OnTickAsObservable;
             }
 
-            return InfernoCore
-                .OnTickAsObservable
+            return OnTickAsObservable
                 .Skip(skipCount)
                 .Take(1)
                 .Repeat()
@@ -151,12 +168,15 @@ namespace Inferno
 
         protected uint StartCoroutine(IEnumerable<Object> coroutine)
         {
-          return InfernoCore.Instance.AddCrotoutine(coroutine);
+            return coroutineSystem.AddCrotoutine(coroutine);
         }
 
         protected void StopCoroutine(uint id)
         {
-            InfernoCore.Instance.RemoveCoroutine(id);
+            if (coroutineSystem != null)
+            {
+                coroutineSystem.RemoveCoroutine(id);
+            }
         }
 
         /// <summary>
@@ -166,7 +186,8 @@ namespace Inferno
         /// <returns></returns>
         protected IEnumerable WaitForSeconds(float secound)
         {
-            var waitLoopCount = (int)(secound * 10);
+            var tick = TickInterval > 0 ? TickInterval : 10;
+            var waitLoopCount = (int) (secound*1000/tick);
             for (var i = 0; i < waitLoopCount; i++)
             {
                 yield return i;

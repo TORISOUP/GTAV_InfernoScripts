@@ -16,29 +16,24 @@ namespace Inferno
     /// </summary>
     internal class CitizenCrazyDriving : InfernoScript
     {
-
-        private bool _isActive = false;
         private readonly float PlayerAroundDistance = 300f;
         private List<Entity> affectPeds = new List<Entity>(); 
-        /// <summary>
-        /// 3秒間隔
-        /// </summary>
-        protected override int TickInterval => 3000;
+
 
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("runaway")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("CitizenCrazyDriving:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("CitizenCrazyDriving:" + IsActive, 3.0f);
 
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
-                .Where(_ => _isActive)
+            CreateTickAsObservable(3000)
+                .Where(_ => IsActive)
                 .Subscribe(_ => RunAway());
         }
 

@@ -11,15 +11,6 @@ namespace Inferno
 {
     class ArmorAndHealthSupplier : InfernoScript
     {
-        bool _isActive = false;
-
-        /// <summary>
-        /// 0.1秒間隔
-        /// </summary>
-        protected override int TickInterval
-        {
-            get { return 100; }
-        }
 
         protected override void Setup()
         {
@@ -27,15 +18,15 @@ namespace Inferno
             CreateInputKeywordAsObservable("armor")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("SupplyArmorAndHealth:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("SupplyArmorAndHealth:" + IsActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             //ミッションが始まった時
             OnTickAsObservable
-                .Where(_ => _isActive)
+                .Where(_ => IsActive)
                 .Select(_ => Game.MissionFlag)
                 .DistinctUntilChanged()
                 .Where(x => x)
@@ -43,7 +34,7 @@ namespace Inferno
 
             //プレイヤが復活した時
             OnTickAsObservable
-                .Where(_ => _isActive && playerPed.IsSafeExist())
+                .Where(_ => IsActive && playerPed.IsSafeExist())
                 .Select(_ => playerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Skip(1) //ONにした直後の判定結果は無視

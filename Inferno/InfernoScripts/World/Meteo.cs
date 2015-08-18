@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,12 +14,9 @@ namespace Inferno
 {
     internal class Meteo : InfernoScript
     {
-        private bool _isActive = false;
         private readonly List<Vector3> meteoLightPositionList = new List<Vector3>();
 
         private bool IsPlayerMoveSlowly => playerPed.Velocity.Length() < 5.0f;
-
-        protected override int TickInterval => 1000;
 
         private static int count = 0;
 
@@ -27,11 +25,11 @@ namespace Inferno
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
-                    DrawText("Meteo:" + _isActive, 3.0f);
+                    IsActive = !IsActive;
+                    DrawText("Meteo:" + IsActive, 3.0f);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => _isActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             //落下地点マーカ描画
             OnDrawingTickAsObservable
@@ -44,10 +42,10 @@ namespace Inferno
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
                     }
                 });
-                
 
-            OnTickAsObservable
-                .Where(_ => _isActive && Random.Next(0,100) <= 30)
+
+            CreateTickAsObservable(1000)
+               .Where(_ => IsActive && Random.Next(0,100) <= 30)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -111,9 +109,7 @@ namespace Inferno
         private IEnumerable<object>  CreateMeteoLight(Vector3 position, float durationSecond)
         {
             meteoLightPositionList.Add(position);
-
             yield return WaitForSeconds(durationSecond);
-
             meteoLightPositionList.Remove(position);
         }
 

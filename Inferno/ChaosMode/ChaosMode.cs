@@ -11,7 +11,6 @@ namespace Inferno.ChaosMode
     internal class ChaosMode : InfernoScript
     {
         private readonly string Keyword = "chaos";
-        public bool _isActive = false;
         private CharacterChaosChecker chaosChecker;
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Inferno.ChaosMode
         private MissionCharacterTreatmentType nextTreatType;
 
 
-        protected override int TickInterval => 1000;
+        protected override int TickInterval => 100;
 
         protected override void Setup()
         {
@@ -51,10 +50,10 @@ namespace Inferno.ChaosMode
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _isActive = !_isActive;
+                    IsActive = !IsActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
-                    if (_isActive)
+                    if (IsActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
                     }
@@ -69,7 +68,7 @@ namespace Inferno.ChaosMode
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
-                .Where(x=> _isActive && x.KeyCode == Keys.F7)
+                .Where(x=> IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
@@ -88,14 +87,14 @@ namespace Inferno.ChaosMode
             //interval設定
             Interval = chaosModeSetting.Interval;
 
-            //interval間隔で市民をカオス化する
-            OnTickAsObservable
-                .Where(_ => _isActive && playerPed.IsSafeExist() && playerPed.IsAlive)
+            //市民をカオス化する
+            CreateTickAsObservable(1000)
+                .Where(_ => IsActive && playerPed.IsSafeExist() && playerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
-            OnTickAsObservable
-                .Where(_=> playerPed.IsSafeExist())
+            CreateTickAsObservable(1000)
+                .Where(_ => playerPed.IsSafeExist())
                 .Select(_ => playerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)

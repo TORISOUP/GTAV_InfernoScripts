@@ -23,7 +23,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-
+            IsActive = true;
             OnTickAsObservable
                 .Where(
                     _ =>
