@@ -406,6 +406,11 @@ namespace Inferno
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, ped, target, true);
         }
 
+        public static Weapon GetCauseOfDeath(this Ped ped)
+        {
+            return (Weapon)Function.Call<int>(Hash.GET_PED_CAUSE_OF_DEATH, ped);
+        }
+
 
         /// <summary>
         /// テキストのフォント指定
