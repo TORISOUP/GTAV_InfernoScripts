@@ -49,7 +49,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.MICROSMG,
                 Weapon.MINIGUN,
                 Weapon.MUSCKET,
-                Weapon.MARKSMANRIFE,
+                Weapon.MARKSMANRIFLE,
                 Weapon.PISTOL,
                 Weapon.PISTOL50,
                 Weapon.PUMPSHOTGUN,
