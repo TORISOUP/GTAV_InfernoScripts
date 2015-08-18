@@ -101,21 +101,21 @@ namespace Inferno.InfernoScripts.World
 
                 SpawnPassengersToEmptySeat();
 
-                //各座席ごとの処理
-                foreach (var seat in vehicleSeat)
-                {
-                    if (!CheckRapeling(_heli, seat)) continue;
-                    var ped = _heli.GetPedOnSeat(seat);
-                    if (!ped.IsSafeExist()) continue;
-                    if(raperingPedList.Contains(ped)) continue;
-                    if (Random.Next(100) <= 30)
-                    {
-                        //ラペリング降下のコルーチン
-                        var id = StartCoroutine(PassengerRapeling(ped, seat));
-                        raperingPedList.Add(ped);
-                        coroutineIds.Add(id);
-                    }
-                }
+                ////各座席ごとの処理
+                //foreach (var seat in vehicleSeat)
+                //{
+                //    if (!CheckRapeling(_heli, seat)) continue;
+                //    var ped = _heli.GetPedOnSeat(seat);
+                //    if (!ped.IsSafeExist()) continue;
+                //    if(raperingPedList.Contains(ped)) continue;
+                //    if (Random.Next(100) <= 30)
+                //    {
+                //        //ラペリング降下のコルーチン
+                //        var id = StartCoroutine(PassengerRapeling(ped, seat));
+                //        raperingPedList.Add(ped);
+                //        coroutineIds.Add(id);
+                //    }
+                //}
 
                 yield return WaitForSeconds(1);
             }
