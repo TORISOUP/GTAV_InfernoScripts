@@ -17,6 +17,8 @@ namespace Inferno.InfernoScripts.World
         private Vehicle _heli = null;
         private Ped _heliDriver = null;
         private List<uint> coroutineIds = new List<uint>();
+        private uint _observeHeliCoroutineId;
+        private uint _observePlayerCoroutineId;
         private HashSet<Ped> raperingPedList = new HashSet<Ped>();  
         //ヘリのドライバー以外の座席
         private readonly List<VehicleSeat> vehicleSeat = new List<VehicleSeat> { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
@@ -31,9 +33,13 @@ namespace Inferno.InfernoScripts.World
                     DrawText("ChaosHeli:" + (IsActive ? "ON" : "OFF"), 3.0f);
                     if (IsActive){
                         ResetHeli();
+                        _observeHeliCoroutineId = StartCoroutine(ObserveHeliCoroutine());
+                        _observePlayerCoroutineId = StartCoroutine(ObservePlayerCoroutine());
                     }
                     else{
                         ReleasePedAndHeli();
+                        StopCoroutine(_observeHeliCoroutineId);
+                        StopCoroutine(_observePlayerCoroutineId);
                     }
                 });
 
@@ -45,25 +51,39 @@ namespace Inferno.InfernoScripts.World
                     ResetHeli();
                 });
 
-            //ヘリのリセット処理
-           CreateTickAsObservable(2000)
-                .Where(_=> IsActive && playerPed.IsSafeExist())
-                .Select(_ => playerPed.IsAlive)
-                .Where(x => !x)
-                .Subscribe(_ => ResetHeli());
-
-            CreateTickAsObservable(40*1000)
-               .Where(_=>IsActive) 
-                .Subscribe(_ =>
-                {
-                    var player = playerPed;
-                    if(!player.IsSafeExist()) return;
-                    if (!_heli.IsSafeExist() || _heli.IsDead || !_heli.IsInRangeOf(player.Position, 200.0f))
-                    {
-                        ResetHeli();
-                    }
-                });
         }
+
+        /// <summary>
+        /// プレイヤを監視するコルーチン
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<object> ObservePlayerCoroutine()
+        {
+            while (IsActive)
+            {
+                if (playerPed.IsSafeExist() && !playerPed.IsAlive)
+                {
+                    ResetHeli();
+                }
+                yield return WaitForSeconds(2);
+            }
+        } 
+
+        /// <summary>
+        /// ヘリが追いつけない状態になっていないか監視するコルーチン
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<object> ObserveHeliCoroutine()
+        {
+            while (IsActive)
+            {
+                if (playerPed.IsSafeExist() && !_heli.IsSafeExist() || _heli.IsDead || !_heli.IsInRangeOf(playerPed.Position, 200.0f))
+                {
+                    ResetHeli();
+                }
+                yield return WaitForSeconds(40);
+            }
+        }  
 
         private IEnumerable<Object> ChaosHeliCoroutine()
         {

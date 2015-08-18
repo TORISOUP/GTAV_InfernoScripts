@@ -98,9 +98,14 @@ namespace Inferno
 
             coroutineSystem = new CoroutineSystem();
 
-            ////コルーチンの実行
-            OnTickAsObservable
-                .Subscribe(_ => coroutineSystem.CoroutineLoop());
+            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 10)*10))
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    ////コルーチンの実行
+                    OnTickAsObservable
+                        .Subscribe(x => coroutineSystem.CoroutineLoop());
+                });
 
             try
             {
