@@ -21,7 +21,15 @@
         VehicleExit = 75,
         VehicleHandbrake = 76,
         VehicleHorn = 86,
-        VehicleLookBehind = 79
+        VehicleLookBehind = 79,
+        LStickLeft = 34,
+        LStickRight = 9,
+        LStickUp = 32,
+        LStickDown = 8,
+        RStickLeft = 5,
+        RStickRight = 1,
+        RStickUp = 3,
+        RStickDown = 2
     };
 
     public enum FiringPattern
