@@ -44,20 +44,21 @@ namespace Inferno
                 return;
             }
 
-            //車体回転時用にスティック入力を0～254の範囲から-127～127に変換。後は4のニトロの計算そのまま
-            var rotation = ((this.GetStickValue(GameKey.LStickDown) - 127) * 30.0f) / 126.0f;
+            //車体回転時用にスティック入力を-127～127で取得。後は4のニトロの計算そのまま
+            var rotation = (this.GetStickValue().Y * 30.0f) / 126.0f;
             if (Game.Player.WantedLevel == 0)
             {
                 vehicle.Rotation = new Vector3(vehicle.Rotation.X + rotation, vehicle.Rotation.Y, vehicle.Rotation.Z);
             }
             var deadZone = 20.0f;
+            var addSpeed = (rotation > deadZone ? 20.0f : 50.0f);
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
-                vehicle.Speed -= (rotation > deadZone ? 20.0f : 50.0f);
+                vehicle.Speed -= addSpeed;
             }
             else
             {
-                vehicle.Speed += (rotation > deadZone ? 20.0f : 50.0f);
+                vehicle.Speed += addSpeed;
             }
 
             NitroAction(driver, vehicle);
