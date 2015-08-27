@@ -20,11 +20,12 @@ namespace Inferno
         /// スティックの入力状態の取得
         /// </summary>
         /// <param name="script"></param>
-        /// <param name="gameKey"></param>
-        /// <returns>スティック下と右0～254、上と左127～254ただし下と右は上と左の入力と連動している</returns>
-        public static int GetStickValue(this Script script, GameKey gameKey)
+        /// <returns>左スティックのX軸とY軸を-127～127で返す</returns>
+        public static Vector2 GetStickValue(this Script script)
         {
-            return Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) gameKey);
+            var LY = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LStickDown) - 127;
+            var LX = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LStickRight) - 127;
+            return new Vector2(LX, LY);
         }
 
         /// <summary>
