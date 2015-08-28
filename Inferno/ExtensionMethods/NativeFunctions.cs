@@ -23,8 +23,8 @@ namespace Inferno
         /// <returns>左スティックのX軸とY軸を-127～127で返す</returns>
         public static Vector2 GetStickValue(this Script script)
         {
-            var LY = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LStickDown) - 127;
-            var LX = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LStickRight) - 127;
+            var LY = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LY) - 127;
+            var LX = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LX) - 127;
             return new Vector2(LX, LY);
         }
 
