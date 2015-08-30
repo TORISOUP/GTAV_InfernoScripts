@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 using Inferno;
 
@@ -42,13 +43,22 @@ namespace Inferno
             {
                 return;
             }
+
+            //車体回転時用にスティック入力を-127～127で取得。後は4のニトロの計算そのまま
+            var rotation = (this.GetStickValue().Y * 30.0f) / 126.0f;
+            if (Game.Player.WantedLevel == 0)
+            {
+                vehicle.Rotation = new Vector3(vehicle.Rotation.X + rotation, vehicle.Rotation.Y, vehicle.Rotation.Z);
+            }
+            var deadZone = 20.0f;
+            var addSpeed = (rotation > deadZone ? 20.0f : 50.0f);
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
-                vehicle.Speed -= 50;
+                vehicle.Speed -= addSpeed;
             }
             else
             {
-                vehicle.Speed += 50;
+                vehicle.Speed += addSpeed;
             }
 
             NitroAction(driver, vehicle);
