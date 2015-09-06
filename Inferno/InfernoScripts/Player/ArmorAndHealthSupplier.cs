@@ -34,8 +34,8 @@ namespace Inferno
 
             //プレイヤが復活した時
             OnTickAsObservable
-                .Where(_ => IsActive && playerPed.IsSafeExist())
-                .Select(_ => playerPed.IsAlive)
+                .Where(_ => IsActive && PlayerPed.IsSafeExist())
+                .Select(_ => PlayerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Skip(1) //ONにした直後の判定結果は無視
                 .Where(x => x)
@@ -47,7 +47,7 @@ namespace Inferno
         /// </summary>
         private void SupplyArmorAndHealth()
         {
-            var player = playerPed;
+            var player = PlayerPed;
             var maxHealth = player.MaxHealth;
             var maxArmor = Game.Player.GetPlayerMaxArmor();
             player.Health = maxHealth;

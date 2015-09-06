@@ -89,13 +89,13 @@ namespace Inferno.ChaosMode
 
             //市民をカオス化する
             CreateTickAsObservable(1000)
-                .Where(_ => IsActive && playerPed.IsSafeExist() && playerPed.IsAlive)
+                .Where(_ => IsActive && PlayerPed.IsSafeExist() && PlayerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
             CreateTickAsObservable(1000)
-                .Where(_ => playerPed.IsSafeExist())
-                .Select(_ => playerPed.IsDead)
+                .Where(_ => PlayerPed.IsSafeExist())
+                .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ =>
@@ -109,10 +109,10 @@ namespace Inferno.ChaosMode
 
         private void CitizenChaos()
         {
-            if(!playerPed.IsSafeExist())return;
+            if(!PlayerPed.IsSafeExist())return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
-            var nearPeds = World.GetNearbyPeds(playerPed, chaosModeSetting.Radius, 100);
+            var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius, 100);
             foreach (var ped in nearPeds.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
@@ -162,12 +162,12 @@ namespace Inferno.ChaosMode
             //以下ループ
             do
             {
-                if (!ped.IsSafeExist() || !playerPed.IsSafeExist())
+                if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist())
                 {
                     break;
                 }
 
-                if (!ped.IsInRangeOf(playerPed.Position, chaosModeSetting.Radius))
+                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius))
                 {
                     break;
                 }
@@ -203,18 +203,18 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private Ped GetTargetPed(Ped ped)
         {
-            if (!ped.IsSafeExist() || !playerPed.IsSafeExist()) return null;
+            if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist()) return null;
 
             //プレイヤへの攻撃補正が設定されているならプレイヤを攻撃対象にする
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
                 Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
             {
-                return playerPed;
+                return PlayerPed;
             }
 
             //100m以内の市民
             var aroundPeds =
-                CachedPeds.Concat(new[] { playerPed }).Where(
+                CachedPeds.Concat(new[] { PlayerPed }).Where(
                     x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
                     

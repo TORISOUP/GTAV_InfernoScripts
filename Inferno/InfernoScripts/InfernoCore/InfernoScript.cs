@@ -25,7 +25,7 @@ namespace Inferno
         /// <summary>
         /// プレイヤのped
         /// </summary>
-        protected Ped playerPed { get; private set; }
+        public Ped PlayerPed { get; private set; }
 
         private Ped[] _cachedPeds = new Ped[0];
         /// <summary>
@@ -83,7 +83,7 @@ namespace Inferno
                 {
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
                     InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
-                    InfernoCore.Instance.PlayerPed.Subscribe(x => playerPed = x);
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => PlayerPed = x);
                 });
             
             //TickイベントをObservable化しておく

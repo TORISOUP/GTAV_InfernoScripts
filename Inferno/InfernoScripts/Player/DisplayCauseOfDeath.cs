@@ -36,8 +36,8 @@ namespace Inferno
                 .Subscribe(_ => _mContainer.Draw());
 
             CreateTickAsObservable(500)
-               .Where(_ => playerPed.IsSafeExist())
-                .Select(x => playerPed.IsAlive)
+               .Where(_ => PlayerPed.IsSafeExist())
+                .Select(x => PlayerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Subscribe(isAlive =>
                 {
@@ -45,11 +45,11 @@ namespace Inferno
                     if (isAlive) return;
                     
                     //死んでいたら死因を出す
-                    var damageWeapon = playerPed.GetCauseOfDeath();
+                    var damageWeapon = PlayerPed.GetCauseOfDeath();
                     if(damageWeapon==0)return;
                         
                     var damageName = damageWeapon.ToString();
-                    if (playerPed.GetKiller() == playerPed) damageName += "(SUICIDE)";
+                    if (PlayerPed.GetKiller() == PlayerPed) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
                         new Point((int)(ScreenWidth * textPositionScale.X),(int)(ScreenHeight*textPositionScale.Y)),
                         1.0f, Color.White, 0, true);

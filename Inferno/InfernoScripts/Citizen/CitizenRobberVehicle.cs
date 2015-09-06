@@ -42,15 +42,15 @@ namespace Inferno
 
         private void RobberVehicle()
         {
-            if(!playerPed.IsSafeExist())return;
+            if(!PlayerPed.IsSafeExist())return;
 
             var playerVehicle = this.GetPlayerVehicle();
 
             //プレイヤの周辺の市民
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
-                                                   && !x.IsSameEntity(playerPed)
+                                                   && !x.IsSameEntity(PlayerPed)
                                                    && !x.IsRequiredForMission()
-                                                   && x.IsInRangeOf(playerPed.Position,PlayerAroundDistance));
+                                                   && x.IsInRangeOf(PlayerPed.Position,PlayerAroundDistance));
 
             foreach (var targetPed in targetPeds)
             {

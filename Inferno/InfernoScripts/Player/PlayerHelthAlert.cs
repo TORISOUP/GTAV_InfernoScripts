@@ -39,7 +39,7 @@ namespace Inferno
                 .Subscribe(_ => _mContainer.Draw());
 
             OnTickAsObservable
-                .Where(_ => playerPed.IsSafeExist() && playerPed.Health < alertHelthValue && playerPed.IsAlive)
+                .Where(_ => PlayerPed.IsSafeExist() && PlayerPed.Health < alertHelthValue && PlayerPed.IsAlive)
                 .Subscribe(_ =>
                 {
                     //体力が減ったら画面を点滅させる
@@ -53,7 +53,7 @@ namespace Inferno
                 });
 
             OnTickAsObservable
-                .Select(_ => playerPed.IsSafeExist() && playerPed.Health < alertHelthValue)
+                .Select(_ => PlayerPed.IsSafeExist() && PlayerPed.Health < alertHelthValue)
                 .DistinctUntilChanged()
                 .Where(x => !x)
                 .Subscribe(_ =>

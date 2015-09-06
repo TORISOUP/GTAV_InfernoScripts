@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,15 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         protected ParupunteCore core;
 
+        /// <summary>
+        /// このパルプンテスクリプト中で使用しているcoroutine一覧
+        /// </summary>
+        protected List<uint> coroutineIds; 
+
         protected ParupunteScript(ParupunteCore core)
         {
             this.core = core;
+            coroutineIds = new List<uint>();
         }
 
         /// <summary>
@@ -51,6 +58,38 @@ namespace Inferno.InfernoScripts.Parupunte
         protected void ParupunteEnd()
         {
             IsActive = false;
+            foreach (var id in coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+            coroutineIds.Clear();
+        }
+
+        /// <summary>
+        /// コルーチンを実行する（処理自体はParupunteCoreが行う）
+        /// </summary>
+        protected uint StartCoroutine(IEnumerable<object> coroutine)
+        {
+            var id = core.RegisterCoroutine(coroutine);
+            coroutineIds.Add(id);
+            return id;
+        }
+
+        /// <summary>
+        /// コルーチンを終了する
+        /// </summary>
+        protected void StopCoroutine(uint id)
+        {
+            core.UnregisterCoroutine(id);
+        }
+
+        /// <summary>
+        /// 指定秒数待機するIEnumerable
+        /// </summary>
+        /// <param name="seconds"></param>
+        protected IEnumerable WaitForSeconds(float seconds)
+        {
+            return core.CreateWaitForSeconds(seconds);
         }
     }
 }

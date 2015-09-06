@@ -36,7 +36,7 @@ namespace Inferno
 
         private void NitroVehicle()
         {
-            var driver = playerPed;
+            var driver = PlayerPed;
             if (!driver.IsSafeExist()) return;
             var vehicle = this.GetPlayerVehicle();
             if (!vehicle.IsSafeExist())

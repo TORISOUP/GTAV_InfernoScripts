@@ -25,7 +25,7 @@ namespace Inferno
         protected override void Setup()
         {
             OnTickAsObservable
-                    .Where(_ => playerPed.IsSafeExist())
+                    .Where(_ => PlayerPed.IsSafeExist())
                     .Select(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
                     .Subscribe(flag =>
                     {
