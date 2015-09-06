@@ -77,6 +77,9 @@
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
+    <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
+    <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs" />
     <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />

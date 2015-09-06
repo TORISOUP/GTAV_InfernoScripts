@@ -209,7 +209,7 @@ namespace Inferno
 
 
         /// <summary>
-        /// ログをTCPSocker経由で吐く
+        /// ログを吐く
         /// </summary>
         /// <param name="message">ログメッセージ</param>
         public void LogWrite(string message)
