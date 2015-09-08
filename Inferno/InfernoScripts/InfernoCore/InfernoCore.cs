@@ -88,8 +88,8 @@ namespace Inferno
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
                 playerPed.OnNext(ped);
-                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500, 300));
-                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500, 300));
+                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500));
+                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500));
             }
             catch (Exception e)
             {
