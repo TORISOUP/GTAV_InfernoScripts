@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
@@ -97,6 +98,9 @@ namespace Inferno
 
         IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
         {
+
+            DrawProcessBar(new Point(0, 30), 11.0f);
+
             yield return WaitForSeconds(3);
             
             if (driver.IsSafeExist())

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -69,6 +70,17 @@ namespace Inferno
         public void DrawText(string text, float time)
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
+        }
+
+        /// <summary>
+        /// プログレスバー表示
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="time"></param>
+        public void DrawProcessBar(Point pos, float time)
+        {
+            ProcessBarDrawing.Instance.DrawProgressBar(pos, time);
         }
 
         /// <summary>
