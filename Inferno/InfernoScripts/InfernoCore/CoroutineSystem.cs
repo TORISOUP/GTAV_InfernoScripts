@@ -64,7 +64,6 @@ namespace Inferno
         /// <summary>
         /// コルーチンの処理を行う
         /// </summary>
-        /// <param name="shardId">シャードID(0～3)</param>
         public void CoroutineLoop()
         {
             KeyValuePair<uint, IEnumerator>[] coroutineArray;

@@ -23,8 +23,6 @@ namespace Inferno
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
 
-        private CoroutineSystem coroutineSystem;
-        private int _currentShardId = 0;
         private readonly BehaviorSubject<Ped[]> _pedsNearPlayer = new BehaviorSubject<Ped[]>(default(Ped[]));
         /// <summary>
         /// 周辺市民
