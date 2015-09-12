@@ -148,7 +148,7 @@ namespace Inferno
         /// <summary>
         /// 100ms単位でのTickイベントをOnTickAsObservableから生成する
         /// </summary>
-        /// <param name="millsecond">ミリ秒(100ミリ秒単位で指定）</param>
+        /// <param name="millsecond">ミリ秒(100ミリ秒以上で指定）</param>
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(int millsecond)
         {

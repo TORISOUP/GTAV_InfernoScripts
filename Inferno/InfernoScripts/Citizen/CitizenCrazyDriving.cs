@@ -60,6 +60,7 @@ namespace Inferno
                     driver.DrivingSpeed = 100.0f;
                     driver.MaxDrivingSpeed = 100.0f;
                     driver.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
+                    driver.Task.VehicleChase(playerPed);
                     affectPeds.Add(driver);
                 }
                 catch (Exception e)

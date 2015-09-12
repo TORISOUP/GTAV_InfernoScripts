@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 using GTA;
+using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.ChaosMode
@@ -68,10 +69,10 @@ namespace Inferno.ChaosMode
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
-                .Where(x=> IsActive && x.KeyCode == Keys.F7)
+                .Where(x => IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
-                   nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
+                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
                     DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -103,6 +104,10 @@ namespace Inferno.ChaosMode
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
                 });
+
+            CreateTickAsObservable(1000)
+                .Where(_ => IsActive)
+                .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
 
         }
 
@@ -159,6 +164,14 @@ namespace Inferno.ChaosMode
             {
                 SetPedStatus(ped);
             }
+
+            //グループに入ってるなら脱退させる
+            var playerGroup = Game.Player.GetPlayerGroup();
+            if (!ped.IsPedGroupMember(playerGroup))
+            {
+                ped.RemovePedFromGroup();
+            }
+
             //以下ループ
             do
             {
@@ -265,6 +278,7 @@ namespace Inferno.ChaosMode
                 ped.Task.ClearAll();
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
+                ped.IsVisible = true;
                 if (ped.IsInVehicle())
                 {
                     //TODO:車から投擲物を投げる方法を調べる
