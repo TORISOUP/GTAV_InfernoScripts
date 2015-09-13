@@ -99,7 +99,7 @@ namespace Inferno
         IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
         {
 
-            DrawProcessBar(new Point(0, 30), 11.0f);
+            DrawIncreaseProcessBar(new Point(0, 30), 11.0f);
 
             yield return WaitForSeconds(3);
             

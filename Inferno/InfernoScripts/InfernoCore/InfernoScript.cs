@@ -73,14 +73,23 @@ namespace Inferno
         }
 
         /// <summary>
-        /// プログレスバー表示
+        /// 増加するプログレスバー表示（時間指定）
         /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="time"></param>
-        public void DrawProcessBar(Point pos, float time)
+        /// <param name="pos">表示させたい座標</param>
+        /// <param name="time">ゲージが満タンになるまでの時間[s]</param>
+        public void DrawIncreaseProcessBar(Point pos, float time)
         {
-            ProcessBarDrawing.Instance.DrawProgressBar(pos, time);
+            ProcessBarDrawing.Instance.DrawIncreaseProgressBar(pos, time);
+        }
+
+        /// <summary>
+        /// 減少するプログレスバー表示（時間指定）
+        /// </summary>
+        /// <param name="pos">表示させたい座標
+        /// <param name="time">ゲージが0になるまでの時間[s]</param>
+        public void DrawReduceProcessBar(Point pos, float time)
+        {
+            ProcessBarDrawing.Instance.DrawReduceProgressBar(pos, time);
         }
 
         /// <summary>

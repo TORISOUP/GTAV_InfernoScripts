@@ -15,8 +15,6 @@ namespace Inferno
     public class ProcessBarDrawing : InfernoScript
     {
         private UIContainer _mContainer = null;
-        //表示を消すまで残りループ回数
-        private int _currentTickCounter = 0;
 
         public static ProcessBarDrawing Instance { get; private set; }
 
@@ -33,25 +31,25 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 指定位置に進行状況を示すバーの表示
+        /// 指定位置に徐々に増加するバーの表示（時間指定）
         /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="time"></param>
-        public void DrawProgressBar(Point pos, float time)
+        /// <param name="pos">表示させたい座標</param>
+        /// <param name="time">ゲージが満タンになるまでの時間[s]</param>
+        public void DrawIncreaseProgressBar(Point pos, float time)
         {
-            StartCoroutine(DrawProgressBarEnumerator(pos, time));
+            StartCoroutine(DrawIncreaseProgressBarEnumerator(pos, time));
         }
 
-        private IEnumerable<Object> DrawProgressBarEnumerator(Point pos, float time)
+        private IEnumerable<Object> DrawIncreaseProgressBarEnumerator(Point pos, float time)
         {
-            _currentTickCounter = (int)(time * 10);
+            //表示を消すまで残りループ回数
+            var currentTickCounter = 0;
+            currentTickCounter = (int)(time * 10);
             var barSize = 0;
             var minorityTmp = 0.0f;
 
-            while (--_currentTickCounter > 0)
+            while (--currentTickCounter > 0)
             {
-                _mContainer.Items.Clear();
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - 5), new Size(210, 30), Color.Black));
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X + 5, pos.Y), new Size(barSize, 20), Color.LightGreen));
                 minorityTmp += (20 / time) % 1.0f;
@@ -61,7 +59,42 @@ namespace Inferno
                     barSize++;
                     minorityTmp = minorityTmp % 1.0f;
                 }
-                yield return _currentTickCounter;
+                yield return currentTickCounter;
+            }
+
+            _mContainer.Items.Clear();
+        }
+
+        /// <summary>
+        /// 指定位置に徐々に減少するバーの表示（時間指定）
+        /// </summary>
+        /// <param name="pos">表示させたい座標</param>
+        /// <param name="time">ゲージが0になるまでの時間[s]</param>
+        public void DrawReduceProgressBar(Point pos, float time)
+        {
+            StartCoroutine(DrawReduceProgressBarEnumerator(pos, time));
+        }
+
+        private IEnumerable<Object> DrawReduceProgressBarEnumerator(Point pos, float time)
+        {
+            //表示を消すまで残りループ回数
+            var currentTickCounter = 0;
+            currentTickCounter = (int)(time * 10);
+            var barSize = 200;
+            var minorityTmp = 0.0f;
+
+            while (--currentTickCounter > 0)
+            {
+                _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - 5), new Size(210, 30), Color.Black));
+                _mContainer.Items.Add(new UIRectangle(new Point(pos.X + 5, pos.Y), new Size(barSize, 20), Color.LightGreen));
+                minorityTmp += (20 / time) % 1.0f;
+                barSize -= (20 / (int)time);
+                if (minorityTmp >= 1.0f)
+                {
+                    barSize--;
+                    minorityTmp = minorityTmp % 1.0f;
+                }
+                yield return currentTickCounter;
             }
 
             _mContainer.Items.Clear();
