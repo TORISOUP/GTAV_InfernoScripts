@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using GTA;
@@ -17,6 +18,8 @@ namespace Inferno
         private UIContainer _mContainer = null;
 
         public static ProcessBarDrawing Instance { get; private set; }
+
+        private List<uint> _coroutineIds = new List<uint>();
 
         protected override void Setup()
         {
@@ -39,7 +42,8 @@ namespace Inferno
         /// <param name="backgroundColor">バーの背景色</param>
         public void DrawIncreaseProgressBar(Point pos, float time, Color barColor, Color backgroundColor)
         {
-            StartCoroutine(DrawProgressBarEnumerator(pos, time, true, barColor, backgroundColor));
+            var id = StartCoroutine(DrawProgressBarEnumerator(pos, time, true, barColor, backgroundColor));
+            _coroutineIds.Add(id);
         }
 
         /// <summary>
@@ -51,7 +55,8 @@ namespace Inferno
         /// <param name="backgroundColor">バーの背景色</param>
         public void DrawReduceProgressBar(Point pos, float time, Color barColor, Color backgroundColor)
         {
-            StartCoroutine(DrawProgressBarEnumerator(pos, time, false, barColor, backgroundColor));
+            var id = StartCoroutine(DrawProgressBarEnumerator(pos, time, false, barColor, backgroundColor));
+            _coroutineIds.Add(id);
         }
 
         /// <summary>
@@ -68,18 +73,22 @@ namespace Inferno
             //表示を消すまで残りループ回数
             var currentTickCounter = 0;
             currentTickCounter = (int)(time * 10);
+            //バーの初期サイズ
             var barSize = isBarAdd ? 0 : 200;
+            //サイズ補正用
             var minorityTmp = 0.0f;
+            //使い回す計算結果
+            var minorityTmpAdd = (20/time)%1.0f;
+            var barSizeAdd = (20/(int) time);
 
             while (--currentTickCounter > 0)
             {
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - 5), new Size(210, 30), backgroundColor));
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X + 5, pos.Y), new Size(barSize, 20), barColor));
-                minorityTmp += (20 / time) % 1.0f;
-                barSize += (20 / (int)time);
+                minorityTmp += minorityTmpAdd;
+                barSize += isBarAdd ? barSizeAdd : -barSizeAdd;
                 if (minorityTmp >= 1.0f)
                 {
-                  
                     barSize += isBarAdd ? 1 : -1;
                     minorityTmp = minorityTmp % 1.0f;
                 }
@@ -89,6 +98,17 @@ namespace Inferno
             _mContainer.Items.Clear();
         }
 
-        //ToDo:各ProgressBarの中断機能つける
+        /// <summary>
+        /// プログレスバーを全削除
+        /// </summary>
+        public void StopAllProgressBarCoroutine()
+        {
+            foreach (var id in _coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+            _coroutineIds.Clear();
+            _mContainer.Items.Clear();
+        }
     }
 }

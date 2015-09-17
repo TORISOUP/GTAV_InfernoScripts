@@ -97,6 +97,14 @@ namespace Inferno
         }
 
         /// <summary>
+        /// すべてのプログレスバーを削除
+        /// </summary>
+        public void StopAllProcessBar()
+        {
+            ProcessBarDrawing.Instance.StopAllProgressBarCoroutine();
+        }
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         protected InfernoScript()
