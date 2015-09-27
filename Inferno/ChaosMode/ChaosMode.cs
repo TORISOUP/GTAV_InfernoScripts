@@ -159,7 +159,7 @@ namespace Inferno.ChaosMode
                 chaosedPedList.Remove(pedId);
                 yield break;
             }
-
+            
             if (ped.IsSafeExist() && !ped.IsRequiredForMission())
             {
                 SetPedStatus(ped);
