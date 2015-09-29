@@ -73,27 +73,16 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 増加するプログレスバー表示（時間指定）
+        /// プログレスバーの表示
         /// </summary>
         /// <param name="pos">表示させたい座標</param>
-        /// <param name="time">ゲージが満タンになるまでの時間[s]</param>
-        /// <param name="barColor">バー本体の色</param>
-        /// <param name="backgroundColor">バーの背景色</param>
-        public void DrawIncreaseProcessBar(Point pos, float time, Color barColor, Color backgroundColor)
+        /// <param name="time">ゲージが満タンor0になるまでの時間[s]</param>
+        /// <param name="barColor">ゲージ本体の色</param>
+        /// <param name="backgroundColor">ゲージ背景色</param>
+        /// <param name="progressBarType">増加or減少するゲージの指定</param>
+        public void DrawProgressBar(Point pos, float time, Color barColor, Color backgroundColor, ProgressBarType progressBarType)
         {
-            ProcessBarDrawing.Instance.DrawIncreaseProgressBar(pos, time, barColor, backgroundColor);
-        }
-
-        /// <summary>
-        /// 減少するプログレスバー表示（時間指定）
-        /// </summary>
-        /// <param name="pos">表示させたい座標</param>
-        /// <param name="time">ゲージが0になるまでの時間[s]</param>
-        /// <param name="barColor">バー本体の色</param>
-        /// <param name="backgroundColor">バーの背景色</param>
-        public void DrawReduceProcessBar(Point pos, float time, Color barColor, Color backgroundColor)
-        {
-            ProcessBarDrawing.Instance.DrawReduceProgressBar(pos, time, barColor, backgroundColor);
+            ProcessBarDrawing.Instance.DrawProgressBar(pos, time, barColor, backgroundColor, progressBarType);
         }
 
         /// <summary>

@@ -99,7 +99,7 @@ namespace Inferno
         IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
         {
 
-            DrawIncreaseProcessBar(new Point(0, 30), 11.0f, Color.LightGreen, Color.Black);
+            DrawProgressBar(new Point(0, 30), 11.0f, Color.LightGreen, Color.Black, ProgressBarType.Increase);
 
             yield return WaitForSeconds(3);
             
