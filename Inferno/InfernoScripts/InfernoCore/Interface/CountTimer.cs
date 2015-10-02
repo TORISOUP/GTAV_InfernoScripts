@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Inferno
 {
-
     /// <summary>
     /// カウンターのインターフェース定義
     /// </summary>
     interface ICountTimer
     {
+        int TickCount { get; }
+        float CounterRate { get; }
+        void Initialization(float setTime);
         void TimerUpdate();
     }
 
@@ -19,25 +16,36 @@ namespace Inferno
     {
         //表示を消すまで残りループ回数
         private int currentTickCounter;
-        private int barSize;
-        //タイマー変数
-        private float timer;
-        //サイズ補正用
-        private float minorityTmp;
+        //使い回す計算結果
+        private float counterAdd;
+        //カウンター
+        private float counter;
+        //少数部一時保存用
+        private float counterMinority;
 
-        CountTimer(float setTimer)
+        /// <summary>
+        /// 時間を指定し、インスタンスの初期化をする
+        /// </summary>
+        /// <param name="setTime">表示させたい時間</param>
+        public CountTimer(float setTime)
         {
-            initializationTimer(setTimer);
+            Initialization(setTime);
         }
+
+        public int TickCount { get { return currentTickCounter; } }
+        public float CounterRate { get { return counter; } }
 
         /// <summary>
         /// 初期化
         /// </summary>
-        private void initializationTimer(float setTimer)
+        /// <param name="setTime">表示させたい時間</param>
+        public void Initialization(float setTime)
         {
-            timer = 0.0f;
-            minorityTmp = 0.0f;
-            currentTickCounter = (int)(setTimer * 10);
+            currentTickCounter = ((int)setTime * 10);
+            counterAdd = (20.0f / setTime) % 1.0f;
+            counterMinority = 0.0f;
+            counter = 0.0f;
+            counterMinority = 0.0f;
         }
 
         /// <summary>
@@ -45,7 +53,10 @@ namespace Inferno
         /// </summary>
         public void TimerUpdate()
         {
-           
+            counter = counterMinority;
+            counter += counterAdd; 
+            counterMinority = counter % 1.0f;
+            currentTickCounter--;
         }
     }
 }
