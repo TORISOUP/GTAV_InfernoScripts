@@ -6,7 +6,7 @@ namespace Inferno
     /// </summary>
     interface ICountTimer
     {
-        int TickCount { get; }
+        int CurrentTickCounter { get; }
         float CounterRate { get; }
         void Initialization(float setTime);
         void TimerUpdate();
@@ -32,7 +32,7 @@ namespace Inferno
             Initialization(setTime);
         }
 
-        public int TickCount { get { return currentTickCounter; } }
+        public int CurrentTickCounter { get { return currentTickCounter; } }
         public float CounterRate { get { return counter; } }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Inferno
 
         private List<uint> _coroutineIds = new List<uint>();
 
-        private CountTimer _countTimer;
+        private List<CountTimer> _coutTimer = new List<CountTimer>();
 
         protected override void Setup()
         {
@@ -36,8 +36,8 @@ namespace Inferno
             
             //ICountTimerのTimerUpdate()の定期呼び出し
             this.OnTickAsObservable
-                .Where(_ => _countTimer != null)
-                .Subscribe(_ => _countTimer.TimerUpdate());
+                .Where(_ => _coutTimer.Count != 0)
+                .Subscribe(_ => UpdateCountTimer());
         }
 
         /// <summary>
@@ -50,10 +50,11 @@ namespace Inferno
         /// <param name="progressBarType">増加or減少するゲージの指定</param>
         public void DrawProgressBar(Point pos, float time, Color barColor, Color backgroundColor, ProgressBarType progressBarType)
         {
-            _countTimer = new CountTimer(time);
+            var countTimer = new CountTimer(time);
+            _coutTimer.Add(countTimer);
             lock (this)
             {
-                var id = StartCoroutine(DrawProgressBarEnumerator(pos, time, progressBarType, barColor, backgroundColor));
+                var id = StartCoroutine(DrawProgressBarEnumerator(pos, countTimer, time, progressBarType, barColor, backgroundColor));
                 _coroutineIds.Add(id);
             }
         }
@@ -62,27 +63,40 @@ namespace Inferno
         /// バーの表示（時間指定）
         /// </summary>
         /// <param name="pos">表示座標</param>
+        /// <param name="countTimer">表示したいタイマー</param>
         /// <param name="time">表示時間</param>
         /// <param name="progressBarType">増加or減少するゲージの指定</param>
         /// <param name="barColor">バー本体の色</param>
         /// <param name="backgroundColor">バーの背景色</param>
         /// <returns></returns>
-        private IEnumerable<Object> DrawProgressBarEnumerator(Point pos, float time, ProgressBarType progressBarType, Color barColor, Color backgroundColor)
+        private IEnumerable<Object> DrawProgressBarEnumerator(Point pos, CountTimer countTimer, float time, ProgressBarType progressBarType, Color barColor, Color backgroundColor)
         {
             var isBarAdd = (progressBarType == 0);
             var barSize = isBarAdd ? 0 : 200;
-            while (_countTimer.TickCount > 0)
+            while (countTimer.CurrentTickCounter > 0)
             {
-                var counterRate = _countTimer.CounterRate;
+                var counterRate = countTimer.CounterRate;
                 var  barSizeAdd = (20 / (int)time) + (int)counterRate;
                 barSize += isBarAdd ? barSizeAdd : -barSizeAdd;
 
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - 5), new Size(210, 30), backgroundColor));
                 _mContainer.Items.Add(new UIRectangle(new Point(pos.X + 5, pos.Y), new Size(barSize, 20), barColor));
-                yield return _countTimer.TickCount;
+                yield return countTimer.CurrentTickCounter;
             }
 
             _mContainer.Items.Clear();
+            _coutTimer.Remove(countTimer);
+        }
+
+        /// <summary>
+        /// _countTimerリストに登録されているタイマーを更新
+        /// </summary>
+        private void UpdateCountTimer()
+        {
+            foreach (var countTimer in _coutTimer)
+            {
+                countTimer.TimerUpdate();
+            }
         }
 
         /// <summary>
