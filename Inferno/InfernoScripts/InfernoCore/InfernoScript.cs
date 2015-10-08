@@ -82,7 +82,7 @@ namespace Inferno
         /// <param name="progressBarType">増加or減少するゲージの指定</param>
         public void DrawProgressBar(Point pos, float time, Color barColor, Color backgroundColor, ProgressBarType progressBarType)
         {
-            ProcessBarDrawing.Instance.DrawProgressBar(pos, time, barColor, backgroundColor, progressBarType);
+            ProgressBarDrawing.Instance.DrawProgressBar(pos, time, barColor, backgroundColor, progressBarType);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Inferno
         /// </summary>
         public void StopAllProcessBar()
         {
-            ProcessBarDrawing.Instance.StopAllProgressBarCoroutine();
+            ProgressBarDrawing.Instance.StopAllProgressBarCoroutine();
         }
 
         /// <summary>

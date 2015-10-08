@@ -13,11 +13,11 @@ namespace Inferno
     /// <summary>
     /// プログレスバーの表示管理
     /// </summary>
-    public class ProcessBarDrawing : InfernoScript
+    public class ProgressBarDrawing : InfernoScript
     {
         private UIContainer _mContainer = null;
 
-        public static ProcessBarDrawing Instance { get; private set; }
+        public static ProgressBarDrawing Instance { get; private set; }
 
         private List<uint> _coroutineIds = new List<uint>();
 

@@ -96,7 +96,7 @@
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Interface\CountTimer.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\ProcessBarDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\ProgressBarDrawing.cs" />
     <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
