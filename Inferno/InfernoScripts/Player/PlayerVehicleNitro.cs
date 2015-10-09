@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -65,12 +66,8 @@ namespace Inferno
             NitroAction(driver, vehicle);
         }
 
-        /// <summary>
-        /// ニトロ処理
-        /// </summary>
-        void NitroAction(Ped driver,Vehicle vehicle)
+        private void ChangeDirverAndVehicleState(Ped driver, Vehicle vehicle, bool isInvincible)
         {
-            _isNitroOk = false;
 
             if (driver.IsSafeExist())
             {
@@ -80,6 +77,17 @@ namespace Inferno
             {
                 vehicle.IsInvincible = true;
             }
+        }
+
+
+        /// <summary>
+        /// ニトロ処理
+        /// </summary>
+        void NitroAction(Ped driver,Vehicle vehicle)
+        {
+            _isNitroOk = false;
+
+            ChangeDirverAndVehicleState(driver, vehicle, true);
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
@@ -98,22 +106,45 @@ namespace Inferno
 
         IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
         {
+            //カウンタ作成
+            var counter = new ReduceCounter(10000);
+            //カウンタを描画
+            RegisterProgressBar(counter, new Point(0, 30),Color.FromArgb(200,0,255,125), Color.FromArgb(128,0,0,0), 100, 10, 5);
+            //カウンタを自動カウント
+            RegisterCounter(counter);
 
-            RegisterProgressBar(new Point(0, 30), 11.0f, Color.LightGreen, Color.Black, ProgressBarType.Increase);
+            //3秒まつ
 
-            yield return WaitForSeconds(3);
-            
-            if (driver.IsSafeExist())
+            foreach (var s in WaitForSeconds(3))
             {
-                driver.IsInvincible = false;
+                if (!playerPed.IsInVehicle() || playerPed.IsDead)
+                {
+                    //死んだりクルマから降りたらリセット
+                    counter.Finish();
+                    _isNitroOk = true;
+                    ChangeDirverAndVehicleState(driver, vehicle, false);
+                    yield break;
+                }
+                yield return s;
             }
-            if (vehicle.IsSafeExist())
+
+            ChangeDirverAndVehicleState(driver, vehicle, false);
+
+            //７秒まつ
+
+            foreach (var s in WaitForSeconds(7))
             {
-                vehicle.IsInvincible = false;
+                if (!playerPed.IsInVehicle() || playerPed.IsDead)
+                {
+                    //死んだりクルマから降りたらリセット
+                    counter.Finish();
+                    _isNitroOk = true;
+                    yield break;
+                }
+                yield return s;
             }
 
-            yield return WaitForSeconds(7);
-
+            counter.Finish();
             _isNitroOk = true;
             DrawText("Nitro:OK", 2.0f);
         }

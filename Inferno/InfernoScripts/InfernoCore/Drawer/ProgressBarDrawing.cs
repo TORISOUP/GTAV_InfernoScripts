@@ -32,7 +32,7 @@ namespace Inferno
 
             //バー表示が設定されていたら描画
             this.OnDrawingTickAsObservable
-                .Where(_ =>progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
+                .Where(_ => !Game.IsPaused && Game.Player.IsAlive && progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
                 .Subscribe(_ =>
                 {
                     _mContainer.Items.Clear();
@@ -48,8 +48,9 @@ namespace Inferno
 
                     foreach (var progressBarData in datas)
                     {
-                        DrawProgressBar(progressBarData);
+                        AddProgressBarToContainer(progressBarData);
                     }
+                    _mContainer.Draw();
                 });
         }
 
@@ -65,18 +66,17 @@ namespace Inferno
         }
 
         /// <summary>
-        /// プログレスバーの描画
+        /// プログレスバーの描画コンテナを追加
         /// </summary>
-        private void DrawProgressBar(ProgressBarData data)
+        private void AddProgressBarToContainer(ProgressBarData data)
         {
             var pos = data.Position;
             var width = data.Width;
             var height = data.Height;
-            const int margin = 10;
+            var margin = data.Mergin;
             var barSize = width*data.ProgressBarStatus.Rate;
             _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - margin/2), new Size(width + margin, height + margin), data.BackgorondColor));
             _mContainer.Items.Add(new UIRectangle(new Point(pos.X + margin/2, pos.Y), new Size((int)barSize, height), data.MainColor));
-
         }
 
         /// <summary>
@@ -90,9 +90,10 @@ namespace Inferno
             public int Width { get; }
             public int Height { get; }
             public IProgressBar ProgressBarStatus { get; }
+            public int Mergin { get; }
 
             public ProgressBarData(IProgressBar barStatus, Point position, Color mainColor, Color backGroundColor,
-                int width, int height)
+                int width, int height,int mergin)
             {
                 Position = position;
                 MainColor = mainColor;
@@ -100,6 +101,7 @@ namespace Inferno
                 ProgressBarStatus = barStatus;
                 Width = width;
                 Height = height;
+                Mergin = mergin;
             }
         }
     }

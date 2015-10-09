@@ -21,8 +21,16 @@ namespace Inferno
         /// </summary>
         void Update(int countValue);
         /// <summary>
-        /// カウント完了通知
+        /// カウンタを終了させる
+        /// </summary>
+        void Finish();
+        /// <summary>
+        /// カウントが正常にカウント完了したことを通知する
         /// </summary>
         IObservable<Unit> OnFinishedAsync { get; }
+        /// <summary>
+        /// タイマが完了状態であるか
+        /// </summary>
+        bool IsCompleted { get; }
     }
 }

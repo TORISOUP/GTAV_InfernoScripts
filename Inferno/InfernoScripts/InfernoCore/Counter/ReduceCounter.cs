@@ -16,13 +16,15 @@ namespace Inferno
     {
         private readonly int _max;
         private readonly Subject<Unit> _onFinishedSubject;
+
         public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
         public int Current { get; private set; }
-        public float Rate => (float) Current/_max;
+        public float Rate => Current/ (float)_max;
         public bool IsCompleted { get; private set; }
 
         /// <summary>
         /// カウント回数を指定する
+        /// AddCounterを利用する場合はミリ秒を与える
         /// </summary>
         public ReduceCounter(int count)
         {
@@ -45,5 +47,12 @@ namespace Inferno
             _onFinishedSubject.OnNext(Unit.Default);
             _onFinishedSubject.OnCompleted();
         }
+
+        public void Finish()
+        {
+            IsCompleted = true;
+            _onFinishedSubject.OnCompleted();
+        }
+
     }
 }
