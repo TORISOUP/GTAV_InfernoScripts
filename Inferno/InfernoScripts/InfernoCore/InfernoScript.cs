@@ -73,26 +73,26 @@ namespace Inferno
         }
 
         /// <summary>
-        /// プログレスバーの表示
+        /// ProgressBarを描画登録する
         /// </summary>
-        /// <param name="pos">表示させたい座標</param>
-        /// <param name="time">ゲージが満タンor0になるまでの時間[s]</param>
-        /// <param name="barColor">ゲージ本体の色</param>
-        /// <param name="backgroundColor">ゲージ背景色</param>
-        /// <param name="progressBarType">増加or減少するゲージの指定</param>
-        public void DrawProgressBar(Point pos, float time, Color barColor, Color backgroundColor, ProgressBarType progressBarType)
+        /// <param name="barStatus">バーの状態</param>
+        /// <param name="position">表示位置</param>
+        /// <param name="mainColor">メインカラー</param>
+        /// <param name="backGroundColor">背景カラー</param>
+        /// <param name="width">横幅</param>
+        /// <param name="height">縦幅</param>
+        public void RegisterProgressBar(
+            IProgressBar barStatus,
+            Point position,
+            Color mainColor,
+            Color backGroundColor,
+            int width = 200,
+            int height = 20
+            )
         {
-            ProgressBarDrawing.Instance.DrawProgressBar(pos, time, barColor, backgroundColor, progressBarType);
+            var data = new ProgressBarDrawing.ProgressBarData(barStatus, position, mainColor, backGroundColor, width, height);
+            ProgressBarDrawing.Instance.RegisterProgressBar(data);
         }
-
-        /// <summary>
-        /// すべてのプログレスバーを削除
-        /// </summary>
-        public void StopAllProcessBar()
-        {
-            ProgressBarDrawing.Instance.StopAllProgressBarCoroutine();
-        }
-
         /// <summary>
         /// コンストラクタ
         /// </summary>

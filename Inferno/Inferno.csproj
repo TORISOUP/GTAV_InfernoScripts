@@ -94,10 +94,12 @@
     <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Interface\CountTimer.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\ProgressBarDrawing.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\DrawingCore.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs" />
     <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />

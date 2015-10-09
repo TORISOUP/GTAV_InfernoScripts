@@ -22,6 +22,8 @@ namespace Inferno
 
         private List<ProgressBarData> progressBarDataList = new List<ProgressBarData>();
 
+        private object lockObject = new object();
+
         protected override void Setup()
         {
             Instance = this;
@@ -30,18 +32,36 @@ namespace Inferno
 
             //バー表示が設定されていたら描画
             this.OnDrawingTickAsObservable
-                .Where(_ => progressBarDataList.Any())
+                .Where(_ =>progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
                 .Subscribe(_ =>
                 {
                     _mContainer.Items.Clear();
+                    var datas = new ProgressBarData[0];
 
-                    //完了しているものは除外する
-                    progressBarDataList.RemoveAll(x => x.ProgressBarStatus.IsCompleted);
-                    foreach (var progressBarData in progressBarDataList)
+                    //ここは排他ロック必要
+                    lock (lockObject)
+                    {
+                        //完了しているものは除外する
+                        progressBarDataList.RemoveAll(x => x.ProgressBarStatus.IsCompleted);
+                        datas = progressBarDataList.ToArray();
+                    }
+
+                    foreach (var progressBarData in datas)
                     {
                         DrawProgressBar(progressBarData);
                     }
                 });
+        }
+
+        /// <summary>
+        /// ProgressBarを描画登録
+        /// </summary>
+        public void RegisterProgressBar(ProgressBarData data)
+        {
+            lock (lockObject)
+            {
+                progressBarDataList.Add(data);
+            }
         }
 
         /// <summary>
@@ -62,7 +82,7 @@ namespace Inferno
         /// <summary>
         /// 描画に使うデータ詰めたやつ
         /// </summary>
-        private class ProgressBarData
+        public class ProgressBarData
         {
             public Point Position { get; }
             public Color MainColor { get; }
@@ -71,7 +91,8 @@ namespace Inferno
             public int Height { get; }
             public IProgressBar ProgressBarStatus { get; }
 
-            public ProgressBarData(IProgressBar barStatus, Point position, Color mainColor, Color backGroundColor,int width = 200,int height = 20)
+            public ProgressBarData(IProgressBar barStatus, Point position, Color mainColor, Color backGroundColor,
+                int width, int height)
             {
                 Position = position;
                 MainColor = mainColor;
