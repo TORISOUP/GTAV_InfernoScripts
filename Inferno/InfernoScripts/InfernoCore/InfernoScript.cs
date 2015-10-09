@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -69,6 +70,27 @@ namespace Inferno
         public void DrawText(string text, float time)
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
+        }
+
+        /// <summary>
+        /// プログレスバーの表示
+        /// </summary>
+        /// <param name="pos">表示させたい座標</param>
+        /// <param name="time">ゲージが満タンor0になるまでの時間[s]</param>
+        /// <param name="barColor">ゲージ本体の色</param>
+        /// <param name="backgroundColor">ゲージ背景色</param>
+        /// <param name="progressBarType">増加or減少するゲージの指定</param>
+        public void DrawProgressBar(Point pos, float time, Color barColor, Color backgroundColor, ProgressBarType progressBarType)
+        {
+            ProgressBarDrawing.Instance.DrawProgressBar(pos, time, barColor, backgroundColor, progressBarType);
+        }
+
+        /// <summary>
+        /// すべてのプログレスバーを削除
+        /// </summary>
+        public void StopAllProcessBar()
+        {
+            ProgressBarDrawing.Instance.StopAllProgressBarCoroutine();
         }
 
         /// <summary>

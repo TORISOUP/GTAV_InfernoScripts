@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reactive.Linq;
 using GTA;
+using GTA.Math;
 using GTA.Native;
 
 namespace Inferno
@@ -76,7 +77,14 @@ namespace Inferno
                 return;
             }
 
-            vehicle.Speed += _velocities[Random.Next(0, _velocities.Length)];
+            var velocitiesSpeed = _velocities[Random.Next(0, _velocities.Length)];
+
+            if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 10)
+            {
+                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, (Random.Next(20, 60) / 100.0f)) * vehicle.Quaternion;
+            }
+
+            vehicle.Speed += velocitiesSpeed;
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
