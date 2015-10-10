@@ -171,23 +171,8 @@ namespace Inferno
         /// <summary>
         /// ProgressBarを描画登録する
         /// </summary>
-        /// <param name="barStatus">バーの状態</param>
-        /// <param name="position">表示位置</param>
-        /// <param name="mainColor">メインカラー</param>
-        /// <param name="backGroundColor">背景カラー</param>
-        /// <param name="width">横幅</param>
-        /// <param name="height">縦幅</param>
-        public void RegisterProgressBar(
-            IProgressBar barStatus,
-            Point position,
-            Color mainColor,
-            Color backGroundColor,
-            int width = 200,
-            int height = 20,
-            int mergin = 10
-            )
+        public void RegisterProgressBar(ProgressBarData data)
         {
-            var data = new ProgressBarDrawing.ProgressBarData(barStatus, position, mainColor, backGroundColor, width, height, mergin);
             ProgressBarDrawing.Instance.RegisterProgressBar(data);
         }
 

@@ -96,6 +96,7 @@
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Drawer\DrawingCore.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarData.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarDrawing.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs" />

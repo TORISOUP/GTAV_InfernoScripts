@@ -74,35 +74,40 @@ namespace Inferno
             var width = data.Width;
             var height = data.Height;
             var margin = data.Mergin;
-            var barSize = width*data.ProgressBarStatus.Rate;
-            _mContainer.Items.Add(new UIRectangle(new Point(pos.X, pos.Y - margin/2), new Size(width + margin, height + margin), data.BackgorondColor));
-            _mContainer.Items.Add(new UIRectangle(new Point(pos.X + margin/2, pos.Y), new Size((int)barSize, height), data.MainColor));
-        }
 
-        /// <summary>
-        /// 描画に使うデータ詰めたやつ
-        /// </summary>
-        public class ProgressBarData
-        {
-            public Point Position { get; }
-            public Color MainColor { get; }
-            public Color BackgorondColor { get; }
-            public int Width { get; }
-            public int Height { get; }
-            public IProgressBar ProgressBarStatus { get; }
-            public int Mergin { get; }
+            var barLength =0;
+            var barPosition = default(Point);
+            var barSize = default(Size);
 
-            public ProgressBarData(IProgressBar barStatus, Point position, Color mainColor, Color backGroundColor,
-                int width, int height,int mergin)
+            switch (data.DrawType)
             {
-                Position = position;
-                MainColor = mainColor;
-                BackgorondColor = backGroundColor;
-                ProgressBarStatus = barStatus;
-                Width = width;
-                Height = height;
-                Mergin = mergin;
+                case DrawType.RightToLeft:
+                    barLength = (int)(width * data.ProgressBarStatus.Rate);
+                    barPosition = new Point(pos.X , pos.Y);
+                    barSize = new Size(barLength, height);
+                    break;
+                case DrawType.LeftToRight:
+                    barLength = (int)(width * data.ProgressBarStatus.Rate);
+                    barPosition = new Point((pos.X + width ) - barLength, pos.Y);
+                    barSize = new Size(barLength, height);
+                    break;
+                case DrawType.UpToBottom:
+                    barLength = (int)(height * data.ProgressBarStatus.Rate);
+                    barPosition = new Point(pos.X , pos.Y + height - barLength);
+                    barSize = new Size(width, barLength);
+                    break;
+                case DrawType.BottomToUp:
+                    barLength = (int)(height * data.ProgressBarStatus.Rate);
+                    barPosition = new Point(pos.X , pos.Y );
+                    barSize = new Size(width, barLength);
+                    break;
             }
+
+            _mContainer.Items.Add(new UIRectangle(new Point(pos.X - margin, pos.Y - margin),
+                new Size(width + margin*2, height + margin*2), data.BackgorondColor));
+            _mContainer.Items.Add(new UIRectangle(barPosition, barSize, data.MainColor));
         }
+
+
     }
 }

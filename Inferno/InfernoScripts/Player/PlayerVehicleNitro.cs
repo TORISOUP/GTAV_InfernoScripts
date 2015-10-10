@@ -109,9 +109,16 @@ namespace Inferno
             //カウンタ作成
             var counter = new ReduceCounter(10000);
             //カウンタを描画
-            RegisterProgressBar(counter, new Point(0, 30),Color.FromArgb(200,0,255,125), Color.FromArgb(128,0,0,0), 100, 10, 5);
+            RegisterProgressBar(
+                new ProgressBarData(counter, new Point(0, 30),
+                Color.FromArgb(200, 0, 255, 125),
+                Color.FromArgb(128, 0, 0, 0), 
+                DrawType.RightToLeft, 100, 10, 2));
+
             //カウンタを自動カウント
             RegisterCounter(counter);
+
+
 
             //3秒まつ
 
