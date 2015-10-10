@@ -71,11 +71,11 @@ namespace Inferno
 
             if (driver.IsSafeExist())
             {
-                driver.IsInvincible = true;
+                driver.IsInvincible = isInvincible;
             }
             if (vehicle.IsSafeExist())
             {
-                vehicle.IsInvincible = true;
+                vehicle.IsInvincible = isInvincible;
             }
         }
 
