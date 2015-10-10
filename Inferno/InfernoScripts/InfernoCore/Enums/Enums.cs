@@ -1,11 +1,5 @@
 ﻿namespace Inferno
 {
-    public enum ProgressBarType
-    {
-        Increase = 0,
-        Reduce = 1
-    };
-
     public enum GameKey
     {
         EnterCar = 23,
