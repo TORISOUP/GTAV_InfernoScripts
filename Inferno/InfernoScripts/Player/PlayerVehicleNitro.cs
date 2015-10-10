@@ -118,8 +118,6 @@ namespace Inferno
             //カウンタを自動カウント
             RegisterCounter(counter);
 
-
-
             //3秒まつ
 
             foreach (var s in WaitForSeconds(3))
