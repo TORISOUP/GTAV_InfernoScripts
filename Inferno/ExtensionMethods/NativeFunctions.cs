@@ -49,6 +49,11 @@ namespace Inferno
             return Function.Call<int>(Hash.GET_HASH_KEY, str);
         }
 
+        public static bool IsFleeing(this Ped ped)
+        {
+            return Function.Call<bool>(Hash.IS_PED_FLEEING, ped);
+        }
+
         /// <summary>
         /// 指定した武器を所持させる
         /// </summary>
@@ -350,7 +355,7 @@ namespace Inferno
             Function.Call(Hash.SET_PED_FLEE_ATTRIBUTES, ped, unk1, unk2);
         }
 
-        public static void SetCombatAttributes(this Ped ped, int unk1, int unk2)
+        public static void SetCombatAttributes(this Ped ped, int unk1, bool unk2)
         {
             Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped, unk1, unk2);
         }

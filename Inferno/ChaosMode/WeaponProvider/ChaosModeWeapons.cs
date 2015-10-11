@@ -60,6 +60,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.STINGER,
                 Weapon.STUNGUN,
                 Weapon.PETROLCAN,
+                Weapon.RAILGUN
             };
 
             //近距離系

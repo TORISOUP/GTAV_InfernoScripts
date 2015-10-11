@@ -159,19 +159,22 @@ namespace Inferno.ChaosMode
                 chaosedPedList.Remove(pedId);
                 yield break;
             }
-            
-            if (ped.IsSafeExist() && !ped.IsRequiredForMission())
+
+            if (!ped.IsRequiredForMission())
             {
+                //ミッション関係じゃないキャラならパラメータ変更
                 SetPedStatus(ped);
+                PreventToFlee(ped);
             }
-
-            //グループに入ってるなら脱退させる
-            var playerGroup = Game.Player.GetPlayerGroup();
-            if (!ped.IsPedGroupMember(playerGroup))
+            else
             {
-                ped.RemovePedFromGroup();
+                //グループに入ってるなら脱退させる
+                var playerGroup = Game.Player.GetPlayerGroup();
+                if (!ped.IsPedGroupMember(playerGroup))
+                {
+                    ped.RemovePedFromGroup();
+                }
             }
-
             //以下ループ
             do
             {
@@ -202,7 +205,15 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                yield return WaitForSeconds(3 + (float) Random.NextDouble()*5);
+                foreach (var s in WaitForSeconds(3 + (float) Random.NextDouble()*5))
+                {
+                    if (ped.IsSafeExist() && ped.IsFleeing())
+                    {
+                        //市民が攻撃をやめて逃げ始めたら再度セットする
+                        break;
+                    }
+                    yield return s;
+                }
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -243,10 +254,10 @@ namespace Inferno.ChaosMode
         {
             if(!ped.IsSafeExist()) return;
             //FIBミッションからのコピペ（詳細不明）
-            ped.SetCombatAttributes(9,0);
-            ped.SetCombatAttributes(1, 0);
-            ped.SetCombatAttributes(3, 1);
-            ped.SetCombatAttributes(29, 1);
+            ped.SetCombatAttributes(9,false);
+            ped.SetCombatAttributes(1, false);
+            ped.SetCombatAttributes(3, true);
+            ped.SetCombatAttributes(29, true);
 
             ped.MaxHealth = 2000;
             ped.Health = 2000;
@@ -274,8 +285,9 @@ namespace Inferno.ChaosMode
                 if(!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
                 if(!target.IsSafeExist()) return;
-                ped.TaskSetBlockingOfNonTemporaryEvents(false);
+                
                 ped.Task.ClearAll();
+                ped.Task.ClearSecondary();
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
                 ped.IsVisible = true;
@@ -306,8 +318,10 @@ namespace Inferno.ChaosMode
                         ped.Task.FightAgainst(target, 60000);
                     }
                 }
+                
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
-                ped.SetPedKeepTask(true);
+                //ped.SetPedKeepTask(true);
+                //ped.TaskSetBlockingOfNonTemporaryEvents(true);
             }
             catch (Exception e)
             {
@@ -316,7 +330,16 @@ namespace Inferno.ChaosMode
             }
         }
 
-      
+        /// <summary>
+        /// 市民が逃げないようにパラメータ設定する
+        /// </summary>
+        /// <param name="ped"></param>
+        private void PreventToFlee(Ped ped)
+        {
+            ped.SetFleeAttributes(0,0);
+            ped.SetCombatAttributes(46,true);
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
+        }
 
         /// <summary>
         /// 市民に武器をもたせる

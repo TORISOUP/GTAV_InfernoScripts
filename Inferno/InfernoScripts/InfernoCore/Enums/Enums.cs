@@ -1,11 +1,7 @@
-﻿namespace Inferno
-{
-    public enum ProgressBarType
-    {
-        Increase = 0,
-        Reduce = 1
-    };
+﻿using GTA.Native;
 
+namespace Inferno
+{
     public enum GameKey
     {
         EnterCar = 23,
@@ -134,7 +130,8 @@
         HELI_CRASH = 341774354,
         FIRE = -544306709,
         MUSCKET= -1466123874,
-        MARKSMANRIFLE = -952879014
+        MARKSMANRIFLE = -952879014,
+        RAILGUN = 1834241177
     }
 
     public enum VehicleWeapon
