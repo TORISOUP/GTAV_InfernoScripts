@@ -16,20 +16,24 @@ namespace Inferno
         protected override void Setup()
         {
             OnTickAsObservable
-                .Where(_ => Function.Call<bool>(Hash.IS_CUTSCENE_PLAYING) && IsActive)
+                .Where(_ => IsActive)
                 .Subscribe(_ =>
                 {
-                    foreach (var ped in CachedPeds.Where(x=>x.IsSafeExist()))
+                    foreach (var ped in CachedPeds.Where(x=>x.IsSafeExist() && x.IsRequiredForMission()))
                     {
                         ped.CanRagdoll = true;
-                        ped.SetToRagdoll(1000);
+                        ped.SetToRagdoll(10000);
                         ped.ApplyForce(new Vector3(0, 0, 1));
                     }
                 });
 
             OnKeyDownAsObservable
-                .Where(x => IsActive && x.KeyCode == Keys.F8)
-                .Subscribe(_ => IsActive = !IsActive);
+                .Where(x => x.KeyCode == Keys.F8)
+                .Subscribe(_ =>
+                {
+                    IsActive = !IsActive;
+                    DrawText("Ragdoll:" + IsActive, 3.0f);
+                });
         }
     }
 }
