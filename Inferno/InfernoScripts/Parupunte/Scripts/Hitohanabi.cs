@@ -16,6 +16,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //コンストラクタは必須
         }
 
+        public override string Name => "ひとはなび";
+
         public override void OnStart()
         {
             //コルーチン起動

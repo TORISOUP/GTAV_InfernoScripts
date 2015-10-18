@@ -16,20 +16,20 @@ namespace Inferno
     class DisplayCauseOfDeath : InfernoScript
     {
         private UIContainer _mContainer;
-        private int ScreenHeight;
-        private int ScreenWidth;
+        private int _screenHeight;
+        private int _screenWidth;
 
-        private Vector2 textPositionScale = new Vector2(0.5f,0.75f);
+        private Vector2 _textPositionScale = new Vector2(0.5f,0.75f);
 
 
         protected override void Setup()
         {
             var screenResolution = NativeFunctions.GetScreenResolution();
-            ScreenHeight = (int)screenResolution.Y;
-            ScreenWidth = (int)screenResolution.X;
+            _screenHeight = (int)screenResolution.Y;
+            _screenWidth = (int)screenResolution.X;
 
             _mContainer = new UIContainer(
-                new Point(0, 0), new Size(ScreenWidth, ScreenHeight));
+                new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             this.OnDrawingTickAsObservable
                 .Where(_ => _mContainer.Items.Count > 0)
@@ -51,7 +51,7 @@ namespace Inferno
                     var damageName = damageWeapon.ToString();
                     if (PlayerPed.GetKiller() == PlayerPed) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
-                        new Point((int)(ScreenWidth * textPositionScale.X),(int)(ScreenHeight*textPositionScale.Y)),
+                        new Point((int)(_screenWidth * _textPositionScale.X),(int)(_screenHeight*_textPositionScale.Y)),
                         1.0f, Color.White, 0, true);
 
                     _mContainer.Items.Add(text);

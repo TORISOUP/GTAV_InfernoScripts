@@ -24,6 +24,8 @@ namespace Inferno.InfernoScripts.Parupunte
     abstract class ParupunteScript
     {
 
+        public abstract string Name { get; }
+
         /// <summary>
         /// パルプンテの処理が実行中であるか
         /// </summary>
