@@ -18,8 +18,6 @@ namespace Inferno
 
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
 
-        private static int count = 0;
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("meteo")

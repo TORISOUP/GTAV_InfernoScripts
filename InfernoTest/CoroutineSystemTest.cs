@@ -51,7 +51,7 @@ namespace InfernoTest
             Assert.AreEqual(1, actionCount);
 
             //1回実行
-            testCoroutineSystem.CoroutineLoop(0);
+            testCoroutineSystem.CoroutineLoop();
 
             //実行回数が増えているはず
             Assert.AreEqual(2, actionCount);
@@ -86,7 +86,7 @@ namespace InfernoTest
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
 
             //一度コルーチンを回す
-            testCoroutineSystem.CoroutineLoop(0);
+            testCoroutineSystem.CoroutineLoop();
 
             //登録コルーチン数は５個になっている
             Assert.AreEqual(5, testCoroutineSystem.RegisteredCoroutineCount);
@@ -112,44 +112,6 @@ namespace InfernoTest
 
 
         [TestMethod]
-        public void ShardIdを指定してコルーチンを回すことができる()
-        {
-            //4個登録
-            for (var id = 0; id < 4; id++)
-            {
-                //それぞれ1回実行したら終了
-                testCoroutineSystem.AddCrotoutine(testEnumerable(1));
-            }
-            //登録コルーチン数は4個になっている
-            Assert.AreEqual(4, testCoroutineSystem.RegisteredCoroutineCount);
-
-            //shardId=0で実行
-            testCoroutineSystem.CoroutineLoop(0);
-
-            //登録コルーチン数は3個になっている
-            Assert.AreEqual(3, testCoroutineSystem.RegisteredCoroutineCount);
-
-            //shardId=1で実行
-            testCoroutineSystem.CoroutineLoop(1);
-
-            //登録コルーチン数は2個になっている
-            Assert.AreEqual(2, testCoroutineSystem.RegisteredCoroutineCount);
-
-            //shardId=2で実行
-            testCoroutineSystem.CoroutineLoop(2);
-
-            //登録コルーチン数は1個になっている
-            Assert.AreEqual(1, testCoroutineSystem.RegisteredCoroutineCount);
-
-            //shardId=3で実行
-            testCoroutineSystem.CoroutineLoop(3);
-
-            //登録コルーチン数は0個になっている
-            Assert.AreEqual(0, testCoroutineSystem.RegisteredCoroutineCount);
-        }
-
-
-        [TestMethod]
         public void NestしたIEnumerableを展開して実行できる()
         {
             testCoroutineSystem.AddCrotoutine(nestEnumerable());
@@ -158,7 +120,7 @@ namespace InfernoTest
             //コルーチンが終了するまでの実行回数を数える
             while (testCoroutineSystem.RegisteredCoroutineCount > 0)
             {
-                testCoroutineSystem.CoroutineLoop(0);
+                testCoroutineSystem.CoroutineLoop();
                 i++;
             }
 

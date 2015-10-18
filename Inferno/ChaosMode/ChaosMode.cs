@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 using GTA;
+using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.ChaosMode
@@ -68,10 +69,10 @@ namespace Inferno.ChaosMode
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
-                .Where(x=> IsActive && x.KeyCode == Keys.F7)
+                .Where(x => IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
-                   nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
+                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
                     DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -104,6 +105,10 @@ namespace Inferno.ChaosMode
                     StopAllChaosCoroutine();
                 });
 
+            CreateTickAsObservable(1000)
+                .Where(_ => IsActive)
+                .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
+
         }
 
 
@@ -112,7 +117,8 @@ namespace Inferno.ChaosMode
             if(!PlayerPed.IsSafeExist())return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
-            var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius, 100);
+            var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius);
+
             foreach (var ped in nearPeds.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
@@ -155,9 +161,20 @@ namespace Inferno.ChaosMode
                 yield break;
             }
 
-            if (ped.IsSafeExist() && !ped.IsRequiredForMission())
+            if (!ped.IsRequiredForMission())
             {
+                //ミッション関係じゃないキャラならパラメータ変更
                 SetPedStatus(ped);
+                PreventToFlee(ped);
+            }
+            else
+            {
+                //グループに入ってるなら脱退させる
+                var playerGroup = Game.Player.GetPlayerGroup();
+                if (!ped.IsPedGroupMember(playerGroup))
+                {
+                    ped.RemovePedFromGroup();
+                }
             }
             //以下ループ
             do
@@ -189,7 +206,15 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                yield return WaitForSeconds(3 + (float) Random.NextDouble()*5);
+                foreach (var s in WaitForSeconds(3 + (float) Random.NextDouble()*5))
+                {
+                    if (ped.IsSafeExist() && ped.IsFleeing())
+                    {
+                        //市民が攻撃をやめて逃げ始めたら再度セットする
+                        break;
+                    }
+                    yield return s;
+                }
 
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -230,10 +255,10 @@ namespace Inferno.ChaosMode
         {
             if(!ped.IsSafeExist()) return;
             //FIBミッションからのコピペ（詳細不明）
-            ped.SetCombatAttributes(9,0);
-            ped.SetCombatAttributes(1, 0);
-            ped.SetCombatAttributes(3, 1);
-            ped.SetCombatAttributes(29, 1);
+            ped.SetCombatAttributes(9,false);
+            ped.SetCombatAttributes(1, false);
+            ped.SetCombatAttributes(3, true);
+            ped.SetCombatAttributes(29, true);
 
             ped.MaxHealth = 2000;
             ped.Health = 2000;
@@ -261,10 +286,12 @@ namespace Inferno.ChaosMode
                 if(!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
                 if(!target.IsSafeExist()) return;
-                ped.TaskSetBlockingOfNonTemporaryEvents(false);
+                
                 ped.Task.ClearAll();
+                ped.Task.ClearSecondary();
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
+                ped.IsVisible = true;
                 if (ped.IsInVehicle())
                 {
                     //TODO:車から投擲物を投げる方法を調べる
@@ -292,8 +319,10 @@ namespace Inferno.ChaosMode
                         ped.Task.FightAgainst(target, 60000);
                     }
                 }
+                
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
-                ped.SetPedKeepTask(true);
+                //ped.SetPedKeepTask(true);
+                //ped.TaskSetBlockingOfNonTemporaryEvents(true);
             }
             catch (Exception e)
             {
@@ -302,7 +331,16 @@ namespace Inferno.ChaosMode
             }
         }
 
-      
+        /// <summary>
+        /// 市民が逃げないようにパラメータ設定する
+        /// </summary>
+        /// <param name="ped"></param>
+        private void PreventToFlee(Ped ped)
+        {
+            ped.SetFleeAttributes(0,0);
+            ped.SetCombatAttributes(46,true);
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
+        }
 
         /// <summary>
         /// 市民に武器をもたせる

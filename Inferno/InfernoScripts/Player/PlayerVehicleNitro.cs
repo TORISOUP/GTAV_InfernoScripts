@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Drawing;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
@@ -44,14 +46,14 @@ namespace Inferno
                 return;
             }
 
-            //車体回転時用にスティック入力を-127～127で取得。後は4のニトロの計算そのまま
-            var rotation = (this.GetStickValue().Y * 30.0f) / 126.0f;
+            //車体回転時用にスティック入力を-127～127で取得して-0.5～0.5の値になるように調整
+            var rotation = this.GetStickValue().Y / 250.0f;
             if (Game.Player.WantedLevel == 0)
             {
-                vehicle.Rotation = new Vector3(vehicle.Rotation.X + rotation, vehicle.Rotation.Y, vehicle.Rotation.Z);
+                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
             }
-            var deadZone = 20.0f;
-            var addSpeed = (rotation > deadZone ? 20.0f : 50.0f);
+            var deadZone = 0.25f;
+            var addSpeed = ((rotation > deadZone || rotation < -deadZone) ? 20.0f : 50.0f);
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
                 vehicle.Speed -= addSpeed;
@@ -64,6 +66,20 @@ namespace Inferno
             NitroAction(driver, vehicle);
         }
 
+        private void ChangeDirverAndVehicleState(Ped driver, Vehicle vehicle, bool isInvincible)
+        {
+
+            if (driver.IsSafeExist())
+            {
+                driver.IsInvincible = isInvincible;
+            }
+            if (vehicle.IsSafeExist())
+            {
+                vehicle.IsInvincible = isInvincible;
+            }
+        }
+
+
         /// <summary>
         /// ニトロ処理
         /// </summary>
@@ -71,14 +87,7 @@ namespace Inferno
         {
             _isNitroOk = false;
 
-            if (driver.IsSafeExist())
-            {
-                driver.IsInvincible = true;
-            }
-            if (vehicle.IsSafeExist())
-            {
-                vehicle.IsInvincible = true;
-            }
+            ChangeDirverAndVehicleState(driver, vehicle, true);
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
@@ -97,19 +106,50 @@ namespace Inferno
 
         IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
         {
-            yield return WaitForSeconds(3);
-            
-            if (driver.IsSafeExist())
+            //カウンタ作成
+            var counter = new ReduceCounter(10000);
+            //カウンタを描画
+            RegisterProgressBar(
+                new ProgressBarData(counter, new Point(0, 30),
+                Color.FromArgb(200, 0, 255, 125),
+                Color.FromArgb(128, 0, 0, 0), 
+                DrawType.RightToLeft, 100, 10, 2));
+
+            //カウンタを自動カウント
+            RegisterCounter(counter);
+
+            //3秒まつ
+
+            foreach (var s in WaitForSeconds(3))
             {
-                driver.IsInvincible = false;
-            }
-            if (vehicle.IsSafeExist())
-            {
-                vehicle.IsInvincible = false;
+                if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
+                {
+                    //死んだりクルマから降りたらリセット
+                    counter.Finish();
+                    _isNitroOk = true;
+                    ChangeDirverAndVehicleState(driver, vehicle, false);
+                    yield break;
+                }
+                yield return s;
             }
 
-            yield return WaitForSeconds(7);
+            ChangeDirverAndVehicleState(driver, vehicle, false);
 
+            //７秒まつ
+
+            foreach (var s in WaitForSeconds(7))
+            {
+                if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
+                {
+                    //死んだりクルマから降りたらリセット
+                    counter.Finish();
+                    _isNitroOk = true;
+                    yield break;
+                }
+                yield return s;
+            }
+
+            counter.Finish();
             _isNitroOk = true;
             DrawText("Nitro:OK", 2.0f);
         }

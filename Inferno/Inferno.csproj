@@ -35,6 +35,26 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationFramework" />
     <Reference Include="ScriptHookVDotNet, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
@@ -45,9 +65,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive, Version=1.0.10621.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Main.1.0.11226\lib\Net4\System.Reactive.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Reactive">
+      <HintPath>.\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
@@ -72,15 +91,20 @@
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
+    <Compile Include="InfernoScripts\Citizen\CitizenRagdoll.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\DrawingCore.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\ToastTextDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\ReduceCounter.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs" />
-    <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\DrawingCore.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarData.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />

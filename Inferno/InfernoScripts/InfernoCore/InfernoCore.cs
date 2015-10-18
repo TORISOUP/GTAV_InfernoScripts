@@ -23,8 +23,6 @@ namespace Inferno
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
 
-        private CoroutineSystem coroutineSystem;
-        private int _currentShardId = 0;
         private readonly BehaviorSubject<Ped[]> _pedsNearPlayer = new BehaviorSubject<Ped[]>(default(Ped[]));
         /// <summary>
         /// 周辺市民
@@ -88,8 +86,8 @@ namespace Inferno
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
                 playerPed.OnNext(ped);
-                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500, 300));
-                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500, 300));
+                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500));
+                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500));
             }
             catch (Exception e)
             {

@@ -18,7 +18,7 @@ namespace Inferno
             CreateInputKeywordAsObservable("killme")
                 .Subscribe(_ =>
                 {
-                    World.AddExplosion(PlayerPed.Position, GTA.ExplosionType.SmallExplosion1, 10.0f, 0.1f);
+                    World.AddExplosion(PlayerPed.Position, GTA.ExplosionType.Grenade, 10.0f, 0.1f);
                     PlayerPed.Kill();
                     //自殺コマンドで死んだときはランダムな方向にふっとばす
                     var x = Random.NextDouble() - 0.5;

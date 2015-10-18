@@ -49,6 +49,11 @@ namespace Inferno
             return Function.Call<int>(Hash.GET_HASH_KEY, str);
         }
 
+        public static bool IsFleeing(this Ped ped)
+        {
+            return Function.Call<bool>(Hash.IS_PED_FLEEING, ped);
+        }
+
         /// <summary>
         /// 指定した武器を所持させる
         /// </summary>
@@ -350,7 +355,7 @@ namespace Inferno
             Function.Call(Hash.SET_PED_FLEE_ATTRIBUTES, ped, unk1, unk2);
         }
 
-        public static void SetCombatAttributes(this Ped ped, int unk1, int unk2)
+        public static void SetCombatAttributes(this Ped ped, int unk1, bool unk2)
         {
             Function.Call(Hash.SET_PED_COMBAT_ATTRIBUTES, ped, unk1, unk2);
         }
@@ -564,6 +569,36 @@ namespace Inferno
         public static int GetClockHours()
         {
             return Function.Call<int>(Hash.GET_CLOCK_HOURS);
+        }
+
+        public static void SetAllRandomPedsFlee(Player player, bool flag)
+        {
+            Function.Call(Hash.SET_ALL_RANDOM_PEDS_FLEE, player, flag);
+
+        }
+
+        /// <summary>
+        /// プレイヤのグループIDを取得
+        /// </summary>
+        public static int GetPlayerGroup(this Player player)
+        {
+            return Function.Call<int>(Hash.GET_PLAYER_GROUP, Game.Player);
+        }
+
+        /// <summary>
+        /// あるグループに属しているか
+        /// </summary>
+        public static bool IsPedGroupMember(this Ped ped, int groupId)
+        {
+            return Function.Call<bool>(Hash.IS_PED_GROUP_MEMBER, ped, groupId);
+        }
+
+        /// <summary>
+        /// 市民をグループから除外する
+        /// </summary>
+        public static void RemovePedFromGroup(this Ped ped)
+        {
+            Function.Call(Hash.REMOVE_PED_FROM_GROUP, ped);
         }
     }
 }

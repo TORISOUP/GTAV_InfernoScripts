@@ -55,7 +55,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 targetPed.Kill();
                 targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 40);
             }
-            GTA.World.AddExplosion(targetPosition, GTA.ExplosionType.BigExplosion1, 2.0f, 1.0f);
+            GTA.World.AddExplosion(targetPosition, GTA.ExplosionType.Rocket, 2.0f, 1.0f);
 
             //終了
             ParupunteEnd();
