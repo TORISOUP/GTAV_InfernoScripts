@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
@@ -11,52 +12,70 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteDebug]
     class Hitohanabi : ParupunteScript
     {
+        private ReduceCounter reduceCounter;
+
         public Hitohanabi(ParupunteCore core) : base(core)
         {
-            //コンストラクタは必須
         }
 
         public override string Name => "ひとはなび";
 
         public override void OnStart()
         {
+            reduceCounter = new ReduceCounter(5000);
+            AddProgressBar(reduceCounter);
             //コルーチン起動
             StartCoroutine(HitohanabiCoroutine());
+            
         }
 
         private IEnumerable<object> HitohanabiCoroutine()
         {
-            //プレイヤ周辺100mの市民取得
-            var targetPeds =
-                core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(core.PlayerPed.Position, 100)).ToArray();
-
-            //市民を車から引きずり出す
-            foreach (var targetPed in targetPeds.Where(x => x.IsSafeExist()))
-            {
-                targetPed.Task.ClearAllImmediately();
-            }
 
             //プレイや周辺の15m上空を設定
-                var targetPosition = core.PlayerPed.Position.AroundRandom2D(10) + new Vector3(0, 0, 15);
+            var targetPosition = core.PlayerPed.Position.Around(20) + new Vector3(0, 0, 15);
+            var pedList = new List<Ped>();
 
-            //だいたい5秒間市民を一箇所に吸い込み続ける
-            for (var i = 0; i < 50; i++)
+            //タイマが終わるまでカウントし続ける
+            while(!reduceCounter.IsCompleted)
             {
-                foreach (var targetPed in targetPeds.Where(x=>x.IsSafeExist()))
+                foreach (
+                    var targetPed in
+                        core.CachedPeds.Where(
+                            x =>x.IsSafeExist() && x.IsAlive && x.IsHuman && x.IsInRangeOf(core.PlayerPed.Position, 50))
+                    )
                 {
+                    //まだの人をリストにくわえる
+                    if (pedList.Count < 30 && !pedList.Contains(targetPed))
+                    {
+                        pedList.Add(targetPed);
+                        if (targetPed.IsInVehicle()) targetPed.Task.ClearAllImmediately();
+                        targetPed.CanRagdoll = true;
+                        targetPed.SetToRagdoll(5000);
+                    }
+
+                }
+
+                foreach (var targetPed in pedList.Where(x=>x.IsSafeExist()))
+                {
+                    //すいこむ
                     var direction = targetPosition - targetPed.Position;
+                    targetPed.FreezePosition = false;
                     var lenght = direction.Length();
-                    direction.Normalize();
-                    targetPed.ApplyForce(direction*lenght.Clamp(0, 2)*15);
+                    if (lenght > 1)
+                    {
+                        direction.Normalize();
+                        targetPed.ApplyForce(direction*lenght.Clamp(0, 1)*20);
+                    }
                 }
                 yield return null;
             }
 
             //バクハツシサン
-            foreach (var targetPed in targetPeds.Where(x => x.IsSafeExist()))
+            foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
             {
                 targetPed.Kill();
-                targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 40);
+                targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 10);
             }
             GTA.World.AddExplosion(targetPosition, GTA.ExplosionType.Rocket, 2.0f, 1.0f);
 

@@ -107,5 +107,14 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             return core.CreateWaitForSeconds(seconds);
         }
+
+        /// <summary>
+        /// ReduceCounterをProgressBarとして出す
+        /// </summary>
+        /// <param name="counter"></param>
+        protected void AddProgressBar(ReduceCounter counter)
+        {
+            core.AddProgressBar(counter);
+        }
     }
 }

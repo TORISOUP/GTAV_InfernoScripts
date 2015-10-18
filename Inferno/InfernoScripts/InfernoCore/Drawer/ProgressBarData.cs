@@ -14,8 +14,8 @@ namespace Inferno
     {
         RightToLeft,
         LeftToRight,
-        UpToBottom,
-        BottomToUp
+        TopToBottom,
+        BottomToTop
     }
 
     /// <summary>

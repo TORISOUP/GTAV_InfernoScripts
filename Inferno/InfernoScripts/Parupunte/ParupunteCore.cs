@@ -212,6 +212,17 @@ namespace Inferno.InfernoScripts.Parupunte
         public IEnumerable CreateWaitForSeconds(float seconds)
         {
             return WaitForSeconds(seconds);
-        } 
+        }
+
+        public void AddProgressBar(ReduceCounter reduceCounter)
+        {
+            var prgoressbarData = new ProgressBarData(reduceCounter,
+                new Point(_screenWidth -10, _screenHeight -100), //画面右下
+                Color.FromArgb(200, 0, 127, 255),
+                Color.FromArgb(128, 0, 0, 0),
+                DrawType.TopToBottom, 10, 100, 2);
+            RegisterProgressBar(prgoressbarData);
+            RegisterCounter(reduceCounter);
+        }
     }
 }

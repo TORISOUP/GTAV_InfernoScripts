@@ -91,12 +91,12 @@ namespace Inferno
                     barPosition = new Point((pos.X + width ) - barLength, pos.Y);
                     barSize = new Size(barLength, height);
                     break;
-                case DrawType.UpToBottom:
+                case DrawType.TopToBottom:
                     barLength = (int)(height * data.ProgressBarStatus.Rate);
                     barPosition = new Point(pos.X , pos.Y + height - barLength);
                     barSize = new Size(width, barLength);
                     break;
-                case DrawType.BottomToUp:
+                case DrawType.BottomToTop:
                     barLength = (int)(height * data.ProgressBarStatus.Rate);
                     barPosition = new Point(pos.X , pos.Y );
                     barSize = new Size(width, barLength);
