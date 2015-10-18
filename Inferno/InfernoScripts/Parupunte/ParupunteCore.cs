@@ -15,7 +15,12 @@ namespace Inferno.InfernoScripts.Parupunte
         /// パルプンテスクリプト一覧
         /// </summary>
         private Type[] _parupunteScritpts;
-        
+
+        /// <summary>
+        /// デバッグ用
+        /// </summary>
+        private Type[] _debugParuputeScripts;
+
         protected override int TickInterval { get; } = 100;
 
         protected override void Setup()
@@ -28,6 +33,12 @@ namespace Inferno.InfernoScripts.Parupunte
                     .GetTypes()
                     .Where(type => type.BaseType != null && type.BaseType == typeof (ParupunteScript))
                     .ToArray();
+
+            _debugParuputeScripts = _parupunteScritpts.Where(x =>
+            {
+                var attribute = x.GetCustomAttribute<ParupunteDebug>();
+                return attribute != null && attribute.IsDebug;
+            }).ToArray();
 
             CreateInputKeywordAsObservable("rnt")
                 .Where(_ => !IsActive)
@@ -43,11 +54,24 @@ namespace Inferno.InfernoScripts.Parupunte
             IsActive = true;
 
             //抽選
-            var scriptType = _parupunteScritpts[Random.Next(0, _parupunteScritpts.Length)];
+            var scriptType = ChooseParupounteScript();
             //インスタンス化
             var scriptInstance = Activator.CreateInstance(scriptType, this) as ParupunteScript;
             //コルーチン開始
             StartCoroutine(ParupunteCoreCoroutine(scriptInstance));
+        }
+
+        /// <summary>
+        /// パルプンテスクリプトから抽選する
+        /// </summary>
+        private Type ChooseParupounteScript()
+        {
+            if (_debugParuputeScripts.Any())
+            {
+                //デバッグ指定のやつがあるならそっち優先で取り出す
+                return _debugParuputeScripts[Random.Next(0, _debugParuputeScripts.Length)];
+            }
+            return _parupunteScritpts[Random.Next(0, _parupunteScritpts.Length)];
         }
 
         /// <summary>

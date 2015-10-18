@@ -7,6 +7,20 @@ using System.Threading.Tasks;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
+    /// <summary>
+    ///　デバッグ用Attribute
+    /// </summary>
+    public class ParupunteDebug : Attribute
+    {
+        //trueにするとそのParupunteScriptが優先される
+        public bool IsDebug;
+
+        public ParupunteDebug(bool isDebug = false)
+        {
+            IsDebug = isDebug;
+        }
+    }
+
     abstract class ParupunteScript
     {
 

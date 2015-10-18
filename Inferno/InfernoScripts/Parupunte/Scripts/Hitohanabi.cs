@@ -8,6 +8,7 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteDebug]
     class Hitohanabi : ParupunteScript
     {
         public Hitohanabi(ParupunteCore core) : base(core)
