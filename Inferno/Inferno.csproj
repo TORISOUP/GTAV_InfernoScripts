@@ -95,7 +95,7 @@
     <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\ReduceCounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs" />
