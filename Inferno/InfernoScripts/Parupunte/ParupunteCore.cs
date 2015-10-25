@@ -207,6 +207,15 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
+        /// コルーチンが存在するかどうかチェックする
+        /// </summary>
+        /// <param scriptname="id"></param>
+        public bool CoroutineExists(uint id)
+        {
+            return IsCoroutineValid(id);
+        }
+
+        /// <summary>
         /// WaitForSeconsの結果を返す
         /// </summary>
         public IEnumerable CreateWaitForSeconds(float seconds)

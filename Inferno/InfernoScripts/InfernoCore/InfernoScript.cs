@@ -116,7 +116,7 @@ namespace Inferno
 
         protected uint StartCoroutine(IEnumerable<Object> coroutine)
         {
-            return coroutineSystem.AddCrotoutine(coroutine);
+            return coroutineSystem.AddCoroutine(coroutine);
         }
 
         protected void StopCoroutine(uint id)
@@ -124,6 +124,18 @@ namespace Inferno
             if (coroutineSystem != null)
             {
                 coroutineSystem.RemoveCoroutine(id);
+            }
+        }
+
+        protected bool IsCoroutineValid(uint id)
+        {
+            if (coroutineSystem != null)
+            {
+                return coroutineSystem.ContainsCoroutine(id);
+            }
+            else
+            {
+                return false;
             }
         }
 

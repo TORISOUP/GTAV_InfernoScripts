@@ -100,6 +100,14 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
+        /// コルーチンが有効かどうかチェックする
+        /// </summary>
+        protected bool IsCoroutineValid(uint id)
+        {
+            return core.CoroutineExists(id);
+        }
+
+        /// <summary>
         /// 指定秒数待機するIEnumerable
         /// </summary>
         /// <param name="seconds"></param>
