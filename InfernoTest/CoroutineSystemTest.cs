@@ -119,11 +119,22 @@ namespace InfernoTest
                 testCoroutineSystem.AddCoroutine(testEnumerable(5));
             }
 
-            //IDは１０個全て存在する
+            //IDは１０個全て存在するか確認し、すぐに除去
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
             for (uint id = 0; id < 10; id++)
             {
                 Assert.IsTrue(testCoroutineSystem.ContainsCoroutine(id));
+                testCoroutineSystem.RemoveCoroutine(id);
+            }
+
+            //一度コルーチンを回す
+            testCoroutineSystem.CoroutineLoop();
+
+            //IDは１０個全て存在していない
+            Assert.AreEqual(0, testCoroutineSystem.RegisteredCoroutineCount);
+            for (uint id = 0; id < 10; id++)
+            {
+                Assert.IsFalse(testCoroutineSystem.ContainsCoroutine(id));
             }
         }
 

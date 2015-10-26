@@ -207,12 +207,12 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
-        /// コルーチンが存在するかどうかチェックする
+        /// コルーチンが動作中かチェックする
         /// </summary>
         /// <param scriptname="id"></param>
-        public bool CoroutineExists(uint id)
+        public bool IsCoroutineInAction(uint id)
         {
-            return IsCoroutineValid(id);
+            return IsCoroutineActive(id);
         }
 
         /// <summary>

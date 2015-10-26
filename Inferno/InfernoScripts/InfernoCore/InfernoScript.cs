@@ -127,7 +127,7 @@ namespace Inferno
             }
         }
 
-        protected bool IsCoroutineValid(uint id)
+        protected bool IsCoroutineActive(uint id)
         {
             if (coroutineSystem != null)
             {

@@ -100,11 +100,11 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
-        /// コルーチンが有効かどうかチェックする
+        /// コルーチンが動作状態かどうかチェックする
         /// </summary>
-        protected bool IsCoroutineValid(uint id)
+        protected bool IsCoroutineActive(uint id)
         {
-            return core.CoroutineExists(id);
+            return core.IsCoroutineInAction(id);
         }
 
         /// <summary>
