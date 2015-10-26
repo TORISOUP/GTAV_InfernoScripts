@@ -207,6 +207,15 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
+        /// コルーチンが動作中かチェックする
+        /// </summary>
+        /// <param scriptname="id"></param>
+        public bool IsCoroutineInAction(uint id)
+        {
+            return IsCoroutineActive(id);
+        }
+
+        /// <summary>
         /// WaitForSeconsの結果を返す
         /// </summary>
         public IEnumerable CreateWaitForSeconds(float seconds)

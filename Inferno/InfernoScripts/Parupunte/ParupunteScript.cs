@@ -100,6 +100,14 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
+        /// コルーチンが動作状態かどうかチェックする
+        /// </summary>
+        protected bool IsCoroutineActive(uint id)
+        {
+            return core.IsCoroutineInAction(id);
+        }
+
+        /// <summary>
         /// 指定秒数待機するIEnumerable
         /// </summary>
         /// <param name="seconds"></param>

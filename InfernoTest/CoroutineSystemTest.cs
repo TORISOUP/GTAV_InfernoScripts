@@ -18,11 +18,11 @@ namespace InfernoTest
         }
 
         [TestMethod]
-        public void AddCroutine時にそれぞれ別のidが連番で割り振られる()
+        public void AddCoroutine時にそれぞれ別のidが連番で割り振られる()
         {
             for (uint expected = 0; expected < 10; expected++)
             {
-                var resultId = testCoroutineSystem.AddCrotoutine(testEnumerable(1));
+                var resultId = testCoroutineSystem.AddCoroutine(testEnumerable(1));
                 Assert.AreEqual(expected, resultId);
             }
 
@@ -42,10 +42,10 @@ namespace InfernoTest
 
 
         [TestMethod]
-        public void AddCroutine時に最初のコルーチンが実行される()
+        public void AddCoroutine時に最初のコルーチンが実行される()
         {
             actionCount = 0;
-            testCoroutineSystem.AddCrotoutine(ExecuteEnumerator());
+            testCoroutineSystem.AddCoroutine(ExecuteEnumerator());
 
             //登録直後に実行されているはず
             Assert.AreEqual(1, actionCount);
@@ -63,7 +63,7 @@ namespace InfernoTest
             //１０個登録
             for (uint expected = 0; expected < 10; expected++)
             {
-                testCoroutineSystem.AddCrotoutine(testEnumerable(5));
+                testCoroutineSystem.AddCoroutine(testEnumerable(5));
             }
 
             //IDは１０個全て存在する
@@ -110,11 +110,39 @@ namespace InfernoTest
             testCoroutineSystem.RemoveCoroutine(0);
         }
 
+        [TestMethod]
+        public void ContainsCoroutineで該当のCoroutineが存在するかどうかチェックされる()
+        {
+            //１０個登録
+            for (uint expected = 0; expected < 10; expected++)
+            {
+                testCoroutineSystem.AddCoroutine(testEnumerable(5));
+            }
+
+            //IDは１０個全て存在するか確認し、すぐに除去
+            Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
+            for (uint id = 0; id < 10; id++)
+            {
+                Assert.IsTrue(testCoroutineSystem.ContainsCoroutine(id));
+                testCoroutineSystem.RemoveCoroutine(id);
+            }
+
+            //一度コルーチンを回す
+            testCoroutineSystem.CoroutineLoop();
+
+            //IDは１０個全て存在していない
+            Assert.AreEqual(0, testCoroutineSystem.RegisteredCoroutineCount);
+            for (uint id = 0; id < 10; id++)
+            {
+                Assert.IsFalse(testCoroutineSystem.ContainsCoroutine(id));
+            }
+        }
+
 
         [TestMethod]
         public void NestしたIEnumerableを展開して実行できる()
         {
-            testCoroutineSystem.AddCrotoutine(nestEnumerable());
+            testCoroutineSystem.AddCoroutine(nestEnumerable());
             var i = 0;
 
             //コルーチンが終了するまでの実行回数を数える
