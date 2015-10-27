@@ -22,13 +22,14 @@ namespace Inferno
                     foreach (var ped in CachedPeds.Where(x=>x.IsSafeExist() && x.IsRequiredForMission()))
                     {
                         ped.CanRagdoll = true;
-                        ped.SetToRagdoll(10000);
-                        ped.ApplyForce(new Vector3(0, 0, 1));
+                        ped.SetToRagdoll(100);
+                        ped.ApplyForce(new Vector3(0, 0, 2));
                     }
                 });
 
             OnKeyDownAsObservable
                 .Where(x => x.KeyCode == Keys.F8)
+                
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
