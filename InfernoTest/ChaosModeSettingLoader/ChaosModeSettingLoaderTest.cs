@@ -16,7 +16,7 @@ namespace InfernoTest
     public class ChaosModeSettingLoaderTest
     {
         [TestMethod]
-        public void 全て正常値が設定されたJosonからChaosSettingが生成できる()
+        public void 全て正常値が設定されたJsonからChaosSettingが生成できる()
         {
             var testLoader =
                 new TestChaosModeSettingLoader(

@@ -33,7 +33,7 @@ namespace Inferno
         /// </summary>
         /// <param name="coroutine">登録するコルーチン</param>
         /// <returns></returns>
-        public uint AddCrotoutine(IEnumerable<Object> coroutine)
+        public uint AddCoroutine(IEnumerable<Object> coroutine)
         {
             lock (_lockObject)
             {
@@ -58,6 +58,15 @@ namespace Inferno
                 //このタイミングでは消さない
                 _stopCoroutineList.Add(id);
             }
+        }
+
+        /// <summary>
+        /// コルーチンが存在するかどうかチェックする
+        /// </summary>
+        /// <param name="id">存在するかどうか確認したいコルーチンID</param>
+        public bool ContainsCoroutine(uint id)
+        {
+            return _coroutines.ContainsKey(id);
         }
 
 
