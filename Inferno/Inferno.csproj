@@ -105,6 +105,7 @@
     <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\Isono.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MagicFire.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Onakaitai.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnCharacters.cs" />
