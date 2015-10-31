@@ -10,7 +10,10 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
+    /// <summary>
+    /// 尻から炎
+    /// </summary>
+    [ParupunteDebug]
     class MagicFire : ParupunteScript
     {
         private ReduceCounter reduceCounter;
@@ -19,17 +22,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name { get; } = "ただし魔法は尻から出る";
+
+        private uint coroutineId = 0;
         public override void OnStart()
         {
             reduceCounter = new ReduceCounter(10000);
             AddProgressBar(reduceCounter);
             //コルーチン起動
-            StartCoroutine(MagicFireCoroutine());
-
+            coroutineId = StartCoroutine(MagicFireCoroutine());
         }
 
         public override void OnFinished()
         {
+            reduceCounter.Finish();
+            StopCoroutine(coroutineId);
             //終了時に炎耐性解除
             SetPlayerFireProof(false);
         }
