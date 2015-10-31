@@ -57,6 +57,10 @@ namespace Inferno.InfernoScripts.Parupunte
             CreateInputKeywordAsObservable("rnt")
                 .Where(_ => !IsActive)
                 .Subscribe(_ => ParupunteStart());
+
+            CreateInputKeywordAsObservable("snt")
+                .Where(_ => IsActive)
+                .Subscribe(_ => ParupunteStop());
             #endregion
 
             #region Drawer
@@ -92,6 +96,14 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
+        /// パルプンテを中断する
+        /// </summary>
+        private void ParupunteStop()
+        {
+            IsActive = false;
+        }
+
+        /// <summary>
         /// パルプンテスクリプトから抽選する
         /// </summary>
         private Type ChooseParupounteScript()
@@ -121,7 +133,7 @@ namespace Inferno.InfernoScripts.Parupunte
             yield return WaitForSeconds(2);
 
             script.OnStart();
-            while (script.IsActive)
+            while (script.IsActive && IsActive)
             {
                 try
                 {
