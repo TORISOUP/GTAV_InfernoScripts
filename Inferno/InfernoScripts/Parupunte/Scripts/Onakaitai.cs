@@ -9,7 +9,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
+    [ParupunteDebug]
     class Onakaitai : ParupunteScript
     {
         public Onakaitai(ParupunteCore core) : base(core)
@@ -23,6 +23,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(reduceCounter);
             //コルーチン起動
             StartCoroutine(OilCoroutine());
+        }
+
+        public override void OnFinished()
+        {
+            reduceCounter.Finish();
         }
 
         private IEnumerable<object> OilCoroutine()
