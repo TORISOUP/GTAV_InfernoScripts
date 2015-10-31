@@ -107,6 +107,7 @@
     <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MagicFire.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Onakaitai.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnCharacters.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpeedMax.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />

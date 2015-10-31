@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
 
-    [ParupunteDebug(true)]
+    [ParupunteDebug]
     class SpeedMax:ParupunteScript
     {
         public SpeedMax(ParupunteCore core) : base(core)
