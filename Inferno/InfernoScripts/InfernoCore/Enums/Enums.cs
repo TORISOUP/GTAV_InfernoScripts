@@ -177,7 +177,7 @@ namespace Inferno
         FLARE = -1330848211,
     }
 
-    public enum VehicleModel
+    public enum VehicleHash
     {
         adder = -1216765807,
         airbus = 1283517198,

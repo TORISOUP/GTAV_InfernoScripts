@@ -413,14 +413,14 @@ namespace Inferno
             return Function.Call<bool>(Hash.IS_ENTITY_A_MISSION_ENTITY, entity);
         }
 
-        public static bool HasBeenDamagedBy(this Ped ped, Weapon weapon)
+        public static bool HasBeenDamagedBy(this Entity entity, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, ped, (int) weapon, -1);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int) weapon, -1);
         }
 
-        public static bool HasBeenDamagedByPed(this Ped ped, Ped target)
+        public static bool HasBeenDamagedByPed(this Entity entity, Ped target)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, ped, target, true);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, entity, target, true);
         }
 
         public static Weapon GetCauseOfDeath(this Ped ped)

@@ -120,6 +120,7 @@
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
     <Compile Include="InfernoScripts\Player\Warp.cs" />
     <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
+    <Compile Include="InfernoScripts\World\Fuluton.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
