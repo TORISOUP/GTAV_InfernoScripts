@@ -37,7 +37,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             reduceCounter.Finish();
             StopCoroutine(coroutineId);
             //終了時に炎耐性解除
-            SetPlayerFireProof(false);
+            core.PlayerPed.IsFireProof = false;
         }
 
         IEnumerable<object> MagicFireCoroutine()
@@ -53,8 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (!reduceCounter.IsCompleted)
             {
-                //炎耐性をつける
-                SetPlayerFireProof(true);
+                core.PlayerPed.IsFireProof = true;
                 StartFire();
                 yield return WaitForSeconds(1);
             }
@@ -77,10 +76,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
         }
 
-        private void SetPlayerFireProof(bool isProof)
-        {
-            var player = core.PlayerPed;
-            player.SetProofs(false, isProof, false, false, false, false, false, false);
-        }
     }
 }
