@@ -9,7 +9,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
+    [ParupunteDebug]
     class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core) : base(core)
@@ -34,7 +34,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             player.CanRagdoll = true;
             player.SetToRagdoll(3000);
+            player.IsCollisionProof = true;
+            if (player.IsInvincible)
+            {
+                player.CurrentVehicle.IsCollisionProof = true;
+            }
 
+            var randomVector = Utilities.InfernoUtilities.CreateRandomVector();
+
+            //6秒間空に打ち上げる
             foreach (var s in WaitForSeconds(6))
             {
                 foreach (var entity in entities.Where(x=>x.IsSafeExist()))
@@ -44,7 +52,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var p = entity as Ped;
                         p.SetToRagdoll(3000);
                     }
-                    entity.ApplyForce(upForce);
+                    entity.ApplyForce(upForce,randomVector);
                 }
                 if (player.IsInVehicle())
                 {
@@ -52,12 +60,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 else
                 {
-                    player.ApplyForce(upForce/2.0f);
+
+                    player.ApplyForce(upForce, randomVector);
                 }
                 yield return null;
             }
-            
 
+            while ( player.IsInvincible ? player.CurrentVehicle.IsInAir : player.IsInAir)
+            {
+                yield return null;
+            }
+            player.IsCollisionProof = false;
+            if (player.IsInvincible)
+            {
+                player.CurrentVehicle.IsCollisionProof = false;
+            }
             ParupunteEnd();
 
         } 
