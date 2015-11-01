@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using GTA;
+using GTA.Math;
+using GTA.Native;
+using Inferno.ChaosMode;
+using Inferno.Utilities;
+
+
+namespace Inferno.InfernoScripts.Parupunte.Scripts
+{
+    class SetTime : ParupunteScript
+    {
+        private int hour;
+        private string name;
+        private Random random;
+
+        public SetTime(ParupunteCore core) : base(core)
+        {
+            Random random = new Random();
+            hour = random.Next(0, 23);
+            name = hour.ToString() + "時かな";
+        }
+
+        public override string Name
+        {
+            get { return name; }
+        }
+        
+        public override void OnStart()
+        {
+            var dayTime = GTA.World.CurrentDayTime;
+            Function.Call(Hash.SET_CLOCK_TIME, hour, dayTime.Minutes, dayTime.Seconds);
+            ParupunteEnd();
+        }
+
+    }
+}
