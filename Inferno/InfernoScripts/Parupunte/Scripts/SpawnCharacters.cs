@@ -55,26 +55,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <returns>装備した武器</returns>
         private void GiveWeaponTpPed(Ped ped)
         {
-            try
-            {
-                if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist()) return;
 
-                //車に乗っているなら車用の武器を渡す
-                var weapon = Enum.GetValues(typeof (WeaponHash))
-                    .Cast<WeaponHash>()
-                    .OrderBy(c => random.Next())
-                    .FirstOrDefault();
+            //車に乗っているなら車用の武器を渡す
+            var weapon = Enum.GetValues(typeof (WeaponHash))
+                .Cast<WeaponHash>()
+                .OrderBy(c => random.Next())
+                .FirstOrDefault();
 
-                var weaponhash = (int) weapon;
+            var weaponhash = (int) weapon;
 
-                ped.SetDropWeaponWhenDead(false); //武器を落とさない
-                ped.GiveWeapon(weaponhash, 1000); //指定武器所持
-                ped.EquipWeapon(weaponhash); //武器装備
-            }
-            catch (Exception e)
-            {
+            ped.SetDropWeaponWhenDead(false); //武器を落とさない
+            ped.GiveWeapon(weaponhash, 1000); //指定武器所持
+            ped.EquipWeapon(weaponhash); //武器装備
 
-            }
         }
     }
 }
