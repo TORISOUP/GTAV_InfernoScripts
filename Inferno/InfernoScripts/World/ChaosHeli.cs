@@ -61,7 +61,7 @@ namespace Inferno.InfernoScripts.World
         {
             while (IsActive)
             {
-                if (playerPed.IsSafeExist() && !playerPed.IsAlive)
+                if (PlayerPed.IsSafeExist() && !PlayerPed.IsAlive)
                 {
                     ResetHeli();
                 }
@@ -77,7 +77,7 @@ namespace Inferno.InfernoScripts.World
         {
             while (IsActive)
             {
-                if (playerPed.IsSafeExist() && !_heli.IsSafeExist() || _heli.IsDead || !_heli.IsInRangeOf(playerPed.Position, 200.0f))
+                if (PlayerPed.IsSafeExist() && !_heli.IsSafeExist() || _heli.IsDead || !_heli.IsInRangeOf(PlayerPed.Position, 200.0f))
                 {
                     ResetHeli();
                 }
@@ -92,9 +92,9 @@ namespace Inferno.InfernoScripts.World
             //ヘリが存在かつMODが有効の間回り続けるコルーチン
             while (IsActive && _heli.IsSafeExist() && _heli.IsAlive)
             {
-                if (!playerPed.IsSafeExist()) break;
+                if (!PlayerPed.IsSafeExist()) break;
 
-                var targetPosition = playerPed.Position + new Vector3(0, 0, 10);
+                var targetPosition = PlayerPed.Position + new Vector3(0, 0, 10);
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
                 MoveHeli(_heliDriver, targetPosition);
@@ -138,9 +138,9 @@ namespace Inferno.InfernoScripts.World
             if(seat== VehicleSeat.Passenger) return false;
             //現在ラペリング中ならできない
             var ped = heli.GetPedOnSeat(seat);
-            if (!ped.IsSafeExist() || !ped.IsHuman || !ped.IsAlive || !playerPed.IsSafeExist()) return false;
+            if (!ped.IsSafeExist() || !ped.IsHuman || !ped.IsAlive || !PlayerPed.IsSafeExist()) return false;
 
-            var playerPosition = playerPed.Position;
+            var playerPosition = PlayerPed.Position;
             
             //プレイヤの近くならラペリングする
             return heli.IsInRangeOf(playerPosition, 50.0f);
@@ -230,8 +230,8 @@ namespace Inferno.InfernoScripts.World
         {
             try
             {
-                if(!playerPed.IsSafeExist()) return;
-                var player = playerPed;
+                if(!PlayerPed.IsSafeExist()) return;
+                var player = PlayerPed;
                 var playerPosition = player.Position;
                 var spawnHeliPosition = playerPosition + new Vector3(0,0,40);
                 var heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, spawnHeliPosition);

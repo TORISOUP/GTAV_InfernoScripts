@@ -67,7 +67,7 @@ namespace Inferno
 
             //プレイヤが死んだらリストクリア
             OnTickAsObservable
-                .Select(_ => playerPed.IsDead)
+                .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ => fulutonedEntityList.Clear());
@@ -116,13 +116,13 @@ namespace Inferno
         {
             foreach (var entity in CachedPeds.Concat(CachedVehicles.Cast<Entity>()).Where(
                 x => x.IsSafeExist()
-                     && x.IsInRangeOf(playerPed.Position, 5.0f)
+                     && x.IsInRangeOf(PlayerPed.Position, 15.0f)
                      && !fulutonedEntityList.Contains(x.Handle)
                      && x.IsAlive
                 ))
             {
-                if (entity.HasBeenDamagedByPed(playerPed) &&(
-                    entity.HasBeenDamagedBy(Weapon.UNARMED)
+                if (entity.HasBeenDamagedByPed(PlayerPed) &&(
+                   entity.HasBeenDamagedBy(Weapon.UNARMED)
                     ))
                 {
                     fulutonedEntityList.Add(entity.Handle);
@@ -195,11 +195,10 @@ namespace Inferno
 
             if (!entity.IsSafeExist() || entity.IsRequiredForMission())
             {
-                fulutonedEntityList.Remove(entity.Handle);
                 yield break;
             }
 
-            if (playerPed.CurrentVehicle.IsSafeExist() && playerPed.CurrentVehicle.Handle == entity.Handle)
+            if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
             {
                 yield break;
             }
@@ -212,9 +211,9 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(7))
             {
-                if (!entity.IsSafeExist() || entity.Position.DistanceTo(playerPed.Position)>200)
+                if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position)>200)
                 {
-                    if (playerPed.CurrentVehicle.IsSafeExist() && playerPed.CurrentVehicle.Handle == entity.Handle)
+                    if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
                     {
                         yield break;
                     }
@@ -249,7 +248,7 @@ namespace Inferno
         {
             var hash = motherBasePeds.Dequeue();
 
-            var p = World.CreatePed(new Model(hash), playerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
+            var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist()) return;
             var weapon = Enum.GetValues(typeof (WeaponHash))
                 .Cast<WeaponHash>()
@@ -274,7 +273,7 @@ namespace Inferno
         {
             var hash = motherbaseVeh.Dequeue();
             DrawText(hash.ToString(), 3.0f);
-            StartCoroutine(SpawnVehicleCoroutine(new Model(hash), playerPed.Position.AroundRandom2D(20)));
+            StartCoroutine(SpawnVehicleCoroutine(new Model(hash), PlayerPed.Position.AroundRandom2D(20)));
         }
 
         private IEnumerable<object> SpawnVehicleCoroutine(Model model, Vector3 targetPosition)

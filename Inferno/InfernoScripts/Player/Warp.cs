@@ -25,15 +25,15 @@ namespace Inferno.InfernoScripts.Player
 
                     var targetEntity = default(Entity);
 
-                    if (playerPed.IsInVehicle())
+                    if (PlayerPed.IsInVehicle())
                     {
-                        var vec = playerPed.CurrentVehicle;
+                        var vec = PlayerPed.CurrentVehicle;
                         if(!vec.IsSafeExist()) return;
                         targetEntity = vec;
                     }
                     else
                     {
-                        targetEntity = playerPed;
+                        targetEntity = PlayerPed;
                     }
 
                     targetEntity.Position = targetPos;

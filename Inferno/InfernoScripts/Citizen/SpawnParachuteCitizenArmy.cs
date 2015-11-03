@@ -35,10 +35,10 @@ namespace Inferno
 
         private void CreateParachutePed()
         {
-            if(!playerPed.IsSafeExist())return;
-            var playerPosition = playerPed.Position;
+            if(!PlayerPed.IsSafeExist())return;
+            var playerPosition = PlayerPed.Position;
 
-            var velocity = playerPed.Velocity;
+            var velocity = PlayerPed.Velocity;
             //プレイヤが移動中ならその進行先に生成する
             var ped =
                 NativeFunctions.CreateRandomPed(playerPosition + 3*velocity + new Vector3(0, 0, 50).AroundRandom2D(50));

@@ -40,15 +40,15 @@ namespace Inferno
         private void RunAway()
         {
             affectPeds.RemoveAll(x => !x.IsSafeExist());
-            if (!playerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist()) return;
 
-            var playerVehicle = playerPed.CurrentVehicle;
+            var playerVehicle = PlayerPed.CurrentVehicle;
 
             //プレイヤ周辺の車
             var drivers = CachedVehicles.Where(x => x.IsSafeExist()
                                                     && (!playerVehicle.IsSafeExist() || !x.IsSameEntity(playerVehicle))
                                                     && !x.IsRequiredForMission()
-                                                    && (x.Position - playerPed.Position).Length() <= PlayerAroundDistance)
+                                                    && (x.Position - PlayerPed.Position).Length() <= PlayerAroundDistance)
                 .Select(x => x.GetPedOnSeat(VehicleSeat.Driver))
                 .Where(x => x.IsSafeExist() && !affectPeds.Contains(x));
 
@@ -60,7 +60,7 @@ namespace Inferno
                     driver.DrivingSpeed = 100.0f;
                     driver.MaxDrivingSpeed = 100.0f;
                     driver.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
-                    driver.Task.VehicleChase(playerPed);
+                    driver.Task.VehicleChase(PlayerPed);
                     affectPeds.Add(driver);
                 }
                 catch (Exception e)

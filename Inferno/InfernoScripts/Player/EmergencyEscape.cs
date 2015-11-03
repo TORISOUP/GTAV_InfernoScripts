@@ -24,7 +24,7 @@ namespace Inferno
         //車に乗ってたら緊急脱出する
         private void EscapeVehicle()
         {
-            var player = playerPed;
+            var player = PlayerPed;
             if(!player.IsInVehicle()) return;
             var playerVec = player.CurrentVehicle;
             if(!playerVec.IsSafeExist())return;

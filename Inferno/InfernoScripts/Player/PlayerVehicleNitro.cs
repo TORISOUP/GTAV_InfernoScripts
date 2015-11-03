@@ -38,7 +38,7 @@ namespace Inferno
 
         private void NitroVehicle()
         {
-            var driver = playerPed;
+            var driver = PlayerPed;
             if (!driver.IsSafeExist()) return;
             var vehicle = this.GetPlayerVehicle();
             if (!vehicle.IsSafeExist())
@@ -122,7 +122,7 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(3))
             {
-                if (!playerPed.IsInVehicle() || playerPed.IsDead)
+                if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
                 {
                     //死んだりクルマから降りたらリセット
                     counter.Finish();
@@ -139,7 +139,7 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(7))
             {
-                if (!playerPed.IsInVehicle() || playerPed.IsDead)
+                if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
                 {
                     //死んだりクルマから降りたらリセット
                     counter.Finish();

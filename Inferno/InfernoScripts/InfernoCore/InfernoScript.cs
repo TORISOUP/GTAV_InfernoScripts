@@ -32,7 +32,7 @@ namespace Inferno
         /// <summary>
         /// プレイヤのped
         /// </summary>
-        protected Ped playerPed { get; private set; }
+        public Ped PlayerPed { get; private set; }
 
         private Ped[] _cachedPeds = new Ped[0];
         /// <summary>
@@ -62,7 +62,7 @@ namespace Inferno
 
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
-
+        
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
         /// </summary>
@@ -217,7 +217,7 @@ namespace Inferno
                 {
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
                     InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
-                    InfernoCore.Instance.PlayerPed.Subscribe(x => playerPed = x);
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => PlayerPed = x);
                 });
             
             //TickイベントをObservable化しておく
@@ -273,7 +273,7 @@ namespace Inferno
         #region Debug
 
         /// <summary>
-        /// ログをTCPSocker経由で吐く
+        /// ログを吐く
         /// </summary>
         /// <param name="message">ログメッセージ</param>
         public void LogWrite(string message)
