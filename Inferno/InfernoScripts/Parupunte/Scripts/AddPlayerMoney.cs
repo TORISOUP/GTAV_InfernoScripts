@@ -16,11 +16,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name => "使い道は入院費";
+        public override string Name => "今じゃあケツをふく紙にもなりゃしねってのによぉ!";
 
         public override void OnStart()
         {
-            Game.Player.Money += 2000;
+            Game.Player.Money += 20000;
             ParupunteEnd();
         }
     }

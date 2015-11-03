@@ -20,7 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name => "死体が爆発するぞ！気をつけろ！";
+        public override string Name => "ば・く・は・つ・し・た・い";
 
         public override void OnStart()
         {

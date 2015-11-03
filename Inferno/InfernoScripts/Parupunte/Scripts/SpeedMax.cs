@@ -14,7 +14,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name { get; } = "SpeedMax";
+        public override string Name { get; } = "高速進行";
 
 
         private ReduceCounter reduceCounter;

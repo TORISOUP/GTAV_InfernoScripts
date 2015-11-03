@@ -36,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var s in WaitForSeconds(1))
             {
-                var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, player.Position.AroundRandom2D(10));
+                var taxi = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Taxi, player.Position.AroundRandom2D(10));
 
                 if (taxi.IsSafeExist())
                 {

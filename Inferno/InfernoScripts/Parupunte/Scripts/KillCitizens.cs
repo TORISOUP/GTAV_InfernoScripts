@@ -40,24 +40,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                                && !x.IsSameEntity(core.PlayerPed)
                                                && !x.IsRequiredForMission()
                                                && x.IsInRangeOf(player.Position, radius)).ToList();
-
-            foreach (var ped in peds)
-            {
-                ped.Kill();
-            }
-
-            var pedsCount = peds.Count();
-
-            while(pedsCount > 0)//一気に数十個も同時に爆発を起こせないので時間差で行う
+            while (peds.Count > 0)//一気に数十個も同時に爆発を起こせないので時間差で行う
             {
                 var removePedList = peds.Take(10);
                 foreach (var ped in removePedList)
                 {
+                    ped.Kill();
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
                 }
 
                 peds.RemoveAll(removePedList.Contains);
-                pedsCount = peds.Count();
 
                 yield return null;
             }

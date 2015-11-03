@@ -10,8 +10,6 @@ using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
-
     internal class SpawnCharacters : ParupunteScript
     {
         private Model pedModel;
