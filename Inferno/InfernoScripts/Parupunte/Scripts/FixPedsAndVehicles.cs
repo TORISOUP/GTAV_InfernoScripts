@@ -11,13 +11,13 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class Daitenshi : ParupunteScript
+    class FixPedsAndVehicles : ParupunteScript
     {
-        public Daitenshi(ParupunteCore core) : base(core)
+        public FixPedsAndVehicles(ParupunteCore core) : base(core)
         {
         }
 
-        public override string Name => "SS-3 大天使の息吹";
+        public override string Name => "周辺の人&車両回復";
 
         public override void OnStart()
         {

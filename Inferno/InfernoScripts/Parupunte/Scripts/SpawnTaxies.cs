@@ -12,16 +12,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class SpawnTaxies : ParupunteScript
     {
-        private Model taxiModel;
         private string name, honorific;
-        private Random random;
 
         public SpawnTaxies(ParupunteCore core) : base(core)
         {
-            taxiModel = new Model(VehicleHash.Taxi);
             honorific = core.PlayerPed.Gender == Gender.Male ? "くん！" : "ちゃん！";
             name = "仲間が増えるよ！やったね" + GetPlayerCharacterName() + honorific;
-            random = new Random();
         }
 
         public override string Name
@@ -40,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var s in WaitForSeconds(1))
             {
-                var taxi = GTA.World.CreateVehicle(taxiModel, player.Position.AroundRandom2D(10));
+                var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, player.Position.AroundRandom2D(10));
 
                 if (taxi.IsSafeExist())
                 {

@@ -11,17 +11,32 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class IncreaseWantedLevel : ParupunteScript
+    class ChangeWantedLevel : ParupunteScript
     {
-        public IncreaseWantedLevel(ParupunteCore core) : base(core)
+        private string name;
+        private int wantedLevelThreshold = 1;
+        private int wantedLevel = Game.Player.WantedLevel;
+
+        public ChangeWantedLevel(ParupunteCore core) : base(core)
         {
+            name = wantedLevel >= wantedLevelThreshold ? "無罪放免" : "日頃の行いが悪い";
         }
 
-        public override string Name => "日頃の行いが悪い";
+        public override string Name
+        {
+            get { return name; }
+        }
 
         public override void OnStart()
         {
-            IncreasePlayerWantedLevel();
+            if (wantedLevel >= wantedLevelThreshold)
+            {
+                Game.Player.WantedLevel = 0;
+            }
+            else
+            {
+                IncreasePlayerWantedLevel();
+            }
             ParupunteEnd();
         }
 

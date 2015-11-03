@@ -11,13 +11,12 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class SetTime : ParupunteScript
+    class SetDateTime : ParupunteScript
     {
         private int hour;
         private string name;
-        private Random random;
 
-        public SetTime(ParupunteCore core) : base(core)
+        public SetDateTime(ParupunteCore core) : base(core)
         {
             Random random = new Random();
             hour = random.Next(0, 23);
