@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ using GTA.Native;
 
 namespace Inferno
 {
-    internal class Fuluton : InfernoScript
+    internal class Fulton : InfernoScript
     {
         protected override int TickInterval { get; } = 100;
 
@@ -20,24 +22,39 @@ namespace Inferno
         /// フルトン回収のコルーチン対象になっているEntity
         /// </summary>
         private HashSet<int> fulutonedEntityList = new HashSet<int>();
-
         private Queue<PedHash> motherBasePeds = new Queue<PedHash>(30);
         private Queue<GTA.Native.VehicleHash> motherbaseVeh = new Queue<GTA.Native.VehicleHash>(30);
         private Random random = new Random();
+
+        /// <summary>
+        /// フルトン回収で車を吊り下げた時の音
+        /// </summary>
+        private SoundPlayer soundPlayerVehicleSetup;
+
+        /// <summary>
+        /// フルトン回収で人を吊り下げた時の音
+        /// </summary>
+        private SoundPlayer soundPlayerPedSetup;
+
+        /// <summary>
+        /// 空に飛んで行く音
+        /// </summary>
+        private SoundPlayer soundPlayerMove;
+
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("fuluton")
+            CreateInputKeywordAsObservable("fulton")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("Fuluton:" + IsActive, 3.0f);
+                    DrawText("Fulton:" + IsActive, 3.0f);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
 
             OnKeyDownAsObservable
-                .Where(x =>IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)
+                .Where(x => IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)
                 .Subscribe(_ => SpawnVehicle());
 
             OnKeyDownAsObservable
@@ -54,15 +71,43 @@ namespace Inferno
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ => fulutonedEntityList.Clear());
+            SetUpSound();
+        }
 
-            OnTickAsObservable.Subscribe(_ => {
-                                                  Game.Player.WantedLevel = 0;
-                                                 
-                                                  playerPed.IsInvincible = true;
+        /// <summary>
+        /// 効果音のロード
+        /// </summary>
+        private void SetUpSound()
+        {
+            var filePaths = LoadWavFiles(@"scripts/fulton");
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains("vehicle.wav"));
+            if (setupWav != null)
+            {
+                soundPlayerVehicleSetup = new SoundPlayer(setupWav);
+            }
 
-            });
+            setupWav = filePaths.FirstOrDefault(x => x.Contains("ped.wav"));
+            if (setupWav != null)
+            {
+                soundPlayerPedSetup = new SoundPlayer(setupWav);
+            }
 
 
+            var moveWav = filePaths.FirstOrDefault(x => x.Contains("move.wav"));
+            if (moveWav != null)
+            {
+                soundPlayerMove = new SoundPlayer(moveWav);
+            }
+        }
+
+        private string[] LoadWavFiles(string targetPath)
+        {
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
+
+            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
 
         #region 回収
@@ -73,6 +118,7 @@ namespace Inferno
                 x => x.IsSafeExist()
                      && x.IsInRangeOf(playerPed.Position, 5.0f)
                      && !fulutonedEntityList.Contains(x.Handle)
+                     && x.IsAlive
                 ))
             {
                 if (entity.HasBeenDamagedByPed(playerPed) &&(
@@ -81,6 +127,16 @@ namespace Inferno
                 {
                     fulutonedEntityList.Add(entity.Handle);
                     StartCoroutine(FulutonCoroutine(entity));
+                    if (entity is Vehicle)
+                    {
+                        soundPlayerVehicleSetup?.Play();
+                    }
+                    else
+                    {
+                        //pedの時は遅延させてならす
+                        Observable.Timer(TimeSpan.FromSeconds(0.3f))
+                            .Subscribe(_ => soundPlayerPedSetup?.Play());
+                    }
                 }
             }
         }
@@ -150,10 +206,13 @@ namespace Inferno
 
             //弾みをつける
             yield return WaitForSeconds(0.25f);
+            soundPlayerMove?.Play();
+
+ 
 
             foreach (var s in WaitForSeconds(7))
             {
-                if (!entity.IsSafeExist())
+                if (!entity.IsSafeExist() || entity.Position.DistanceTo(playerPed.Position)>200)
                 {
                     if (playerPed.CurrentVehicle.IsSafeExist() && playerPed.CurrentVehicle.Handle == entity.Handle)
                     {
@@ -237,6 +296,7 @@ namespace Inferno
 
             if (!car.IsSafeExist()) yield break;
             car.MarkAsNoLongerNeeded();
+
         }
 
         #endregion
