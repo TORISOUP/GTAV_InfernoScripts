@@ -46,26 +46,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ped.Kill();
             }
 
-            var removePedList = new HashSet<Ped>();
             var pedsCount = peds.Count();
 
             while(pedsCount > 0)//一気に数十個も同時に爆発を起こせないので時間差で行う
             {
-                foreach (var ped in peds.Select((entity, index) => new { entity, index }))
+                var removePedList = peds.Take(10);
+                foreach (var ped in removePedList)
                 {
-                    if (ped.index < pedsCount && ped.index < 10)
-                    {
-                        removePedList.Add(ped.entity);
-                        GTA.World.AddExplosion(ped.entity.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
                 }
 
                 peds.RemoveAll(removePedList.Contains);
-                removePedList.Clear();
                 pedsCount = peds.Count();
 
                 yield return null;
