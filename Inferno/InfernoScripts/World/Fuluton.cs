@@ -55,6 +55,14 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ => fulutonedEntityList.Clear());
 
+            OnTickAsObservable.Subscribe(_ => {
+                                                  Game.Player.WantedLevel = 0;
+                                                 
+                                                  playerPed.IsInvincible = true;
+
+            });
+
+
         }
 
         #region 回収
@@ -63,11 +71,13 @@ namespace Inferno
         {
             foreach (var entity in CachedPeds.Concat(CachedVehicles.Cast<Entity>()).Where(
                 x => x.IsSafeExist()
-                     && x.IsInRangeOf(playerPed.Position, 10.0f)
+                     && x.IsInRangeOf(playerPed.Position, 5.0f)
                      && !fulutonedEntityList.Contains(x.Handle)
                 ))
             {
-                if (entity.HasBeenDamagedBy(Weapon.UNARMED) && entity.HasBeenDamagedByPed(playerPed))
+                if (entity.HasBeenDamagedByPed(playerPed) &&(
+                    entity.HasBeenDamagedBy(Weapon.UNARMED)
+                    ))
                 {
                     fulutonedEntityList.Add(entity.Handle);
                     StartCoroutine(FulutonCoroutine(entity));
@@ -103,6 +113,7 @@ namespace Inferno
             if (entity is Ped)
             {
                 var p = entity as Ped;
+                p.CanRagdoll = true;
                 p.SetToRagdoll(10*1000);
 
                 isPed = true;
@@ -115,13 +126,13 @@ namespace Inferno
             }
             hash = entity.Model.Hash;
 
-
+            entity.ApplyForce(upForce * 2.0f);
 
             foreach (var s in WaitForSeconds(3))
             {
                 if (!entity.IsSafeExist() || entity.IsDead) yield break;
 
-                entity.ApplyForce(upForce*1.1f);
+                entity.ApplyForce(upForce*1.07f);
 
                 yield return s;
             }
@@ -136,6 +147,9 @@ namespace Inferno
             {
                 yield break;
             }
+
+            //弾みをつける
+            yield return WaitForSeconds(0.25f);
 
             foreach (var s in WaitForSeconds(7))
             {
@@ -162,7 +176,7 @@ namespace Inferno
 
                 if (entity.IsDead) yield break;
 
-                entity.ApplyForce(upForce*10.0f);
+                entity.ApplyForce(upForce*1.0f/Game.FPS*500.0f);
 
                 yield return s;
             }
@@ -176,26 +190,31 @@ namespace Inferno
         {
             var hash = motherBasePeds.Dequeue();
 
-            var p = World.CreatePed(new Model(hash), playerPed.Position.Around(3.0f));
+            var p = World.CreatePed(new Model(hash), playerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist()) return;
-
             var weapon = Enum.GetValues(typeof (WeaponHash))
                 .Cast<WeaponHash>()
                 .OrderBy(c => random.Next())
                 .FirstOrDefault();
 
             var weaponhash = (int) weapon;
+            p.MarkAsNoLongerNeeded();
 
+            Function.Call(Hash.SET_PED_AS_GROUP_MEMBER, p, Game.Player.GetPlayerGroup());
             p.SetDropWeaponWhenDead(false); //武器を落とさない
             p.GiveWeapon(weaponhash, 1000); //指定武器所持
             p.EquipWeapon(weaponhash); //武器装備
-
+            p.Health = 1;
+            p.Task.FightAgainstHatedTargets(50, 0);
+            var blip = p.AddBlip();
+            blip.Color = BlipColor.White;
+            
         }
 
         private void SpawnVehicle()
         {
             var hash = motherbaseVeh.Dequeue();
-            DrawText("Fuluton Call:" + hash.ToString(), 3.0f);
+            DrawText(hash.ToString(), 3.0f);
             StartCoroutine(SpawnVehicleCoroutine(new Model(hash), playerPed.Position.AroundRandom2D(20)));
         }
 
