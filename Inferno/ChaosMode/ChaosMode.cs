@@ -172,6 +172,7 @@ namespace Inferno.ChaosMode
                 var playerGroup = Game.Player.GetPlayerGroup();
                 if (!ped.IsPedGroupMember(playerGroup))
                 {
+                    ped.NeverLeavesGroup = false;
                     ped.RemovePedFromGroup();
                 }
             }
