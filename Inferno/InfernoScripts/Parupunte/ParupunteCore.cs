@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using NVC2MikuMikuMouth;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -178,6 +177,7 @@ namespace Inferno.InfernoScripts.Parupunte
             _mContainer.Items.Add(CreateUIText(scriptname));
             mess = new RequestDataPackage(scriptname);
             tcpManager.SendToAll(mess.ToJson());
+
             //3秒画面に出す
             yield return WaitForSeconds(2);
             //消す

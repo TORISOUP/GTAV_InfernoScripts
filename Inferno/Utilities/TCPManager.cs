@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NVC2MikuMikuMouth
+namespace Inferno
 {
     class TCPManager
     {

@@ -195,7 +195,6 @@ namespace Inferno
 
             if (!entity.IsSafeExist() || entity.IsRequiredForMission())
             {
-                fulutonedEntityList.Remove(entity.Handle);
                 yield break;
             }
 
