@@ -10,13 +10,14 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using NVC2MikuMikuMouth;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
     class ParupunteCore : InfernoScript
     {
 
-
+        TCPManager tcpManager = new TCPManager();
         /// <summary>
         /// パルプンテスクリプト一覧
         /// </summary>
@@ -35,6 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected override void Setup()
         {
+            tcpManager.ServerStart();
             IsActive = false;
 
             #region ParunteScripts
@@ -164,6 +166,9 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //○はパルプンテを唱えた！の部分
             _mContainer.Items.Add(CreateUIText(callString));
+            
+            var mess = new RequestDataPackage(callString);
+            tcpManager.SendToAll(mess.ToJson());
             //2秒画面に出す
             yield return WaitForSeconds(2);
             //消す
@@ -171,6 +176,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //効果名
             _mContainer.Items.Add(CreateUIText(scriptname));
+            mess = new RequestDataPackage(scriptname);
+            tcpManager.SendToAll(mess.ToJson());
             //3秒画面に出す
             yield return WaitForSeconds(2);
             //消す

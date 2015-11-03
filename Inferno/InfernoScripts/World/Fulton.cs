@@ -116,13 +116,13 @@ namespace Inferno
         {
             foreach (var entity in CachedPeds.Concat(CachedVehicles.Cast<Entity>()).Where(
                 x => x.IsSafeExist()
-                     && x.IsInRangeOf(PlayerPed.Position, 5.0f)
+                     && x.IsInRangeOf(PlayerPed.Position, 15.0f)
                      && !fulutonedEntityList.Contains(x.Handle)
                      && x.IsAlive
                 ))
             {
                 if (entity.HasBeenDamagedByPed(PlayerPed) &&(
-                    entity.HasBeenDamagedBy(Weapon.UNARMED)
+                   entity.HasBeenDamagedBy(Weapon.UNARMED)
                     ))
                 {
                     fulutonedEntityList.Add(entity.Handle);
