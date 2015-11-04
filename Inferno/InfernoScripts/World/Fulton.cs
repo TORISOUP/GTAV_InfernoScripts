@@ -272,7 +272,8 @@ namespace Inferno
         private void SpawnVehicle()
         {
             var hash = motherbaseVeh.Dequeue();
-            DrawText(hash.ToString(), 3.0f);
+            var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)hash);
+            DrawText(Game.GetGXTEntry(vehicleGxtEntry), 3.0f);
             StartCoroutine(SpawnVehicleCoroutine(new Model(hash), PlayerPed.Position.AroundRandom2D(20)));
         }
 
