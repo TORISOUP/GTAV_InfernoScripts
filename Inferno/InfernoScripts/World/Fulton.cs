@@ -61,8 +61,8 @@ namespace Inferno
                 .Where(x => IsActive && x.KeyCode == Keys.F10 && motherBasePeds.Count > 0)
                 .Subscribe(_ => SpawnCitizen());
 
-            OnTickAsObservable
-                .Where(_ => IsActive)
+            CreateTickAsObservable(500)
+                .Where(_ => IsActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))
                 .Subscribe(_ => FulutonUpdate());
 
             //プレイヤが死んだらリストクリア
@@ -207,11 +207,9 @@ namespace Inferno
             yield return WaitForSeconds(0.25f);
             soundPlayerMove?.Play();
 
- 
-
-            foreach (var s in WaitForSeconds(7))
+            foreach (var s in WaitForSeconds(15))
             {
-                if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position)>200)
+                if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position)>100)
                 {
                     if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
                     {
@@ -222,6 +220,7 @@ namespace Inferno
                     {
                         motherBasePeds.Enqueue((PedHash) hash);
                         Game.Player.Money -= 100;
+                        if (entity.IsSafeExist()) { entity.Delete();}
                     }
                     else
                     {
@@ -233,8 +232,13 @@ namespace Inferno
                 }
 
                 if (entity.IsDead) yield break;
+                var force = upForce*1.0f/Game.FPS*500.0f;
+                if (entity is Ped)
+                {
+                    force = upForce * 1.0f / Game.FPS * 800.0f;
+                }
 
-                entity.ApplyForce(upForce*1.0f/Game.FPS*500.0f);
+                entity.ApplyForce(force);
 
                 yield return s;
             }

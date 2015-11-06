@@ -63,5 +63,13 @@ namespace Inferno
             randomBaseVector.Normalize();
             return vector + randomBaseVector*(float) Random.NextDouble()*radius;
         }
+
+        /// <summary>
+        /// カットシーン専用のキャラであるか
+        /// </summary>
+        public static bool IsCutsceneOnlyPed(this Ped ped)
+        {
+            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), ped.Model.Hash);
+        }
     }
 }

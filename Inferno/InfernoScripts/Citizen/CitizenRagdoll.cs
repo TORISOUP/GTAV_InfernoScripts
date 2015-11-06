@@ -10,31 +10,37 @@ using GTA.Native;
 
 namespace Inferno
 {
-    class CitizenRagdoll : InfernoScript
+    internal class CitizenRagdoll : InfernoScript
     {
-        
+
         protected override void Setup()
         {
-            OnTickAsObservable
-                .Where(_ => IsActive)
-                .Subscribe(_ =>
-                {
-                    foreach (var ped in CachedPeds.Where(x=>x.IsSafeExist() && x.IsRequiredForMission()))
-                    {
-                        ped.CanRagdoll = true;
-                        ped.SetToRagdoll(100);
-                        ped.ApplyForce(new Vector3(0, 0, 2));
-                    }
-                });
 
             OnKeyDownAsObservable
                 .Where(x => x.KeyCode == Keys.F8)
-                
                 .Subscribe(_ =>
                 {
-                    IsActive = !IsActive;
-                    DrawText("Ragdoll:" + IsActive, 3.0f);
+                    DrawText("Ragdoll", 3.0f);
+                    StartCoroutine(RagdollCoroutine());
                 });
+        }
+
+        private IEnumerable<object> RagdollCoroutine()
+        {
+            var peds = CachedPeds.Where(
+                x => x.IsSafeExist()
+                     && x.IsRequiredForMission()
+                     && !x.IsCutsceneOnlyPed()
+                     && x.IsInRangeOf(PlayerPed.Position, 15)).ToArray();
+
+            foreach (var ped in peds)
+            {
+                if(!ped.IsSafeExist() ) continue;
+                ped.CanRagdoll = true;
+                ped.SetToRagdoll(100);
+                ped.ApplyForce(new Vector3(0,0,2));
+                yield return null;
+            }
         }
     }
 }

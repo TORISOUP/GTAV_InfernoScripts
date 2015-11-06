@@ -31,7 +31,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var player = core.PlayerPed;
             var playerGroup = player.CurrentPedGroup;
             var peds = core.CachedPeds.Where(
-                x => x.IsSafeExist() && !x.IsSameEntity(core.PlayerPed) && x.IsInRangeOf(player.Position, radius));
+                x => x.IsSafeExist() && !x.IsSameEntity(core.PlayerPed) && !x.IsCutsceneOnlyPed() && x.IsInRangeOf(player.Position, radius));
 
             foreach (var ped in peds)
             {
