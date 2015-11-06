@@ -48,6 +48,7 @@ namespace Inferno
                         soundPlayer.Stop();
                         //次の音をセット
                         soundPlayer.SoundLocation = filePaths[Random.Next(filePaths.Length)];
+                        soundPlayer.LoadAsync();
                     }
                 });
 
