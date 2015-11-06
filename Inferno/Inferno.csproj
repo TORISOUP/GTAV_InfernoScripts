@@ -146,6 +146,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
+    <Compile Include="InfernoScripts\Player\SpecialAbilityBgm.cs" />
     <Compile Include="InfernoScripts\Player\Warp.cs" />
     <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
     <Compile Include="InfernoScripts\World\Fulton.cs" />

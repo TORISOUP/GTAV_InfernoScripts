@@ -600,5 +600,10 @@ namespace Inferno
         {
             Function.Call(Hash.REMOVE_PED_FROM_GROUP, ped);
         }
+
+        public static bool IsSpecialAbilityActive(this Player player)
+        {
+            return Function.Call<bool>(Hash.IS_SPECIAL_ABILITY_ACTIVE, player);
+        }
     }
 }
