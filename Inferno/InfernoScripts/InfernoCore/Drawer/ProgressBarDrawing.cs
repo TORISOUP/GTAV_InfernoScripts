@@ -57,7 +57,7 @@ namespace Inferno
         /// <summary>
         /// ProgressBarを描画登録
         /// </summary>
-        public void RegisterProgressBar(ProgressBarData data)
+        public new void RegisterProgressBar(ProgressBarData data)
         {
             lock (lockObject)
             {

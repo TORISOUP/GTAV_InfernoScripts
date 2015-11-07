@@ -37,7 +37,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected override void Setup()
         {
-            tcpManager.ServerStart();
+            tcpManager.ServerStartAsync();
             IsActive = false;
 
             #region ParunteScripts

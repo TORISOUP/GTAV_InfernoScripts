@@ -22,7 +22,7 @@ namespace Inferno
             encoding = System.Text.Encoding.UTF8;
         }
 
-        public void ServerStart()
+        public void ServerStartAsync()
         {
 
             this.listener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), port);

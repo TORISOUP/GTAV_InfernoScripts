@@ -16,6 +16,7 @@ namespace Inferno
             this.isInterrupted = true;
             this.text = text;
             this.tag = "";
+            this.emotion = "";
         }
 
         public string ToJson()
