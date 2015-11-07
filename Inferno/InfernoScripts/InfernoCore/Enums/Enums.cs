@@ -131,7 +131,11 @@ namespace Inferno
         FIRE = -544306709,
         MUSCKET= -1466123874,
         MARKSMANRIFLE = -952879014,
-        RAILGUN = 1834241177
+        RAILGUN = 1834241177,
+        FLAREGUN = 1198879012,
+        MARKSMANPISTOL = -598887786,
+        MACHINEPISTOL = -619010992,
+        GUSENBERG = 1627465347
     }
 
     public enum VehicleWeapon
