@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .FirstOrDefault();
 
             var weatherName = GetWeatherName(weather);
-            name = "天候変更" + weatherName;
+            name = "天候変化" + (!string.IsNullOrEmpty(weatherName) ? "：" : "") + weatherName;
         }
 
         public override string Name
@@ -42,55 +42,39 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private string GetWeatherName(Weather weather)
         {
-            string weatherName = null;
             switch (weather)
             {
                 case Weather.ExtraSunny:
-                    weatherName = "快晴";
-                    break;
+                    return "快晴";
                 case Weather.Clear:
-                    weatherName = "晴れ";
-                    break;
+                    return "晴れ";
                 case Weather.Clouds:
-                    weatherName = "くもり";
-                    break;
+                    return "くもり";
                 case Weather.Smog:
-                    weatherName = "スモッグ";
-                    break;
+                    return "スモッグ";
                 case Weather.Foggy:
-                    weatherName = "霧";
-                    break;
+                    return "霧";
                 case Weather.Overcast:
-                    weatherName = "くもり2";
-                    break;
-                case Weather.Raining:
-                    weatherName = "雨";
-                    break;
+                    return "くもり2";
+                  case Weather.Raining:
+                    return "雨";
                 case Weather.ThunderStorm:
-                    weatherName = "嵐";
-                    break;
+                    return "嵐";
                 case Weather.Clearing:
-                    weatherName = "天気雨";
-                    break;
+                    return "天気雨";
                 case Weather.Neutral:
-                    weatherName = "奇妙";
-                    break;
+                    return "奇妙";
                 case Weather.Snowing:
-                    weatherName = "雪";
-                    break;
+                    return "雪";
                 case Weather.Blizzard:
-                    weatherName = "吹雪";
-                    break;
+                    return "吹雪";
                 case Weather.Snowlight:
-                    weatherName = "雪明り";
-                    break;
+                    return "雪明り";
                 case Weather.Christmas:
-                    weatherName = "クリスマス";
-                    break;
+                    return "クリスマス";
                 default:
                     return string.Empty;
             }
-            return weatherName.Insert(0, "：");
         }
     }
 }
