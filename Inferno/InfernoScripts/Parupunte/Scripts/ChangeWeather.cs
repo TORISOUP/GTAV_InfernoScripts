@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .FirstOrDefault();
 
             var weatherName = GetWeatherName(weather);
-            name = "天候変化" + (!string.IsNullOrEmpty(weatherName) ? "：" : "") + weatherName;
+            name = "天候変化" + "：" + weatherName;
         }
 
         public override string Name
@@ -73,7 +73,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 case Weather.Christmas:
                     return "クリスマス";
                 default:
-                    return string.Empty;
+                    return "わからん";
             }
         }
     }
