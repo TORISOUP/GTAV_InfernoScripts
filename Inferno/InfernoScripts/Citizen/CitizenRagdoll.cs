@@ -30,13 +30,12 @@ namespace Inferno
             var peds = CachedPeds.Where(
                 x => x.IsSafeExist()
                      && x.IsRequiredForMission()
-                     && !x.IsCutsceneOnlyPed()
+                     && x.CanRagdoll
                      && x.IsInRangeOf(PlayerPed.Position, 15)).ToArray();
 
             foreach (var ped in peds)
             {
                 if(!ped.IsSafeExist() ) continue;
-                ped.CanRagdoll = true;
                 ped.SetToRagdoll(100);
                 ped.ApplyForce(new Vector3(0,0,2));
                 yield return null;
