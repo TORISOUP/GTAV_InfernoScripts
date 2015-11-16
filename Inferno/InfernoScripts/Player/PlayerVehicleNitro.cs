@@ -46,8 +46,18 @@ namespace Inferno
                 return;
             }
 
-            //車体回転時用にスティック入力を-127～127で取得して-0.5～0.5の値になるように調整
-            var rotation = this.GetStickValue().Y / 250.0f;
+            
+            float rotation;
+            if (this.IsGamePadPressed(GameKey.VehicleAccelerateKey))
+            {
+                rotation = this.IsGamePadPressed(GameKey.VehicleForwardTiltKey) ? 0.5f : 0.0f;
+            }
+            else
+            {
+                //車体回転時用にスティック入力を-127～127で取得して-0.5～0.5の値になるように調整
+                rotation = this.GetStickValue().Y / 250.0f;
+            }
+
             if (Game.Player.WantedLevel == 0)
             {
                 vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
