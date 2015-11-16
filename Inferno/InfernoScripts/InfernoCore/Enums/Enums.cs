@@ -35,7 +35,10 @@ namespace Inferno
         RStickUp = 3,
         RStickDown = 4,
         RStickLeft = 5,
-        RStickRight = 6
+        RStickRight = 6,
+        VehicleAccelerateKey = 232,
+        VehicleForwardTiltKey = 209,
+        VehicleBackwardTiltKey = 224
         
     };
 
