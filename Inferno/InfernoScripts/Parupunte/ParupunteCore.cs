@@ -136,8 +136,19 @@ namespace Inferno.InfernoScripts.Parupunte
             //名前を出してスタート
             StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!",script.Name));
             yield return WaitForSeconds(2);
+            
+            try
+            {
+                script.OnStart();
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.ToString());
+                script.OnFinished();
+                IsActive = false;
+                yield break;
+            }
 
-            script.OnStart();
             while (script.IsActive && IsActive)
             {
                 try
