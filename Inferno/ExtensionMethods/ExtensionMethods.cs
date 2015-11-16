@@ -69,7 +69,7 @@ namespace Inferno
         /// </summary>
         public static bool IsCutsceneOnlyPed(this Ped ped)
         {
-            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), ped.Model.Hash);
+            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
         }
     }
 }
