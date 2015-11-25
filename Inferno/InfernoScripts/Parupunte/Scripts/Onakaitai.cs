@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override string Name { get; } = "おなかいたい";
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(10000);
+            reduceCounter = new ReduceCounter(20000);
             AddProgressBar(reduceCounter);
             //コルーチン起動
             StartCoroutine(OilCoroutine());

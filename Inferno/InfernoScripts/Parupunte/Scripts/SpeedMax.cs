@@ -20,7 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private ReduceCounter reduceCounter;
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(15 * 1000);
+            reduceCounter = new ReduceCounter(45 * 1000);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(reduceCounter);
         }
@@ -38,7 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 x => x.IsSafeExist() && x.IsInRangeOf(player.Position,radius)
                 ))
             {
-                vec.Speed = vec.Handle%10 == 0 ? -300 : 300;
+                vec.Speed = vec.Handle%10 == 0 ? -200 : 200;
             }
 
         }

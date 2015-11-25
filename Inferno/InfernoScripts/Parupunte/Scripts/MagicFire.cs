@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private uint coroutineId = 0;
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(10000);
+            reduceCounter = new ReduceCounter(20000);
             AddProgressBar(reduceCounter);
             //コルーチン起動
             coroutineId = StartCoroutine(MagicFireCoroutine());

@@ -39,7 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             while (!reduceCounter.IsCompleted)
             {
                 core.PlayerPed.Health += 8;
-                yield return WaitForSeconds(3);
+                yield return WaitForSeconds(1);
             }
         }
 

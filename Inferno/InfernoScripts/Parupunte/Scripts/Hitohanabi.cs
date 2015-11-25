@@ -42,7 +42,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 foreach (
                     var targetPed in
                         core.CachedPeds.Where(
-                            x =>x.IsSafeExist() && x.IsAlive && x.IsHuman && x.IsInRangeOf(core.PlayerPed.Position, 50))
+                            x =>x.IsSafeExist() 
+                            && x.IsAlive                             
+                            && x.IsHuman 
+                            && x.IsInRangeOf(core.PlayerPed.Position, 50))
                     )
                 {
                     //まだの人をリストにくわえる

@@ -26,7 +26,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             reduceCounter = new ReduceCounter(20000);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(reduceCounter);
+            StartCoroutine(Coroutine());
         }
+
+        private IEnumerable<object> Coroutine()
+        {
+            while (!reduceCounter.IsCompleted)
+            {
+                if (!core.PlayerPed.IsInvincible)
+                {
+                    core.PlayerPed.IsInvincible = true;
+                }
+                yield return WaitForSeconds(1);
+            }
+        } 
 
         public override void OnFinished()
         {
