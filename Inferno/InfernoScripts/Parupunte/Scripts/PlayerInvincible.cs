@@ -1,13 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -45,6 +37,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             reduceCounter.Finish();
             core.PlayerPed.IsInvincible = false;
+            core.DrawParupunteText("おわり",3.0f);
         }
 
         public override void OnUpdate()
