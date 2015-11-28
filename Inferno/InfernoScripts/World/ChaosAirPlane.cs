@@ -14,7 +14,7 @@ namespace Inferno
     {
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("angryplane")
+            CreateInputKeywordAsObservable("abomb")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -22,13 +22,31 @@ namespace Inferno
 
                     if (IsActive)
                     {
-                        //戦闘機を３つ出す
-                        StartCoroutine(PlaneManageCoroutine());
-                        StartCoroutine(PlaneManageCoroutine());
-                        StartCoroutine(PlaneManageCoroutine());
+                        StartCoroutine(StartChaosPlanes());
+                    }
+                });
+
+            OnAllOnCommandObservable
+                .Subscribe(_ =>
+                {
+                    if (!IsActive)
+                    {
+                        IsActive = true;
+                        StartCoroutine(StartChaosPlanes());
                     }
                 });
         }
+
+        //時間差で戦闘機を出現させる
+        private IEnumerable<object> StartChaosPlanes()
+        {
+            foreach (var i in Enumerable.Range(0,7))
+            {
+                StartCoroutine(PlaneManageCoroutine());
+                yield return WaitForSeconds(1);
+            }
+          
+        } 
 
         /// <summary>
         /// 戦闘機を管理するコルーチン
@@ -61,18 +79,14 @@ namespace Inferno
         {
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成
-            var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(100) + new Vector3(0, 0, 100));
+            var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
-            plane.MarkAsNoLongerNeeded();
-
+            plane.Speed = 50;
+            plane.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, (float) (Random.NextDouble()*Math.PI)) * plane.Quaternion;
+            plane.AddBlip().Color = BlipColor.White;
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
             if (!ped.IsSafeExist())  return null;
-            ped.MarkAsNoLongerNeeded();
-            //戦闘範囲
-            ped.SetCombatRange(1000);
-            //攻撃を受けたら反撃する
-            ped.RegisterHatedTargetsAroundPed(1000);
             ped.SetNotChaosPed(true);
 
             return new Tuple<Vehicle, Ped>(plane, ped);
@@ -89,31 +103,47 @@ namespace Inferno
                 if (target.IsSafeExist())
                 {
                     //周辺市民をターゲットにする
-                    ped.Task.ClearAll();
                     ped.Task.FightAgainst(target);
                     yield return null;
                 }
 
                 //しばらく待つ
-                foreach (var s in WaitForSeconds(15))
+                foreach (var s in WaitForSeconds(25))
                 {
                     //ターゲットが死亡していたらターゲット変更
-                    if(!target.IsSafeExist() || target.IsDead) break;
+                    if(!target.IsSafeExist() || target.IsDead || !IsActive) break;
                     yield return null;
                 }
-
+                yield return null;
             }
 
             if (plane.IsSafeExist())
             {
                 plane.PetrolTankHealth = -1;
+                plane.MarkAsNoLongerNeeded();
+            }
+
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
             }
         }
 
         //キャッシュ市民から一人選出
         private Ped GetRandomPed()
         {
-            var peds = CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).Concat(new[]{PlayerPed}).ToArray();
+            //プレイヤの近くの市民
+            var targetPeds = CachedPeds
+                .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100));
+
+            if (PlayerPed.IsInVehicle())
+            {
+                //プレイヤが車に乗っているなら対象に追加する
+                targetPeds = targetPeds.Concat(new[]{PlayerPed});
+            }
+
+            var peds = targetPeds.ToArray();
+
             return peds.Length > 0 ? peds[Random.Next(peds.Length)] : null;
         }
 
