@@ -7,7 +7,6 @@ using GTA.Math;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
 
-
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class RestorePlayerHealthAndArmor : ParupunteScript
