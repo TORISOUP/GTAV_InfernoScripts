@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
@@ -93,10 +94,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //抽選
             var scriptType = ChooseParupounteScript();
-            //インスタンス化
-            var scriptInstance = Activator.CreateInstance(scriptType, this) as ParupunteScript;
-            //コルーチン開始
-            StartCoroutine(ParupunteCoreCoroutine(scriptInstance));
+
+            Observable.Start(() => Activator.CreateInstance(scriptType, this) as ParupunteScript)
+                .Subscribe(x =>
+                {
+                    //コルーチン開始
+                    StartCoroutine(ParupunteCoreCoroutine(x));
+                });
 
         }
 
@@ -127,6 +131,8 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <returns></returns>
         private IEnumerable<object> ParupunteCoreCoroutine(ParupunteScript script)
         {
+            yield return null;
+
             if (script == null)
             {
                 IsActive = false;
@@ -197,7 +203,22 @@ namespace Inferno.InfernoScripts.Parupunte
             yield return WaitForSeconds(2);
             //消す
             _mContainer.Items.Clear();
+        }
 
+        /// <summary>
+        /// テキストを表示する(ParupunteScript用)
+        /// </summary>
+        public void DrawParupunteText(string text,float duration)
+        {
+            StartCoroutine(DrawTextCoroutine(text, duration));
+        }
+
+        //ParupunteScriptから呼び出す用
+        private IEnumerable<object> DrawTextCoroutine(string text, float duration )
+        {
+            _mContainer.Items.Add(CreateUIText(text));
+            yield return WaitForSeconds(duration);
+            _mContainer.Items.Clear();
         }
 
         private UIText CreateUIText(string text)
