@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GTA;
@@ -35,6 +36,8 @@ namespace Inferno
                         StartCoroutine(StartChaosPlanes());
                     }
                 });
+
+
         }
 
         //時間差で戦闘機を出現させる
@@ -99,11 +102,12 @@ namespace Inferno
         {
             while (IsActive && IsPlaneActive(plane, ped))
             {
-                var target = GetRandomPed();
+                var target =  GetRandomPed();
                 if (target.IsSafeExist())
                 {
                     //周辺市民をターゲットにする
-                    ped.Task.FightAgainst(target);
+                    SetPlaneTask(plane, ped, target);
+
                     yield return null;
                 }
 
@@ -111,7 +115,16 @@ namespace Inferno
                 foreach (var s in WaitForSeconds(25))
                 {
                     //ターゲットが死亡していたらターゲット変更
-                    if(!target.IsSafeExist() || target.IsDead || !IsActive) break;
+                    if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
+
+                    if (Random.Next(0, 100) < 10)
+                    {
+                        //たまに攻撃
+                        var pos = target.Position.Around(30);
+                        Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X,
+                            pos.Y, pos.Z);
+                        SetPlaneTask(plane, ped, target);
+                    }
                     yield return null;
                 }
                 yield return null;
@@ -127,6 +140,13 @@ namespace Inferno
             {
                 ped.MarkAsNoLongerNeeded();
             }
+        }
+
+        private void SetPlaneTask(Vehicle plane, Ped ped,Ped target)
+        {
+            var tarPos = target.Position;
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 20f, 90f,
+                90f, 0, -1500);
         }
 
         //キャッシュ市民から一人選出
