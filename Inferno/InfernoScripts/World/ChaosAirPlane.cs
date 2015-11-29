@@ -112,7 +112,7 @@ namespace Inferno
                 }
 
                 //しばらく待つ
-                foreach (var s in WaitForSeconds(25))
+                foreach (var s in WaitForSeconds(10))
                 {
                     if (!IsPlaneActive(plane, ped))
                     {
@@ -156,12 +156,14 @@ namespace Inferno
         //キャッシュ市民から一人選出
         private Entity GetRandomTarget()
         {
-            //プレイヤの近くの市民
-            var targetPeds = CachedPeds
-                .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100));
 
             var playerVehicle = PlayerPed.CurrentVehicle;
 
+            //プレイヤの近くの市民
+            var targetPeds = CachedPeds
+                .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100)
+                            && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle));
+            
             var targetVehicles = CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100)
                             && playerVehicle != x);

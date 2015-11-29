@@ -207,7 +207,7 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                foreach (var s in WaitForSeconds(3 + (float) Random.NextDouble()*5))
+                foreach (var s in WaitForSeconds(2 + (float) Random.NextDouble()*3))
                 {
                     if (ped.IsSafeExist() && ped.IsFleeing())
                     {
