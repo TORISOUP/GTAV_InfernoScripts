@@ -47,7 +47,9 @@ namespace Inferno
 
             ped.MarkAsNoLongerNeeded();
             ped.Task.ClearAllImmediately();
-            
+            ped.TaskSetBlockingOfNonTemporaryEvents(true);
+            ped.SetPedKeepTask(true);
+            ped.AlwaysKeepTask = true;
             //プレイヤ周囲15mを目標に降下
             var targetPosition = playerPosition.AroundRandom2D(15);
             ped.ParachuteTo(targetPosition);
@@ -82,16 +84,11 @@ namespace Inferno
                 
             }
 
-            //監視終了後１秒待ってからカオス化許可する(アニメーションがおかしくなるのを避けるため)
-            foreach (var s in WaitForSeconds(1.0f))
-            {
-                yield return s;
-            }
-            
             if (ped.IsSafeExist())
             {
                 ped.SetNotChaosPed(false);
                 ped.IsInvincible = false;
+                ped.MarkAsNoLongerNeeded();
             }
         }
 

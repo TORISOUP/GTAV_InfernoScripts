@@ -271,8 +271,6 @@ namespace Inferno.ChaosMode
             ped.SetCombatRange(1000);
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(500);
-            //タスクを中断しない
-            ped.TaskSetBlockingOfNonTemporaryEvents(false);
         }
 
         /// <summary>
@@ -287,19 +285,19 @@ namespace Inferno.ChaosMode
                 if(!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
                 if(!target.IsSafeExist()) return;
-                
-                ped.Task.ClearAll();
-                ped.Task.ClearSecondary();
+                ped.TaskSetBlockingOfNonTemporaryEvents(true);
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
                 ped.IsVisible = true;
                 if (ped.IsInVehicle())
                 {
                     //TODO:車から投擲物を投げる方法を調べる
-                   ped.TaskDriveBy(target,FiringPattern.BurstFireDriveby);
+                    ped.Task.ClearAll();
+                    ped.TaskDriveBy(target, FiringPattern.BurstFireDriveby);
                 }
                 else
                 {
+                    ped.Task.ClearAllImmediately();
                     if (chaosModeSetting.IsStupidShooting)
                     {
                         if (weaponProvider.IsProjectileWeapon(equipWeapon))

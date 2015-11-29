@@ -102,7 +102,7 @@ namespace Inferno
         {
             while (IsActive && IsPlaneActive(plane, ped))
             {
-                var target =  GetRandomPed();
+                var target =  GetRandomTarget();
                 if (target.IsSafeExist())
                 {
                     ped.Task.ClearAll();
@@ -114,6 +114,11 @@ namespace Inferno
                 //しばらく待つ
                 foreach (var s in WaitForSeconds(25))
                 {
+                    if (!IsPlaneActive(plane, ped))
+                    {
+                        break;;
+                    }
+
                     //ターゲットが死亡していたらターゲット変更
                     if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
 
@@ -141,22 +146,29 @@ namespace Inferno
             }
         }
 
-        private void SetPlaneTask(Vehicle plane, Ped ped,Ped target)
+        private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
         {
             var tarPos = target.Position;
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 200.0, -1.0, -1.0, 100, 100);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 200.0, -1.0, -1.0,
+                100, 100);
         }
 
         //キャッシュ市民から一人選出
-        private Ped GetRandomPed()
+        private Entity GetRandomTarget()
         {
             //プレイヤの近くの市民
             var targetPeds = CachedPeds
                 .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100));
 
-            var peds = targetPeds.ToArray();
+            var playerVehicle = PlayerPed.CurrentVehicle;
 
-            return peds.Length > 0 ? peds[Random.Next(peds.Length)] : null;
+            var targetVehicles = CachedVehicles
+                .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100)
+                            && playerVehicle != x);
+
+            var targets = targetPeds.Concat(targetVehicles.Cast<Entity>()).ToArray();
+
+            return targets.Length > 0 ? targets[Random.Next(targets.Length)] : null;
         }
 
         //戦闘機が動作可能な状態であるか
