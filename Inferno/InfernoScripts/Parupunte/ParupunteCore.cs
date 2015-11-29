@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -67,6 +68,18 @@ namespace Inferno.InfernoScripts.Parupunte
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
+
+            //時間差で起動
+            OnTickAsObservable
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    IsonoManager.Instance.OnRecievedMessageAsObservable
+                        .Where(x => !IsActive && x.Contains("ぱるぷんて"))
+                        .ThrottleFirst(TimeSpan.FromSeconds(5))
+                        .Subscribe(__ => ParupunteStart());
+                });
+
             #endregion
 
             #region Drawer
@@ -90,6 +103,8 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStart()
         {
+            if (IsActive) { return;}
+
             IsActive = true;
 
             //抽選

@@ -99,6 +99,8 @@
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoTcpClient.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\AddPlayerMoney.cs" />
@@ -155,7 +157,9 @@
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
+    <Compile Include="Utilities\ObservableExtends.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
+    <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
     <Compile Include="Utilities\TCPManager.cs" />
   </ItemGroup>
   <ItemGroup>

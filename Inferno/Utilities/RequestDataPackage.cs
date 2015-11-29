@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Xml;
 namespace Inferno
 {
@@ -19,6 +20,11 @@ namespace Inferno
             this.emotion = "";
         }
 
+        public RequestDataPackage()
+        {
+            ;
+        }
+
         public string ToJson()
         {
             string result = "";
@@ -31,6 +37,16 @@ namespace Inferno
                 result = reader.ReadToEnd();
             }
             return result;
+        }
+
+        public static RequestDataPackage FromJson(string json)
+        {
+            var jsonSerializer = new DataContractJsonSerializer(typeof(RequestDataPackage));
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                return (RequestDataPackage)jsonSerializer.ReadObject(stream);
+            }
+            
         }
 
         /// <summary>

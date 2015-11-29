@@ -170,12 +170,13 @@ namespace Inferno
         #endregion
 
         #region forDraw
+
         /// <summary>
         /// テキスト表示
         /// </summary>
         /// <param name="text">表示したい文字列</param>
         /// <param name="time">時間[s]</param>
-        public void DrawText(string text, float time)
+        public void DrawText(string text, float time = 3.0f)
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
