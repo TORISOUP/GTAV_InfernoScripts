@@ -19,7 +19,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("AngryPlane:" + IsActive,3.0f);
+                    DrawText("ChaosPlane:" + IsActive,3.0f);
 
                     if (IsActive)
                     {
@@ -84,9 +84,9 @@ namespace Inferno
             //戦闘機生成
             var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
-            plane.Speed = 50;
-            plane.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, (float) (Random.NextDouble()*Math.PI)) * plane.Quaternion;
-            plane.AddBlip().Color = BlipColor.White;
+            plane.Speed = 300;
+            plane.Rotation = plane.Rotation + new Vector3(0, 0, Random.Next(0, 360));
+
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
             if (!ped.IsSafeExist())  return null;
@@ -105,9 +105,9 @@ namespace Inferno
                 var target =  GetRandomPed();
                 if (target.IsSafeExist())
                 {
+                    ped.Task.ClearAll();
                     //周辺市民をターゲットにする
                     SetPlaneTask(plane, ped, target);
-
                     yield return null;
                 }
 
@@ -117,14 +117,13 @@ namespace Inferno
                     //ターゲットが死亡していたらターゲット変更
                     if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
 
-                    if (Random.Next(0, 100) < 10)
+                    if (target.IsInRangeOf(plane.Position,2500) &&  Random.Next(0, 100) < 10)
                     {
                         //たまに攻撃
                         var pos = target.Position.Around(30);
-                        Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X,
-                            pos.Y, pos.Z);
-                        SetPlaneTask(plane, ped, target);
+                        Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X, pos.Y, pos.Z);
                     }
+ 
                     yield return null;
                 }
                 yield return null;
@@ -145,8 +144,7 @@ namespace Inferno
         private void SetPlaneTask(Vehicle plane, Ped ped,Ped target)
         {
             var tarPos = target.Position;
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 20f, 90f,
-                90f, 0, -1500);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 200.0, -1.0, -1.0, 100, 100);
         }
 
         //キャッシュ市民から一人選出
@@ -155,12 +153,6 @@ namespace Inferno
             //プレイヤの近くの市民
             var targetPeds = CachedPeds
                 .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100));
-
-            if (PlayerPed.IsInVehicle())
-            {
-                //プレイヤが車に乗っているなら対象に追加する
-                targetPeds = targetPeds.Concat(new[]{PlayerPed});
-            }
 
             var peds = targetPeds.ToArray();
 

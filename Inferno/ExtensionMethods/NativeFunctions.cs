@@ -544,7 +544,7 @@ namespace Inferno
             });
         }
 
-        public static Vector2 GetScreenResolution()
+        public static unsafe Vector2 GetScreenResolution()
         {
             return new Vector2(UI.WIDTH, UI.HEIGHT);
         }
@@ -605,6 +605,5 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_SPECIAL_ABILITY_ACTIVE, player);
         }
-
     }
 }

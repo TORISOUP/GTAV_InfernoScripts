@@ -43,7 +43,7 @@ namespace Inferno
 
 
             CreateTickAsObservable(1000)
-               .Where(_ => IsActive && Random.Next(0,100) <= 30)
+               .Where(_ => IsActive && Random.Next(0,100) <= 15)
                 .Subscribe(_ => ShootMeteo());
         }
 
