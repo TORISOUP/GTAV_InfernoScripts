@@ -69,17 +69,6 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
-            //時間差で起動
-            OnTickAsObservable
-                .Take(1)
-                .Subscribe(_ =>
-                {
-                    IsonoManager.Instance.OnRecievedMessageAsObservable
-                        .Where(x => !IsActive && x.Contains("ぱるぷんて"))
-                        .ThrottleFirst(TimeSpan.FromSeconds(5))
-                        .Subscribe(__ => ParupunteStart());
-                });
-
             #endregion
 
             #region Drawer
