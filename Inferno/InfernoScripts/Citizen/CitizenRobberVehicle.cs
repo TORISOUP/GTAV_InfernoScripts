@@ -48,9 +48,10 @@ namespace Inferno
 
             //プレイヤの周辺の市民
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
-                                                   && !x.IsSameEntity(PlayerPed)
+                                                   && x.IsAlive
+                                                   && x.IsInRangeOf(PlayerPed.Position, PlayerAroundDistance)
+                                                   && x != PlayerPed
                                                    && !x.IsRequiredForMission()
-                                                   && x.IsInRangeOf(PlayerPed.Position,PlayerAroundDistance)
                                                    && !x.IsNotChaosPed());
 
             foreach (var targetPed in targetPeds)
@@ -66,15 +67,13 @@ namespace Inferno
                     //市民周辺の車が対象
                     var targetVehicle =
                         CachedVehicles
-                            .FirstOrDefault(x => x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 20.0f));
+                            .FirstOrDefault(x => x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 40.0f) && x != targetPed.CurrentVehicle);
 
                     //30%の確率でプレイヤの車を盗むように変更
                     if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
                     {
                         targetVehicle = playerVehicle;
                     }
-
-
                     if (!targetVehicle.IsSafeExist()) continue;
                     StartCoroutine(RobberVehicleCoroutine(targetPed, targetVehicle));
                 }
@@ -87,15 +86,25 @@ namespace Inferno
 
         IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
         {
+            yield return RandomWait();
             if (!ped.IsSafeExist()) yield break;
             //カオス化しない
             ped.SetNotChaosPed(true);
 
-            ped.Task.ClearAll();
-            ped.Task.ClearSecondary();
-            
+            ped.TaskSetBlockingOfNonTemporaryEvents(true);
             ped.SetPedKeepTask(true);
-           
+            ped.AlwaysKeepTask = true;
+
+            if (ped.IsInVehicle())
+            {
+                ped.Task.ClearAll();
+                ped.Task.LeaveVehicle(ped.CurrentVehicle, false);
+                yield return WaitForSeconds(1);
+            }
+            else
+            {
+                ped.Task.ClearAllImmediately();
+            }
             ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
 
             foreach (var t in WaitForSeconds(20))
@@ -108,8 +117,6 @@ namespace Inferno
 
             if (!ped.IsSafeExist())yield break;
             
-          
-
             //カオス化許可
             ped.SetNotChaosPed(false);
         } 
