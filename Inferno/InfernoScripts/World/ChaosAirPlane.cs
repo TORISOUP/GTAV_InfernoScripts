@@ -13,6 +13,14 @@ namespace Inferno
 {
     class ChaosAirPlane : InfernoScript
     {
+        /// <summary>
+        /// 各戦闘機が狙っているターゲット
+        /// </summary>
+        private Dictionary<int, Tuple<Vehicle,Entity>> targets = new Dictionary<int, Tuple<Vehicle, Entity>>();
+
+        //攻撃半径
+        private float attackRadius = 2000;
+
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("abomb")
@@ -37,6 +45,23 @@ namespace Inferno
                     }
                 });
 
+            //ターゲット描画
+            OnDrawingTickAsObservable
+                .Where(_ => IsActive && targets.Count > 0)
+                .Subscribe(_ =>
+                {
+                    var insensity = 5;
+
+                    //攻撃半径に入っている対象のみに絞る
+                    var array = targets.Values
+                        .Where(x => x != null && x.Item1.IsSafeExist() && x.Item2.IsSafeExist()
+                                    && x.Item1.IsInRangeOf(x.Item2.Position, attackRadius)).Select(x=>x.Item2.Position).ToArray();
+
+                    foreach (var point in array)
+                    {
+                        NativeFunctions.CreateLight(point, 255, 30, 30, 0.1f, insensity);
+                    }
+                });
 
         }
 
@@ -45,16 +70,18 @@ namespace Inferno
         {
             foreach (var i in Enumerable.Range(0,7))
             {
-                StartCoroutine(PlaneManageCoroutine());
+                StartCoroutine(PlaneManageCoroutine(i));
                 yield return WaitForSeconds(1);
             }
           
-        } 
+        }
 
         /// <summary>
         /// 戦闘機を管理するコルーチン
         /// </summary>
-        private IEnumerable<object> PlaneManageCoroutine()
+        /// <param name="id">戦闘機に割り振るID</param>
+        /// <returns></returns>
+        private IEnumerable<object> PlaneManageCoroutine(int id)
         {
             var plane = default(Vehicle);
             var ped = default(Ped);
@@ -70,7 +97,8 @@ namespace Inferno
                         plane = spawn.Item1;
                         ped = spawn.Item2;
                         //戦闘機稼働
-                        StartCoroutine(AirPlaneCoroutine(plane, ped));
+                        targets[id] = null;
+                        StartCoroutine(AirPlaneCoroutine(plane, ped, id));
                     }
                 }
                 //5秒ごとにチェック
@@ -84,8 +112,7 @@ namespace Inferno
             //戦闘機生成
             var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
-            plane.Speed = 300;
-            plane.Rotation = plane.Rotation + new Vector3(0, 0, Random.Next(0, 360));
+            plane.Speed = 500;
 
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
@@ -98,13 +125,15 @@ namespace Inferno
         /// <summary>
         /// 戦闘機のコルーチン
         /// </summary>
-        private IEnumerable<object> AirPlaneCoroutine(Vehicle plane, Ped ped)
+        private IEnumerable<object> AirPlaneCoroutine(Vehicle plane, Ped ped,int id)
         {
             while (IsActive && IsPlaneActive(plane, ped))
             {
                 var target =  GetRandomTarget();
                 if (target.IsSafeExist())
                 {
+                    targets[id] = new Tuple<Vehicle, Entity>(plane, target);
+
                     ped.Task.ClearAll();
                     //周辺市民をターゲットにする
                     SetPlaneTask(plane, ped, target);
@@ -122,7 +151,7 @@ namespace Inferno
                     //ターゲットが死亡していたらターゲット変更
                     if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
 
-                    if (target.IsInRangeOf(plane.Position,2500) &&  Random.Next(0, 100) < 10)
+                    if (target.IsInRangeOf(plane.Position, attackRadius) &&  Random.Next(0, 100) < 5)
                     {
                         //たまに攻撃
                         var pos = target.Position.Around(30);
@@ -161,11 +190,11 @@ namespace Inferno
 
             //プレイヤの近くの市民
             var targetPeds = CachedPeds
-                .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100)
+                .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
                             && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle));
             
             var targetVehicles = CachedVehicles
-                .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 100)
+                .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
                             && playerVehicle != x);
 
             var targets = targetPeds.Concat(targetVehicles.Cast<Entity>()).ToArray();
