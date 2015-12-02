@@ -104,7 +104,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 {
                     //コルーチン開始
                     StartCoroutine(ParupunteCoreCoroutine(x));
-                });
+                }, ex => LogWrite(ex.ToString()));
 
         }
 

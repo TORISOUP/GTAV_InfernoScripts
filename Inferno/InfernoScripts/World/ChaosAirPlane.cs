@@ -19,7 +19,7 @@ namespace Inferno
         private Dictionary<int, Tuple<Vehicle,Entity>> targets = new Dictionary<int, Tuple<Vehicle, Entity>>();
 
         //攻撃半径
-        private float attackRadius = 2000;
+        private float attackRadius = 500;
 
         protected override void Setup()
         {
@@ -62,7 +62,6 @@ namespace Inferno
                         NativeFunctions.CreateLight(point, 255, 30, 30, 0.1f, insensity);
                     }
                 });
-
         }
 
         //時間差で戦闘機を出現させる
@@ -113,7 +112,7 @@ namespace Inferno
             var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
             plane.Speed = 500;
-
+            plane.PetrolTankHealth = 10;
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
             if (!ped.IsSafeExist())  return null;
@@ -127,16 +126,19 @@ namespace Inferno
         /// </summary>
         private IEnumerable<object> AirPlaneCoroutine(Vehicle plane, Ped ped,int id)
         {
+            var speed = (float)Random.Next(50, 500);
             while (IsActive && IsPlaneActive(plane, ped))
             {
                 var target =  GetRandomTarget();
+                targets[id] = null;
                 if (target.IsSafeExist())
                 {
-                    targets[id] = new Tuple<Vehicle, Entity>(plane, target);
-
                     ped.Task.ClearAll();
                     //周辺市民をターゲットにする
-                    SetPlaneTask(plane, ped, target);
+                    SetPlaneTask(plane, ped, target, speed);
+
+                    //少しづつ耐久値を削る
+                    plane.PetrolTankHealth-=1.0f;
                     yield return null;
                 }
 
@@ -151,13 +153,15 @@ namespace Inferno
                     //ターゲットが死亡していたらターゲット変更
                     if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
 
-                    if (target.IsInRangeOf(plane.Position, attackRadius) &&  Random.Next(0, 100) < 5)
+                    if (target.IsInRangeOf(plane.Position, attackRadius) &&  Random.Next(0, 100) < 10)
                     {
                         //たまに攻撃
                         var pos = target.Position.Around(30);
                         Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X, pos.Y, pos.Z);
+
+                        targets[id] = new Tuple<Vehicle, Entity>(plane, target);
                     }
- 
+
                     yield return null;
                 }
                 yield return null;
@@ -175,11 +179,10 @@ namespace Inferno
             }
         }
 
-        private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
+        private void SetPlaneTask(Vehicle plane, Ped ped, Entity target,float planeSpeed)
         {
             var tarPos = target.Position;
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 200.0, -1.0, -1.0,
-                100, 100);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, planeSpeed, -1.0, -1.0,100, -500);
         }
 
         //キャッシュ市民から一人選出
