@@ -36,7 +36,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.MarkAsNoLongerNeeded();
             ped.Task.ClearAll();
 
-            yield return WaitForSeconds(4);
+            foreach (var s in WaitForSeconds(8))
+            {
+                var length = (core.PlayerPed.Position - plane.Position).Length();
+                if(length < 400.0f) break;
+                yield return null;
+            }
+            
+
             if (!plane.IsSafeExist() || !ped.IsSafeExist()) yield break;
             plane.EngineHealth = 0;
             plane.EngineRunning = false;
