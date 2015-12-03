@@ -54,19 +54,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                     entity.ApplyForce(upForce,randomVector);
                 }
-                if (player.IsInVehicle())
+                if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
                 {
                     player.CurrentVehicle.ApplyForce(upForce);
                 }
                 else
                 {
-
                     player.ApplyForce(upForce, randomVector);
                 }
                 yield return null;
             }
 
-            while ( player.IsInvincible ? player.CurrentVehicle.IsInAir : player.IsInAir)
+            while ( player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
             {
                 yield return null;
             }
