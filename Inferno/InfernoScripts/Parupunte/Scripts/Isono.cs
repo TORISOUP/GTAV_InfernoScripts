@@ -70,7 +70,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return null;
             }
             player.IsCollisionProof = false;
-            if (player.IsInvincible)
+            if (player.IsInVehicle())
             {
                 player.CurrentVehicle.IsCollisionProof = false;
             }
