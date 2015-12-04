@@ -9,8 +9,10 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Forms;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -48,6 +50,11 @@ namespace Inferno
         #endregion
 
         #region forEvents
+        /// <summary>
+        /// ObserveOn用
+        /// </summary>
+        protected SingleThreadSynchronizationContext Context;
+
         /// <summary>
         /// 一定間隔のTickイベント
         /// </summary>
@@ -211,6 +218,10 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
+            Context = new SingleThreadSynchronizationContext();
+            SynchronizationContext.SetSynchronizationContext(Context);
+            OnTickAsObservable.Subscribe(_ => Context.RunOnCurrentThread());
+
             Observable.Interval(TimeSpan.FromMilliseconds(1))
                 .Where(_ => InfernoCore.Instance != null)
                 .Take(1)

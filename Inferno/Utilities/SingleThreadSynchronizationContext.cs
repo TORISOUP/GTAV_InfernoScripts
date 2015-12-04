@@ -18,7 +18,7 @@ namespace Inferno.Utilities
         private readonly BlockingCollection<KeyValuePair<SendOrPostCallback, object>> m_queue =
             new BlockingCollection<KeyValuePair<SendOrPostCallback, object>>();
 
-        /// <summary>Dispatches an asynchronous message to the synchronization context.</summary>
+        /// <summary>Dispatches an asynchronous message to the synchronization Context.</summary>
         /// <param name="d">The System.Threading.SendOrPostCallback delegate to call.</param>
         /// <param name="state">The object passed to the delegate.</param>
         public override void Post(SendOrPostCallback d, object state)
@@ -40,7 +40,7 @@ namespace Inferno.Utilities
                 workItem.Key(workItem.Value);
         }
 
-        /// <summary>Notifies the context that no more work will arrive.</summary>
+        /// <summary>Notifies the Context that no more work will arrive.</summary>
         public void Complete()
         {
             m_queue.CompleteAdding();
