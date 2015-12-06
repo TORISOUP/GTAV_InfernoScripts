@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,7 +42,9 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// このパルプンテスクリプト中で使用しているcoroutine一覧
         /// </summary>
-        protected List<uint> coroutineIds; 
+        protected List<uint> coroutineIds;
+
+        private Subject<Unit> onUpdateSubject; 
 
         protected ParupunteScript(ParupunteCore core)
         {
@@ -52,18 +57,33 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public abstract void OnStart();
 
+        public void OnUpdateCore()
+        {
+            onUpdateSubject?.OnNext(Unit.Default);
+            OnUpdate();
+        }
+
+        protected IObservable<Unit> OnUpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+
         /// <summary>
         /// 100msごとに実行される
         /// </summary>
-        public virtual void OnUpdate()
+        protected virtual void OnUpdate()
         {
             ;
+        }
+
+
+        public void OnFinishedCore()
+        {
+            onUpdateSubject?.OnCompleted();
+            OnFinished();
         }
 
         /// <summary>
         /// パルプンテ終了時に実行される
         /// </summary>
-        public virtual void OnFinished()
+        protected virtual void OnFinished()
         {
             ;
         }

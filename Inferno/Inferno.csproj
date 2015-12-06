@@ -122,6 +122,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\HealthRegen.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MagicFire.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Mayday.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\NinjaRun.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Onakaitai.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Owatashiki.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\PlayerInvincible.cs" />

@@ -25,12 +25,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(reduceCounter);
         }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             reduceCounter.Finish();
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             var radius = 50.0f;
             var player = core.PlayerPed;

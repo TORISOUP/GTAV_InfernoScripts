@@ -159,7 +159,7 @@ namespace Inferno.InfernoScripts.Parupunte
             catch (Exception e)
             {
                 LogWrite(e.ToString());
-                script.OnFinished();
+                script.OnFinishedCore();
                 IsActive = false;
                 yield break;
             }
@@ -169,12 +169,12 @@ namespace Inferno.InfernoScripts.Parupunte
                 try
                 {
                     //スクリプトのUpdateを実行
-                    script.OnUpdate();
+                    script.OnUpdateCore();
                 }
                 catch (Exception e)
                 {
                     LogWrite(e.ToString());
-                    script.OnFinished();
+                    script.OnFinishedCore();
                     IsActive = false;
                     yield break;
                 }
@@ -182,7 +182,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 yield return null; //100ms待機
             }
 
-            script.OnFinished();
+            script.OnFinishedCore();
             IsActive = false;
         }
 
