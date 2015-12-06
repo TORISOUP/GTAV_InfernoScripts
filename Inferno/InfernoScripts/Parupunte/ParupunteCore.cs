@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Text;
@@ -83,6 +84,10 @@ namespace Inferno.InfernoScripts.Parupunte
 
             #endregion
 
+            IsonoManager.Instance.OnRecievedMessageAsObservable
+                .Where(x => x.Contains("ぱるぷんて"))
+                .ObserveOn(Context)
+                .Subscribe(_ => ParupunteStart());
         }
 
 

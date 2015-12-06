@@ -220,8 +220,6 @@ namespace Inferno
         {
             Context = new SingleThreadSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(Context);
-            OnTickAsObservable.Subscribe(_ => Context.RunOnCurrentThread());
-
             Observable.Interval(TimeSpan.FromMilliseconds(1))
                 .Where(_ => InfernoCore.Instance != null)
                 .Take(1)
@@ -265,6 +263,12 @@ namespace Inferno
                     OnTickAsObservable
                         .Subscribe(x => coroutineSystem.CoroutineLoop());
                 });
+
+            OnTickAsObservable.Skip(1).Subscribe(_ =>
+            {
+                Context.RunOnCurrentThread();
+            });
+            
 
             try
             {
