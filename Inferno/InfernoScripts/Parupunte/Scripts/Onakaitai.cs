@@ -24,7 +24,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var r = new Random();
 
             //たまに全員に対して発動させる
-            AffectAllPed = r.Next()%10 == 0;
+            AffectAllPed = true;//.Next()%10 == 0;
         }
 
         public override string Name => AffectAllPed ? "みんなおなかいたい" : "おなかいたい";

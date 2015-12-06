@@ -38,6 +38,8 @@ namespace Inferno.InfernoScripts.Parupunte
         private int _screenWidth;
         private Vector2 _textPositionScale = new Vector2(0.5f, 0.8f);
 
+        public SynchronizationContext CoreContex => this.Context;
+
         protected override void Setup()
         {
             tcpManager.ServerStartAsync();
@@ -102,19 +104,20 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStart()
         {
-            if (IsActive) { return;}
+            if (IsActive)
+            {
+                return;
+            }
 
             IsActive = true;
 
             //抽選
             var scriptType = ChooseParupounteScript();
 
-            Observable.Start(() => Activator.CreateInstance(scriptType, this) as ParupunteScript)
-                .Subscribe(x =>
-                {
-                    //コルーチン開始
-                    StartCoroutine(ParupunteCoreCoroutine(x));
-                }, ex => LogWrite(ex.ToString()));
+            var x = Activator.CreateInstance(scriptType, this) as ParupunteScript;
+            //コルーチン開始
+            StartCoroutine(ParupunteCoreCoroutine(x));
+
 
         }
 

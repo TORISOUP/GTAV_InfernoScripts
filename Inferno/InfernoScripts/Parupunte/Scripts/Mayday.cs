@@ -9,6 +9,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// プレイヤの近くに飛行機を墜落させる
     /// </summary>
+    
     class Mayday : ParupunteScript
     {
         public Mayday(ParupunteCore core) : base(core)
