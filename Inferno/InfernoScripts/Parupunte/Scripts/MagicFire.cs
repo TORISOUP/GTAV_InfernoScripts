@@ -32,7 +32,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             coroutineId = StartCoroutine(MagicFireCoroutine());
         }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             reduceCounter.Finish();
             StopCoroutine(coroutineId);

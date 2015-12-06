@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             coroutineId = StartCoroutine(KillCitizensCoroutine());
         }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             StopCoroutine(coroutineId);
             ParupunteEnd();

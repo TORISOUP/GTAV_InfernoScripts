@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(reduceCounter);
         }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             reduceCounter.Finish();
             StopCoroutine(coroutineId);

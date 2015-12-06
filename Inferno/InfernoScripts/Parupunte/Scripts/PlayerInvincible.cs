@@ -31,16 +31,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 yield return WaitForSeconds(1);
             }
-        } 
+        }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             reduceCounter.Finish();
             core.PlayerPed.IsInvincible = false;
             core.DrawParupunteText("おわり",3.0f);
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             core.PlayerPed.IsInvincible = true;
         }

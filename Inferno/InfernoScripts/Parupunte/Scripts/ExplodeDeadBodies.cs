@@ -30,12 +30,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             explodedPedHandles = new HashSet<int>();
         }
 
-        public override void OnFinished()
+        protected override void OnFinished()
         {
             reduceCounter.Finish();
         }
 
-        public override void OnUpdate()
+        protected override void OnUpdate()
         {
             explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x));//後の誤判定防止のため;
 
