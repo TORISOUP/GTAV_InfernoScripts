@@ -18,9 +18,12 @@ namespace Inferno.InfernoScripts.Parupunte
         //trueにするとそのParupunteScriptが優先される
         public bool IsDebug;
 
-        public ParupunteDebug(bool isDebug = false)
+        //trueにすると除外される(IsDebugより優先度は高い）
+        public bool IsIgnore;
+        public ParupunteDebug(bool isDebug = false,bool isIgnore = false)
         {
             IsDebug = isDebug;
+            IsIgnore = isIgnore;
         }
     }
 
@@ -63,7 +66,7 @@ namespace Inferno.InfernoScripts.Parupunte
             OnUpdate();
         }
 
-        protected IObservable<Unit> OnUpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+        protected IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
 
         /// <summary>
         /// 100msごとに実行される

@@ -49,6 +49,11 @@ namespace Inferno.InfernoScripts.Parupunte
                 Assembly.GetExecutingAssembly()
                     .GetTypes()
                     .Where(type => type.BaseType != null && type.BaseType == typeof (ParupunteScript))
+                    .Where(x =>
+                    {
+                        var attribute = x.GetCustomAttribute<ParupunteDebug>();
+                        return attribute == null || !attribute.IsIgnore;
+                    })
                     .ToArray();
 
             _debugParuputeScripts = _parupunteScritpts.Where(x =>
