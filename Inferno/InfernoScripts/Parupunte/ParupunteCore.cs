@@ -71,14 +71,20 @@ namespace Inferno.InfernoScripts.Parupunte
             #region EventHook
 
             CreateInputKeywordAsObservable("rnt")
-                .Merge(OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
-                .Select(_ => Unit.Default))
                 .Where(_ => !IsActive)
                 .Subscribe(_ => ParupunteStart());
 
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
+
+            var shortCutKey = OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0).Select(_=>Unit.Default);
+            shortCutKey.Buffer(() => shortCutKey.Throttle(TimeSpan.FromMilliseconds(500))).Select(x => x.Count)
+                .Subscribe(count =>
+                {
+                    if(count==1 && !IsActive) ParupunteStart();
+                    if(count==2 && IsActive) ParupunteStop();
+                });
 
             #endregion
 
@@ -96,10 +102,10 @@ namespace Inferno.InfernoScripts.Parupunte
                 _mContainer.Items.Add(timerText.Text);
             });
             //テキストが時間切れしたら消す
-            timerText.OnTextExpiredObservable.Subscribe(_ =>
-            {
-                _mContainer.Items.Clear();
-            });
+            OnTickAsObservable.Select(_ => timerText.IsEnabled)
+                .DistinctUntilChanged()
+                .Where(x => !x)
+                .Subscribe(_ => _mContainer.Items.Clear());
 
             this.OnDrawingTickAsObservable
                 .Where(_=> _mContainer.Items.Any())
@@ -127,7 +133,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             IsActive = true;
 
-            //別スレッドで初期化
+            //ThreadPool上で初期化（プチフリ回避）
             Observable.Start(() =>
             {
                 //抽選
@@ -166,6 +172,8 @@ namespace Inferno.InfernoScripts.Parupunte
         private IEnumerable<object> ParupunteCoreCoroutine(ParupunteScript script)
         {
             yield return null;
+
+            if (!IsActive) yield break;
 
             if (script == null)
             {

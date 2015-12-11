@@ -19,9 +19,7 @@ namespace Inferno
         private ReduceCounter reduceCounter;
         private UIText uiText;
         private Subject<Unit> setTextSubject = new Subject<Unit>();
-        private Subject<Unit> textExpiredSubject = new Subject<Unit>(); 
         public IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
-        public IObservable<Unit> OnTextExpiredObservable => textExpiredSubject.AsObservable(); 
         public TimerUiTextManager(InfernoScript parent)
         {
             this.parent = parent;
@@ -42,7 +40,7 @@ namespace Inferno
         /// <summary>
         /// テキストが有効な状態であるか？
         /// </summary>
-        public bool IsEnabled => uiText != null;
+        public bool IsEnabled => reduceCounter != null && !reduceCounter.IsCompleted;
 
         public void Set(UIText text, float expireSeconds)
         {
@@ -50,7 +48,6 @@ namespace Inferno
             reduceCounter= new ReduceCounter((int)(1000 * expireSeconds));
             parent.RegisterCounter(reduceCounter);
             setTextSubject.OnNext(Unit.Default);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => textExpiredSubject.OnNext(Unit.Default));
         }
 
     }

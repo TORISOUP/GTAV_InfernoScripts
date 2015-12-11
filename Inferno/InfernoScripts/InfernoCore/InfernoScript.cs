@@ -65,7 +65,21 @@ namespace Inferno
         /// </summary>
         public IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
 
-        public IObservable<KeyEventArgs> OnKeyDownAsObservable => InfernoCore.OnKeyDownAsObservable;
+        private IObservable<KeyEventArgs> _onKeyDownAsObservable;
+
+        public IObservable<KeyEventArgs> OnKeyDownAsObservable
+        {
+            get
+            {
+                if (_onKeyDownAsObservable != null) return _onKeyDownAsObservable;
+                _onKeyDownAsObservable =
+                    Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
+                        h => KeyDown -= h)
+                        .Select(e => e.EventArgs)
+                        .Publish().RefCount();
+                return _onKeyDownAsObservable;
+            }
+        }
 
 
         public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
@@ -82,13 +96,14 @@ namespace Inferno
                 throw new Exception("Keyword is empty.");
             }
 
-            return InfernoCore.OnKeyDownAsObservable
+            return OnKeyDownAsObservable
                 .Select(e => e.KeyCode.ToString())
                 .Buffer(keyword.Length, 1)
                 .Select(x => x.Aggregate((p, c) => p + c))
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
                 .Take(1).Repeat() //1回動作したらBufferをクリア
+                .ObserveOn(Context)
                 .Publish()
                 .RefCount();
         }
