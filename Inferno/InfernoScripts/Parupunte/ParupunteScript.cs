@@ -53,6 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             this.core = core;
             coroutineIds = new List<uint>();
+            core.LogWrite(this.ToString());
         }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
 
-            reduceCounter = new ReduceCounter(30000);
+            reduceCounter = new ReduceCounter(20000);
             AddProgressBar(reduceCounter);
  
 

@@ -113,7 +113,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //抽選
             var scriptType = ChooseParupounteScript();
-
+            
             var x = Activator.CreateInstance(scriptType, this) as ParupunteScript;
             //コルーチン開始
             StartCoroutine(ParupunteCoreCoroutine(x));

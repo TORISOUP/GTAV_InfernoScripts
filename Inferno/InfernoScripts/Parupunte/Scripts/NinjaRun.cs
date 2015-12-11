@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -73,7 +66,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GTA.World.AddExplosion(core.PlayerPed.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
                 });
 
-            reduceCounter = new ReduceCounter(30000);
+            reduceCounter = new ReduceCounter(20000);
             AddProgressBar(reduceCounter);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
         }
