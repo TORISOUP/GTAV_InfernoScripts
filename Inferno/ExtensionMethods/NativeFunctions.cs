@@ -537,6 +537,7 @@ namespace Inferno
         /// <param name="y"></param>
         public static void DrawTextInSetPosition(this Script script, float x, float y)
         {
+            
             Function.Call(Hash._DRAW_TEXT, new InputArgument[]
             {
                 x,

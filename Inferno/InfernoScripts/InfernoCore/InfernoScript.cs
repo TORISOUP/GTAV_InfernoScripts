@@ -206,7 +206,7 @@ namespace Inferno
         /// カウンタを登録して自動カウントさせる
         /// カウンタのUpdateにはIntervalの数値が渡される
         /// </summary>
-        protected void RegisterCounter(ICounter counter)
+        public void RegisterCounter(ICounter counter)
         {
             _counterList.Add(counter);
         }

@@ -57,7 +57,13 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
-        /// パルプンテ開始前に1回だけ実行される
+        /// パルプンテの名前が出るより前に1回だけ実行される
+        /// コンストラクタでの初期化の代わりにこっちを使う
+        /// </summary>
+        public abstract void OnSetUp();
+
+        /// <summary>
+        /// パルプンテの名前が出たあとに1回だけ実行される
         /// </summary>
         public abstract void OnStart();
 

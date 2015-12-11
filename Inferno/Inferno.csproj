@@ -99,6 +99,7 @@
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Drawer\TimerUITextManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoTcpClient.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />

@@ -34,6 +34,7 @@ namespace Inferno.InfernoScripts.Parupunte
         protected override int TickInterval { get; } = 100;
 
         private UIContainer _mContainer;
+        private TimerUiTextManager timerText;
         private int _screenHeight;
         private int _screenWidth;
         private Vector2 _textPositionScale = new Vector2(0.5f, 0.8f);
@@ -44,6 +45,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             tcpManager.ServerStartAsync();
             IsActive = false;
+            timerText = new TimerUiTextManager(this);
 
             #region ParunteScripts
             //RefrectionでParupunteScriptを継承しているクラスをすべて取得する
@@ -69,7 +71,8 @@ namespace Inferno.InfernoScripts.Parupunte
             #region EventHook
 
             CreateInputKeywordAsObservable("rnt")
-                .Merge(OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0).Select(_ => Unit.Default))
+                .Merge(OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
+                .Select(_ => Unit.Default))
                 .Where(_ => !IsActive)
                 .Subscribe(_ => ParupunteStart());
 
@@ -85,8 +88,21 @@ namespace Inferno.InfernoScripts.Parupunte
             _screenWidth = (int)screenResolution.X;
             _mContainer = new UIContainer(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
+
+            //テキストが更新されたら詰め直す
+            timerText.OnSetTextAsObservable.Subscribe(_ =>
+            {
+                _mContainer.Items.Clear();
+                _mContainer.Items.Add(timerText.Text);
+            });
+            //テキストが時間切れしたら消す
+            timerText.OnTextExpiredObservable.Subscribe(_ =>
+            {
+                _mContainer.Items.Clear();
+            });
+
             this.OnDrawingTickAsObservable
-                .Where(_ => _mContainer.Items.Any())
+                .Where(_=> _mContainer.Items.Any())
                 .Subscribe(_ => _mContainer.Draw());
 
             #endregion
@@ -111,14 +127,15 @@ namespace Inferno.InfernoScripts.Parupunte
 
             IsActive = true;
 
-            //抽選
-            var scriptType = ChooseParupounteScript();
-            
-            var x = Activator.CreateInstance(scriptType, this) as ParupunteScript;
-            //コルーチン開始
-            StartCoroutine(ParupunteCoreCoroutine(x));
-
-
+            //別スレッドで初期化
+            Observable.Start(() =>
+            {
+                //抽選
+                var scriptType = ChooseParupounteScript();
+                return Activator.CreateInstance(scriptType, this) as ParupunteScript;
+            },Scheduler.ThreadPool)
+            .ObserveOn(Context)
+            .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)));
         }
 
         /// <summary>
@@ -152,6 +169,18 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (script == null)
             {
+                IsActive = false;
+                yield break;
+            }
+
+            try
+            {
+                script.OnSetUp();
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.ToString());
+                script.OnFinishedCore();
                 IsActive = false;
                 yield break;
             }
@@ -199,27 +228,24 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private IEnumerable<object> ParupunteDrawCoroutine(string callString ,string scriptname)
         {
-           _mContainer.Items.Clear();
 
             //○はパルプンテを唱えた！の部分
-            _mContainer.Items.Add(CreateUIText(callString));
-            
+            timerText.Set(CreateUIText(callString),2.0f);
             var mess = new RequestDataPackage(callString);
             tcpManager.SendToAll(mess.ToJson());
+
             //2秒画面に出す
             yield return WaitForSeconds(2);
-            //消す
-            _mContainer.Items.Clear();
+
 
             //効果名
-            _mContainer.Items.Add(CreateUIText(scriptname));
+            timerText.Set(CreateUIText(scriptname), 3.0f);
             mess = new RequestDataPackage(scriptname);
             tcpManager.SendToAll(mess.ToJson());
 
             //3秒画面に出す
-            yield return WaitForSeconds(2);
-            //消す
-            _mContainer.Items.Clear();
+            yield return WaitForSeconds(3);
+
         }
 
         /// <summary>
@@ -227,15 +253,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public void DrawParupunteText(string text,float duration)
         {
-            StartCoroutine(DrawTextCoroutine(text, duration));
-        }
-
-        //ParupunteScriptから呼び出す用
-        private IEnumerable<object> DrawTextCoroutine(string text, float duration )
-        {
-            _mContainer.Items.Add(CreateUIText(text));
-            yield return WaitForSeconds(duration);
-            _mContainer.Items.Clear();
+            timerText.Set(CreateUIText(text), duration);
         }
 
         private UIText CreateUIText(string text)
