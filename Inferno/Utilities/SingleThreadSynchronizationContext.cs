@@ -15,27 +15,27 @@ namespace Inferno.Utilities
     public class SingleThreadSynchronizationContext : SynchronizationContext
     {
         private readonly
-            BlockingCollection<KeyValuePair<SendOrPostCallback, object>>
-            m_queue =
-                new BlockingCollection<KeyValuePair<SendOrPostCallback, object>>();
+            ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>
+            _mQueue =
+                new ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>();
 
         public override void Post(SendOrPostCallback d, object state)
         {
-            m_queue.Add(
+            _mQueue.Enqueue(
                 new KeyValuePair<SendOrPostCallback, object>(d, state));
         }
 
         public void RunOnCurrentThread()
         {
-            if(m_queue.Count==0) return;
+            if(_mQueue.Count==0) return;
             KeyValuePair<SendOrPostCallback, object> workItem;
-            while (m_queue.TryTake(out workItem, 20))
+            while (_mQueue.TryDequeue(out workItem))
                 workItem.Key(workItem.Value);
         }
 
         public void Complete()
         {
-            m_queue.CompleteAdding();
+
         }
 
     }
