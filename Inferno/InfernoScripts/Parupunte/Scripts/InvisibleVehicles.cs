@@ -45,6 +45,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (player.IsInVehicle())
             {
                 player.CurrentVehicle.IsVisible = false;
+                player.IsVisible = true;
             }
         }
     }

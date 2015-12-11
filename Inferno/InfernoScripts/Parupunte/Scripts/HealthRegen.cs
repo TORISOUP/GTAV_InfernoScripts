@@ -27,7 +27,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(30000);
+            reduceCounter = new ReduceCounter(10000);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             coroutineId = StartCoroutine(HealthRegenCoroutine());
             AddProgressBar(reduceCounter);
@@ -43,7 +43,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!reduceCounter.IsCompleted)
             {
-                core.PlayerPed.Health += 8;
+                core.PlayerPed.Health += 15;
                 yield return WaitForSeconds(1);
             }
         }

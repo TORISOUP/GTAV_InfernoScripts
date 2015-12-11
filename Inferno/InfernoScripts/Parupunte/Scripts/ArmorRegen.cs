@@ -10,6 +10,10 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    /// <summary>
+    /// 地味なので封印
+    /// </summary>
+    [ParupunteDebug(false,true)]
     class ArmorRegen : ParupunteScript
     {
         private ReduceCounter reduceCounter;
@@ -25,7 +29,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private uint coroutineId = 0;
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(30000);
+            reduceCounter = new ReduceCounter(5000);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             coroutineId = StartCoroutine(ArmorRegenCoroutine());
             AddProgressBar(reduceCounter);
@@ -41,8 +45,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!reduceCounter.IsCompleted)
             {
-                core.PlayerPed.Armor += 14;
-                yield return WaitForSeconds(3);
+                core.PlayerPed.Armor += 20;
+                yield return WaitForSeconds(1);
             }
         }
 

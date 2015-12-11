@@ -36,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(20000);
+            reduceCounter = new ReduceCounter(15000);
             AddProgressBar(reduceCounter);
 
             var ptfxName = "core";

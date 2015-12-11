@@ -69,6 +69,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     //すいこむ
                     var direction = targetPosition - targetPed.Position;
                     targetPed.FreezePosition = false;
+                    targetPed.SetToRagdoll();
                     var lenght = direction.Length();
                     if (lenght > 1)
                     {
