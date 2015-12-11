@@ -33,6 +33,12 @@ namespace Inferno.InfernoScripts.Parupunte
         public abstract string Name { get; }
 
         /// <summary>
+        /// 終了時に表示されるメッセージ
+        /// nullまたは空文字列なら表示しない
+        /// </summary>
+        public virtual string EndMessage { get; }
+
+        /// <summary>
         /// パルプンテの処理が実行中であるか
         /// </summary>
         public bool IsActive { get; private set; } = true;
@@ -88,6 +94,10 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             onUpdateSubject?.OnCompleted();
             OnFinished();
+            if (!string.IsNullOrEmpty(EndMessage))
+            {
+                core.DrawParupunteText(EndMessage, 2.0f);
+            }
         }
 
         /// <summary>

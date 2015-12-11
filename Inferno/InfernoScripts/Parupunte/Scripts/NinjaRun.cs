@@ -13,7 +13,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name => "NINJA RUN";
+        public override string Name => "バリキ・ジツ";
+        public override string EndMessage => "もうオシマイだ！";
         public override void OnSetUp()
         {
             

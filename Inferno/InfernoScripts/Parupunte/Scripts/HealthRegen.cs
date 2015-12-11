@@ -18,7 +18,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => "リジェネ";
-
+        public override string EndMessage => "おわり";
         private uint coroutineId = 0;
         public override void OnSetUp()
         {

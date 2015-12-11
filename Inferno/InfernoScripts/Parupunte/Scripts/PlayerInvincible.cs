@@ -12,7 +12,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => "無敵";
-
+        public override string EndMessage => "おわり";
         public override void OnSetUp()
         {
             
@@ -42,7 +42,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             reduceCounter.Finish();
             core.PlayerPed.IsInvincible = false;
-            core.DrawParupunteText("おわり",3.0f);
+
         }
 
         protected override void OnUpdate()

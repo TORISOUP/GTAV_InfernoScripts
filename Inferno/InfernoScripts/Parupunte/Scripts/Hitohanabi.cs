@@ -19,6 +19,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => "ひとはなび";
+        public override string EndMessage => "きたねぇ花火だ";
 
         public override void OnSetUp()
         {

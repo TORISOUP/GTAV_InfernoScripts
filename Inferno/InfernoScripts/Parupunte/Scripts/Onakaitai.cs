@@ -25,6 +25,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => AffectAllPed ? "みんなおなかいたい" : "おなかいたい";
+        public override string EndMessage => "ついでに着火";
 
         public override void OnSetUp()
         {

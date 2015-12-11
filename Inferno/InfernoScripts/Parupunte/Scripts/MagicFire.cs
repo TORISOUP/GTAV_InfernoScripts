@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name { get; } = "ただし魔法は尻から出る";
-
+        public override string EndMessage => "　お　し　り　";
         private uint coroutineId = 0;
         public override void OnSetUp()
         {

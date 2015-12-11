@@ -22,10 +22,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => "江　戸　時　代";
+        public override string EndMessage => "　現　代　";
 
         public override void OnSetUp()
         {
             
+        }
+
+        protected override void OnFinished()
+        {
         }
 
         public override void OnStart()

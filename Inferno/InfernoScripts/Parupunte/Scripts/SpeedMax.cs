@@ -15,7 +15,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name { get; } = "光速進行";
-
+        public override string EndMessage => "法定速度を守ってマナーよく運転しましょう";
 
         private ReduceCounter reduceCounter;
         public override void OnSetUp()
