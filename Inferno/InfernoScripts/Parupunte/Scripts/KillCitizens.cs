@@ -21,6 +21,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private uint coroutineId = 0;
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             coroutineId = StartCoroutine(KillCitizensCoroutine());

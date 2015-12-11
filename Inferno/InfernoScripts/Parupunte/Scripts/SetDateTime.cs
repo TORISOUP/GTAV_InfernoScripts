@@ -18,16 +18,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public SetDateTime(ParupunteCore core) : base(core)
         {
-            Random random = new Random();
-            hour = random.Next(0, 23);
-            name = hour.ToString() + "時かな";
+
         }
 
         public override string Name
         {
             get { return name; }
         }
-        
+
+        public override void OnSetUp()
+        {
+            Random random = new Random();
+            hour = random.Next(0, 23);
+            name = hour.ToString() + "時かな";
+        }
+
         public override void OnStart()
         {
             var dayTime = GTA.World.CurrentDayTime;

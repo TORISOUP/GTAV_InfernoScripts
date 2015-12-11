@@ -19,6 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "車両パワーうｐ";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             SetVehiclesStrong();

@@ -17,6 +17,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "全回復";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             var player = core.PlayerPed;

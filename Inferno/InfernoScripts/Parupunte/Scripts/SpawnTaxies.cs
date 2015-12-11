@@ -16,11 +16,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public SpawnTaxies(ParupunteCore core) : base(core)
         {
-            var honorific = core.PlayerPed.Gender == Gender.Male ? "くん！" : "ちゃん！";
-            name = "仲間が増えるよ！やったね" + GetPlayerCharacterName() + honorific;
+
         }
 
         public override string Name => name;
+
+        public override void OnSetUp()
+        {
+            var honorific = core.PlayerPed.Gender == Gender.Male ? "くん！" : "ちゃん！";
+            name = "仲間が増えるよ！やったね" + GetPlayerCharacterName() + honorific;
+        }
 
         public override void OnStart()
         {

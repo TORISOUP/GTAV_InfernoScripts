@@ -19,6 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public ChangeWantedLevel(ParupunteCore core) : base(core)
         {
+            
+        }
+
+        public override void OnSetUp()
+        {
             name = wantedLevel >= wantedLevelThreshold ? "無罪放免" : "日頃の行いが悪い";
         }
 

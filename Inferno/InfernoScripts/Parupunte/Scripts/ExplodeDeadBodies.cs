@@ -22,6 +22,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "ば・く・は・つ・し・た・い";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             reduceCounter = new ReduceCounter(20000);

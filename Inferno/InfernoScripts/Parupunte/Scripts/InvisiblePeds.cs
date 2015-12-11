@@ -19,6 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "光学迷彩(仲間除くNPC)";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             SetPedsInvisible();

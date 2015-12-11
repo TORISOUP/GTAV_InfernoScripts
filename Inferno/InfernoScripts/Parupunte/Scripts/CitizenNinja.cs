@@ -23,6 +23,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "江　戸　時　代";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
 

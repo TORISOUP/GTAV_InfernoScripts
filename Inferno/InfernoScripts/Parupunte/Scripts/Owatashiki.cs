@@ -18,6 +18,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "オワタ式の可能性";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             var player = core.PlayerPed;

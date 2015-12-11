@@ -16,7 +16,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public ArmorRegen(ParupunteCore core) : base(core)
         {
         }
+        public override void OnSetUp()
+        {
 
+        }
         public override string Name => "自動回復アーマー";
 
         private uint coroutineId = 0;

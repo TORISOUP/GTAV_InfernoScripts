@@ -14,10 +14,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name { get; } = "高速進行";
+        public override string Name { get; } = "光速進行";
 
 
         private ReduceCounter reduceCounter;
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             reduceCounter = new ReduceCounter(30 * 1000);

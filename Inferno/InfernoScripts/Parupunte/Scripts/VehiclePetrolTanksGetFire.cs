@@ -19,6 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "周辺車両一斉発火";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             GetVehiclesFire();

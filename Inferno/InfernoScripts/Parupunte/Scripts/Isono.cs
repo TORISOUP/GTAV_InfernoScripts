@@ -17,6 +17,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name { get; } = "磯野ー！空飛ぼうぜ！";
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             StartCoroutine(IsonoCoroutine());

@@ -18,6 +18,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "メーデー！メーデー！";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             StartCoroutine(AirPlaneCoroutine());

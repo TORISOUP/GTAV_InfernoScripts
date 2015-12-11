@@ -14,6 +14,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         public override string Name => "NINJA RUN";
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             var ptfxName = "core";

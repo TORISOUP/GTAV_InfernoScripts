@@ -13,9 +13,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "無敵";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(20000);
+            reduceCounter = new ReduceCounter(15000);
             reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(reduceCounter);
             StartCoroutine(Coroutine());

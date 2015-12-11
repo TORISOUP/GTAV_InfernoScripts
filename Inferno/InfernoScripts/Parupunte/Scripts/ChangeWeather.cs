@@ -18,6 +18,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public ChangeWeather(ParupunteCore core) : base(core)
         {
+        }
+
+        public override string Name
+        {
+            get { return name; }
+        }
+
+        public override void OnSetUp()
+        {
             Random random = new Random();
 
             weather = Enum.GetValues(typeof(Weather))
@@ -29,11 +38,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             name = "天候変化" + "：" + weatherName;
         }
 
-        public override string Name
-        {
-            get { return name; }
-        }
-        
         public override void OnStart()
         {
             GTA.World.Weather = weather;

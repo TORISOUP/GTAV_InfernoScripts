@@ -19,6 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "周辺の人&車両回復";
 
+        public override void OnSetUp()
+        {
+            
+        }
+
         public override void OnStart()
         {
             RepairVehicles();

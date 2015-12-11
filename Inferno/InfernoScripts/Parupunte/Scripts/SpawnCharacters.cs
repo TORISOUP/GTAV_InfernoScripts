@@ -18,14 +18,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public SpawnCharacters(ParupunteCore core) : base(core)
         {
-            pedModel = new Model(PedHash.LamarDavis);
-            name = "ニガ～♪";
-            random = new Random();
+
         }
 
         public override string Name
         {
             get { return name; }
+        }
+
+        public override void OnSetUp()
+        {
+            pedModel = new Model(PedHash.LamarDavis);
+            name = "ニガ～♪";
+            random = new Random();
         }
 
         public override void OnStart()

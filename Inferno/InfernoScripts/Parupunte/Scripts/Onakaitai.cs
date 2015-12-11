@@ -21,13 +21,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public Onakaitai(ParupunteCore core) : base(core)
         {
-            var r = new Random();
 
-            //たまに全員に対して発動させる
-            AffectAllPed = true;//.Next()%10 == 0;
         }
 
         public override string Name => AffectAllPed ? "みんなおなかいたい" : "おなかいたい";
+
+        public override void OnSetUp()
+        {
+            var r = new Random();
+
+            //たまに全員に対して発動させる
+            AffectAllPed = r.Next() % 10 == 0;
+        }
 
         public override void OnStart()
         {
