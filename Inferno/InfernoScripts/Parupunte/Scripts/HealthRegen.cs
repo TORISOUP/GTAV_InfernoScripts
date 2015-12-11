@@ -43,7 +43,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!reduceCounter.IsCompleted)
             {
-                core.PlayerPed.Health += 15;
+                if (core.PlayerPed.Health < core.PlayerPed.MaxHealth)
+                {
+                    core.PlayerPed.Health += 15;
+                }
+                else
+                {
+                    core.PlayerPed.Armor += 20;
+                }
                 yield return WaitForSeconds(1);
             }
         }
