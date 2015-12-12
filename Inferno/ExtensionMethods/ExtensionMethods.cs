@@ -37,7 +37,7 @@ namespace Inferno
         {
             if (!vehicle.IsSafeExist())
             {
-              return false;
+                return false;
             }
             return vehicle == Game.Player.Character.CurrentVehicle;
         }
@@ -59,7 +59,7 @@ namespace Inferno
         /// <returns>ランダムな座標</returns>
         public static Vector3 AroundRandom2D(this Vector3 vector, float radius)
         {
-            var randomBaseVector = new Vector3((float)Random.NextDouble() - 0.5f, (float)Random.NextDouble() - 0.5f, 0);
+            var randomBaseVector = new Vector3((float) Random.NextDouble() - 0.5f, (float) Random.NextDouble() - 0.5f, 0);
             randomBaseVector.Normalize();
             return vector + randomBaseVector*(float) Random.NextDouble()*radius;
         }
@@ -69,7 +69,21 @@ namespace Inferno
         /// </summary>
         public static bool IsCutsceneOnlyPed(this Ped ped)
         {
-            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
+            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), (CutSceneOnlyPedHash) ped.Model.Hash);
+        }
+
+        public static Vector3 ApplyVector(this Quaternion q, Vector3 v)
+        {
+
+            var w = -q.X*v.X - q.Y*v.Y - q.Z*v.Z;
+            var x = q.Y*v.Z - q.Z*v.Y + q.W*v.X;
+            var y = q.Z*v.X - q.X*v.Z + q.W*v.Y;
+            var z = q.X*v.Y - q.Y*v.X + q.W*v.Z;
+            return new Vector3(
+                y*-q.Z + z*q.Y - w*q.X + x*q.W,
+                z*-q.X + x*q.Z - w*q.Y + y*q.W,
+                x*-q.Y + y*q.X - w*q.Z + z*q.W
+                );
         }
     }
 }

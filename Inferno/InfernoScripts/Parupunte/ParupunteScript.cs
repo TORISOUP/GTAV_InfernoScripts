@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -77,6 +73,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
+            
         }
 
         protected IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());

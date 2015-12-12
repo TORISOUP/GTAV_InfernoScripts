@@ -6,6 +6,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteDebug(true)]
     class NinjaRun : ParupunteScript
     {
         private ReduceCounter reduceCounter;
@@ -18,6 +19,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnSetUp()
         {
             
+        }
+
+        protected override void OnFinished()
+        {
+            SetAnimRate(core.PlayerPed, 1);
+            Function.Call(Hash.TASK_FORCE_MOTION_STATE, core.PlayerPed, 0xFFF7E7A4, 0);
         }
 
         public override void OnStart()
@@ -40,11 +47,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     var hp = core.PlayerPed.ForwardVector;
                     Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,true, true, true, true);
                     Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0, 0, 0,0);
+
                     StartFire();
                 });
 
-
+            var num = 0;
             this.UpdateAsObservable
+                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num % 10 ==0)
+                .Subscribe(_ =>
+                {
+                    num++;
+                    StartFire();
+                });
+
+        this.UpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Select(_ => core.GetStickValue().X)
                 .Subscribe(input =>
@@ -52,7 +68,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     var player = core.PlayerPed;
                     player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input/127.0f) * 0.2f) * player.Quaternion;
                 });
-
 
             this.UpdateAsObservable
                 .Select(_ => core.IsGamePadPressed(GameKey.Sprint))
