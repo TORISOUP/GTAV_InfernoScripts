@@ -6,7 +6,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
+
     class NinjaRun : ParupunteScript
     {
         private ReduceCounter reduceCounter;
