@@ -19,7 +19,7 @@ namespace Inferno
 
         public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
         public int Current { get; private set; }
-        public float Rate => Current/ (float)_max;
+        public float Rate => (float)Current/ (float)_max;
         public bool IsCompleted { get; private set; }
 
         /// <summary>
