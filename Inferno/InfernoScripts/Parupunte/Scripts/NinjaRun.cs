@@ -3,10 +3,10 @@ using System.Reactive.Linq;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.InfernoScripts.Parupunte;
 
-namespace Inferno.InfernoScripts.Parupunte.Scripts
+namespace Inferno
 {
-
     class NinjaRun : ParupunteScript
     {
         private ReduceCounter reduceCounter;

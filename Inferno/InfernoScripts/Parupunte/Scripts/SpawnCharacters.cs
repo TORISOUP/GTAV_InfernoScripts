@@ -10,6 +10,7 @@ using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+
     internal class SpawnCharacters : ParupunteScript
     {
         private Model pedModel;
@@ -28,9 +29,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            pedModel = new Model(PedHash.LamarDavis);
-            name = "ニガ～♪";
             random = new Random();
+
+            switch (random.Next(0,100) % 1)
+            {
+                case 0:
+                    pedModel = new Model(PedHash.LamarDavis);
+                    name = "ニガ～♪";
+                break;
+
+            }
+
+
         }
 
         public override void OnStart()
@@ -43,9 +53,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var player = core.PlayerPed;
             foreach (var s in WaitForSeconds(2))
             {
-                var ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(10));
-                ped.MarkAsNoLongerNeeded();
-                GiveWeaponTpPed(ped);
+                var ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                if (ped.IsSafeExist())
+                {
+                    ped.MarkAsNoLongerNeeded();
+                    GiveWeaponTpPed(ped);
+                }
                 yield return s;
             }
             ParupunteEnd();

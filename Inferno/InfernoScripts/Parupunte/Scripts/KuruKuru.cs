@@ -10,7 +10,6 @@ using Inferno.InfernoScripts.Parupunte;
 
 namespace Inferno
 {
-    [ParupunteDebug(false,true)]
     class KuruKuru : ParupunteScript
     {
         private ReduceCounter reduceCounter;
