@@ -139,7 +139,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\Tempest.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FloatingCar.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\WhalePresent.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs" />
     <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
