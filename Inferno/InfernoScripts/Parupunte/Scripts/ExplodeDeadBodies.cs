@@ -13,7 +13,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class ExplodeDeadBodies : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
         private HashSet<int> explodedPedHandles;
 
         public ExplodeDeadBodies(ParupunteCore core) : base(core)
@@ -29,16 +28,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(20000);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(20000);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            AddProgressBar(ReduceCounter);
             explodedPedHandles = new HashSet<int>();
         }
 
-        protected override void OnFinished()
-        {
-            reduceCounter.Finish();
-        }
 
         protected override void OnUpdate()
         {

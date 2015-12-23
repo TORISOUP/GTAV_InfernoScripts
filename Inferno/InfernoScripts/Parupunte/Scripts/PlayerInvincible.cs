@@ -5,7 +5,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class PlayerInvincible : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
 
         public PlayerInvincible(ParupunteCore core) : base(core)
         {
@@ -20,15 +19,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(15000);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(15000);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            AddProgressBar(ReduceCounter);
             StartCoroutine(Coroutine());
         }
 
         private IEnumerable<object> Coroutine()
         {
-            while (!reduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 if (!core.PlayerPed.IsInvincible)
                 {
@@ -40,9 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnFinished()
         {
-            reduceCounter.Finish();
             core.PlayerPed.IsInvincible = false;
-
         }
 
         protected override void OnUpdate()

@@ -12,7 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteDebug]
     class Hitohanabi : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
 
         public Hitohanabi(ParupunteCore core) : base(core)
         {
@@ -28,8 +27,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(5000);
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(5000);
+            AddProgressBar(ReduceCounter);
             //コルーチン起動
             StartCoroutine(HitohanabiCoroutine());
             
@@ -43,7 +42,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var pedList = new List<Ped>();
 
             //タイマが終わるまでカウントし続ける
-            while(!reduceCounter.IsCompleted)
+            while(!ReduceCounter.IsCompleted)
             {
                 foreach (
                     var targetPed in

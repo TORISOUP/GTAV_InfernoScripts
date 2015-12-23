@@ -15,7 +15,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         readonly string petroEffect = "ent_sht_petrol";
 
         private bool AffectAllPed = false;
-        private ReduceCounter reduceCounter;
+
         private List<Ped> targetPeds = new List<Ped>(); 
 
 
@@ -37,8 +37,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(15000);
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(15000);
+            AddProgressBar(ReduceCounter);
 
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
@@ -61,7 +61,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //終わったら着火する
-            reduceCounter.OnFinishedAsync.Subscribe(_ =>
+            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 foreach (var ped in targetPeds.Where(x=>x.IsSafeExist()&&x.IsAlive))
                 {
@@ -75,7 +75,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private IEnumerable<object> OilCoroutine(Ped ped)
         {
 
-            while (!reduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 CreateEffect(ped, petroEffect);
                 yield return WaitForSeconds(1);

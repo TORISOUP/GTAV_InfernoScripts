@@ -10,7 +10,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class Tempest : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
         List<int> entityList = new List<int>();
 
         public Tempest(ParupunteCore core) : base(core)
@@ -31,9 +30,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             GTA.World.Weather = Weather.ThunderStorm;
-            reduceCounter = new ReduceCounter(20*1000);
-            AddProgressBar(reduceCounter);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            ReduceCounter = new ReduceCounter(20*1000);
+            AddProgressBar(ReduceCounter);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             this.UpdateAsObservable
                 .Subscribe(_ =>
@@ -58,7 +57,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> TemepenstCoroutine(Entity entity)
         {
-            while (!reduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 if(!entity.IsSafeExist()) yield break;
                 if (!entity.IsInRangeOf(core.PlayerPed.Position, 100)) yield return null;

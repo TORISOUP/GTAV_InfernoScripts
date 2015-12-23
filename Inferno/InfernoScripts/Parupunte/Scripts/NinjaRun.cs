@@ -9,7 +9,6 @@ namespace Inferno
 {
     class NinjaRun : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
         public NinjaRun(ParupunteCore core) : base(core)
         {
         }
@@ -87,9 +86,9 @@ namespace Inferno
                     GTA.World.AddExplosion(core.PlayerPed.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
                 });
 
-            reduceCounter = new ReduceCounter(20000);
-            AddProgressBar(reduceCounter);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            ReduceCounter = new ReduceCounter(20000);
+            AddProgressBar(ReduceCounter);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
         }
 
         private void SetAnimRate(Ped ped, float rate)

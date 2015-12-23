@@ -12,11 +12,11 @@ namespace Inferno
 {
     class KuruKuru : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
 
+        private IDisposable mainStream;
         public KuruKuru(ParupunteCore core) : base(core)
         {
-            reduceCounter = new ReduceCounter(20 * 1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
         }
 
         public override string Name { get; } = "くるくる";
@@ -28,8 +28,9 @@ namespace Inferno
 
         public override void OnStart()
         {
-            AddProgressBar(reduceCounter);
-            reduceCounter.OnFinishedAsync.Subscribe(_ =>
+            AddProgressBar(ReduceCounter);
+
+            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 var player = core.PlayerPed;
                 var targets = core.CachedVehicles
@@ -46,8 +47,9 @@ namespace Inferno
             });
 
             //TODO 別の場所にHookする
+            mainStream = 
             DrawingCore.OnDrawingTickAsObservable
-                .TakeUntil(reduceCounter.OnFinishedAsync)
+                .TakeUntil(ReduceCounter.OnFinishedAsync)
                 .Subscribe(_ =>
                 {
 
@@ -58,7 +60,7 @@ namespace Inferno
                                     && x != player.CurrentVehicle
 
                         );
-                    var rate = (1.0f - reduceCounter.Rate);
+                    var rate = (1.0f - ReduceCounter.Rate);
                     foreach (var veh in targets)
                     {
                         if(!veh.IsSafeExist()) continue;
@@ -70,9 +72,11 @@ namespace Inferno
                         }
                     }
                 });
-
-
         }
 
+        protected override void OnFinished()
+        {
+            mainStream?.Dispose();
+        }
     }
 }

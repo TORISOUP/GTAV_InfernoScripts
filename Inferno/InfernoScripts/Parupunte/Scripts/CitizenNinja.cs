@@ -13,7 +13,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class CitizenNinja : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
         private Random random = new Random();
         HashSet<int> ninjas = new HashSet<int>();
         List<Ped> pedList = new List<Ped>(); 
@@ -36,10 +35,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
 
-            reduceCounter = new ReduceCounter(20000);
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(20000);
+            AddProgressBar(ReduceCounter);
  
-
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
@@ -69,7 +67,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 });
 
-            reduceCounter.OnFinishedAsync.Subscribe(_ =>
+            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 foreach (var ped in pedList)
                 {
@@ -91,7 +89,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> DashCoroutine(Ped ped)
         {
-            while (!reduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 if (!ped.IsSafeExist()) yield break;
                 if (ped.IsDead)

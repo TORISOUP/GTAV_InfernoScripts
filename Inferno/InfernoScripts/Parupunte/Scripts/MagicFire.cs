@@ -16,7 +16,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteDebug]
     class MagicFire : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
+
         public MagicFire(ParupunteCore core) : base(core)
         {
         }
@@ -31,15 +31,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(20000);
-            AddProgressBar(reduceCounter);
+            ReduceCounter = new ReduceCounter(20000);
+            AddProgressBar(ReduceCounter);
             //コルーチン起動
             coroutineId = StartCoroutine(MagicFireCoroutine());
         }
 
         protected override void OnFinished()
         {
-            reduceCounter.Finish();
             StopCoroutine(coroutineId);
             //終了時に炎耐性解除
             core.PlayerPed.IsFireProof = false;
@@ -56,7 +55,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            while (!reduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 core.PlayerPed.IsFireProof = true;
                 StartFire();

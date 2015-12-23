@@ -13,7 +13,6 @@ namespace Inferno.InfernoScripts.Parupunte
     {
         //trueにするとそのParupunteScriptが優先される
         public bool IsDebug;
-
         //trueにすると除外される(IsDebugより優先度は高い）
         public bool IsIgnore;
         public ParupunteDebug(bool isDebug = false,bool isIgnore = false)
@@ -25,6 +24,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
     abstract class ParupunteScript
     {
+        private bool IsFinished = false;
 
         public abstract string Name { get; }
 
@@ -49,7 +49,12 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         protected List<uint> coroutineIds;
 
-        private Subject<Unit> onUpdateSubject; 
+        private Subject<Unit> onUpdateSubject;
+
+        /// <summary>
+        /// 汎用カウンタ（終了時にCompletedになる）
+        /// </summary>
+        protected ReduceCounter ReduceCounter;
 
         protected ParupunteScript(ParupunteCore core)
         {
@@ -73,7 +78,6 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
-            
         }
 
         protected IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
@@ -89,8 +93,18 @@ namespace Inferno.InfernoScripts.Parupunte
 
         public void OnFinishedCore()
         {
+            if(IsFinished) return;
+            IsFinished = true;
+            ReduceCounter?.Finish();
             onUpdateSubject?.OnCompleted();
             OnFinished();
+
+            foreach (var id in coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+            coroutineIds.Clear();
+
             if (!string.IsNullOrEmpty(EndMessage))
             {
                 core.DrawParupunteText(EndMessage, 2.0f);
@@ -111,11 +125,6 @@ namespace Inferno.InfernoScripts.Parupunte
         protected void ParupunteEnd()
         {
             IsActive = false;
-            foreach (var id in coroutineIds)
-            {
-                StopCoroutine(id);
-            }
-            coroutineIds.Clear();
         }
 
         /// <summary>

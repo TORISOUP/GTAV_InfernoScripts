@@ -11,7 +11,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class FloatingCar : ParupunteScript
     {
-        private ReduceCounter reduceCounter;
+        private ReduceCounter ReduceCounter;
 
         public FloatingCar(ParupunteCore core) : base(core)
         {
@@ -27,9 +27,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(20*1000);
-            AddProgressBar(reduceCounter);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            ReduceCounter = new ReduceCounter(20*1000);
+            AddProgressBar(ReduceCounter);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             this.UpdateAsObservable
                 .Subscribe(_ =>
