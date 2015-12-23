@@ -51,6 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             x =>x.IsSafeExist() 
                             && x.IsAlive                             
                             && x.IsHuman 
+                            && !x.IsCutsceneOnlyPed()
                             && x.IsInRangeOf(core.PlayerPed.Position, 50))
                     )
                 {
