@@ -7,20 +7,16 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
     class ParupunteCore : InfernoScript
     {
-
         TCPManager tcpManager = new TCPManager();
         /// <summary>
         /// パルプンテスクリプト一覧
@@ -78,13 +74,8 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
-            var shortCutKey = OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0).Select(_=>Unit.Default);
-            shortCutKey.Buffer(() => shortCutKey.Throttle(TimeSpan.FromMilliseconds(500))).Select(x => x.Count)
-                .Subscribe(count =>
-                {
-                    if(count==1 && !IsActive) ParupunteStart();
-                    if(count==2 && IsActive) ParupunteStop();
-                });
+            OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
+                .Subscribe(_ => ParupunteStart());
 
             #endregion
 
@@ -141,7 +132,13 @@ namespace Inferno.InfernoScripts.Parupunte
                 return Activator.CreateInstance(scriptType, this) as ParupunteScript;
             },Scheduler.ThreadPool)
             .ObserveOn(Context)
-            .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)));
+            .Repeat(3)
+            .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
+            {
+                LogWrite(ex.ToString());
+                DrawText(ex.Message);
+                IsActive = false;
+            });
         }
 
         /// <summary>
@@ -149,6 +146,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStop()
         {
+            DrawText("Parupunte:Abort");
             IsActive = false;
         }
 
@@ -223,12 +221,20 @@ namespace Inferno.InfernoScripts.Parupunte
                     IsActive = false;
                     yield break;
                 }
-
                 yield return null; //100ms待機
             }
-
-            script.OnFinishedCore();
-            IsActive = false;
+            try
+            {
+                script.OnFinishedCore();
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.ToString());
+            }
+            finally
+            {
+                IsActive = false;
+            }
         }
 
         /// <summary>
