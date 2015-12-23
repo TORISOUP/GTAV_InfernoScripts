@@ -24,16 +24,11 @@ namespace Inferno
         protected override void Setup()
         {
             OnTickAsObservable
-                    .Where(_ => PlayerPed.IsSafeExist())
-                    .Select(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                    .Subscribe(flag =>
+                    .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                    .Subscribe(_ =>
                     {
                         var playerChar = Game.Player;
-
-                        if (flag)
-                        {
-                            SetPlayerRagdoll(playerChar);
-                        }
+                        SetPlayerRagdoll(playerChar);
                     });
 
         }
