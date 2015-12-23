@@ -110,6 +110,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenNinja.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\Gochiusa.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\InvisiblePeds.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\KillCitizens.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs" />
