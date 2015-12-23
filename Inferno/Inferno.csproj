@@ -130,6 +130,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\Owatashiki.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\PlayerInvincible.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\InvisibleVehicles.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\PositionShufle.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\RepairVehicles.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SetDateTime.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnTaxies.cs" />
