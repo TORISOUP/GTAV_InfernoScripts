@@ -36,7 +36,7 @@ namespace Inferno
             }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            this.UpdateAsObservable
+            core.OnTickAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Subscribe(_ =>
                 {
@@ -51,7 +51,7 @@ namespace Inferno
                 });
 
             var num = 0;
-            this.UpdateAsObservable
+            core.OnTickAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num % 10 ==0)
                 .Subscribe(_ =>
                 {
@@ -59,8 +59,8 @@ namespace Inferno
                     StartFire();
                 });
 
-        this.UpdateAsObservable
-                .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
+            core.OnTickAsObservable
+                    .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Select(_ => core.GetStickValue().X)
                 .Subscribe(input =>
                 {
@@ -68,7 +68,7 @@ namespace Inferno
                     player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input/127.0f) * 0.2f) * player.Quaternion;
                 });
 
-            this.UpdateAsObservable
+            core.OnTickAsObservable
                 .Select(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .DistinctUntilChanged()
                 .Where(x => !x)
@@ -78,7 +78,7 @@ namespace Inferno
                     SetAnimRate(core.PlayerPed, 1);
                     Function.Call(Hash.TASK_FORCE_MOTION_STATE, core.PlayerPed, 0xFFF7E7A4, 0);
                 });
-            this.UpdateAsObservable
+            core.OnTickAsObservable
                 .Select(_ => core.PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x).Subscribe(_ =>
