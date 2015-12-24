@@ -31,31 +31,30 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            this.UpdateAsObservable
-                .Subscribe(_ =>
+        }
+
+        protected override void OnUpdate()
+        {
+            var player = core.PlayerPed;
+            var targets = core.CachedVehicles
+                .Where(x => x.IsSafeExist()
+                            && x.IsInRangeOf(player.Position, 80.0f)
+                            && x != player.CurrentVehicle
+
+                );
+            foreach (var vehicle in targets)
+            {
+                vehicle.ApplyForce(Vector3.WorldUp);
+            }
+
+            if (core.PlayerPed.IsInVehicle())
+            {
+                var v = core.PlayerPed.CurrentVehicle;
+                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
                 {
-                    var player = core.PlayerPed;
-                    var targets = core.CachedVehicles
-                        .Where(x => x.IsSafeExist()
-                                    && x.IsInRangeOf(player.Position, 80.0f)
-                                    && x != player.CurrentVehicle
-
-                        );
-                    foreach (var vehicle in targets)
-                    {
-                        vehicle.ApplyForce(Vector3.WorldUp);
-                    }
-
-                    if (core.PlayerPed.IsInVehicle())
-                    {
-                        var v = core.PlayerPed.CurrentVehicle;
-                        if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
-                        {
-                            v.ApplyForce(Vector3.WorldUp);
-                        }
-                    }
-                });
-
+                    v.ApplyForce(Vector3.WorldUp);
+                }
+            }
         }
     }
 }

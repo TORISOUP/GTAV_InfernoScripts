@@ -135,7 +135,7 @@ namespace Inferno.InfernoScripts.Parupunte
             .Repeat(3)
             .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
             {
-                LogWrite(ex.ToString());
+            //    LogWrite(ex.ToString());
                 DrawText(ex.Message);
                 IsActive = false;
             });
@@ -223,6 +223,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 }
                 yield return null; //100ms待機
             }
+
             try
             {
                 script.OnFinishedCore();
@@ -316,6 +317,11 @@ namespace Inferno.InfernoScripts.Parupunte
         public IEnumerable CreateWaitForSeconds(float seconds)
         {
             return WaitForSeconds(seconds);
+        }
+
+        public IEnumerable CreateRadomWait()
+        {
+            return RandomWait();
         }
 
         public void AddProgressBar(ReduceCounter reduceCounter)

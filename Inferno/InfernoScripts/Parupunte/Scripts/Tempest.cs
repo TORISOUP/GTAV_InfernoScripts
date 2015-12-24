@@ -33,26 +33,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(20*1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+        }
 
-            this.UpdateAsObservable
-                .Subscribe(_ =>
+        protected override void OnUpdate()
+        {
+            var playerPos = core.PlayerPed.Position;
+            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
+            {
+                if (!entityList.Contains(ped.Handle))
                 {
-                    var playerPos = core.PlayerPed.Position;
-                    foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
-                    {
-                        if (!entityList.Contains(ped.Handle))
-                        {
-                            entityList.Add(ped.Handle);
-                            StartCoroutine(TemepenstCoroutine(ped));
-                        }
-                    }
-                    foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
-                    {
-                        entityList.Add(veh.Handle);
-                        StartCoroutine(TemepenstCoroutine(veh));
-                    }
-                });
-            
+                    entityList.Add(ped.Handle);
+                    StartCoroutine(TemepenstCoroutine(ped));
+                }
+            }
+            foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
+            {
+                entityList.Add(veh.Handle);
+                StartCoroutine(TemepenstCoroutine(veh));
+            }
         }
 
         private IEnumerable<object> TemepenstCoroutine(Entity entity)

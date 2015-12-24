@@ -54,19 +54,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 StartCoroutine(DashCoroutine(ped));
             }
 
-            this.UpdateAsObservable
-                .Subscribe(_ =>
-                {
-                    foreach (var ped in core.CachedPeds.Where(x=>x.IsSafeExist()&&x.IsAlive 
-                    && x.IsInRangeOf(core.PlayerPed.Position,100) && !ninjas.Contains(x.Handle)))
-                    {
-                        pedList.Add(ped);
-                        ninjas.Add(ped.Handle);
-                        ped.Task.ClearAllImmediately();
-                        StartCoroutine(DashCoroutine(ped));
-                    }
-                });
-
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 foreach (var ped in pedList)
@@ -80,6 +67,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
+        }
+
+        protected override void OnUpdate()
+        {
+            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive
+                                                           && x.IsInRangeOf(core.PlayerPed.Position, 100) &&
+                                                           !ninjas.Contains(x.Handle)))
+            {
+                pedList.Add(ped);
+                ninjas.Add(ped.Handle);
+                ped.Task.ClearAllImmediately();
+                StartCoroutine(DashCoroutine(ped));
+            }
         }
 
         private void SetAnimRate(Ped ped, float rate)
