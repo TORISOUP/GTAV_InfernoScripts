@@ -135,8 +135,7 @@ namespace Inferno.InfernoScripts.Parupunte
             .Retry(3)
             .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
             {
-            //    LogWrite(ex.ToString());
-                DrawText(ex.Message);
+                LogWrite(ex.ToString());
                 IsActive = false;
             });
         }
