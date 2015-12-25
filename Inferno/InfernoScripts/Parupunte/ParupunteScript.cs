@@ -77,9 +77,11 @@ namespace Inferno.InfernoScripts.Parupunte
 
         public void OnUpdateCore()
         {
-
+            onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
         }
+
+        protected IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
 
         /// <summary>
         /// 100msごとに実行される
@@ -94,7 +96,9 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             if(IsFinished) return;
 
-            
+            IsFinished = true;
+            ReduceCounter?.Finish();
+
             onUpdateSubject?.OnCompleted();
             OnFinished();
 
@@ -108,8 +112,7 @@ namespace Inferno.InfernoScripts.Parupunte
             {
                 core.DrawParupunteText(EndMessage, 2.0f);
             }
-            ReduceCounter?.Finish();
-            IsFinished = true;
+
         }
 
         /// <summary>

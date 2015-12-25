@@ -36,39 +36,42 @@ namespace Inferno
             }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            core.OnTickAsObservable
+            this.UpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Subscribe(_ =>
                 {
                     SetAnimRate(core.PlayerPed, 5.0f);
-                    Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, core.PlayerPed, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0, 0,0);
+                    Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, core.PlayerPed, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,
+                        0, 0);
                     Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, core.PlayerPed, true);
                     var hp = core.PlayerPed.ForwardVector;
-                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,true, true, true, true);
-                    Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0, 0, 0,0);
+                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X*1, hp.Y*1, hp.Z*1, 0, 0, 0, 1, false,
+                        true, true, true, true);
+                    Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
+                        0, 0, 0);
 
                     StartFire();
                 });
 
             var num = 0;
-            core.OnTickAsObservable
-                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num % 10 ==0)
+            this.UpdateAsObservable
+                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num%10 == 0)
                 .Subscribe(_ =>
                 {
                     num++;
                     StartFire();
                 });
 
-            core.OnTickAsObservable
-                    .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
+            this.UpdateAsObservable
+                .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Select(_ => core.GetStickValue().X)
                 .Subscribe(input =>
                 {
                     var player = core.PlayerPed;
-                    player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input/127.0f) * 0.2f) * player.Quaternion;
+                    player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input/127.0f)*0.2f)*player.Quaternion;
                 });
 
-            core.OnTickAsObservable
+            this.UpdateAsObservable
                 .Select(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .DistinctUntilChanged()
                 .Where(x => !x)
@@ -78,7 +81,7 @@ namespace Inferno
                     SetAnimRate(core.PlayerPed, 1);
                     Function.Call(Hash.TASK_FORCE_MOTION_STATE, core.PlayerPed, 0xFFF7E7A4, 0);
                 });
-            core.OnTickAsObservable
+            this.UpdateAsObservable
                 .Select(_ => core.PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x).Subscribe(_ =>
