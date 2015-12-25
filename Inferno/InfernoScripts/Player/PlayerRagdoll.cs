@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Native;
- 
+
 namespace Inferno
 {
     /// <summary>
@@ -16,7 +16,6 @@ namespace Inferno
     /// </summary>
     public class PlayerRagdoll : InfernoScript
     {
-        bool ragdollFlag = false;
         protected override int TickInterval
         {
             get { return 50; }
@@ -25,25 +24,11 @@ namespace Inferno
         protected override void Setup()
         {
             OnTickAsObservable
-                    .Where(_ => PlayerPed.IsSafeExist())
-                    .Select(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                    .Subscribe(flag =>
+                    .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                    .Subscribe(_ =>
                     {
                         var playerChar = Game.Player;
-
-                        if (flag)
-                        {
-                            SetPlayerRagdoll(playerChar);
-                            ragdollFlag = true;
-                        }
-                        else
-                        {
-                            if (ragdollFlag)
-                            {
-                                UnSetPlayerRagdoll(playerChar);
-                                ragdollFlag = false;
-                            }
-                        }
+                        SetPlayerRagdoll(playerChar);
                     });
 
         }
@@ -51,23 +36,7 @@ namespace Inferno
         void SetPlayerRagdoll(Player PlayerChar)
         {
             var player = PlayerChar.Character;
-
-            player.CanRagdoll = true;
-            PlayerChar.CanControlRagdoll = true;          
-            PlayerChar.CanControlCharacter = true;
-            player.SetToRagdoll(1000000); //時間指定しないとブルブル動く
+            player.SetToRagdoll(); //時間指定しなくても大丈夫っぽい
         }
-
-        void UnSetPlayerRagdoll(Player PlayerChar)
-        {
-            var player = PlayerChar.Character;
-
-            player.CanRagdoll = false;
-            PlayerChar.CanControlRagdoll = false;
-            //後でラグドール状態にならないのを防ぐために
-            player.CanRagdoll = true;
-            PlayerChar.CanControlRagdoll = true;
-        }
-
     }
 }
