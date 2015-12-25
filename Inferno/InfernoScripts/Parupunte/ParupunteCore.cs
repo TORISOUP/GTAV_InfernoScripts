@@ -132,7 +132,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 return Activator.CreateInstance(scriptType, this) as ParupunteScript;
             },Scheduler.ThreadPool)
             .ObserveOn(Context)
-            .Repeat(3)
+            .Retry(3)
             .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
             {
             //    LogWrite(ex.ToString());
