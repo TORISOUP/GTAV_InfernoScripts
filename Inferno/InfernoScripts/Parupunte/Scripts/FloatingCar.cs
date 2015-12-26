@@ -11,7 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class FloatingCar : ParupunteScript
     {
-        private ReduceCounter ReduceCounter;
 
         public FloatingCar(ParupunteCore core) : base(core)
         {
@@ -30,7 +29,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(20*1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-
+            
         }
 
         protected override void OnUpdate()
@@ -52,7 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var v = core.PlayerPed.CurrentVehicle;
                 if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
                 {
-                    v.ApplyForce(Vector3.WorldUp);
+                    v.ApplyForce(Vector3.WorldUp * 1.2f);
                 }
             }
         }
