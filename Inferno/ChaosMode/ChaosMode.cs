@@ -205,18 +205,23 @@ namespace Inferno.ChaosMode
 
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
-
-                //適当に待機
-                foreach (var s in WaitForSeconds(2 + (float) Random.NextDouble()*3))
+                if (ped.IsCutsceneOnlyPed())
                 {
-                    if (ped.IsSafeExist() && ped.IsFleeing())
-                    {
-                        //市民が攻撃をやめて逃げ始めたら再度セットする
-                        break;
-                    }
-                    yield return s;
+                    yield return WaitForSeconds(2);
                 }
-
+                else
+                {
+                    //適当に待機
+                    foreach (var s in WaitForSeconds(2 + (float) Random.NextDouble()*3))
+                    {
+                        if (ped.IsSafeExist() && ped.IsFleeing())
+                        {
+                            //市民が攻撃をやめて逃げ始めたら再度セットする
+                            break;
+                        }
+                        yield return s;
+                    }
+                }
             } while (ped.IsSafeExist() && ped.IsAlive);
 
             chaosedPedList.Remove(pedId);
