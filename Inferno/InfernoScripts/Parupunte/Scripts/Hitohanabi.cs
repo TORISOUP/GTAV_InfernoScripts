@@ -39,7 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //プレイや周辺の15m上空を設定
             var targetPosition = core.PlayerPed.Position.Around(20) + new Vector3(0, 0, 15);
-            var pedList = new List<Ped>();
+            var pedList = new HashSet<Ped>();
 
             //タイマが終わるまでカウントし続ける
             while(!ReduceCounter.IsCompleted)
@@ -60,7 +60,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         pedList.Add(targetPed);
                         if (targetPed.IsInVehicle()) targetPed.Task.ClearAllImmediately();
                         targetPed.CanRagdoll = true;
-                        targetPed.SetToRagdoll(5000);
+                        targetPed.SetToRagdoll();
                     }
 
                 }
@@ -72,10 +72,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     targetPed.FreezePosition = false;
                     targetPed.SetToRagdoll();
                     var lenght = direction.Length();
-                    if (lenght > 1)
+                    if (lenght > 5)
                     {
                         direction.Normalize();
-                        targetPed.ApplyForce(direction*lenght.Clamp(0, 1)*20);
+                        targetPed.ApplyForce(direction*lenght.Clamp(0, 5)*4);
                     }
                 }
                 yield return null;

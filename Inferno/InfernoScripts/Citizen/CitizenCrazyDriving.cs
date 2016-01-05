@@ -17,7 +17,7 @@ namespace Inferno
     internal class CitizenCrazyDriving : InfernoScript
     {
         private readonly float PlayerAroundDistance = 300f;
-        private List<Entity> affectPeds = new List<Entity>(); 
+        private HashSet<Entity> affectPeds = new HashSet<Entity>(); 
 
 
         protected override void Setup()

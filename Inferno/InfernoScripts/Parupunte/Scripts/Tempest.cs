@@ -10,7 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class Tempest : ParupunteScript
     {
-        List<int> entityList = new List<int>();
+        HashSet<Entity> entityList = new HashSet<Entity>();
 
         public Tempest(ParupunteCore core) : base(core)
         {
@@ -40,16 +40,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var playerPos = core.PlayerPed.Position;
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
             {
-                if (!entityList.Contains(ped.Handle))
+                if (!entityList.Contains(ped))
                 {
-                    entityList.Add(ped.Handle);
+                    entityList.Add(ped);
                     StartCoroutine(TemepenstCoroutine(ped));
                 }
             }
             foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 50)))
             {
-                entityList.Add(veh.Handle);
-                StartCoroutine(TemepenstCoroutine(veh));
+                if (!entityList.Contains(veh))
+                {
+                    entityList.Add(veh);
+                    StartCoroutine(TemepenstCoroutine(veh));
+                }
             }
         }
 

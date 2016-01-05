@@ -10,7 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class Gochiusa : ParupunteScript
     {
-        private List<int> vehicleList = new List<int>(); 
+        private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>(); 
 
         public Gochiusa(ParupunteCore core) : base(core)
         {
@@ -39,9 +39,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var v in targets)
             {
-                if (!vehicleList.Contains(v.Handle))
+                if (!vehicleList.Contains(v))
                 {
-                    vehicleList.Add(v.Handle);
+                    vehicleList.Add(v);
                     StartCoroutine(VehiclePyonPyon(v));
                 }
             }
