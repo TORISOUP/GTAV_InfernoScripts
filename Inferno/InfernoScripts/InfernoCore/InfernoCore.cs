@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+using UniRx;
+
+
+using UniRx;
 using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using GTA.Native;
 
 
@@ -27,27 +27,27 @@ namespace Inferno
         /// <summary>
         /// 周辺市民
         /// </summary>
-        public IObservable<Ped[]> PedsNearPlayer => _pedsNearPlayer.AsObservable();
+        public UniRx.IObservable<Ped[]> PedsNearPlayer => _pedsNearPlayer.AsObservable();
 
         private readonly BehaviorSubject<Vehicle[]> _vehiclesNearPlayer = new BehaviorSubject<Vehicle[]>(default(Vehicle[]));
         /// <summary>
         /// 周辺車両
         /// </summary>
-        public IObservable<Vehicle[]> VehicleNearPlayer => _vehiclesNearPlayer.AsObservable();
+        public UniRx.IObservable<Vehicle[]> VehicleNearPlayer => _vehiclesNearPlayer.AsObservable();
 
         private BehaviorSubject<Ped> playerPed = new BehaviorSubject<Ped>(default(Ped));
 
-        public IObservable<Ped> PlayerPed => playerPed.AsObservable(); 
+        public UniRx.IObservable<Ped> PlayerPed => playerPed.AsObservable(); 
 
         /// <summary>
         /// 25ms周期のTick
         /// </summary>
-        public static IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
+        public static UniRx.IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
 
         /// <summary>
         /// キー入力
         /// </summary>
-        public static IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
+        public static UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
 
         public InfernoCore()
         {

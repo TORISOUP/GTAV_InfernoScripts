@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;

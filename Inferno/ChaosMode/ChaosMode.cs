@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
+using UniRx;
 using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 

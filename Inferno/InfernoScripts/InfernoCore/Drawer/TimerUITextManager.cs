@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
-using GTA;
+using GTA; using UniRx;
+using UniRx;
 
 namespace Inferno
 {
@@ -19,7 +17,7 @@ namespace Inferno
         private ReduceCounter reduceCounter;
         private UIText uiText;
         private Subject<Unit> setTextSubject = new Subject<Unit>();
-        public IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
+        public UniRx.IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
         public TimerUiTextManager(InfernoScript parent)
         {
             this.parent = parent;

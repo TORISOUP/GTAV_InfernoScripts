@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Inferno;
-using Inferno.Isono;
-using Inferno.Utilities;
+﻿using Inferno.Isono;
+using UniRx;
 
 namespace Inferno
 {
@@ -18,7 +9,7 @@ namespace Inferno
     {
         public static IsonoManager Instance { get; private set; }
 
-        public IObservable<string> OnRecievedMessageAsObservable
+        public UniRx.IObservable<string> OnRecievedMessageAsObservable
         {
             get
             {

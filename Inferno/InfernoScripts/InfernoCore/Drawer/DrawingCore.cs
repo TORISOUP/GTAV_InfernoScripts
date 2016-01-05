@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using GTA;
+using UniRx;
+
+using UniRx;
+using GTA; using UniRx;
 
 namespace Inferno
 {
@@ -18,7 +18,7 @@ namespace Inferno
         /// <summary>
         /// 100ms周期のTick
         /// </summary>
-        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+        public static UniRx.IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
 
         public DrawingCore()
         {

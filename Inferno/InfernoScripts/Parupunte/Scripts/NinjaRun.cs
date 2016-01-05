@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Reactive.Linq;
-using GTA;
+
+using GTA; using UniRx;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.Parupunte;

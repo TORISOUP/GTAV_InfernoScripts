@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+
+using UniRx;
 using System.Text;
 using System.Threading;
 
@@ -23,7 +23,7 @@ namespace Inferno.Isono
 
         private Subject<string> _onRecievedMessageSubject = new Subject<string>();
 
-        public IObservable<string> OnRecievedMessageAsObservable => _onRecievedMessageSubject.AsObservable();
+        public UniRx.IObservable<string> OnRecievedMessageAsObservable => _onRecievedMessageSubject.AsObservable();
 
         /// <summary>
         /// コンストラクタ

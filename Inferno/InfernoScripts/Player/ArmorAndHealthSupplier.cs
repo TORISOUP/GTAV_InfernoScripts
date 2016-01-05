@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reactive.Linq;
-using GTA;
+
+using GTA; using UniRx;
 using GTA.Native;
 
 namespace Inferno

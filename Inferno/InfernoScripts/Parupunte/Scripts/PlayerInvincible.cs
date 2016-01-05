@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class PlayerInvincible : ParupunteScript

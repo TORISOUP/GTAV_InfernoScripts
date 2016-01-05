@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
-using GTA;
+using GTA; using UniRx;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
@@ -16,7 +16,7 @@ namespace Inferno
         /// <summary>
         /// 各戦闘機が狙っているターゲット
         /// </summary>
-        private Dictionary<int, Tuple<Vehicle,Entity>> targets = new Dictionary<int, Tuple<Vehicle, Entity>>();
+        private Dictionary<int, System.Tuple<Vehicle,Entity>> targets = new Dictionary<int, System.Tuple<Vehicle, Entity>>();
 
         //攻撃半径
         private float attackRadius = 500;
@@ -105,7 +105,7 @@ namespace Inferno
             }
         }
 
-        private Tuple<Vehicle,Ped> SpawnAirPlane()
+        private System.Tuple<Vehicle,Ped> SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成

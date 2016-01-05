@@ -1,5 +1,5 @@
 ﻿using System;
-using GTA;
+using GTA; using UniRx;
 using GTA.Native;
 
 namespace Inferno.ChaosMode

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reactive;
-using System.Reactive.Subjects;
+using UniRx;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -81,7 +81,7 @@ namespace Inferno.InfernoScripts.Parupunte
             OnUpdate();
         }
 
-        protected IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+        protected UniRx.IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
 
         /// <summary>
         /// 100msごとに実行される
