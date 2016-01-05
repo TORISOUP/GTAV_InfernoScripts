@@ -19,7 +19,7 @@ namespace Inferno
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
 
         private uint _coroutineIdIndex = 0;
-        private readonly Object _lockObject = new object();
+        private readonly object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
         private readonly DebugLogger logger;
 
@@ -90,8 +90,10 @@ namespace Inferno
 
             var endIdList = new List<uint>();
 
-            foreach (var coroutine in coroutineArray)
+            //forの方がforeachよりちょっとだけはやい
+            for (int index = 0, max = coroutineArray.Length; index < max; index++)
             {
+                var coroutine = coroutineArray[index];
                 try
                 {
                     if (!coroutine.Value.MoveNext())
