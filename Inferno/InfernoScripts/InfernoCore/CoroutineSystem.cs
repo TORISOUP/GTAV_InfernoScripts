@@ -80,7 +80,7 @@ namespace Inferno
             lock (_lockObject)
             {
                 //開始前に削除登録されたものを消す
-                foreach (var stopId in _stopCoroutineList.ToArray())
+                foreach (var stopId in _stopCoroutineList)
                 {
                     _coroutines.Remove(stopId);
                 }
@@ -109,7 +109,7 @@ namespace Inferno
             }
             lock (_lockObject)
             {
-                foreach (var id in endIdList.ToArray())
+                foreach (var id in endIdList)
                 {
                     _coroutines.Remove(id);
                 }
