@@ -13,4 +13,7 @@ MIT Licenseで公開します。
 下記を参照設定に追加してください
 
 * [ScriptHookVDotNet.dll](http://gtaforums.com/topic/789907-vrel-community-script-hook-v-net/)
-* [ReactiveExtensions](https://www.nuget.org/packages/Rx-Main/1.0.11226)(バージョンに注意)
+
+##使用ライブラリ
+UniRx  
+Copyright (c) 2014 Yoshifumi Kawai https://github.com/neuecc/UniRx/blob/master/LICENSE
