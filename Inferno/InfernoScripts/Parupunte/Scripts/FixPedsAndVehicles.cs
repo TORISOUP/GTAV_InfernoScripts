@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
+﻿using GTA;
 using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class FixPedsAndVehicles : ParupunteScript
+    internal class FixPedsAndVehicles : ParupunteScript
     {
         public FixPedsAndVehicles(ParupunteCore core) : base(core)
         {
@@ -21,7 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -56,7 +49,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 ped.Health = ped.MaxHealth;
 
-                if(ped.Armor < 100)
+                if (ped.Armor < 100)
                 {
                     ped.Armor = 100;
                 }
@@ -64,7 +57,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             player.Health = player.MaxHealth;
             player.Armor = Game.Player.GetPlayerMaxArmor();
-
         }
     }
 }

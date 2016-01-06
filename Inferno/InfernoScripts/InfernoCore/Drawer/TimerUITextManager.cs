@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using UniRx;
 
 namespace Inferno
@@ -11,13 +6,14 @@ namespace Inferno
     /// <summary>
     ///　時限式テキスト
     /// </summary>
-    class TimerUiTextManager
+    internal class TimerUiTextManager
     {
         private InfernoScript parent;
         private ReduceCounter reduceCounter;
         private UIText uiText;
         private Subject<Unit> setTextSubject = new Subject<Unit>();
         public UniRx.IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
+
         public TimerUiTextManager(InfernoScript parent)
         {
             this.parent = parent;
@@ -43,10 +39,9 @@ namespace Inferno
         public void Set(UIText text, float expireSeconds)
         {
             uiText = text;
-            reduceCounter= new ReduceCounter((int)(1000 * expireSeconds));
+            reduceCounter = new ReduceCounter((int)(1000 * expireSeconds));
             parent.RegisterCounter(reduceCounter);
             setTextSubject.OnNext(Unit.Default);
         }
-
     }
 }

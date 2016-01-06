@@ -1,8 +1,9 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTA; using UniRx;
-using GTA.Math;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -19,7 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20*1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
@@ -37,9 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 yield return WaitForSeconds(0.8f);
             }
-
         }
-
 
         /// <summary>
         /// 市民を2人をランダムに抽出する
@@ -47,10 +46,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Tuple<Ped, Ped> ChoisePeds(IEnumerable<Ped> originalGroup)
         {
             var playerPosition = core.PlayerPed.Position;
-            var targetGroup = originalGroup.Concat(new [] {core.PlayerPed}).Where(x =>
-                x.IsSafeExist()
-                && x.IsInRangeOf(playerPosition, 150)
-                && x.IsAlive).ToArray();
+            var targetGroup = originalGroup.Concat(new[] { core.PlayerPed }).Where(x =>
+                 x.IsSafeExist()
+                 && x.IsInRangeOf(playerPosition, 150)
+                 && x.IsAlive).ToArray();
 
             var p1 = targetGroup[random.Next(0, targetGroup.Length)];
             var p2 = targetGroup[random.Next(0, targetGroup.Length)];
@@ -83,25 +82,29 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 p2.Position += Vector3.WorldUp * 10;
             }
 
-            #endregion
-            if(!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
-            
+            #endregion P2を退避
+
+            if (!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
+
             // p1 -> p2
+
             #region P1 -> P2
 
             if (isP2InVehicle)
             {
-                if(!v2.IsSafeExist()) yield break;
-                p1.Task.WarpIntoVehicle(v2,v2seat);
+                if (!v2.IsSafeExist()) yield break;
+                p1.Task.WarpIntoVehicle(v2, v2seat);
             }
             else
             {
                 p1.PositionNoOffset = p2Pos;
             }
-            #endregion
 
-           // yield return null;
+            #endregion P1 -> P2
+
+            // yield return null;
             // p2 -> p1
+
             #region P2 -> P1
 
             if (isP1InVehicle)
@@ -111,18 +114,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
             else
             {
-                
                 p2.PositionNoOffset = p1Pos;
             }
-            #endregion
+
+            #endregion P2 -> P1
         }
 
         private VehicleSeat GetPedSeat(Ped ped, Vehicle veh)
         {
-            if(!veh.IsSafeExist()) return VehicleSeat.None;
+            if (!veh.IsSafeExist()) return VehicleSeat.None;
             var seatList = new[]
             {VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear};
-  
+
             foreach (var s in seatList)
             {
                 var p = veh.GetPedOnSeat(s);
@@ -131,7 +134,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             return VehicleSeat.None;
         }
-
     }
-    
 }

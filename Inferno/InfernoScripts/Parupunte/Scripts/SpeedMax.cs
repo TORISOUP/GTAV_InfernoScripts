@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using UniRx;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
     [ParupunteDebug]
-    class SpeedMax:ParupunteScript
+    internal class SpeedMax : ParupunteScript
     {
         public SpeedMax(ParupunteCore core) : base(core)
         {
@@ -19,7 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -29,18 +24,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
         }
 
-
         protected override void OnUpdate()
         {
             var radius = 50.0f;
             var player = core.PlayerPed;
             foreach (var vec in core.CachedVehicles.Where(
-                x => x.IsSafeExist() && x.IsInRangeOf(player.Position,radius)
+                x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius)
                 ))
             {
-                vec.Speed = vec.Handle%10 == 0 ? -200 : 200;
+                vec.Speed = vec.Handle % 10 == 0 ? -200 : 200;
             }
-
         }
     }
 }

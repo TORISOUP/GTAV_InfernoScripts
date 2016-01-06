@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA;
+﻿using GTA;
 using GTA.Math;
-using GTA.Native;
 using Inferno.ChaosMode;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 
 namespace Inferno
@@ -43,9 +37,8 @@ namespace Inferno
                     }
                 });
 
-
             CreateTickAsObservable(1000)
-               .Where(_ => IsActive && Random.Next(0,100) <= 15)
+               .Where(_ => IsActive && Random.Next(0, 100) <= 15)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -54,7 +47,7 @@ namespace Inferno
             try
             {
                 var player = PlayerPed;
-                if(!player.IsSafeExist()) return;
+                if (!player.IsSafeExist()) return;
 
                 var playerPosition = player.Position;
                 var range = 30;
@@ -67,15 +60,15 @@ namespace Inferno
                 }
 
                 var targetPosition = playerPosition + addPosition;
-                var direction = new Vector3(1,0,2);
+                var direction = new Vector3(1, 0, 2);
                 direction.Normalize();
-                var createPosition = targetPosition + direction*100;
+                var createPosition = targetPosition + direction * 100;
 
                 //たまに花火
                 var weapon = Random.Next(0, 100) < 3 ? (int)Weapon.FIREWORK : (int)Weapon.RPG;
 
                 var ped = NativeFunctions.CreateRandomPed(createPosition);
-                if(!ped.IsSafeExist()) return;
+                if (!ped.IsSafeExist()) return;
                 ped.MarkAsNoLongerNeeded();
                 if (!ped.IsSafeExist()) return;
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
@@ -90,12 +83,10 @@ namespace Inferno
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
 
                 //Aさん削除
-                StartCoroutine(MeteoShoot(ped,targetPosition, 8.0f));
-
+                StartCoroutine(MeteoShoot(ped, targetPosition, 8.0f));
             }
             catch (Exception ex)
             {
-
                 LogWrite(ex.ToString());
             }
         }
@@ -106,7 +97,7 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<object>  CreateMeteoLight(Vector3 position, float durationSecond)
+        private IEnumerable<object> CreateMeteoLight(Vector3 position, float durationSecond)
         {
             meteoLightPositionList.Add(position);
             yield return WaitForSeconds(durationSecond);
@@ -119,11 +110,11 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<object> MeteoShoot(Ped ped,Vector3 targetPosition, float durationSecond)
+        private IEnumerable<object> MeteoShoot(Ped ped, Vector3 targetPosition, float durationSecond)
         {
             ped.TaskShootAtCoord(targetPosition, 1000);
             yield return WaitForSeconds(durationSecond);
-            if(!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist()) yield break;
             ped.Delete();
         }
     }

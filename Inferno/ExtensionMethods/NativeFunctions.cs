@@ -1,19 +1,15 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
 using Hash = GTA.Native.Hash;
 
 namespace Inferno
 {
-
     public static class NativeFunctions
     {
         public static bool IsGamePadPressed(this Script script, GameKey gameKey)
         {
-            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int) gameKey);
+            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
         }
 
         /// <summary>
@@ -23,8 +19,8 @@ namespace Inferno
         /// <returns>左スティックのX軸とY軸を-127～127で返す</returns>
         public static Vector2 GetStickValue(this Script script)
         {
-            var LY = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LY) - 127;
-            var LX = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int) GameKey.LX) - 127;
+            var LY = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int)GameKey.LY) - 127;
+            var LX = Function.Call<int>(Hash.GET_CONTROL_VALUE, 0, (int)GameKey.LX) - 127;
             return new Vector2(LX, LY);
         }
 
@@ -83,7 +79,7 @@ namespace Inferno
         /// <returns>trueで実行中</returns>
         public static bool IsTaskActive(this Ped ped, PedTaskAction task)
         {
-            return Function.Call<bool>(Hash.GET_IS_TASK_ACTIVE, ped, (int) task);
+            return Function.Call<bool>(Hash.GET_IS_TASK_ACTIVE, ped, (int)task);
         }
 
         /// <summary>
@@ -97,7 +93,6 @@ namespace Inferno
 
             Function.Call(Hash.SET_PED_KEEP_TASK, toggle);
         }
-
 
         /// <summary>
         /// 指定座標に攻撃する
@@ -180,7 +175,7 @@ namespace Inferno
         /// <param name="vehicle"></param>
         public static void TaskDriveBy(this Ped ped, Ped target, FiringPattern firingPattern)
         {
-            if(!ped.IsSafeExist() || !target.IsSafeExist()) return;
+            if (!ped.IsSafeExist() || !target.IsSafeExist()) return;
             var p = target.Position;
             Function.Call(Hash.TASK_DRIVE_BY, ped, 0, 0, p.X, p.Y, p.Z, 10000.0, 0, 0, (int)firingPattern);
         }
@@ -195,7 +190,7 @@ namespace Inferno
         public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, GTA.VehicleSeat vehicleSeat)
         {
             if (!ped.IsSafeExist() || !vehicle.IsSafeExist()) return;
-            Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int) vehicleSeat, 1, 1, 0);
+            Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int)vehicleSeat, 1, 1, 0);
         }
 
         /// <summary>
@@ -205,9 +200,9 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="waypoint"></param>
         /// <param name="speed"></param>
-        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed,DrivingStyle drivingStyle)
+        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed, DrivingStyle drivingStyle)
         {
-            if(!vehicle.IsSafeExist() || !ped.IsSafeExist()) return;
+            if (!vehicle.IsSafeExist() || !ped.IsSafeExist()) return;
             Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, (int)drivingStyle, -1);
         }
 
@@ -227,9 +222,8 @@ namespace Inferno
         /// <param name="ped"></param>
         public static void TaskRappelFromHeli(this Ped ped)
         {
-            if(!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist()) return;
             Function.Call(Hash.TASK_RAPPEL_FROM_HELI, ped, 10.0f);
-
         }
 
         /// <summary>
@@ -241,7 +235,6 @@ namespace Inferno
         public static void SetIntoVehicle(this Ped ped, Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
         {
             Function.Call(Hash.SET_PED_INTO_VEHICLE, ped, vehicle, (int)vehicleSeat);
-
         }
 
         /// <summary>
@@ -415,7 +408,7 @@ namespace Inferno
 
         public static bool HasBeenDamagedBy(this Entity entity, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int) weapon, -1);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int)weapon, -1);
         }
 
         public static bool HasBeenDamagedByPed(this Entity entity, Ped target)
@@ -428,7 +421,6 @@ namespace Inferno
             return (Weapon)Function.Call<int>(Hash.GET_PED_CAUSE_OF_DEATH, ped);
         }
 
-
         /// <summary>
         /// テキストのフォント指定
         /// </summary>
@@ -436,7 +428,7 @@ namespace Inferno
         /// <param name="font">フォント指定</param>
         public static void SetTextFont(this Script script, int font)
         {
-            Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] {font});
+            Function.Call(Hash.SET_TEXT_FONT, new InputArgument[] { font });
         }
 
         /// <summary>
@@ -480,7 +472,7 @@ namespace Inferno
         /// <param name="isCenter">false:左寄せ？true:中央寄せ</param>
         public static void SetTextCentre(this Script script, bool isCenter)
         {
-            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] {isCenter ? 1 : 0});
+            Function.Call(Hash.SET_TEXT_CENTRE, new InputArgument[] { isCenter ? 1 : 0 });
         }
 
         /// <summary>
@@ -524,9 +516,9 @@ namespace Inferno
         public static void AddTextString(this Script script, string str)
         {
             //文字の種類?
-            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] {"STRING"});
+            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] { "STRING" });
             //テキストとして表示する文字列
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] {str});
+            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] { str });
         }
 
         /// <summary>
@@ -537,7 +529,6 @@ namespace Inferno
         /// <param name="y"></param>
         public static void DrawTextInSetPosition(this Script script, float x, float y)
         {
-            
             Function.Call(Hash._DRAW_TEXT, new InputArgument[]
             {
                 x,
@@ -556,7 +547,7 @@ namespace Inferno
         /// <param name="ped"></param>
         public static void ClearTasksImmediately(this Ped ped)
         {
-            Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, new InputArgument[] {ped});
+            Function.Call(Hash.CLEAR_PED_TASKS_IMMEDIATELY, new InputArgument[] { ped });
         }
 
         public static void SetToRagdoll(this Ped ped, int time1 = 0, int ragdollType = 0, int time2 = 0)
@@ -575,7 +566,6 @@ namespace Inferno
         public static void SetAllRandomPedsFlee(Player player, bool flag)
         {
             Function.Call(Hash.SET_ALL_RANDOM_PEDS_FLEE, player, flag);
-
         }
 
         /// <summary>

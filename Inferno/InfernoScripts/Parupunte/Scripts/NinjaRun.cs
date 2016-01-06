@@ -1,13 +1,12 @@
-﻿using System;
-
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.Parupunte;
+using UniRx;
 
 namespace Inferno
 {
-    class NinjaRun : ParupunteScript
+    internal class NinjaRun : ParupunteScript
     {
         public NinjaRun(ParupunteCore core) : base(core)
         {
@@ -15,9 +14,9 @@ namespace Inferno
 
         public override string Name => "バリキ・ジツ";
         public override string EndMessage => "もうオシマイだ！";
+
         public override void OnSetUp()
         {
-            
         }
 
         protected override void OnFinished()
@@ -45,7 +44,7 @@ namespace Inferno
                         0, 0);
                     Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, core.PlayerPed, true);
                     var hp = core.PlayerPed.ForwardVector;
-                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X*1, hp.Y*1, hp.Z*1, 0, 0, 0, 1, false,
+                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
                         true, true, true, true);
                     Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
                         0, 0, 0);
@@ -55,7 +54,7 @@ namespace Inferno
 
             var num = 0;
             this.UpdateAsObservable
-                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num%10 == 0)
+                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num % 10 == 0)
                 .Subscribe(_ =>
                 {
                     num++;
@@ -68,7 +67,7 @@ namespace Inferno
                 .Subscribe(input =>
                 {
                     var player = core.PlayerPed;
-                    player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input/127.0f)*0.2f)*player.Quaternion;
+                    player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input / 127.0f) * 0.2f) * player.Quaternion;
                 });
 
             this.UpdateAsObservable
@@ -77,7 +76,6 @@ namespace Inferno
                 .Where(x => !x)
                 .Subscribe(_ =>
                 {
-
                     SetAnimRate(core.PlayerPed, 1);
                     Function.Call(Hash.TASK_FORCE_MOTION_STATE, core.PlayerPed, 0xFFF7E7A4, 0);
                 });
@@ -96,7 +94,7 @@ namespace Inferno
 
         private void SetAnimRate(Ped ped, float rate)
         {
-            Function.Call(Hash.SET_ANIM_RATE, ped,(double) rate, 0.0, 0.0);
+            Function.Call(Hash.SET_ANIM_RATE, ped, (double)rate, 0.0, 0.0);
         }
 
         private int StartFire()
@@ -107,8 +105,8 @@ namespace Inferno
             var scale = 1.0f;
 
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
-             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_electrical_box",
-                    player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_L_Toe0, scale, 0, 0, 0);
+            Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_electrical_box",
+                   player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_L_Toe0, scale, 0, 0, 0);
 
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",

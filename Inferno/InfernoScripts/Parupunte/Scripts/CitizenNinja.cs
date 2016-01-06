@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class CitizenNinja : ParupunteScript
     {
         private Random random = new Random();
-        HashSet<int> ninjas = new HashSet<int>();
-        List<Ped> pedList = new List<Ped>(); 
+        private HashSet<int> ninjas = new HashSet<int>();
+        private List<Ped> pedList = new List<Ped>();
+
         public CitizenNinja(ParupunteCore core) : base(core)
         {
         }
@@ -25,7 +23,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         protected override void OnFinished()
@@ -34,10 +31,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-
             ReduceCounter = new ReduceCounter(20000);
             AddProgressBar(ReduceCounter);
- 
+
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
@@ -84,7 +80,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private void SetAnimRate(Ped ped, float rate)
         {
-            Function.Call(Hash.SET_ANIM_RATE, ped, (double) rate, 0.0, 0.0);
+            Function.Call(Hash.SET_ANIM_RATE, ped, (double)rate, 0.0, 0.0);
         }
 
         private IEnumerable<object> DashCoroutine(Ped ped)
@@ -100,7 +96,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 if (random.Next(100) < 10)
                 {
-                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector,(float)(random.NextDouble()-0.5)) * ped.Quaternion;
+                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) * ped.Quaternion;
                 }
 
                 SetAnimRate(ped, 5.0f);
@@ -108,7 +104,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     0, 0);
                 Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, ped, true);
                 var hp = core.PlayerPed.ForwardVector;
-                Function.Call(Hash.APPLY_FORCE_TO_ENTITY, ped, hp.X*1, hp.Y*1, hp.Z*1, 0, 0, 0, 1, false,
+                Function.Call(Hash.APPLY_FORCE_TO_ENTITY, ped, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
                     true, true, true, true);
                 Function.Call(Hash.TASK_PLAY_ANIM, ped, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
                     0, 0, 0);
@@ -116,28 +112,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 yield return null;
             }
-
         }
-
 
         private void StartFire(Ped ped)
         {
-
             var offset = new Vector3(0.0f, 0.0f, 0.0f);
             var rotation = new Vector3(0.0f, 0.0f, 0.0f);
             var scale = 2.0f;
 
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_electrical_box",
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int) Bone.SKEL_L_Toe0, scale,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_L_Toe0, scale,
                 0, 0, 0);
 
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int) Bone.SKEL_R_Toe0, scale,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_R_Toe0, scale,
                 0, 0, 0);
-
         }
-
     }
 }

@@ -1,22 +1,15 @@
-﻿using System;
+﻿using GTA.Math;
 using System.Collections.Generic;
 using System.Linq;
-
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using GTA.Math;
-using GTA.Native;
 using UniRx;
 
 namespace Inferno
 {
     internal class CitizenRagdoll : InfernoScript
     {
-
         protected override void Setup()
         {
-
             OnKeyDownAsObservable
                 .Where(x => x.KeyCode == Keys.F8)
                 .Subscribe(_ =>
@@ -36,9 +29,9 @@ namespace Inferno
 
             foreach (var ped in peds)
             {
-                if(!ped.IsSafeExist() ) continue;
+                if (!ped.IsSafeExist()) continue;
                 ped.SetToRagdoll(100);
-                ped.ApplyForce(new Vector3(0,0,2));
+                ped.ApplyForce(new Vector3(0, 0, 2));
                 yield return null;
             }
         }

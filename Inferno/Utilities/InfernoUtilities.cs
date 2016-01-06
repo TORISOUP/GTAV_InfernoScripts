@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA.Math;
+﻿using GTA.Math;
+using System;
 
 namespace Inferno.Utilities
 {
@@ -11,7 +7,8 @@ namespace Inferno.Utilities
     public static class InfernoUtilities
     {
         private static Random random;
-         static InfernoUtilities()
+
+        static InfernoUtilities()
         {
             random = new Random();
         }

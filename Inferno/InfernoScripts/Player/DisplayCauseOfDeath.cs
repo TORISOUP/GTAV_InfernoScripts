@@ -1,26 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
-using GTA.Native;
+using System.Drawing;
+using UniRx;
 
 namespace Inferno
 {
     /// <summary>
     /// 死因表示
     /// </summary>
-    class DisplayCauseOfDeath : InfernoScript
+    internal class DisplayCauseOfDeath : InfernoScript
     {
         private UIContainer _mContainer;
         private int _screenHeight;
         private int _screenWidth;
 
-        private Vector2 _textPositionScale = new Vector2(0.5f,0.75f);
-
+        private Vector2 _textPositionScale = new Vector2(0.5f, 0.75f);
 
         protected override void Setup()
         {
@@ -43,20 +37,19 @@ namespace Inferno
                 {
                     _mContainer.Items.Clear();
                     if (isAlive) return;
-                    
+
                     //死んでいたら死因を出す
                     var damageWeapon = PlayerPed.GetCauseOfDeath();
-                    if(damageWeapon==0)return;
-                        
+                    if (damageWeapon == 0) return;
+
                     var damageName = damageWeapon.ToString();
                     if (PlayerPed.GetKiller() == PlayerPed) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
-                        new Point((int)(_screenWidth * _textPositionScale.X),(int)(_screenHeight*_textPositionScale.Y)),
+                        new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
                         1.0f, Color.White, 0, true);
 
                     _mContainer.Items.Add(text);
                 });
-
         }
     }
 }

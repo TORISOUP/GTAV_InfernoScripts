@@ -2,9 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Inferno
 {
@@ -37,10 +34,10 @@ namespace Inferno
         {
             lock (_lockObject)
             {
-                var id = unchecked (_coroutineIdIndex++);
+                var id = unchecked(_coroutineIdIndex++);
                 //WaitForSecondsを展開できるように
                 var enumrator = coroutine
-                    .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>) x) : new object[] {x}).GetEnumerator();
+                    .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>)x) : new object[] { x }).GetEnumerator();
                 _coroutines.Add(id, enumrator);
                 enumrator.MoveNext();
                 return id;
@@ -68,7 +65,6 @@ namespace Inferno
         {
             return _coroutines.ContainsKey(id);
         }
-
 
         /// <summary>
         /// コルーチンの処理を行う

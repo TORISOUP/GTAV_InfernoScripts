@@ -2,7 +2,7 @@
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class VehiclePetrolTanksGetFire : ParupunteScript
+    internal class VehiclePetrolTanksGetFire : ParupunteScript
     {
         public VehiclePetrolTanksGetFire(ParupunteCore core) : base(core)
         {
@@ -12,7 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()

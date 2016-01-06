@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
+using System;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -25,7 +22,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             StartCoroutine(AirPlaneCoroutine());
         }
-
 
         /// <summary>
         /// 飛行機を召喚する
@@ -80,7 +76,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var length = delta.Length();
 
                 //プレイヤとの平面上の距離が80m以内になったら投棄
-                if (length < 80)  break;
+                if (length < 80) break;
 
                 yield return null;
             }
@@ -92,10 +88,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 plane.EngineHealth = 0;
 
                 //ボルガ博士投棄
-                StartCoroutine(VolgaCoroutine(plane.Position + new Vector3(0,0,-2),plane.Velocity));
+                StartCoroutine(VolgaCoroutine(plane.Position + new Vector3(0, 0, -2), plane.Velocity));
             }
 
-            if(ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
         }
 
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
@@ -104,7 +100,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 100.0, -1.0, -1.0, 100, 100);
         }
 
-        private IEnumerable<object> VolgaCoroutine(Vector3 createPosition,Vector3 forward)
+        private IEnumerable<object> VolgaCoroutine(Vector3 createPosition, Vector3 forward)
         {
             var volga = GTA.World.CreatePed(new Model(PedHash.Solomon), createPosition);
             if (!volga.IsSafeExist())
@@ -157,8 +153,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var p in peds)
             {
-                if(!p.IsSafeExist())continue;
-                if(p.IsCutsceneOnlyPed()) continue;
+                if (!p.IsSafeExist()) continue;
+                if (p.IsCutsceneOnlyPed()) continue;
 
                 var dir = p.Position - centerPos;
                 var lenght = dir.Length();
@@ -168,7 +164,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 float power = 50;
                 if (lenght <= 30) power = 200;
-                if (30 < lenght && lenght <=70) power = 100;
+                if (30 < lenght && lenght <= 70) power = 100;
                 p.ApplyForce(dir * power);
             }
 
@@ -182,9 +178,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 float power = 30;
                 if (lenght <= 30) power = 70;
                 if (30 < lenght && lenght <= 70) power = 50;
-                w.ApplyForce(dir*power,Vector3.RandomXYZ()*10.0f);
+                w.ApplyForce(dir * power, Vector3.RandomXYZ() * 10.0f);
             }
-
         }
     }
 }

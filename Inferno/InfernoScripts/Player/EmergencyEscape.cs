@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
+using UniRx;
 
 namespace Inferno
 {
@@ -25,18 +20,17 @@ namespace Inferno
         private void EscapeVehicle()
         {
             var player = PlayerPed;
-            if(!player.IsInVehicle()) return;
+            if (!player.IsInVehicle()) return;
             var playerVec = player.CurrentVehicle;
-            if(!playerVec.IsSafeExist())return;
+            if (!playerVec.IsSafeExist()) return;
 
             Game.Player.CanControlRagdoll = true;
             player.CanRagdoll = true;
 
             player.ClearTasksImmediately();
-            player.Position += new Vector3(0,0,0.5f);
+            player.Position += new Vector3(0, 0, 0.5f);
             player.SetToRagdoll();
             player.ApplyForce(new Vector3(0, 0, 8.0f) + playerVec.Velocity);
-            
         }
     }
 }

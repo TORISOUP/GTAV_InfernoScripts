@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inferno.Utilities
 {
@@ -27,7 +23,7 @@ namespace Inferno.Utilities
 
         public void RunOnCurrentThread()
         {
-            if(_mQueue.Count==0) return;
+            if (_mQueue.Count == 0) return;
             KeyValuePair<SendOrPostCallback, object> workItem;
             while (_mQueue.TryDequeue(out workItem))
                 workItem.Key(workItem.Value);
@@ -35,9 +31,6 @@ namespace Inferno.Utilities
 
         public void Complete()
         {
-
         }
-
     }
-
 }

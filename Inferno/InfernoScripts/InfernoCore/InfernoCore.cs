@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using UniRx;
-
-
-using UniRx;
+﻿using GTA;
+using System;
 using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Native;
-
+using UniRx;
 
 namespace Inferno
 {
@@ -24,12 +18,14 @@ namespace Inferno
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
 
         private readonly BehaviorSubject<Ped[]> _pedsNearPlayer = new BehaviorSubject<Ped[]>(default(Ped[]));
+
         /// <summary>
         /// 周辺市民
         /// </summary>
         public UniRx.IObservable<Ped[]> PedsNearPlayer => _pedsNearPlayer.AsObservable();
 
         private readonly BehaviorSubject<Vehicle[]> _vehiclesNearPlayer = new BehaviorSubject<Vehicle[]>(default(Vehicle[]));
+
         /// <summary>
         /// 周辺車両
         /// </summary>
@@ -37,7 +33,7 @@ namespace Inferno
 
         private BehaviorSubject<Ped> playerPed = new BehaviorSubject<Ped>(default(Ped));
 
-        public UniRx.IObservable<Ped> PlayerPed => playerPed.AsObservable(); 
+        public UniRx.IObservable<Ped> PlayerPed => playerPed.AsObservable();
 
         /// <summary>
         /// 25ms周期のTick
@@ -69,7 +65,6 @@ namespace Inferno
                 .Multicast(OnKeyDownSubject)
                 .Connect();
 
-
             //市民と車両の更新
             OnTickAsObservable
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
@@ -94,7 +89,6 @@ namespace Inferno
                 LogWrite(e.StackTrace);
             }
         }
-
 
         public void LogWrite(string message)
         {

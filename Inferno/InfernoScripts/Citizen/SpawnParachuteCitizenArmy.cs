@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
-using GTA.Native;
 using Inferno.ChaosMode;
+using System;
+using System.Collections.Generic;
+using UniRx;
 
 namespace Inferno
 {
@@ -16,7 +12,6 @@ namespace Inferno
     /// </summary>
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
-
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("carmy")
@@ -35,15 +30,15 @@ namespace Inferno
 
         private void CreateParachutePed()
         {
-            if(!PlayerPed.IsSafeExist())return;
+            if (!PlayerPed.IsSafeExist()) return;
             var playerPosition = PlayerPed.Position;
 
             var velocity = PlayerPed.Velocity;
             //プレイヤが移動中ならその進行先に生成する
             var ped =
-                NativeFunctions.CreateRandomPed(playerPosition + 3*velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
-            
-            if(!ped.IsSafeExist()) return;
+                NativeFunctions.CreateRandomPed(playerPosition + 3 * velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
+
+            if (!ped.IsSafeExist()) return;
 
             ped.MarkAsNoLongerNeeded();
             ped.Task.ClearAllImmediately();
@@ -63,7 +58,7 @@ namespace Inferno
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        IEnumerable<Object>  PedOnGroundedCheck(Ped ped)
+        private IEnumerable<Object> PedOnGroundedCheck(Ped ped)
         {
             //市民無敵化
             ped.IsInvincible = true;
@@ -73,7 +68,7 @@ namespace Inferno
                 yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
-                if(!ped.IsSafeExist()) yield break;
+                if (!ped.IsSafeExist()) yield break;
                 if (ped.IsDead) yield break;
 
                 //着地していたら監視終了
@@ -81,7 +76,6 @@ namespace Inferno
                 {
                     break;
                 }
-                
             }
 
             if (ped.IsSafeExist())
@@ -91,6 +85,5 @@ namespace Inferno
                 ped.MarkAsNoLongerNeeded();
             }
         }
-
     }
 }

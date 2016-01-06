@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-using GTA; using UniRx;
-using GTA.Native;
+﻿using GTA;
+using UniRx;
 
 namespace Inferno
 {
-    class ArmorAndHealthSupplier : InfernoScript
+    internal class ArmorAndHealthSupplier : InfernoScript
     {
-
         protected override void Setup()
         {
-
             CreateInputKeywordAsObservable("armor")
                 .Subscribe(_ =>
                 {
@@ -41,7 +33,7 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealth());
         }
-        
+
         /// <summary>
         /// 体力とアーマー回復
         /// </summary>

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GTA;
+using GTA.Native;
+using System;
 using System.IO;
 using System.Linq;
 using System.Media;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Native;
+using UniRx;
 
 namespace Inferno
 {
-    class SpecialAbilityBgm : InfernoScript
+    internal class SpecialAbilityBgm : InfernoScript
     {
         private string[] filePaths;
         private SoundPlayer soundPlayer;
@@ -22,7 +19,7 @@ namespace Inferno
 
             if (filePaths.Length <= 0) return;
 
-            soundPlayer = new SoundPlayer {SoundLocation = filePaths[Random.Next(filePaths.Length)]};
+            soundPlayer = new SoundPlayer { SoundLocation = filePaths[Random.Next(filePaths.Length)] };
 
             CreateInputKeywordAsObservable("sbmg")
                 .Subscribe(_ =>
@@ -51,7 +48,6 @@ namespace Inferno
                         soundPlayer.LoadAsync();
                     }
                 });
-
         }
 
         /// <summary>
@@ -66,6 +62,5 @@ namespace Inferno
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
-
     }
 }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Player
 {
-    class Warp : InfernoScript
+    internal class Warp : InfernoScript
     {
         protected override void Setup()
         {
@@ -28,7 +24,7 @@ namespace Inferno.InfernoScripts.Player
                     if (PlayerPed.IsInVehicle())
                     {
                         var vec = PlayerPed.CurrentVehicle;
-                        if(!vec.IsSafeExist()) return;
+                        if (!vec.IsSafeExist()) return;
                         targetEntity = vec;
                     }
                     else
@@ -39,7 +35,6 @@ namespace Inferno.InfernoScripts.Player
                     targetEntity.Position = targetPos;
                     targetEntity.ApplyForce(new Vector3(0, 0, 10));
                 });
-
         }
     }
 }
