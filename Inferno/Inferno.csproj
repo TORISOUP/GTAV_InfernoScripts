@@ -273,6 +273,8 @@
     <Compile Include="UniRx\Operators\Where.cs" />
     <Compile Include="UniRx\Operators\Zip.cs" />
     <Compile Include="UniRx\Pair.cs" />
+    <Compile Include="UniRx\ReactiveCollection.cs" />
+    <Compile Include="UniRx\ReactiveProperty.cs" />
     <Compile Include="UniRx\Schedulers\CurrentThreadScheduler.cs" />
     <Compile Include="UniRx\Schedulers\ImmediateScheduler.cs" />
     <Compile Include="UniRx\Schedulers\IScheduler.cs" />
