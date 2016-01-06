@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
+﻿using GTA.Math;
 using GTA.Native;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class FloatingCar : ParupunteScript
+    internal class FloatingCar : ParupunteScript
     {
-
         public FloatingCar(ParupunteCore core) : base(core)
         {
         }
@@ -21,15 +16,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-
         }
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20*1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            
         }
 
         protected override void OnUpdate()

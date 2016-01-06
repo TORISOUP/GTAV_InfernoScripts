@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
+﻿using GTA.Math;
 using Inferno.InfernoScripts.Parupunte;
+using System;
+using System.Linq;
+using UniRx;
 
 namespace Inferno
 {
-    class KuruKuru : ParupunteScript
+    internal class KuruKuru : ParupunteScript
     {
-
         private IDisposable mainStream;
+
         public KuruKuru(ParupunteCore core) : base(core)
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
@@ -47,12 +43,11 @@ namespace Inferno
             });
 
             //TODO 別の場所にHookする
-            mainStream = 
+            mainStream =
             DrawingCore.OnDrawingTickAsObservable
                 .TakeUntil(ReduceCounter.OnFinishedAsync)
                 .Subscribe(_ =>
                 {
-
                     var player = core.PlayerPed;
                     var targets = core.CachedVehicles
                         .Where(x => x.IsSafeExist()
@@ -63,12 +58,12 @@ namespace Inferno
                     var rate = (1.0f - ReduceCounter.Rate);
                     foreach (var veh in targets)
                     {
-                        if(!veh.IsSafeExist()) continue;
-                        veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;  
+                        if (!veh.IsSafeExist()) continue;
+                        veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;
                         if (rate > 0.5f)
                         {
                             veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
-                            veh.Speed = 40.0f*2.0f*(rate - 0.5f);
+                            veh.Speed = 40.0f * 2.0f * (rate - 0.5f);
                         }
                     }
                 });

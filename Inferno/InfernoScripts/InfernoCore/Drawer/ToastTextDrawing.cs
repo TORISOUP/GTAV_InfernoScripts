@@ -1,8 +1,8 @@
-﻿using System;
+﻿using GTA;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-
-using GTA; using UniRx;
+using UniRx;
 
 namespace Inferno
 {
@@ -13,6 +13,7 @@ namespace Inferno
     {
         private UIContainer _mContainer = null;
         private int _coroutineId = -1;
+
         //画面表示を消すまでの残りCoroutineループ回数
         private int _currentTickCounter = 0;
 
@@ -43,13 +44,12 @@ namespace Inferno
             if (_coroutineId >= 0)
             {
                 //既に実行中のがあれば止める
-                StopCoroutine((uint) _coroutineId);
+                StopCoroutine((uint)_coroutineId);
             }
-            _coroutineId = (int) StartCoroutine(DrawTextEnumerator(text, time));
-
+            _coroutineId = (int)StartCoroutine(DrawTextEnumerator(text, time));
         }
 
-        private IEnumerable<Object>  DrawTextEnumerator(string text, float time)
+        private IEnumerable<Object> DrawTextEnumerator(string text, float time)
         {
             _mContainer.Items.Clear();
             _currentTickCounter = (int)(time * 10);

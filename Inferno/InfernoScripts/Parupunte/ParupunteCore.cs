@@ -1,23 +1,22 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
+using GTA.Native;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using UniRx;
-
-
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
-    class ParupunteCore : InfernoScript
+    internal class ParupunteCore : InfernoScript
     {
-        TCPManager tcpManager = new TCPManager();
+        private TCPManager tcpManager = new TCPManager();
+
         /// <summary>
         /// パルプンテスクリプト一覧
         /// </summary>
@@ -27,6 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// デバッグ用
         /// </summary>
         private Type[] _debugParuputeScripts;
+
         protected override int TickInterval { get; } = 100;
 
         private UIContainer _mContainer;
@@ -44,11 +44,12 @@ namespace Inferno.InfernoScripts.Parupunte
             timerText = new TimerUiTextManager(this);
 
             #region ParunteScripts
+
             //RefrectionでParupunteScriptを継承しているクラスをすべて取得する
             _parupunteScritpts =
                 Assembly.GetExecutingAssembly()
                     .GetTypes()
-                    .Where(type => type.BaseType != null && type.BaseType == typeof (ParupunteScript))
+                    .Where(type => type.BaseType != null && type.BaseType == typeof(ParupunteScript))
                     .Where(x =>
                     {
                         var attribute = x.GetCustomAttribute<ParupunteDebug>();
@@ -62,7 +63,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 return attribute != null && attribute.IsDebug;
             }).ToArray();
 
-            #endregion
+            #endregion ParunteScripts
 
             #region EventHook
 
@@ -77,9 +78,10 @@ namespace Inferno.InfernoScripts.Parupunte
             OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
                 .Subscribe(_ => ParupunteStart());
 
-            #endregion
+            #endregion EventHook
 
             #region Drawer
+
             var screenResolution = NativeFunctions.GetScreenResolution();
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
@@ -99,18 +101,16 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ => _mContainer.Items.Clear());
 
             this.OnDrawingTickAsObservable
-                .Where(_=> _mContainer.Items.Any())
+                .Where(_ => _mContainer.Items.Any())
                 .Subscribe(_ => _mContainer.Draw());
 
-            #endregion
+            #endregion Drawer
 
             //IsonoManager.Instance.OnRecievedMessageAsObservable
             //    .Where(x => x.Contains("ぱるぷんて"))
             //    .ObserveOn(Context)
             //    .Subscribe(_ => ParupunteStart());
         }
-
-
 
         /// <summary>
         /// パルプンテの実行を開始する
@@ -130,13 +130,13 @@ namespace Inferno.InfernoScripts.Parupunte
                 //抽選
                 var scriptType = ChooseParupounteScript();
                 return Activator.CreateInstance(scriptType, this) as ParupunteScript;
-            },Scheduler.ThreadPool)
+            }, Scheduler.ThreadPool)
             .Retry(3)
-            .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
-            {
-                LogWrite(ex.ToString());
-                IsActive = false;
-            });
+            .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
+             {
+                 LogWrite(ex.ToString());
+                 IsActive = false;
+             });
         }
 
         /// <summary>
@@ -190,9 +190,9 @@ namespace Inferno.InfernoScripts.Parupunte
             }
 
             //名前を出してスタート
-            StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!",script.Name));
+            StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!", script.Name));
             yield return WaitForSeconds(2);
-            
+
             try
             {
                 script.OnStart();
@@ -239,17 +239,15 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// 画面に名前とかを出す
         /// </summary>
-        private IEnumerable<object> ParupunteDrawCoroutine(string callString ,string scriptname)
+        private IEnumerable<object> ParupunteDrawCoroutine(string callString, string scriptname)
         {
-
             //○はパルプンテを唱えた！の部分
-            timerText.Set(CreateUIText(callString),2.0f);
+            timerText.Set(CreateUIText(callString), 2.0f);
             var mess = new RequestDataPackage(callString);
             tcpManager.SendToAll(mess.ToJson());
 
             //2秒画面に出す
             yield return WaitForSeconds(2);
-
 
             //効果名
             timerText.Set(CreateUIText(scriptname), 3.0f);
@@ -258,44 +256,45 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //3秒画面に出す
             yield return WaitForSeconds(3);
-
         }
 
         /// <summary>
         /// テキストを表示する(ParupunteScript用)
         /// </summary>
-        public void DrawParupunteText(string text,float duration)
+        public void DrawParupunteText(string text, float duration)
         {
             timerText.Set(CreateUIText(text), duration);
         }
 
         private UIText CreateUIText(string text)
         {
-            return new UIText(text,new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
+            return new UIText(text, new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
                0.8f, Color.White, 0, true);
         }
 
         private string GetPlayerName()
         {
-            var hash = (PedHash) PlayerPed.Model.Hash;
+            var hash = (PedHash)PlayerPed.Model.Hash;
             switch (hash)
             {
                 case PedHash.Trevor:
                     return Game.GetGXTEntry("BLIP_TREV");
+
                 case PedHash.Michael:
                     return Game.GetGXTEntry("BLIP_MICHAEL");
+
                 case PedHash.Franklin:
                     return Game.GetGXTEntry("BLIP_FRANKLIN");
+
                 default:
                     return hash.ToString();
             }
         }
 
-
         /// <summary>
         /// コルーチンの実行をCoreに委託する
         /// </summary>
-        public uint RegisterCoroutine(IEnumerable<object> coroutine )
+        public uint RegisterCoroutine(IEnumerable<object> coroutine)
         {
             return StartCoroutine(coroutine);
         }
@@ -325,7 +324,7 @@ namespace Inferno.InfernoScripts.Parupunte
         public void AddProgressBar(ReduceCounter reduceCounter)
         {
             var prgoressbarData = new ProgressBarData(reduceCounter,
-                new Point(_screenWidth -10, _screenHeight -100), //画面右下
+                new Point(_screenWidth - 10, _screenHeight - 100), //画面右下
                 Color.FromArgb(200, 0, 127, 255),
                 Color.FromArgb(128, 0, 0, 0),
                 DrawType.TopToBottom, 10, 100, 2);

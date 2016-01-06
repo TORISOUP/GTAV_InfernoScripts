@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Inferno;
+﻿using Inferno;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 
 namespace InfernoTest
 {
-
     [TestClass]
     public class CoroutineSystemTest
     {
@@ -32,14 +31,13 @@ namespace InfernoTest
 
         private int actionCount = 0;
 
-        IEnumerable<Object> ExecuteEnumerator()
+        private IEnumerable<Object> ExecuteEnumerator()
         {
             actionCount++;
             yield return null;
             actionCount++;
             yield return null;
         }
-
 
         [TestMethod]
         public void AddCoroutine時に最初のコルーチンが実行される()
@@ -137,7 +135,6 @@ namespace InfernoTest
                 Assert.IsFalse(testCoroutineSystem.ContainsCoroutine(id));
             }
         }
-
 
         [TestMethod]
         public void NestしたIEnumerableを展開して実行できる()

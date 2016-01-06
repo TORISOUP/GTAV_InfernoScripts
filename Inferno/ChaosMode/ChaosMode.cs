@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UniRx;
-using System.Windows.Forms;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using UniRx;
 
 namespace Inferno.ChaosMode
 {
@@ -18,7 +18,8 @@ namespace Inferno.ChaosMode
         /// カオス化済み市民一覧
         /// </summary>
         private HashSet<int> chaosedPedList = new HashSet<int>();
-        private List<uint> coroutineIds = new List<uint>(); 
+
+        private List<uint> coroutineIds = new List<uint>();
 
         /// <summary>
         /// WeaponProvider
@@ -32,8 +33,8 @@ namespace Inferno.ChaosMode
 
         private MissionCharacterTreatmentType currentTreatType =
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
-        private MissionCharacterTreatmentType nextTreatType;
 
+        private MissionCharacterTreatmentType nextTreatType;
 
         protected override int TickInterval => 100;
 
@@ -62,7 +63,6 @@ namespace Inferno.ChaosMode
                     {
                         DrawText("ChaosMode:Off", 3.0f);
                     }
-
                 });
 
             nextTreatType = currentTreatType;
@@ -108,18 +108,16 @@ namespace Inferno.ChaosMode
             CreateTickAsObservable(1000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
-
         }
-
 
         private void CitizenChaos()
         {
-            if(!PlayerPed.IsSafeExist())return;
+            if (!PlayerPed.IsSafeExist()) return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
             var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius);
 
-            foreach (var ped in nearPeds.Where(x =>x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 var id = StartCoroutine(ChaosPedAction(ped));
@@ -144,13 +142,13 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerable<Object>  ChaosPedAction(Ped ped)
+        private IEnumerable<Object> ChaosPedAction(Ped ped)
         {
             yield return RandomWait();
 
             if (!ped.IsSafeExist()) yield break;
             var pedId = ped.Handle;
-            
+
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
             var equipedWeapon = GiveWeaponTpPed(ped);
 
@@ -212,7 +210,7 @@ namespace Inferno.ChaosMode
                 else
                 {
                     //適当に待機
-                    foreach (var s in WaitForSeconds(2 + (float) Random.NextDouble()*3))
+                    foreach (var s in WaitForSeconds(2 + (float)Random.NextDouble() * 3))
                     {
                         if (ped.IsSafeExist() && ped.IsFleeing())
                         {
@@ -248,7 +246,7 @@ namespace Inferno.ChaosMode
                 CachedPeds.Concat(new[] { PlayerPed }).Where(
                     x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
-                    
+
             //100m以内の市民のうち、より近い人を選出
             var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(5).ToArray();
 
@@ -259,9 +257,9 @@ namespace Inferno.ChaosMode
 
         private void SetPedStatus(Ped ped)
         {
-            if(!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist()) return;
             //FIBミッションからのコピペ（詳細不明）
-            ped.SetCombatAttributes(9,false);
+            ped.SetCombatAttributes(9, false);
             ped.SetCombatAttributes(1, false);
             ped.SetCombatAttributes(3, true);
             ped.SetCombatAttributes(29, true);
@@ -287,9 +285,9 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                if(!ped.IsSafeExist()) return;
+                if (!ped.IsSafeExist()) return;
                 var target = GetTargetPed(ped);
-                if(!target.IsSafeExist()) return;
+                if (!target.IsSafeExist()) return;
                 ped.TaskSetBlockingOfNonTemporaryEvents(true);
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
@@ -323,7 +321,7 @@ namespace Inferno.ChaosMode
                         ped.Task.FightAgainst(target, 60000);
                     }
                 }
-                
+
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
                 //ped.SetPedKeepTask(true);
                 //ped.TaskSetBlockingOfNonTemporaryEvents(true);
@@ -341,8 +339,8 @@ namespace Inferno.ChaosMode
         /// <param name="ped"></param>
         private void PreventToFlee(Ped ped)
         {
-            ped.SetFleeAttributes(0,0);
-            ped.SetCombatAttributes(46,true);
+            ped.SetFleeAttributes(0, 0);
+            ped.SetCombatAttributes(46, true);
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
         }
 
@@ -357,10 +355,10 @@ namespace Inferno.ChaosMode
             {
                 if (!ped.IsSafeExist()) return Weapon.UNARMED;
                 //市民の武器を変更して良いか調べる
-                if(!chaosChecker.IsPedChangebalWeapon(ped)) return Weapon.UNARMED;
+                if (!chaosChecker.IsPedChangebalWeapon(ped)) return Weapon.UNARMED;
 
                 //車に乗っているなら車用の武器を渡す
-                var weapon =  ped.IsInVehicle()
+                var weapon = ped.IsInVehicle()
                     ? weaponProvider.GetRandomDriveByWeapon()
                     : weaponProvider.GetRandomWeaponExcludeClosedWeapon();
 
@@ -377,6 +375,5 @@ namespace Inferno.ChaosMode
             }
             return Weapon.UNARMED;
         }
-
     }
 }

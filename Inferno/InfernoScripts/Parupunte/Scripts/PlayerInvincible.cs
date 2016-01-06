@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UniRx;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class PlayerInvincible : ParupunteScript
+    internal class PlayerInvincible : ParupunteScript
     {
-
         public PlayerInvincible(ParupunteCore core) : base(core)
         {
         }
 
         public override string Name => "無敵";
         public override string EndMessage => "おわり";
+
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()

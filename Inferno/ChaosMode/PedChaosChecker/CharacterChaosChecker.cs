@@ -1,12 +1,10 @@
-﻿using System;
-using GTA; using UniRx;
-using GTA.Native;
+﻿using GTA;
+using System;
 
 namespace Inferno.ChaosMode
 {
     public class CharacterChaosChecker
     {
-
         /// <summary>
         /// ミッションキャラの武器を変更するか
         /// </summary>
@@ -16,7 +14,6 @@ namespace Inferno.ChaosMode
         /// ミッションキャラのカオス化
         /// </summary>
         public MissionCharacterTreatmentType MissionCharacterTreatment { get; set; }
-
 
         public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment, bool isChangeMissonCharacterWeapon)
         {
@@ -41,7 +38,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueで武器を取り替えて良い</returns>
         public bool IsPedChangebalWeapon(Ped ped)
         {
-            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer 
+            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer
                 && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
         }
 
@@ -52,9 +49,8 @@ namespace Inferno.ChaosMode
         /// <returns>trueでユニークキャラ</returns>
         public bool IsUniqueCharacter(uint pedHash)
         {
-            return Enum.IsDefined(typeof (UniqueCharacters), pedHash);
+            return Enum.IsDefined(typeof(UniqueCharacters), pedHash);
         }
-
 
         /// <summary>
         /// 対象の市民がミッションキャラだった時にカオス化してよいか判定する
@@ -71,14 +67,15 @@ namespace Inferno.ChaosMode
             {
                 case MissionCharacterTreatmentType.AffectAllCharacter:
                     return true;
+
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
                     return !IsUniqueCharacter((uint)ped.Model.Hash); //ユニークキャラじゃないならカオス化
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
+
                 default:
                     return false;
             }
-
         }
 
         private enum UniqueCharacters : uint

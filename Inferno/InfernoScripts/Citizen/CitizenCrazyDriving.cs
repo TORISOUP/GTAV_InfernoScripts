@@ -1,7 +1,7 @@
-﻿using System;
+﻿using GTA;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTA; using UniRx;
 using UniRx;
 
 namespace Inferno
@@ -12,8 +12,7 @@ namespace Inferno
     internal class CitizenCrazyDriving : InfernoScript
     {
         private readonly float PlayerAroundDistance = 300f;
-        private HashSet<Entity> affectPeds = new HashSet<Entity>(); 
-
+        private HashSet<Entity> affectPeds = new HashSet<Entity>();
 
         protected override void Setup()
         {
@@ -22,7 +21,6 @@ namespace Inferno
                 {
                     IsActive = !IsActive;
                     DrawText("CitizenCrazyDriving:" + IsActive, 3.0f);
-
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -46,7 +44,6 @@ namespace Inferno
                                                     && (x.Position - PlayerPed.Position).Length() <= PlayerAroundDistance)
                 .Select(x => x.GetPedOnSeat(VehicleSeat.Driver))
                 .Where(x => x.IsSafeExist() && !affectPeds.Contains(x));
-
 
             foreach (var driver in drivers)
             {

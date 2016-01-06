@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 
 namespace Inferno.ChaosMode
 {
@@ -21,7 +16,7 @@ namespace Inferno.ChaosMode
         {
             if (ped.IsSafeExist())
             {
-                //所持金が555だとカオス化しないキャラクタという意味にする 
+                //所持金が555だとカオス化しないキャラクタという意味にする
                 ped.SetPedMoney(toggle ? 555 : 0);
             }
         }

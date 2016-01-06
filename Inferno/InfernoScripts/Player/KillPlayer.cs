@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
+using System;
+using UniRx;
 
 namespace Inferno
 {
     /// <summary>
     /// 自殺する
     /// </summary>
-    class KillPlayer:InfernoScript
+    internal class KillPlayer : InfernoScript
     {
         protected override void Setup()
         {
@@ -26,7 +23,7 @@ namespace Inferno
                     var z = Random.NextDouble() - 0.5;
                     var randomVector = new Vector3((float)x, (float)y, (float)z);
                     randomVector.Normalize();
-                    PlayerPed.ApplyForce(randomVector*100);
+                    PlayerPed.ApplyForce(randomVector * 100);
                 });
         }
     }

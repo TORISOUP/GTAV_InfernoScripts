@@ -1,16 +1,14 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class Gochiusa : ParupunteScript
+    internal class Gochiusa : ParupunteScript
     {
-        private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>(); 
+        private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
 
         public Gochiusa(ParupunteCore core) : base(core)
         {
@@ -24,7 +22,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(15 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-
         }
 
         protected override void OnUpdate()
@@ -52,23 +49,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             yield return core.CreateRadomWait();
             while (!ReduceCounter.IsCompleted && v.IsSafeExist())
             {
-                if(!v.IsSafeExist() || !v.IsAlive) yield break;
+                if (!v.IsSafeExist() || !v.IsAlive) yield break;
                 if (!v.IsInRangeOf(core.PlayerPed.Position, 30.0f))
                 {
                     yield return null;
                     continue;
                 }
 
-                var toPlayer =  core.PlayerPed.Position - v.Position;
+                var toPlayer = core.PlayerPed.Position - v.Position;
                 toPlayer.Normalize();
                 var power = v.IsInRangeOf(core.PlayerPed.Position, 7) ? 0 : 2;
-                v.ApplyForce(Vector3.WorldUp*10 + toPlayer * power, Vector3.RandomXYZ()*10);
+                v.ApplyForce(Vector3.WorldUp * 10 + toPlayer * power, Vector3.RandomXYZ() * 10);
 
                 foreach (var w in WaitForSeconds(0.4f))
                 {
-                    v.ApplyForce(Vector3.WorldDown*5);
-  
-                      yield return null;
+                    v.ApplyForce(Vector3.WorldDown * 5);
+
+                    yield return null;
                 }
             }
         }

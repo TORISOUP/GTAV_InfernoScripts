@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
+using System.Collections.Generic;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteDebug]
-    class Hitohanabi : ParupunteScript
+    internal class Hitohanabi : ParupunteScript
     {
-
         public Hitohanabi(ParupunteCore core) : base(core)
         {
         }
@@ -22,7 +20,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -31,25 +28,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             //コルーチン起動
             StartCoroutine(HitohanabiCoroutine());
-            
         }
 
         private IEnumerable<object> HitohanabiCoroutine()
         {
-
             //プレイや周辺の15m上空を設定
             var targetPosition = core.PlayerPed.Position.Around(20) + new Vector3(0, 0, 15);
             var pedList = new HashSet<Ped>();
 
             //タイマが終わるまでカウントし続ける
-            while(!ReduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted)
             {
                 foreach (
                     var targetPed in
                         core.CachedPeds.Where(
-                            x =>x.IsSafeExist() 
-                            && x.IsAlive                             
-                            && x.IsHuman 
+                            x => x.IsSafeExist()
+                            && x.IsAlive
+                            && x.IsHuman
                             && !x.IsCutsceneOnlyPed()
                             && x.IsInRangeOf(core.PlayerPed.Position, 50))
                     )
@@ -62,10 +57,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
                     }
-
                 }
 
-                foreach (var targetPed in pedList.Where(x=>x.IsSafeExist()))
+                foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
                 {
                     //すいこむ
                     var direction = targetPosition - targetPed.Position;
@@ -75,7 +69,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     if (lenght > 5)
                     {
                         direction.Normalize();
-                        targetPed.ApplyForce(direction*lenght.Clamp(0, 5)*4);
+                        targetPed.ApplyForce(direction * lenght.Clamp(0, 5) * 4);
                     }
                 }
                 yield return null;
@@ -91,6 +85,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //終了
             ParupunteEnd();
-        } 
+        }
     }
 }

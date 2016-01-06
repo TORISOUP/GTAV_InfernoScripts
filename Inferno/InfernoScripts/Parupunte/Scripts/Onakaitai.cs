@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class Onakaitai : ParupunteScript
+    internal class Onakaitai : ParupunteScript
     {
-        readonly string petroEffect = "ent_sht_petrol";
+        private readonly string petroEffect = "ent_sht_petrol";
 
         private bool AffectAllPed = false;
 
-        private List<Ped> targetPeds = new List<Ped>(); 
-
+        private List<Ped> targetPeds = new List<Ped>();
 
         public Onakaitai(ParupunteCore core) : base(core)
         {
-
         }
 
         public override string Name => AffectAllPed ? "みんなおなかいたい" : "おなかいたい";
@@ -46,8 +42,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
             }
 
-
-            
             if (AffectAllPed)
             {
                 targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
@@ -63,7 +57,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //終わったら着火する
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in targetPeds.Where(x=>x.IsSafeExist()&&x.IsAlive))
+                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
                 {
                     Ignition(ped);
                 }
@@ -74,7 +68,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> OilCoroutine(Ped ped)
         {
-
             while (!ReduceCounter.IsCompleted)
             {
                 CreateEffect(ped, petroEffect);
@@ -82,9 +75,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
-        private void CreateEffect(Ped ped,string effect)
+        private void CreateEffect(Ped ped, string effect)
         {
-            if(!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist()) return;
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;

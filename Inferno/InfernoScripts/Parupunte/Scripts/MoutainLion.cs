@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Native;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class MoutainLion : ParupunteScript
+    internal class MoutainLion : ParupunteScript
     {
         public MoutainLion(ParupunteCore core) : base(core)
         {
@@ -19,7 +19,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> SpawnCharacter()
         {
-
             foreach (var s in WaitForSeconds(2))
             {
                 Spawn();
@@ -41,6 +40,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 lion.Task.FightAgainst(core.PlayerPed);
             }
         }
-
     }
 }

@@ -10,7 +10,7 @@ namespace Inferno
     /// <summary>
     /// 死亡時に音を鳴らす
     /// </summary>
-    class DeathSoundEffect : InfernoScript
+    internal class DeathSoundEffect : InfernoScript
     {
         private string[] filePath;
         private SoundPlayer soundPlayer;
@@ -55,7 +55,6 @@ namespace Inferno
             var path = filePath[Random.Next(filePath.Length)];
             soundPlayer.SoundLocation = path;
             soundPlayer.LoadAsync();
-
         }
     }
 }

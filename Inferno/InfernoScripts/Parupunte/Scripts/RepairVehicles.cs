@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+﻿using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class RepairVehicles : ParupunteScript
+    internal class RepairVehicles : ParupunteScript
     {
         public RepairVehicles(ParupunteCore core) : base(core)
         {
@@ -21,7 +13,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -42,7 +33,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 vehicle.Repair();
             }
 
-            if(player.IsInVehicle())
+            if (player.IsInVehicle())
             {
                 player.CurrentVehicle.Repair();
             }

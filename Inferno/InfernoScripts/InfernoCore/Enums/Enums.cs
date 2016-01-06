@@ -1,6 +1,4 @@
-﻿using GTA.Native;
-
-namespace Inferno
+﻿namespace Inferno
 {
     public enum GameKey
     {
@@ -39,7 +37,6 @@ namespace Inferno
         VehicleAccelerateKey = 232,
         VehicleForwardTiltKey = 209,
         VehicleBackwardTiltKey = 224
-        
     };
 
     public enum FiringPattern
@@ -94,7 +91,7 @@ namespace Inferno
         SNIPERRIFLE = 100416529,
         HEAVYSNIPER = 205991906,
         HEAVYPISTOL = -771403250,
-        HEAVYSHOTGUN= 984333226,
+        HEAVYSHOTGUN = 984333226,
         REMOTESNIPER = 856002082,
         GRENADELAUNCHER = -1568386805,
         GRENADELAUNCHER_SMOKE = 1305664598,
@@ -132,7 +129,7 @@ namespace Inferno
         MOW_OVER_BY_AIRCRAFT = -1323279794,
         HELI_CRASH = 341774354,
         FIRE = -544306709,
-        MUSCKET= -1466123874,
+        MUSCKET = -1466123874,
         MARKSMANRIFLE = -952879014,
         RAILGUN = 1834241177,
         FLAREGUN = 1198879012,
@@ -154,7 +151,6 @@ namespace Inferno
         ENEMY_LASER = 1566990507,
         SEARCHLIGHT = -844344963,
         RADAR = -764006018,
-
     }
 
     public enum ExplosionType
@@ -183,7 +179,6 @@ namespace Inferno
         BZGAS = -515713583,
         FLARE = -1330848211,
     }
- 
 
     /// <summary>
     /// ミッションキャラの扱い
@@ -199,7 +194,6 @@ namespace Inferno
     {
         FALL_WITH_PARACHUTE = 334,
     }
-
 
     public enum CutSceneOnlyPedHash : uint
     {
@@ -323,5 +317,4 @@ namespace Inferno
         WeiChengCutscene = 0x30DB9D7B,
         ZimborCutscene = 0xEAACAAF0,
     }
-
 }

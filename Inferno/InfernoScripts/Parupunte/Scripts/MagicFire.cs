@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -14,9 +9,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// 尻から炎
     /// </summary>
     [ParupunteDebug]
-    class MagicFire : ParupunteScript
+    internal class MagicFire : ParupunteScript
     {
-
         public MagicFire(ParupunteCore core) : base(core)
         {
         }
@@ -24,9 +18,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override string Name { get; } = "ただし魔法は尻から出る";
         public override string EndMessage => "　お　し　り　";
         private uint coroutineId = 0;
+
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -44,9 +38,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             core.PlayerPed.IsFireProof = false;
         }
 
-        IEnumerable<object> MagicFireCoroutine()
+        private IEnumerable<object> MagicFireCoroutine()
         {
-           
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
@@ -79,6 +72,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_flame",
                     player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
         }
-
     }
 }

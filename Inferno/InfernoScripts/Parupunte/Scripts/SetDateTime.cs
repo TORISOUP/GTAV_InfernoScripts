@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+﻿using GTA.Native;
+using System;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class SetDateTime : ParupunteScript
+    internal class SetDateTime : ParupunteScript
     {
         private int hour;
         private string name;
 
         public SetDateTime(ParupunteCore core) : base(core)
         {
-
         }
 
         public override string Name
@@ -39,6 +30,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.SET_CLOCK_TIME, hour, dayTime.Minutes, dayTime.Seconds);
             ParupunteEnd();
         }
-
     }
 }

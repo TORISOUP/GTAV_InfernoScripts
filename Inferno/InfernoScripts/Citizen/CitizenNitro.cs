@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System;
+using System.Linq;
 using UniRx;
 
 namespace Inferno
@@ -15,7 +14,7 @@ namespace Inferno
     {
         private readonly string Keyword = "cnitro";
         private readonly int probability = 7;
-        private readonly int[] _velocities = {-100,-70, -50, 50, 70, 100};
+        private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
 
         protected override void Setup()
         {
@@ -29,12 +28,10 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-
             //interval間隔で実行
             CreateTickAsObservable(3000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => CitizenNitroAction());
-
         }
 
         /// <summary>
@@ -54,12 +51,11 @@ namespace Inferno
                 {
                     if (Random.Next(0, 100) <= probability)
                     {
-                        
                         NitroVehicle(veh);
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //nice catch!
                 LogWrite(e.ToString());
@@ -72,7 +68,6 @@ namespace Inferno
         /// <param name="vehicle"></param>
         private void NitroVehicle(Vehicle vehicle)
         {
-
             if (!vehicle.IsSafeExist())
             {
                 return;

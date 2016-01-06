@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.ChaosMode.WeaponProvider;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class SpawnTaxies : ParupunteScript
+    internal class SpawnTaxies : ParupunteScript
     {
         private string name;
 
         public SpawnTaxies(ParupunteCore core) : base(core)
         {
-
         }
 
         public override string Name => name;
@@ -58,10 +51,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 case PedHash.Trevor:
                     return Game.GetGXTEntry("BLIP_TREV");
+
                 case PedHash.Michael:
                     return Game.GetGXTEntry("BLIP_MICHAEL");
+
                 case PedHash.Franklin:
                     return Game.GetGXTEntry("BLIP_FRANKLIN");
+
                 default:
                     return hash.ToString();
             }

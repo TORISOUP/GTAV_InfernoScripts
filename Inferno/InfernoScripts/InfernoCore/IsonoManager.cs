@@ -3,7 +3,6 @@ using UniRx;
 
 namespace Inferno
 {
-
     //ISONO管理マネージャ
     public class IsonoManager : InfernoScript
     {
@@ -38,7 +37,6 @@ namespace Inferno
                         IsonoTcpClient.Disconnect();
                     }
                 });
-            
         }
     }
 }

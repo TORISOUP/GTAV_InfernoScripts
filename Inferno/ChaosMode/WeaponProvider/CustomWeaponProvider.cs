@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
-    public class CustomWeaponProvider: IWeaponProvider
+    public class CustomWeaponProvider : IWeaponProvider
     {
         protected Weapon[] CustomShootWeapons;
         protected Weapon[] CustomClosedWeapons;
@@ -40,8 +38,8 @@ namespace Inferno.ChaosMode.WeaponProvider
         /// <returns></returns>
         public Weapon GetRandomWeaponExcludeClosedWeapon()
         {
-            return CustomExcludeClosedWeapons.Length > 0 
-                ? CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)] 
+            return CustomExcludeClosedWeapons.Length > 0
+                ? CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)]
                 : Weapon.UNARMED;
         }
 
@@ -65,7 +63,6 @@ namespace Inferno.ChaosMode.WeaponProvider
         {
             return chaosModeWeapons.ShootWeapons.Contains(weapon);
         }
-
 
         /// <summary>
         /// 近接系の武器であるか

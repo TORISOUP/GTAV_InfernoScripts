@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
-
-namespace Inferno.InfernoScripts.Parupunte.Scripts
+﻿namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class Owatashiki : ParupunteScript
+    internal class Owatashiki : ParupunteScript
     {
         public Owatashiki(ParupunteCore core) : base(core)
         {
@@ -20,7 +10,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()

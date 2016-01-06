@@ -1,15 +1,12 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
+using GTA.Native;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
-
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
 using UniRx;
 
 namespace Inferno
@@ -22,6 +19,7 @@ namespace Inferno
         /// フルトン回収のコルーチン対象になっているEntity
         /// </summary>
         private HashSet<int> fulutonedEntityList = new HashSet<int>();
+
         private Queue<PedHash> motherBasePeds = new Queue<PedHash>(30);
         private Queue<GTA.Native.VehicleHash> motherbaseVeh = new Queue<GTA.Native.VehicleHash>(30);
         private Random random = new Random();
@@ -51,7 +49,6 @@ namespace Inferno
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)
@@ -92,7 +89,6 @@ namespace Inferno
                 soundPlayerPedSetup = new SoundPlayer(setupWav);
             }
 
-
             var moveWav = filePaths.FirstOrDefault(x => x.Contains("move.wav"));
             if (moveWav != null)
             {
@@ -121,7 +117,7 @@ namespace Inferno
                      && x.IsAlive
                 ))
             {
-                if (entity.HasBeenDamagedByPed(PlayerPed) &&(
+                if (entity.HasBeenDamagedByPed(PlayerPed) && (
                    entity.HasBeenDamagedBy(Weapon.UNARMED)
                     ))
                 {
@@ -147,7 +143,7 @@ namespace Inferno
 
             foreach (
                 var seat in
-                    new[] {VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear})
+                    new[] { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear })
             {
                 var ped = vec.GetPedOnSeat(seat);
                 if (ped.IsSafeExist())
@@ -170,7 +166,7 @@ namespace Inferno
             {
                 var p = entity as Ped;
                 p.CanRagdoll = true;
-                p.SetToRagdoll(10*1000);
+                p.SetToRagdoll(10 * 1000);
 
                 isPed = true;
             }
@@ -188,7 +184,7 @@ namespace Inferno
             {
                 if (!entity.IsSafeExist() || entity.IsDead) yield break;
 
-                entity.ApplyForce(upForce*1.07f);
+                entity.ApplyForce(upForce * 1.07f);
 
                 yield return s;
             }
@@ -209,7 +205,7 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(15))
             {
-                if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position)>100)
+                if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position) > 100)
                 {
                     if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
                     {
@@ -218,13 +214,13 @@ namespace Inferno
 
                     if (isPed)
                     {
-                        motherBasePeds.Enqueue((PedHash) hash);
+                        motherBasePeds.Enqueue((PedHash)hash);
                         Game.Player.Money -= 100;
-                        if (entity.IsSafeExist()) { entity.Delete();}
+                        if (entity.IsSafeExist()) { entity.Delete(); }
                     }
                     else
                     {
-                        motherbaseVeh.Enqueue((GTA.Native.VehicleHash) hash);
+                        motherbaseVeh.Enqueue((GTA.Native.VehicleHash)hash);
                         Game.Player.Money -= 1000;
                     }
                     DrawText("回収完了", 3.0f);
@@ -232,7 +228,7 @@ namespace Inferno
                 }
 
                 if (entity.IsDead) yield break;
-                var force = upForce*1.0f/Game.FPS*500.0f;
+                var force = upForce * 1.0f / Game.FPS * 500.0f;
                 if (entity is Ped)
                 {
                     force = upForce * 1.0f / Game.FPS * 800.0f;
@@ -244,7 +240,7 @@ namespace Inferno
             }
         }
 
-        #endregion
+        #endregion 回収
 
         #region 生成
 
@@ -254,12 +250,12 @@ namespace Inferno
 
             var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist()) return;
-            var weapon = Enum.GetValues(typeof (WeaponHash))
+            var weapon = Enum.GetValues(typeof(WeaponHash))
                 .Cast<WeaponHash>()
                 .OrderBy(c => random.Next())
                 .FirstOrDefault();
 
-            var weaponhash = (int) weapon;
+            var weaponhash = (int)weapon;
             p.MarkAsNoLongerNeeded();
 
             Function.Call(Hash.SET_PED_AS_GROUP_MEMBER, p, Game.Player.GetPlayerGroup());
@@ -270,7 +266,6 @@ namespace Inferno
             p.Task.FightAgainstHatedTargets(50, 0);
             var blip = p.AddBlip();
             blip.Color = BlipColor.White;
-            
         }
 
         private void SpawnVehicle()
@@ -300,9 +295,8 @@ namespace Inferno
 
             if (!car.IsSafeExist()) yield break;
             car.MarkAsNoLongerNeeded();
-
         }
 
-        #endregion
+        #endregion 生成
     }
 }
