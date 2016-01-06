@@ -1,13 +1,9 @@
-﻿
-using System;
-using System.Windows.Forms;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
-using GTA.Native;
+using System;
 
 namespace Inferno
 {
-
     public static class ExtensionMethods
     {
         private static Random _random;
@@ -59,9 +55,9 @@ namespace Inferno
         /// <returns>ランダムな座標</returns>
         public static Vector3 AroundRandom2D(this Vector3 vector, float radius)
         {
-            var randomBaseVector = new Vector3((float) Random.NextDouble() - 0.5f, (float) Random.NextDouble() - 0.5f, 0);
+            var randomBaseVector = new Vector3((float)Random.NextDouble() - 0.5f, (float)Random.NextDouble() - 0.5f, 0);
             randomBaseVector.Normalize();
-            return vector + randomBaseVector*(float) Random.NextDouble()*radius;
+            return vector + randomBaseVector * (float)Random.NextDouble() * radius;
         }
 
         /// <summary>
@@ -69,20 +65,19 @@ namespace Inferno
         /// </summary>
         public static bool IsCutsceneOnlyPed(this Ped ped)
         {
-            return Enum.IsDefined(typeof (CutSceneOnlyPedHash), (CutSceneOnlyPedHash) ped.Model.Hash);
+            return Enum.IsDefined(typeof(CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
         }
 
         public static Vector3 ApplyVector(this Quaternion q, Vector3 v)
         {
-
-            var w = -q.X*v.X - q.Y*v.Y - q.Z*v.Z;
-            var x = q.Y*v.Z - q.Z*v.Y + q.W*v.X;
-            var y = q.Z*v.X - q.X*v.Z + q.W*v.Y;
-            var z = q.X*v.Y - q.Y*v.X + q.W*v.Z;
+            var w = -q.X * v.X - q.Y * v.Y - q.Z * v.Z;
+            var x = q.Y * v.Z - q.Z * v.Y + q.W * v.X;
+            var y = q.Z * v.X - q.X * v.Z + q.W * v.Y;
+            var z = q.X * v.Y - q.Y * v.X + q.W * v.Z;
             return new Vector3(
-                y*-q.Z + z*q.Y - w*q.X + x*q.W,
-                z*-q.X + x*q.Z - w*q.Y + y*q.W,
-                x*-q.Y + y*q.X - w*q.Z + z*q.W
+                y * -q.Z + z * q.Y - w * q.X + x * q.W,
+                z * -q.X + x * q.Z - w * q.Y + y * q.W,
+                x * -q.Y + y * q.X - w * q.Z + z * q.W
                 );
         }
 
@@ -107,7 +102,6 @@ namespace Inferno
             var m20 = vector.X;
             var m21 = vector.Y;
             var m22 = vector.Z;
-
 
             float num8 = (m00 + m11) + m22;
             var quaternion = new Quaternion();

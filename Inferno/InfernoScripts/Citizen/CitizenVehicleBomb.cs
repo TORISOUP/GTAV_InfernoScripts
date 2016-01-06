@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using UniRx;
 
 namespace Inferno
@@ -12,18 +7,17 @@ namespace Inferno
     /// <summary>
     /// 爆雷
     /// </summary>
-    class CitizenVehicleBomb:InfernoScript
+    internal class CitizenVehicleBomb : InfernoScript
     {
         private float probability = 10;
 
         protected override void Setup()
         {
-
             CreateInputKeywordAsObservable("vbomb")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("VehicleBomb:"+IsActive,3.0f);
+                    DrawText("VehicleBomb:" + IsActive, 3.0f);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -33,7 +27,7 @@ namespace Inferno
                 .Subscribe(_ => VehicleBombAction());
         }
 
-        void VehicleBombAction()
+        private void VehicleBombAction()
         {
             //まだ発火していないプレイや以外のドライバのいるミッション対象外の車が対象
             var targetVehicles = CachedVehicles

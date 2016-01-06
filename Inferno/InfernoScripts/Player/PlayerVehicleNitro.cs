@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using GTA; using UniRx;
+﻿using GTA;
 using GTA.Math;
 using GTA.Native;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using UniRx;
+
 namespace Inferno
 {
     /// <summary>
@@ -27,7 +28,6 @@ namespace Inferno
                 .Subscribe(_ => NitroVehicle());
         }
 
-
         private void NitroVehicle()
         {
             var driver = PlayerPed;
@@ -38,7 +38,6 @@ namespace Inferno
                 return;
             }
 
-            
             float rotation;
             if (this.IsGamePadPressed(GameKey.VehicleAccelerateKey))
             {
@@ -70,7 +69,6 @@ namespace Inferno
 
         private void ChangeDirverAndVehicleState(Ped driver, Vehicle vehicle, bool isInvincible)
         {
-
             if (driver.IsSafeExist())
             {
                 driver.IsInvincible = isInvincible;
@@ -81,11 +79,10 @@ namespace Inferno
             }
         }
 
-
         /// <summary>
         /// ニトロ処理
         /// </summary>
-        void NitroAction(Ped driver,Vehicle vehicle)
+        private void NitroAction(Ped driver, Vehicle vehicle)
         {
             _isNitroOk = false;
 
@@ -106,7 +103,7 @@ namespace Inferno
             StartCoroutine(NitroAfterTreatment(driver, vehicle));
         }
 
-        IEnumerable<Object> NitroAfterTreatment(Ped driver,Vehicle vehicle)
+        private IEnumerable<Object> NitroAfterTreatment(Ped driver, Vehicle vehicle)
         {
             //カウンタ作成
             var counter = new ReduceCounter(10000);
@@ -114,7 +111,7 @@ namespace Inferno
             RegisterProgressBar(
                 new ProgressBarData(counter, new Point(0, 30),
                 Color.FromArgb(200, 0, 255, 125),
-                Color.FromArgb(128, 0, 0, 0), 
+                Color.FromArgb(128, 0, 0, 0),
                 DrawType.RightToLeft, 100, 10, 2));
 
             //カウンタを自動カウント
@@ -155,7 +152,5 @@ namespace Inferno
             _isNitroOk = true;
             DrawText("Nitro:OK", 2.0f);
         }
-
-
     }
 }

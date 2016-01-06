@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using UniRx;
-
-
-using UniRx;
+﻿using GTA;
+using System;
 using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Native;
-
+using UniRx;
 
 namespace Inferno
 {
@@ -68,7 +62,6 @@ namespace Inferno
                 .Multicast(OnKeyDownSubject)
                 .Connect();
 
-
             //市民と車両の更新
             OnTickAsObservable
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
@@ -93,7 +86,6 @@ namespace Inferno
                 LogWrite(e.StackTrace);
             }
         }
-
 
         public void LogWrite(string message)
         {

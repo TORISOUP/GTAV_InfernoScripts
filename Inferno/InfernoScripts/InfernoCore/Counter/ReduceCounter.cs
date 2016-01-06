@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UniRx;
-
-using UniRx;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UniRx;
 
 namespace Inferno
 {
@@ -22,8 +15,9 @@ namespace Inferno
         /// 強制終了時はOnCompletedのみ通知
         /// </summary>
         public UniRx.IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
+
         public int Current { get; private set; }
-        public float Rate => (float)Current/ (float)_max;
+        public float Rate => (float)Current / (float)_max;
         public bool IsCompleted { get; private set; }
 
         /// <summary>
@@ -37,7 +31,6 @@ namespace Inferno
             _onFinishedSubject = new Subject<Unit>();
             IsCompleted = false;
         }
-
 
         public void Update(int countValue)
         {
@@ -57,6 +50,5 @@ namespace Inferno
             IsCompleted = true;
             _onFinishedSubject.OnCompleted();
         }
-
     }
 }

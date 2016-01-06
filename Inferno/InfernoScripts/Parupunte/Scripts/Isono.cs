@@ -1,25 +1,22 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteDebug]
-    class Isono : ParupunteScript
+    internal class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core) : base(core)
         {
         }
 
         public override string Name { get; } = "磯野ー！空飛ぼうぜ！";
+
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -27,7 +24,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             StartCoroutine(IsonoCoroutine());
         }
 
-        IEnumerable<object> IsonoCoroutine()
+        private IEnumerable<object> IsonoCoroutine()
         {
             var player = core.PlayerPed;
             var entities =
@@ -50,14 +47,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //6秒間空に打ち上げる
             foreach (var s in WaitForSeconds(6))
             {
-                foreach (var entity in entities.Where(x=>x.IsSafeExist()))
+                foreach (var entity in entities.Where(x => x.IsSafeExist()))
                 {
                     if (entity is Ped)
                     {
                         var p = entity as Ped;
                         p.SetToRagdoll(3000);
                     }
-                    entity.ApplyForce(upForce,randomVector);
+                    entity.ApplyForce(upForce, randomVector);
                 }
                 if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
                 {
@@ -70,7 +67,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return null;
             }
 
-            while ( player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
+            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
             {
                 yield return null;
             }
@@ -80,7 +77,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 player.CurrentVehicle.IsCollisionProof = false;
             }
             ParupunteEnd();
-
-        } 
+        }
     }
 }

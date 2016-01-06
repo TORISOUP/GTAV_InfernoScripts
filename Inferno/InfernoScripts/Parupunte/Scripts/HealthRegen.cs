@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
+﻿using System.Collections.Generic;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class HealthRegen : ParupunteScript
+    internal class HealthRegen : ParupunteScript
     {
         private ReduceCounter reduceCounter;
+
         public HealthRegen(ParupunteCore core) : base(core)
         {
         }
@@ -20,9 +14,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override string Name => "リジェネ";
         public override string EndMessage => "おわり";
         private uint coroutineId = 0;
+
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -39,7 +33,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             StopCoroutine(coroutineId);
         }
 
-        IEnumerable<object> HealthRegenCoroutine()
+        private IEnumerable<object> HealthRegenCoroutine()
         {
             while (!reduceCounter.IsCompleted)
             {
@@ -54,6 +48,5 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return WaitForSeconds(1);
             }
         }
-
     }
 }

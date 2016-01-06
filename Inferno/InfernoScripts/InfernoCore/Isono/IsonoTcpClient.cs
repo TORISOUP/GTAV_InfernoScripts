@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
-
-using UniRx;
 using System.Text;
 using System.Threading;
+using UniRx;
 
 namespace Inferno.Isono
 {
@@ -12,8 +11,8 @@ namespace Inferno.Isono
     {
         private string hostIp;
         private int hostPort;
-        TcpClient tcpClient;
-        byte[] buffer;
+        private TcpClient tcpClient;
+        private byte[] buffer;
         private DebugLogger logger;
 
         public bool IsConnected
@@ -44,7 +43,6 @@ namespace Inferno.Isono
         /// </summary>
         public void Connect()
         {
-
             var thread = new Thread(new ThreadStart(() =>
             {
                 try
@@ -55,7 +53,6 @@ namespace Inferno.Isono
                 catch (Exception e)
                 {
                     logger.Log(e.ToString());
-
                 }
             }));
             thread.Start();
@@ -65,7 +62,7 @@ namespace Inferno.Isono
         {
             try
             {
-                if(!IsConnected) return;
+                if (!IsConnected) return;
                 var bytes = this.tcpClient.GetStream().EndRead(ar);
 
                 if (bytes == 0)
@@ -96,7 +93,6 @@ namespace Inferno.Isono
                         tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, CallBackBeginReceive, null);
                     }
                 }
-
             }
             catch (Exception e)
             {

@@ -1,16 +1,16 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Xml;
+
 namespace Inferno
 {
     [DataContract]
-    class RequestDataPackage
+    internal class RequestDataPackage
     {
-        DataContractJsonSerializer jsonSerializer;
-        public RequestDataPackage(string text )
+        private DataContractJsonSerializer jsonSerializer;
+
+        public RequestDataPackage(string text)
         {
             jsonSerializer = new DataContractJsonSerializer(typeof(RequestDataPackage));
             this.name = "";
@@ -46,7 +46,6 @@ namespace Inferno
             {
                 return (RequestDataPackage)jsonSerializer.ReadObject(stream);
             }
-            
         }
 
         /// <summary>
@@ -54,21 +53,25 @@ namespace Inferno
         /// </summary>
         [DataMember]
         public string emotion;
+
         /// <summary>
         /// コメントのカラー
         /// </summary>
         [DataMember]
         public string tag;
+
         /// <summary>
         /// 読み上げるメッセージ
         /// </summary>
         [DataMember]
         public string text;
+
         /// <summary>
         /// コメント投稿者
         /// </summary>
         [DataMember]
         public string name;
+
         /// <summary>
         /// 運営コメントかどうか
         /// </summary>

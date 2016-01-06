@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+﻿using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class AddPlayerMoney : ParupunteScript
+    internal class AddPlayerMoney : ParupunteScript
     {
         public AddPlayerMoney(ParupunteCore core) : base(core)
         {
@@ -20,7 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()

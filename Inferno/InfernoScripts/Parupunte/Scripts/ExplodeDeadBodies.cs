@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GTA; using UniRx;
+using GTA;
 using GTA.Native;
-using GTA.Math;
+using System.Collections.Generic;
+using System.Linq;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class ExplodeDeadBodies : ParupunteScript
+    internal class ExplodeDeadBodies : ParupunteScript
     {
         private HashSet<int> explodedPedHandles;
 
@@ -21,9 +16,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name => "ば・く・は・つ・し・た・い";
         public override string EndMessage => "ば・く・は・つ・し・な・い";
+
         public override void OnSetUp()
         {
-
         }
 
         public override void OnStart()
@@ -33,7 +28,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             explodedPedHandles = new HashSet<int>();
         }
-
 
         protected override void OnUpdate()
         {

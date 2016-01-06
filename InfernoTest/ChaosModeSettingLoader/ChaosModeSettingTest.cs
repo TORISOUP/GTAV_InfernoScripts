@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using Inferno;
+﻿using Inferno;
 using Inferno.ChaosMode;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 
 namespace InfernoTest
 {
@@ -42,20 +42,19 @@ namespace InfernoTest
                 , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
         }
 
-
         #region EnableWeaponListFilterTest
 
         [TestMethod]
         public void 正常な武器の文字列のみの配列からWeaponの配列が生成できる()
         {
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[] {Weapon.UNARMED.ToString(),Weapon.PISTOL.ToString(),Weapon.ASSAULTSMG.ToString(),Weapon.STUNGUN.ToString()};
+            var testData = new String[] { Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), Weapon.ASSAULTSMG.ToString(), Weapon.STUNGUN.ToString() };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数が同じ
             Assert.AreEqual(testData.Length, resutl.Length);
             //要素も同じ
-            Assert.IsTrue(resutl.All(x=>testData.Contains(x.ToString())));
+            Assert.IsTrue(resutl.All(x => testData.Contains(x.ToString())));
         }
 
         [TestMethod]
@@ -80,7 +79,6 @@ namespace InfernoTest
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             Assert.AreEqual(0, resutl.Length);
-
         }
 
         [TestMethod]
@@ -97,7 +95,7 @@ namespace InfernoTest
         {
             var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon))).OrderBy(x => x.ToString()).ToArray();
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[] {"HOGE", "FUGA", "PIYO"};
+            var testData = new String[] { "HOGE", "FUGA", "PIYO" };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は全ての武器数と同じ
@@ -106,9 +104,9 @@ namespace InfernoTest
             Assert.IsTrue(allWeapons.SequenceEqual(resutl.OrderBy(x => x.ToString())));
         }
 
-        #endregion
+        #endregion EnableWeaponListFilterTest
 
-        class TestSetting:ChaosModeSetting
+        private class TestSetting : ChaosModeSetting
         {
             public Weapon[] TestEnableWeaponListFilter(string[] WeaponList)
             {

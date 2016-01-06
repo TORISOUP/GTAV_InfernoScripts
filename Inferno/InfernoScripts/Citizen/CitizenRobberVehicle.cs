@@ -1,9 +1,8 @@
-﻿using System;
-using UniRx;
+﻿using GTA;
+using Inferno.ChaosMode;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTA; using UniRx;
-using Inferno.ChaosMode;
 using UniRx;
 
 namespace Inferno
@@ -13,7 +12,6 @@ namespace Inferno
     /// </summary>
     internal class CitizenRobberVehicle : InfernoScript
     {
-
         /// <summary>
         /// プレイヤの周囲何ｍの市民が対象か
         /// </summary>
@@ -42,7 +40,7 @@ namespace Inferno
 
         private void RobberVehicle()
         {
-            if(!PlayerPed.IsSafeExist())return;
+            if (!PlayerPed.IsSafeExist()) return;
 
             var playerVehicle = this.GetPlayerVehicle();
 
@@ -84,7 +82,7 @@ namespace Inferno
             }
         }
 
-        IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
+        private IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
         {
             yield return RandomWait();
             if (!ped.IsSafeExist()) yield break;
@@ -110,16 +108,15 @@ namespace Inferno
             foreach (var t in WaitForSeconds(20))
             {
                 //20秒間車に乗れたか監視する
-                if(!ped.IsSafeExist()) yield break;
-                if(ped.IsInVehicle()) break;
+                if (!ped.IsSafeExist()) yield break;
+                if (ped.IsInVehicle()) break;
                 yield return null;
             }
 
-            if (!ped.IsSafeExist())yield break;
-            
+            if (!ped.IsSafeExist()) yield break;
+
             //カオス化許可
             ped.SetNotChaosPed(false);
-        } 
-
+        }
     }
 }

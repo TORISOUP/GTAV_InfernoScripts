@@ -4,17 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Inferno
 {
-    class TCPManager
+    internal class TCPManager
     {
-        int port = 50085;
-        TcpListener listener;
-        List<TcpClient> tcpClients;
-        System.Text.Encoding encoding;
+        private int port = 50085;
+        private TcpListener listener;
+        private List<TcpClient> tcpClients;
+        private System.Text.Encoding encoding;
 
         public TCPManager()
         {
@@ -24,19 +23,17 @@ namespace Inferno
 
         public void ServerStartAsync()
         {
-
             this.listener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), port);
             this.listener.Start();
             Debug.Print("待受を開始しました");
             Accept();
-
         }
 
         /// <summary>
         /// 外部からの接続を待機する
         /// </summary>
         /// <returns></returns>
-        async Task Accept()
+        private async Task Accept()
         {
             while (true)
             {
@@ -74,7 +71,6 @@ namespace Inferno
                     do
                     {
                         ns.WriteAsync(message_byte, 0, message_byte.Length);
-
                     } while (ns.DataAvailable);
                 }
                 catch (Exception e)

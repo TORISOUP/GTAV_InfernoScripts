@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Inferno.ChaosMode.WeaponProvider;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno.ChaosMode
 {
@@ -15,7 +12,7 @@ namespace Inferno.ChaosMode
     /// </summary>
     public class ChaosModeSettingLoader
     {
-        readonly Encoding _encoding = Encoding.GetEncoding("Shift_JIS");
+        private readonly Encoding _encoding = Encoding.GetEncoding("Shift_JIS");
         private DebugLogger _debugLogger;
 
         protected virtual DebugLogger ChaosModeDebugLogger
@@ -28,7 +25,6 @@ namespace Inferno.ChaosMode
             }
         }
 
-    
         /// <summary>
         /// ファイルから読み込んで設定ファイルを生成する
         /// </summary>
@@ -101,10 +97,10 @@ namespace Inferno.ChaosMode
             var chaosModeWeapons = new ChaosModeWeapons();
             dto.WeaponList = chaosModeWeapons.ExcludeClosedWeapons.Select(x => x.ToString()).ToArray();
             dto.WeaponListForDriveBy = chaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray();
-            
+
             try
             {
-                using (var w = new StreamWriter(filePath,false,_encoding))
+                using (var w = new StreamWriter(filePath, false, _encoding))
                 {
                     var json = jss.Serialize(dto);
                     w.WriteAsync(json);
@@ -116,6 +112,5 @@ namespace Inferno.ChaosMode
                 ChaosModeDebugLogger.Log(e.StackTrace);
             }
         }
-        
     }
 }

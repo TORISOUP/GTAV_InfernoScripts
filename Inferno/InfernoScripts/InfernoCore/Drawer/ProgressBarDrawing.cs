@@ -1,12 +1,8 @@
-﻿using System;
+﻿using GTA;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
+using UniRx;
 
 namespace Inferno
 {
@@ -15,7 +11,6 @@ namespace Inferno
     /// </summary>
     public class ProgressBarDrawing : InfernoScript
     {
-
         private UIContainer _mContainer = null;
 
         public static ProgressBarDrawing Instance { get; private set; }
@@ -75,7 +70,7 @@ namespace Inferno
             var height = data.Height;
             var margin = data.Mergin;
 
-            var barLength =0;
+            var barLength = 0;
             var barPosition = default(Point);
             var barSize = default(Size);
 
@@ -83,31 +78,32 @@ namespace Inferno
             {
                 case DrawType.RightToLeft:
                     barLength = (int)(width * data.ProgressBarStatus.Rate);
-                    barPosition = new Point(pos.X , pos.Y);
+                    barPosition = new Point(pos.X, pos.Y);
                     barSize = new Size(barLength, height);
                     break;
+
                 case DrawType.LeftToRight:
                     barLength = (int)(width * data.ProgressBarStatus.Rate);
-                    barPosition = new Point((pos.X + width ) - barLength, pos.Y);
+                    barPosition = new Point((pos.X + width) - barLength, pos.Y);
                     barSize = new Size(barLength, height);
                     break;
+
                 case DrawType.TopToBottom:
                     barLength = (int)(height * data.ProgressBarStatus.Rate);
-                    barPosition = new Point(pos.X , pos.Y + height - barLength);
+                    barPosition = new Point(pos.X, pos.Y + height - barLength);
                     barSize = new Size(width, barLength);
                     break;
+
                 case DrawType.BottomToTop:
                     barLength = (int)(height * data.ProgressBarStatus.Rate);
-                    barPosition = new Point(pos.X , pos.Y );
+                    barPosition = new Point(pos.X, pos.Y);
                     barSize = new Size(width, barLength);
                     break;
             }
 
             _mContainer.Items.Add(new UIRectangle(new Point(pos.X - margin, pos.Y - margin),
-                new Size(width + margin*2, height + margin*2), data.BackgorondColor));
+                new Size(width + margin * 2, height + margin * 2), data.BackgorondColor));
             _mContainer.Items.Add(new UIRectangle(barPosition, barSize, data.MainColor));
         }
-
-
     }
 }

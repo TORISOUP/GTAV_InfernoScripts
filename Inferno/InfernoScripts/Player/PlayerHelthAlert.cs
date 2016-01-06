@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GTA;
+using System;
 using System.Drawing;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using Inferno;
+using UniRx;
 
 namespace Inferno
 {
@@ -14,10 +10,10 @@ namespace Inferno
     /// </summary>
     internal class PlayerHelthAlert : InfernoScript
     {
-        float omega = 0.4f;
-        float time = 0.0f;
-        int amplitude = 25;
-        int offset = 15;
+        private float omega = 0.4f;
+        private float time = 0.0f;
+        private int amplitude = 25;
+        private int offset = 15;
 
         private UIContainer _mContainer;
         private int ScreenHeight;
@@ -29,8 +25,8 @@ namespace Inferno
         protected override void Setup()
         {
             var screenResolution = NativeFunctions.GetScreenResolution();
-            ScreenHeight = (int) screenResolution.Y;
-            ScreenWidth = (int) screenResolution.X;
+            ScreenHeight = (int)screenResolution.Y;
+            ScreenWidth = (int)screenResolution.X;
 
             _mContainer = new UIContainer(
                 new Point(0, 0), new Size(ScreenWidth, ScreenHeight));
@@ -44,11 +40,11 @@ namespace Inferno
                 {
                     //体力が減ったら画面を点滅させる
                     time += 1;
-                    var alpha = offset + amplitude*Math.Abs(Math.Sin(omega*time));
+                    var alpha = offset + amplitude * Math.Abs(Math.Sin(omega * time));
 
                     _mContainer.Items.Clear();
                     var rect = new UIRectangle(new Point(0, 0), new Size(ScreenWidth, ScreenHeight),
-                        Color.FromArgb((int) alpha, 255, 0, 0));
+                        Color.FromArgb((int)alpha, 255, 0, 0));
                     _mContainer.Items.Add(rect);
                 });
 
@@ -61,7 +57,6 @@ namespace Inferno
                     time = 0;
                     _mContainer.Items.Clear();
                 });
-
         }
     }
 }

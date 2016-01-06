@@ -1,23 +1,21 @@
-﻿using System;
+﻿using GTA;
+using GTA.Math;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Math;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class Tempest : ParupunteScript
+    internal class Tempest : ParupunteScript
     {
-        HashSet<Entity> entityList = new HashSet<Entity>();
+        private HashSet<Entity> entityList = new HashSet<Entity>();
 
         public Tempest(ParupunteCore core) : base(core)
         {
         }
 
         public override string Name { get; } = "テンペスト";
-        
+
         public override void OnSetUp()
         {
         }
@@ -30,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             GTA.World.Weather = Weather.ThunderStorm;
-            ReduceCounter = new ReduceCounter(20*1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
         }
@@ -60,7 +58,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!ReduceCounter.IsCompleted)
             {
-                if(!entity.IsSafeExist()) yield break;
+                if (!entity.IsSafeExist()) yield break;
                 if (!entity.IsInRangeOf(core.PlayerPed.Position, 100)) yield return null;
                 if (entity is Ped)
                 {
@@ -74,7 +72,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var lenght = gotoPlayerVector.Length();
                 gotoPlayerVector.Normalize();
 
-
                 var angle = lenght > 10 ? 89.2f : 90;
                 var rotatedVector = Quaternion.RotationAxis(Vector3.WorldUp, angle)
                     .ApplyVector(gotoPlayerVector);
@@ -85,6 +82,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 yield return null;
             }
-        } 
+        }
     }
 }

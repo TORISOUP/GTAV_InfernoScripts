@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+﻿using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class ChangeWantedLevel : ParupunteScript
+    internal class ChangeWantedLevel : ParupunteScript
     {
         private string name;
         private int wantedLevelThreshold = 1;
@@ -19,7 +10,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public ChangeWantedLevel(ParupunteCore core) : base(core)
         {
-            
         }
 
         public override void OnSetUp()

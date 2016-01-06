@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -13,16 +12,18 @@ namespace Inferno.InfernoScripts.Parupunte
     {
         //trueにするとそのParupunteScriptが優先される
         public bool IsDebug;
+
         //trueにすると除外される(IsDebugより優先度は高い）
         public bool IsIgnore;
-        public ParupunteDebug(bool isDebug = false,bool isIgnore = false)
+
+        public ParupunteDebug(bool isDebug = false, bool isIgnore = false)
         {
             IsDebug = isDebug;
             IsIgnore = isIgnore;
         }
     }
 
-    abstract class ParupunteScript
+    internal abstract class ParupunteScript
     {
         private bool IsFinished = false;
 
@@ -68,7 +69,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// パルプンテの名前が出るより前に1回だけ実行される
         /// コンストラクタでの初期化の代わりにこっちを使う
         /// </summary>
-        public virtual void OnSetUp() {;}
+        public virtual void OnSetUp() {; }
 
         /// <summary>
         /// パルプンテの名前が出たあとに1回だけ実行される
@@ -91,10 +92,9 @@ namespace Inferno.InfernoScripts.Parupunte
             ;
         }
 
-
         public void OnFinishedCore()
         {
-            if(IsFinished) return;
+            if (IsFinished) return;
 
             IsFinished = true;
             ReduceCounter?.Finish();
@@ -112,7 +112,6 @@ namespace Inferno.InfernoScripts.Parupunte
             {
                 core.DrawParupunteText(EndMessage, 2.0f);
             }
-
         }
 
         /// <summary>

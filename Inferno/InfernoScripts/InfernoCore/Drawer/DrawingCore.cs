@@ -1,15 +1,13 @@
-﻿using System;
+﻿using GTA;
+using System;
 using UniRx;
-
-using UniRx;
-using GTA; using UniRx;
 
 namespace Inferno
 {
     /// <summary>
     /// 描画用のOnTickを提供する
     /// </summary>
-    class DrawingCore : Script
+    internal class DrawingCore : Script
     {
         public static DrawingCore Instance { get; private set; }
 

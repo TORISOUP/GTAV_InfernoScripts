@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
-using GTA.Native;
+﻿using System.Linq;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
@@ -78,7 +72,6 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.GOLFCLUB,
                 Weapon.KNIFE,
                 Weapon.NIGHTSTICK,
-
             };
 
             //投げる系

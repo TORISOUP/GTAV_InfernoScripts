@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using GTA; using UniRx;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.Utilities;
-
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    class KillCitizens : ParupunteScript
+    internal class KillCitizens : ParupunteScript
     {
         public KillCitizens(ParupunteCore core) : base(core)
         {
@@ -23,7 +16,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            
         }
 
         public override void OnStart()
@@ -37,7 +29,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ParupunteEnd();
         }
 
-        IEnumerable<object> KillCitizensCoroutine()
+        private IEnumerable<object> KillCitizensCoroutine()
         {
             var radius = 100.0f;
             var player = core.PlayerPed;

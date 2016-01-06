@@ -49,7 +49,7 @@ namespace Inferno.InfernoScripts.Parupunte
             _parupunteScritpts =
                 Assembly.GetExecutingAssembly()
                     .GetTypes()
-                    .Where(type => type.BaseType != null && type.BaseType == typeof (ParupunteScript))
+                    .Where(type => type.BaseType != null && type.BaseType == typeof(ParupunteScript))
                     .Where(x =>
                     {
                         var attribute = x.GetCustomAttribute<ParupunteDebug>();
@@ -83,8 +83,8 @@ namespace Inferno.InfernoScripts.Parupunte
             #region Drawer
 
             var screenResolution = NativeFunctions.GetScreenResolution();
-            _screenHeight = (int) screenResolution.Y;
-            _screenWidth = (int) screenResolution.X;
+            _screenHeight = (int)screenResolution.Y;
+            _screenWidth = (int)screenResolution.X;
             _mContainer = new UIContainer(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
@@ -272,13 +272,13 @@ namespace Inferno.InfernoScripts.Parupunte
         private UIText CreateUIText(string text)
         {
             return new UIText(text,
-                new Point((int) (_screenWidth*_textPositionScale.X), (int) (_screenHeight*_textPositionScale.Y)),
+                new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
                 0.8f, Color.White, 0, true);
         }
 
         private string GetPlayerName()
         {
-            var hash = (PedHash) PlayerPed.Model.Hash;
+            var hash = (PedHash)PlayerPed.Model.Hash;
             switch (hash)
             {
                 case PedHash.Trevor:

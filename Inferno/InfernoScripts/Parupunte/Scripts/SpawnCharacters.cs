@@ -1,16 +1,12 @@
-﻿using System;
+﻿using GTA;
+using GTA.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA; using UniRx;
-using GTA.Native;
-using Inferno.ChaosMode;
-using Inferno.ChaosMode.WeaponProvider;
+using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
     internal class SpawnCharacters : ParupunteScript
     {
         private Model pedModel;
@@ -19,7 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public SpawnCharacters(ParupunteCore core) : base(core)
         {
-
         }
 
         public override string Name
@@ -31,16 +26,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             random = new Random();
 
-            switch (random.Next(0,100) % 1)
+            switch (random.Next(0, 100) % 1)
             {
                 case 0:
                     pedModel = new Model(PedHash.LamarDavis);
                     name = "ニガ～♪";
-                break;
-
+                    break;
             }
-
-
         }
 
         public override void OnStart()
@@ -74,17 +66,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (!ped.IsSafeExist()) return;
 
             //車に乗っているなら車用の武器を渡す
-            var weapon = Enum.GetValues(typeof (WeaponHash))
+            var weapon = Enum.GetValues(typeof(WeaponHash))
                 .Cast<WeaponHash>()
                 .OrderBy(c => random.Next())
                 .FirstOrDefault();
 
-            var weaponhash = (int) weapon;
+            var weaponhash = (int)weapon;
 
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
-
         }
     }
 }
