@@ -1,14 +1,13 @@
-﻿using System;
+﻿using GTA;
+using Inferno.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Linq;
-using UniRx;
 using System.Threading;
 using System.Windows.Forms;
-using GTA; using UniRx;
-using Inferno.Utilities;
+using UniRx;
 
 namespace Inferno
 {
@@ -19,7 +18,22 @@ namespace Inferno
     {
         protected Random Random = new Random();
 
-        protected bool IsActive = false;
+        private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
+
+        /// <summary>
+        /// スクリプトが動作中であるか
+        /// </summary>
+        protected bool IsActive
+        {
+            get { return _isActiveReactiveProperty.Value; }
+            set { _isActiveReactiveProperty.Value = value; }
+        }
+
+        /// <summary>
+        /// IsActiveが変化したことを通知する
+        /// </summary>
+        protected UniRx.IObservable<bool> IsActiveAsObservable => _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+
         /// <summary>
         /// スクリプトのTickイベントの実行頻度[ms]
         /// コルーチンの実行間隔も影響を受けるので注意
@@ -27,25 +41,30 @@ namespace Inferno
         protected virtual int TickInterval => 100;
 
         #region Chace
+
         /// <summary>
         /// プレイヤのped
         /// </summary>
         public Ped PlayerPed { get; private set; }
 
         private Ped[] _cachedPeds = new Ped[0];
+
         /// <summary>
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
-        public ReadOnlyCollection<Ped> CachedPeds => Array.AsReadOnly(_cachedPeds??new Ped[0]);
+        public ReadOnlyCollection<Ped> CachedPeds => Array.AsReadOnly(_cachedPeds ?? new Ped[0]);
 
         private Vehicle[] _cachedVehicles = new Vehicle[0];
+
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
         public ReadOnlyCollection<Vehicle> CachedVehicles => Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]);
-        #endregion
+
+        #endregion Chace
 
         #region forEvents
+
         /// <summary>
         /// ObserveOn用
         /// </summary>
@@ -77,9 +96,8 @@ namespace Inferno
             }
         }
 
-
         public UniRx.IObservable<Unit> OnAllOnCommandObservable { get; private set; }
-        
+
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
         /// </summary>
@@ -124,8 +142,7 @@ namespace Inferno
                 .Publish().RefCount();
         }
 
-
-        #endregion
+        #endregion forEvents
 
         #region forCoroutine
 
@@ -184,7 +201,7 @@ namespace Inferno
             }
         }
 
-        #endregion
+        #endregion forCoroutine
 
         #region forDraw
 
@@ -206,7 +223,7 @@ namespace Inferno
             ProgressBarDrawing.Instance.RegisterProgressBar(data);
         }
 
-        #endregion
+        #endregion forDraw
 
         #region forTimer
 
@@ -221,7 +238,7 @@ namespace Inferno
             _counterList.Add(counter);
         }
 
-        #endregion
+        #endregion forTimer
 
         /// <summary>
         /// コンストラクタ
@@ -239,7 +256,7 @@ namespace Inferno
                     InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
                     InfernoCore.Instance.PlayerPed.Subscribe(x => PlayerPed = x);
                 });
-            
+
             //TickイベントをObservable化しておく
             Interval = TickInterval;
             OnTickAsObservable =
@@ -265,7 +282,7 @@ namespace Inferno
 
             coroutineSystem = new CoroutineSystem();
 
-            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 10)*10))
+            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 10) * 10))
                 .Take(1)
                 .Subscribe(_ =>
                 {
@@ -278,7 +295,6 @@ namespace Inferno
             {
                 Context.RunOnCurrentThread();
             });
-            
 
             try
             {
@@ -295,7 +311,6 @@ namespace Inferno
         /// </summary>
         protected abstract void Setup();
 
-
         #region Debug
 
         /// <summary>
@@ -307,6 +322,6 @@ namespace Inferno
             InfernoCore.Instance.LogWrite(message + "\n");
         }
 
-        #endregion
+        #endregion Debug
     }
 }
