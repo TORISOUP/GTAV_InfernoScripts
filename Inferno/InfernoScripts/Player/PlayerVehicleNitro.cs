@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Drawing;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using GTA.Math;
 using GTA.Native;
-using Inferno;
-
+using UniRx;
 namespace Inferno
 {
     /// <summary>

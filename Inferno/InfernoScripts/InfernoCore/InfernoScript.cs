@@ -4,14 +4,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Runtime.CompilerServices;
+using UniRx;
 using System.Threading;
 using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using Inferno.Utilities;
 
 namespace Inferno
@@ -58,16 +54,16 @@ namespace Inferno
         /// <summary>
         /// 一定間隔のTickイベント
         /// </summary>
-        public IObservable<Unit> OnTickAsObservable { get; private set; }
+        public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
 
         /// <summary>
         /// 描画用のTickイベント
         /// </summary>
-        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
+        public UniRx.IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
 
-        private IObservable<KeyEventArgs> _onKeyDownAsObservable;
+        private UniRx.IObservable<KeyEventArgs> _onKeyDownAsObservable;
 
-        public IObservable<KeyEventArgs> OnKeyDownAsObservable
+        public UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable
         {
             get
             {
@@ -82,14 +78,14 @@ namespace Inferno
         }
 
 
-        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+        public UniRx.IObservable<Unit> OnAllOnCommandObservable { get; private set; }
         
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
+        protected UniRx.IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
             {
@@ -103,7 +99,6 @@ namespace Inferno
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
                 .Take(1).Repeat() //1回動作したらBufferをクリア
-                .ObserveOn(Context)
                 .Publish()
                 .RefCount();
         }
@@ -113,7 +108,7 @@ namespace Inferno
         /// </summary>
         /// <param name="millsecond">ミリ秒(100ミリ秒以上で指定）</param>
         /// <returns></returns>
-        protected IObservable<Unit> CreateTickAsObservable(int millsecond)
+        protected UniRx.IObservable<Unit> CreateTickAsObservable(int millsecond)
         {
             var skipCount = (millsecond / TickInterval) - 1;
 

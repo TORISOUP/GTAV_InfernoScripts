@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
+using UniRx;
+
+
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using GTA;
+using GTA; using UniRx;
 using GTA.Math;
 using GTA.Native;
 
@@ -104,10 +104,10 @@ namespace Inferno.InfernoScripts.Parupunte
 
             #endregion
 
-            IsonoManager.Instance.OnRecievedMessageAsObservable
-                .Where(x => x.Contains("ぱるぷんて"))
-                .ObserveOn(Context)
-                .Subscribe(_ => ParupunteStart());
+            //IsonoManager.Instance.OnRecievedMessageAsObservable
+            //    .Where(x => x.Contains("ぱるぷんて"))
+            //    .ObserveOn(Context)
+            //    .Subscribe(_ => ParupunteStart());
         }
 
 
@@ -131,7 +131,6 @@ namespace Inferno.InfernoScripts.Parupunte
                 var scriptType = ChooseParupounteScript();
                 return Activator.CreateInstance(scriptType, this) as ParupunteScript;
             },Scheduler.ThreadPool)
-            .ObserveOn(Context)
             .Retry(3)
             .Subscribe(x=> StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
             {
