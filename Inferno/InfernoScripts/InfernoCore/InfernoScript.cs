@@ -247,9 +247,11 @@ namespace Inferno
         {
             Context = new SingleThreadSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(Context);
+
+            //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(1))
                 .Where(_ => InfernoCore.Instance != null)
-                .Take(1)
+                .First()
                 .Subscribe(_ =>
                 {
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
@@ -282,8 +284,9 @@ namespace Inferno
 
             coroutineSystem = new CoroutineSystem();
 
-            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 10) * 10))
-                .Take(1)
+            //コルーチンの起動を分散する
+            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 100)))
+                .First()
                 .Subscribe(_ =>
                 {
                     ////コルーチンの実行

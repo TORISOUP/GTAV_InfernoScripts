@@ -23,21 +23,20 @@ namespace Inferno
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
 
-        private readonly BehaviorSubject<Ped[]> _pedsNearPlayer = new BehaviorSubject<Ped[]>(default(Ped[]));
         /// <summary>
         /// 周辺市民
         /// </summary>
-        public UniRx.IObservable<Ped[]> PedsNearPlayer => _pedsNearPlayer.AsObservable();
+        public ReactiveProperty<Ped[]> PedsNearPlayer = new ReactiveProperty<Ped[]>();
 
-        private readonly BehaviorSubject<Vehicle[]> _vehiclesNearPlayer = new BehaviorSubject<Vehicle[]>(default(Vehicle[]));
         /// <summary>
         /// 周辺車両
         /// </summary>
-        public UniRx.IObservable<Vehicle[]> VehicleNearPlayer => _vehiclesNearPlayer.AsObservable();
+        public ReactiveProperty<Vehicle[]> VehicleNearPlayer = new ReactiveProperty<Vehicle[]>();
 
-        private BehaviorSubject<Ped> playerPed = new BehaviorSubject<Ped>(default(Ped));
-
-        public UniRx.IObservable<Ped> PlayerPed => playerPed.AsObservable(); 
+        /// <summary>
+        /// プレイヤ
+        /// </summary>
+        public ReactiveProperty<Ped> PlayerPed = new ReactiveProperty<Ped>();
 
         /// <summary>
         /// 25ms周期のTick
@@ -85,9 +84,9 @@ namespace Inferno
                 var player = Game.Player;
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
-                playerPed.OnNext(ped);
-                _pedsNearPlayer.OnNext(World.GetNearbyPeds(ped, 500));
-                _vehiclesNearPlayer.OnNext(World.GetNearbyVehicles(ped, 500));
+                PlayerPed.Value = ped;
+                PedsNearPlayer.Value = World.GetNearbyPeds(ped, 500);
+                VehicleNearPlayer.Value = World.GetNearbyVehicles(ped, 500);
             }
             catch (Exception e)
             {
