@@ -52,7 +52,7 @@ namespace Inferno
         /// <summary>
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
-        public ReadOnlyCollection<Ped> CachedPeds => Array.AsReadOnly(_cachedPeds ?? new Ped[0]);
+        public Ped[] CachedPeds => _cachedPeds;
 
         private Vehicle[] _cachedVehicles = new Vehicle[0];
 
@@ -116,7 +116,7 @@ namespace Inferno
                 .Select(x => x.Aggregate((p, c) => p + c))
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
-                .Take(1).Repeat() //1回動作したらBufferをクリア
+                .First().Repeat() //1回動作したらBufferをクリア
                 .Publish()
                 .RefCount();
         }
@@ -137,7 +137,7 @@ namespace Inferno
 
             return OnTickAsObservable
                 .Skip(skipCount)
-                .Take(1)
+                .First()
                 .Repeat()
                 .Publish().RefCount();
         }

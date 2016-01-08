@@ -30,18 +30,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var player = core.PlayerPed;
             var targets = core.CachedVehicles
                 .Where(x => x.IsSafeExist()
-                            && x.IsInRangeOf(player.Position, 80.0f)
+                            && x.IsInRangeOf(player.Position, 50.0f)
                             && x != player.CurrentVehicle
-
+                            && !x.IsPersistent
                 );
             foreach (var vehicle in targets)
             {
                 vehicle.ApplyForce(Vector3.WorldUp);
             }
 
-            if (core.PlayerPed.IsInVehicle())
+            if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
             {
-                var v = core.PlayerPed.CurrentVehicle;
+                var v = player.CurrentVehicle;
                 if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
                 {
                     v.ApplyForce(Vector3.WorldUp * 1.2f);

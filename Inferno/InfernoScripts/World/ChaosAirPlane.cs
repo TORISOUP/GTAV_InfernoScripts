@@ -51,7 +51,7 @@ namespace Inferno
 
                     foreach (var point in array)
                     {
-                        NativeFunctions.CreateLight(point, 255, 30, 30, 0.1f, insensity);
+                        NativeFunctions.CreateLight(point, 255, 80, 80, 0.1f, insensity);
                     }
                 });
         }
@@ -59,7 +59,7 @@ namespace Inferno
         //時間差で戦闘機を出現させる
         private IEnumerable<object> StartChaosPlanes()
         {
-            foreach (var i in Enumerable.Range(0, 7))
+            foreach (var i in Enumerable.Range(0, 4))
             {
                 StartCoroutine(PlaneManageCoroutine(i));
                 yield return WaitForSeconds(1);
@@ -144,10 +144,10 @@ namespace Inferno
                     //ターゲットが死亡していたらターゲット変更
                     if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
 
-                    if (target.IsInRangeOf(plane.Position, attackRadius) && Random.Next(0, 100) < 10)
+                    if (target.IsInRangeOf(plane.Position, attackRadius) && Random.Next(0, 100) < 5)
                     {
                         //たまに攻撃
-                        var pos = target.Position.Around(30);
+                        var pos = target.Position.Around(10);
                         Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X, pos.Y, pos.Z);
 
                         targets[id] = new Tuple<Vehicle, Entity>(plane, target);
