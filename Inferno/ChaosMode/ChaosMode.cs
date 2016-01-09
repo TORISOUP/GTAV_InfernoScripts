@@ -38,8 +38,14 @@ namespace Inferno.ChaosMode
 
         protected override int TickInterval => 100;
 
+        private int chaosRelationShipId;
+
         protected override void Setup()
         {
+            //敵対関係のグループを作成
+            chaosRelationShipId = World.AddRelationshipGroup("Inferno:ChaosPeds");
+            
+
             var chaosSettingLoader = new ChaosModeSettingLoader();
             chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"./scripts/chaosmode/default.conf");
 
@@ -58,10 +64,12 @@ namespace Inferno.ChaosMode
                     if (IsActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
+                        World.SetRelationshipBetweenGroups(Relationship.Hate, chaosRelationShipId, PlayerPed.RelationshipGroup);
                     }
                     else
                     {
                         DrawText("ChaosMode:Off", 3.0f);
+                        World.SetRelationshipBetweenGroups(Relationship.Neutral, chaosRelationShipId, PlayerPed.RelationshipGroup);
                     }
                 });
 
@@ -167,7 +175,6 @@ namespace Inferno.ChaosMode
             }
             else
             {
-                //グループに入ってるなら脱退させる
                 var playerGroup = Game.Player.GetPlayerGroup();
                 if (!ped.IsPedGroupMember(playerGroup))
                 {
@@ -271,9 +278,12 @@ namespace Inferno.ChaosMode
             //戦闘能力？
             ped.SetCombatAbility(1000);
             //戦闘範囲
-            ped.SetCombatRange(1000);
+            ped.SetCombatRange(30);
             //攻撃を受けたら反撃する
-            ped.RegisterHatedTargetsAroundPed(500);
+            ped.RegisterHatedTargetsAroundPed(20);
+
+            //プレイヤと敵対状態にする
+            ped.RelationshipGroup = chaosRelationShipId;
         }
 
         /// <summary>
