@@ -307,6 +307,7 @@ namespace Inferno.ChaosMode
                     //TODO:車から投擲物を投げる方法を調べる
                     ped.Task.ClearAll();
                     ped.TaskDriveBy(target, FiringPattern.BurstFireDriveby);
+                    
                 }
                 else
                 {
@@ -333,8 +334,6 @@ namespace Inferno.ChaosMode
                 }
 
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
-                //ped.SetPedKeepTask(true);
-                //ped.TaskSetBlockingOfNonTemporaryEvents(true);
             }
             catch (Exception e)
             {
