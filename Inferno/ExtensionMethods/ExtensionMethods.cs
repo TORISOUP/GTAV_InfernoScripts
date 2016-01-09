@@ -47,6 +47,13 @@ namespace Inferno
             return x.Handle == y.Handle;
         }
 
+        public static Vector3 Normalized(this Vector3 origin)
+        {
+            var copy = origin;
+            copy.Normalize();
+            return copy;
+        }
+
         /// <summary>
         /// 平面上でランダムな座標を加えた座標を返す
         /// </summary>

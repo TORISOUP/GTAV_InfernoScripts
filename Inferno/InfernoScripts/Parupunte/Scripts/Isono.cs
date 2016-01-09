@@ -6,7 +6,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug]
     internal class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core) : base(core)
@@ -32,7 +31,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     .Concat(core.CachedPeds.Cast<Entity>())
                     .Where(x => x.IsSafeExist() && x.IsInRangeOf(player.Position, 100));
 
-            var upForce = new Vector3(0, 0, 8.0f);
+            var targetPositionInAri = core.PlayerPed.Position + new Vector3(0, 0, 500);
+
+            var vehicleForcePower = 5;
+            var pedForcePower = 10;
 
             player.CanRagdoll = true;
             player.SetToRagdoll(3000);
@@ -42,11 +44,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 player.CurrentVehicle.IsCollisionProof = true;
             }
 
-            var randomVector = Utilities.InfernoUtilities.CreateRandomVector();
-
-            //6秒間空に打ち上げる
-            foreach (var s in WaitForSeconds(6))
+            foreach (var s in WaitForSeconds(10))
             {
+                //一定以上打ち上がったらおわり
+                if(player.Position.Z > targetPositionInAri.Z) break;
+
                 foreach (var entity in entities.Where(x => x.IsSafeExist()))
                 {
                     if (entity is Ped)
@@ -54,19 +56,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var p = entity as Ped;
                         p.SetToRagdoll(3000);
                     }
-                    entity.ApplyForce(upForce, randomVector);
+                    var direction = (targetPositionInAri - entity.Position).Normalized();
+                    var power = entity is Ped ? pedForcePower : vehicleForcePower;
+                    entity.ApplyForce(direction * power, Vector3.RandomXYZ());
                 }
                 if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
                 {
-                    player.CurrentVehicle.ApplyForce(upForce);
+                    player.CurrentVehicle.ApplyForce(Vector3.WorldUp * vehicleForcePower);
                 }
                 else
                 {
-                    player.ApplyForce(upForce, randomVector);
+                    
+                    player.ApplyForce(Vector3.WorldUp * pedForcePower);
                 }
                 yield return null;
             }
 
+            //着地するまで
             while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
             {
                 yield return null;

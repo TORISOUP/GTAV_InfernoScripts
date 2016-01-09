@@ -5,7 +5,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     internal class DachoClub : ParupunteScript
     {
         public DachoClub(ParupunteCore core) : base(core)
