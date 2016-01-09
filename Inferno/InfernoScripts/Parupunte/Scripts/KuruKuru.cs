@@ -1,10 +1,9 @@
-﻿using GTA.Math;
-using Inferno.InfernoScripts.Parupunte;
-using System;
+﻿using System;
 using System.Linq;
+using GTA.Math;
 using UniRx;
 
-namespace Inferno
+namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class KuruKuru : ParupunteScript
     {

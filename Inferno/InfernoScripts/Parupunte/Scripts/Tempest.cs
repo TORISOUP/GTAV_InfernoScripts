@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             GTA.World.Weather = Weather.ThunderStorm;
-            ReduceCounter = new ReduceCounter(20 * 1000);
+            ReduceCounter = new ReduceCounter(15 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
         }

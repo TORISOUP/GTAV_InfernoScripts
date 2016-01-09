@@ -134,7 +134,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .OnErrorRetry((Exception ex) =>
                 {
                     LogWrite(ex.ToString());
-                }, 3, TimeSpan.FromMilliseconds(20))
+                }, 3, TimeSpan.FromMilliseconds(300))
                 .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
                 {
                     LogWrite(ex.ToString());
