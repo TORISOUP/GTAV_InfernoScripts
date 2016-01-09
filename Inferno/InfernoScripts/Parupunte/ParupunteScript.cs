@@ -57,12 +57,15 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         protected ReduceCounter ReduceCounter;
 
+        protected Random Random;
+
         protected ParupunteScript(ParupunteCore core)
         {
             this.core = core;
             coroutineIds = new List<uint>();
             core.LogWrite(this.ToString());
             IsFinished = false;
+            Random = new Random();
         }
 
         /// <summary>

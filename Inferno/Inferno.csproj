@@ -132,6 +132,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\PositionShufle.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\RepairVehicles.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SetDateTime.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnFriend.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnTaxies.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnCharacters.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpeedMax.cs" />
