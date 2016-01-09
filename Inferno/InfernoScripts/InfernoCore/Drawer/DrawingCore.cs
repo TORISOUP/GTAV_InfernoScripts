@@ -13,9 +13,6 @@ namespace Inferno
 
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
 
-        /// <summary>
-        /// 100ms周期のTick
-        /// </summary>
         public static UniRx.IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
 
         public DrawingCore()

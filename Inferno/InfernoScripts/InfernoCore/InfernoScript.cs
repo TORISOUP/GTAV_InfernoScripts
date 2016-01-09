@@ -45,7 +45,9 @@ namespace Inferno
         /// <summary>
         /// プレイヤのped
         /// </summary>
-        public Ped PlayerPed { get; private set; }
+        public Ped PlayerPed => cahcedPlayerPed ?? Game.Player.Character;
+
+        private Ped cahcedPlayerPed;
 
         private Ped[] _cachedPeds = new Ped[0];
 
@@ -249,14 +251,14 @@ namespace Inferno
             SynchronizationContext.SetSynchronizationContext(Context);
 
             //初期化をちょっと遅延させる
-            Observable.Interval(TimeSpan.FromMilliseconds(1))
+            Observable.Interval(TimeSpan.FromMilliseconds(10))
                 .Where(_ => InfernoCore.Instance != null)
                 .First()
                 .Subscribe(_ =>
                 {
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
                     InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
-                    InfernoCore.Instance.PlayerPed.Subscribe(x => PlayerPed = x);
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
                 });
 
             //TickイベントをObservable化しておく

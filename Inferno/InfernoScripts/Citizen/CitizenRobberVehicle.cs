@@ -35,7 +35,8 @@ namespace Inferno
                 .Where(_ => IsActive)
                 .Subscribe(_ => RobberVehicle());
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+            //デフォルトではOFFにする
+         //   OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
 
         private void RobberVehicle()
