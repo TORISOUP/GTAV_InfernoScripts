@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Windows.Forms;
+using Inferno.ChaosMode;
+using Inferno.ChaosMode.WeaponProvider;
 using UniRx;
 
 namespace Inferno
@@ -23,6 +25,7 @@ namespace Inferno
         private Queue<PedHash> motherBasePeds = new Queue<PedHash>(30);
         private Queue<GTA.Native.VehicleHash> motherbaseVeh = new Queue<GTA.Native.VehicleHash>(30);
         private Random random = new Random();
+        private ChaosModeWeapons weapons = new ChaosModeWeapons();
 
         /// <summary>
         /// フルトン回収で車を吊り下げた時の音
@@ -166,7 +169,7 @@ namespace Inferno
             {
                 var p = entity as Ped;
                 p.CanRagdoll = true;
-                p.SetToRagdoll(10 * 1000);
+                p.SetToRagdoll();
 
                 isPed = true;
             }
@@ -183,7 +186,7 @@ namespace Inferno
             foreach (var s in WaitForSeconds(3))
             {
                 if (!entity.IsSafeExist() || entity.IsDead) yield break;
-
+                if(entity is Ped) { ((Ped)entity).SetToRagdoll(); }
                 entity.ApplyForce(upForce * 1.07f);
 
                 yield return s;
@@ -250,24 +253,34 @@ namespace Inferno
 
             var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist()) return;
-            var weapon = Enum.GetValues(typeof(WeaponHash))
-                .Cast<WeaponHash>()
-                .OrderBy(c => random.Next())
-                .FirstOrDefault();
 
-            var weaponhash = (int)weapon;
-            p.MarkAsNoLongerNeeded();
+            p.SetNotChaosPed(true);
+            PlayerPed.CurrentPedGroup.Add(p, false);
+            p.MaxHealth = 500;
+            p.Health = p.MaxHealth;
 
-            Function.Call(Hash.SET_PED_AS_GROUP_MEMBER, p, Game.Player.GetPlayerGroup());
+            var weaponhash = (int)weapons.AllWeapons[Random.Next(0, weapons.AllWeapons.Length)];
             p.SetDropWeaponWhenDead(false); //武器を落とさない
             p.GiveWeapon(weaponhash, 1000); //指定武器所持
             p.EquipWeapon(weaponhash); //武器装備
-            p.Health = 1;
-            p.Task.FightAgainstHatedTargets(50, 0);
-            var blip = p.AddBlip();
-            blip.Color = BlipColor.White;
+            StartCoroutine(FriendCoroutine(p));
         }
 
+        /// <summary>
+        /// 生成した味方を監視するコルーチン
+        /// </summary>
+        private IEnumerable<object> FriendCoroutine(Ped ped)
+        {
+            while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position,100))
+            {
+                yield return WaitForSeconds(1);
+            }
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
+            }
+        }
+             
         private void SpawnVehicle()
         {
             var hash = motherbaseVeh.Dequeue();
