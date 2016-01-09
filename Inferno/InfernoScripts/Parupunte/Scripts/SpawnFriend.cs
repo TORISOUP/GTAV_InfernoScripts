@@ -10,7 +10,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     class SpawnFriend :ParupunteScript
     {
         private ChaosModeWeapons weapons = new ChaosModeWeapons();
@@ -24,7 +23,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(30 * 1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             foreach (var i in Enumerable.Range(0,4))
             {
@@ -36,6 +35,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ParupunteEnd();
             });
 
+            this.UpdateAsObservable
+                .Where(_ => core.PlayerPed.IsDead)
+                .FirstOrDefault()
+                .Subscribe(_ =>
+                {
+                    ParupunteEnd();
+                });
         }
 
         protected override void OnFinished()
