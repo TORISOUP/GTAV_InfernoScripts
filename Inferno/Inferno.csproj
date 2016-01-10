@@ -143,6 +143,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs" />
     <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
+    <Compile Include="InfernoScripts\Player\BondCar.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
     <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
