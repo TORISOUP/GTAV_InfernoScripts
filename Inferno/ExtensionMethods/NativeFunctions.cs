@@ -596,5 +596,11 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_SPECIAL_ABILITY_ACTIVE, player);
         }
+
+        public static void RequestCollision(this Entity entity)
+        {
+            var p = entity.Position;
+            Function.Call(Hash.REQUEST_COLLISION_AT_COORD, p.X, p.Y, p.Z);
+        }
     }
 }

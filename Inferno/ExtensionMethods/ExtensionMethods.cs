@@ -47,6 +47,17 @@ namespace Inferno
             return x.Handle == y.Handle;
         }
 
+        /// <summary>
+        /// ターゲットへ向かう正規化したベクトルを返す
+        /// </summary>
+        public static Vector3 To(this Vector3 origin, Vector3 target)
+        {
+            return (target - origin).Normalized();
+        }
+
+        /// <summary>
+        /// 正規化する
+        /// </summary>
         public static Vector3 Normalized(this Vector3 origin)
         {
             var copy = origin;
