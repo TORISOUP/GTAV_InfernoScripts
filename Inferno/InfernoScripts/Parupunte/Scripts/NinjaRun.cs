@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.Parupunte;
@@ -8,6 +9,7 @@ namespace Inferno
 {
     internal class NinjaRun : ParupunteScript
     {
+        private float addSpeed = 1.0f;
         public NinjaRun(ParupunteCore core) : base(core)
         {
         }
@@ -35,32 +37,36 @@ namespace Inferno
             }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
+            //メイン処理
             this.UpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Subscribe(_ =>
                 {
-                    SetAnimRate(core.PlayerPed, 5.0f);
+                    SetAnimRate(core.PlayerPed, 6.0f + addSpeed);
                     Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, core.PlayerPed, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,
                         0, 0);
                     Function.Call(Hash.SET_ACTIVATE_OBJECT_PHYSICS_AS_SOON_AS_IT_IS_UNFROZEN, core.PlayerPed, true);
                     var hp = core.PlayerPed.ForwardVector;
-                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X * 1, hp.Y * 1, hp.Z * 1, 0, 0, 0, 1, false,
+                    Function.Call(Hash.APPLY_FORCE_TO_ENTITY, core.PlayerPed, hp.X * addSpeed, hp.Y * addSpeed, hp.Z * addSpeed, 0, 0, 0, 1, false,
                         true, true, true, true);
                     Function.Call(Hash.TASK_PLAY_ANIM, core.PlayerPed, "move_m@generic", "sprint", 8.0, -8.0, -1, 9, 0,
                         0, 0, 0);
-
-                    StartFire();
+                    
+                    //徐々に加速
+                    addSpeed *= 1.05f;
+                    addSpeed = Math.Min(5, addSpeed);
                 });
 
-            var num = 0;
+            //定期的にエフェクト再生
             this.UpdateAsObservable
-                .Where(_ => core.IsGamePadPressed(GameKey.Sprint) && num % 10 == 0)
+                .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
+                .ThrottleFirst(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
-                    num++;
                     StartFire();
                 });
 
+            //左右移動
             this.UpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Select(_ => core.GetStickValue().X)
@@ -70,15 +76,19 @@ namespace Inferno
                     player.Quaternion = Quaternion.RotationAxis(player.UpVector, (-input / 127.0f) * 0.2f) * player.Quaternion;
                 });
 
+            //ボタンを離したら中断
             this.UpdateAsObservable
                 .Select(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .DistinctUntilChanged()
                 .Where(x => !x)
                 .Subscribe(_ =>
                 {
+                    addSpeed = 1.0f;
                     SetAnimRate(core.PlayerPed, 1);
                     Function.Call(Hash.TASK_FORCE_MOTION_STATE, core.PlayerPed, 0xFFF7E7A4, 0);
                 });
+
+            //死んだら爆発
             this.UpdateAsObservable
                 .Select(_ => core.PlayerPed.IsDead)
                 .DistinctUntilChanged()
@@ -87,7 +97,7 @@ namespace Inferno
                     GTA.World.AddExplosion(core.PlayerPed.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
                 });
 
-            ReduceCounter = new ReduceCounter(20000);
+            ReduceCounter = new ReduceCounter(25000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
         }
