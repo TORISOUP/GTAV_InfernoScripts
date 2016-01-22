@@ -46,7 +46,7 @@ namespace Inferno
                     if (PlayerPed.GetKiller() == PlayerPed) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
                         new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
-                        1.0f, Color.White, 0, true);
+                        1.0f, Color.White, 0, true, false ,true);
 
                     _mContainer.Items.Add(text);
                 });

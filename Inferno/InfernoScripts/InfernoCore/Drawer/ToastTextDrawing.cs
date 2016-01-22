@@ -53,7 +53,7 @@ namespace Inferno
         {
             _mContainer.Items.Clear();
             _currentTickCounter = (int)(time * 10);
-            _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false));
+            _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false, false, true));
 
             while (--_currentTickCounter > 0)
             {
