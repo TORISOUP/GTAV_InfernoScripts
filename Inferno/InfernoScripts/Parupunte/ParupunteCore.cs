@@ -273,7 +273,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             return new UIText(text,
                 new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
-                0.8f, Color.White, 0, true);
+                0.8f, Color.White, 0, true, false, true);
         }
 
         private string GetPlayerName()
