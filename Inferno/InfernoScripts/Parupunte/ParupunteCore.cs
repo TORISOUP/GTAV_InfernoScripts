@@ -137,7 +137,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 }, 3, TimeSpan.FromMilliseconds(300))
                 .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
                 {
-                    LogWrite(ex.ToString());
+             //       LogWrite(ex.ToString());
                     IsActive = false;
                 });
         }
