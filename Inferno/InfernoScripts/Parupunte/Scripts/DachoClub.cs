@@ -21,7 +21,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             //プレイヤの着地を監視
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Select(_ => !core.PlayerPed.IsInAir)
                 .DistinctUntilChanged()
                 .Where(x => x)

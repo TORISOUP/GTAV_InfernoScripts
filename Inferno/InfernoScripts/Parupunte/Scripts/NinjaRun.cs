@@ -38,7 +38,7 @@ namespace Inferno
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
             //メイン処理
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Subscribe(_ =>
                 {
@@ -58,7 +58,7 @@ namespace Inferno
                 });
 
             //定期的にエフェクト再生
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .ThrottleFirst(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
@@ -67,7 +67,7 @@ namespace Inferno
                 });
 
             //左右移動
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .Select(_ => core.GetStickValue().X)
                 .Subscribe(input =>
@@ -77,7 +77,7 @@ namespace Inferno
                 });
 
             //ボタンを離したら中断
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Select(_ => core.IsGamePadPressed(GameKey.Sprint))
                 .DistinctUntilChanged()
                 .Where(x => !x)
@@ -89,7 +89,7 @@ namespace Inferno
                 });
 
             //死んだら爆発
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Select(_ => core.PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x).Subscribe(_ =>

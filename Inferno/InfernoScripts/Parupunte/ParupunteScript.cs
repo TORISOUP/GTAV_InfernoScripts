@@ -51,6 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte
         protected List<uint> coroutineIds;
 
         private Subject<Unit> onUpdateSubject;
+        private Subject<Unit> onFinishedSubject;
 
         /// <summary>
         /// 汎用カウンタ（終了時にCompletedになる）
@@ -85,7 +86,11 @@ namespace Inferno.InfernoScripts.Parupunte
             OnUpdate();
         }
 
-        protected UniRx.IObservable<Unit> UpdateAsObservable => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+        protected UniRx.IObservable<Unit> OnUpdateAsObservable
+            => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+
+        protected UniRx.IObservable<Unit> OnFinishedAsObservable
+            => onFinishedSubject ?? (onFinishedSubject = new Subject<Unit>());
 
         /// <summary>
         /// 100msごとに実行される
@@ -104,6 +109,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             onUpdateSubject?.OnCompleted();
             OnFinished();
+            onFinishedSubject?.OnNext(Unit.Default);
+            onFinishedSubject?.OnCompleted();
 
             foreach (var id in coroutineIds)
             {

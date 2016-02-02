@@ -102,6 +102,7 @@
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\AddPlayerMoney.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenNinja.cs" />

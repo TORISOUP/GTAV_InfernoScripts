@@ -79,7 +79,7 @@ namespace Inferno
         /// </summary>
         private void SetUpSound()
         {
-            var filePaths = LoadWavFiles(@"scripts/fulton");
+            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
             var setupWav = filePaths.FirstOrDefault(x => x.Contains("vehicle.wav"));
             if (setupWav != null)
             {

@@ -35,7 +35,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ParupunteEnd();
             });
 
-            this.UpdateAsObservable
+            this.OnUpdateAsObservable
                 .Where(_ => core.PlayerPed.IsDead)
                 .FirstOrDefault()
                 .Subscribe(_ =>
