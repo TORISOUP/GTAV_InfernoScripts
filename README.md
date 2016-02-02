@@ -14,6 +14,10 @@ MIT Licenseで公開します。
 
 * [ScriptHookVDotNet.dll](http://gtaforums.com/topic/789907-vrel-community-script-hook-v-net/)
 
-##使用ライブラリ
+##License
+
+This library is under the MIT License.
+
+###使用ライブラリ
 UniRx  
 Copyright (c) 2014 Yoshifumi Kawai https://github.com/neuecc/UniRx/blob/master/LICENSE
