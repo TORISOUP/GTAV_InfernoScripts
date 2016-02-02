@@ -27,7 +27,15 @@ namespace Inferno.InfernoScripts.Parupunte
     {
         private bool IsFinished = false;
 
+        /// <summary>
+        /// 開始時に表示されるメインメッセージ
+        /// </summary>
         public abstract string Name { get; }
+
+        /// <summary>
+        /// 画面右下に常に表示されるミニメッセージ
+        /// </summary>
+        public virtual string SubName { get; }
 
         /// <summary>
         /// 終了時に表示されるメッセージ

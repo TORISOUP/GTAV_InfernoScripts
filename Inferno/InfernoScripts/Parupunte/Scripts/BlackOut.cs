@@ -9,7 +9,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     class BlackOut : ParupunteScript
     {
         private SoundPlayer soundPlayerStart;

@@ -29,11 +29,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected override int TickInterval { get; } = 100;
 
-        private UIContainer _mContainer;
+        private UIContainer _mainTextUiContainer;
+        private UIContainer _subTextUiContainer;
         private TimerUiTextManager timerText;
         private int _screenHeight;
         private int _screenWidth;
-        private Vector2 _textPositionScale = new Vector2(0.5f, 0.8f);
+        private Vector2 _mainTextPositionScale = new Vector2(0.5f, 0.8f);
+        private Vector2 _subTextPositionScale = new Vector2(0.0f, 0.0f);
 
         public SynchronizationContext CoreContex => this.Context;
 
@@ -85,24 +87,30 @@ namespace Inferno.InfernoScripts.Parupunte
             var screenResolution = NativeFunctions.GetScreenResolution();
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
-            _mContainer = new UIContainer(
+            _mainTextUiContainer = new UIContainer(
+                new Point(0, 0), new Size(_screenWidth, _screenHeight));
+            _subTextUiContainer = new UIContainer(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             //テキストが更新されたら詰め直す
             timerText.OnSetTextAsObservable.Subscribe(_ =>
             {
-                _mContainer.Items.Clear();
-                _mContainer.Items.Add(timerText.Text);
+                _mainTextUiContainer.Items.Clear();
+                _mainTextUiContainer.Items.Add(timerText.Text);
             });
             //テキストが時間切れしたら消す
             OnTickAsObservable.Select(_ => timerText.IsEnabled)
                 .DistinctUntilChanged()
                 .Where(x => !x)
-                .Subscribe(_ => _mContainer.Items.Clear());
+                .Subscribe(_ => _mainTextUiContainer.Items.Clear());
 
             this.OnDrawingTickAsObservable
-                .Where(_ => _mContainer.Items.Any())
-                .Subscribe(_ => _mContainer.Draw());
+                .Where(_ => _mainTextUiContainer.Items.Any() || _subTextUiContainer.Items.Any())
+                .Subscribe(_ =>
+                {
+                    _mainTextUiContainer.Draw();
+                    _subTextUiContainer.Draw();
+                });
 
             #endregion Drawer
 
@@ -137,7 +145,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 }, 3, TimeSpan.FromMilliseconds(300))
                 .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
                 {
-             //       LogWrite(ex.ToString());
+                    //       LogWrite(ex.ToString());
                     IsActive = false;
                 });
         }
@@ -205,8 +213,15 @@ namespace Inferno.InfernoScripts.Parupunte
                 LogWrite(e.ToString());
                 script.OnFinishedCore();
                 IsActive = false;
+                _subTextUiContainer.Items.Clear();
                 yield break;
             }
+
+            //サブタイトルを出す
+            var subTitle = string.IsNullOrEmpty(script.SubName) ? script.Name : script.SubName;
+            _subTextUiContainer.Items.Clear();
+            _subTextUiContainer.Items.Add(CreateSubText(subTitle));
+
 
             while (script.IsActive && IsActive)
             {
@@ -220,6 +235,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     LogWrite(e.ToString());
                     script.OnFinishedCore();
                     IsActive = false;
+                    _subTextUiContainer.Items.Clear();
                     yield break;
                 }
                 yield return null; //100ms待機
@@ -236,6 +252,7 @@ namespace Inferno.InfernoScripts.Parupunte
             finally
             {
                 IsActive = false;
+                _subTextUiContainer.Items.Clear();
             }
         }
 
@@ -245,7 +262,7 @@ namespace Inferno.InfernoScripts.Parupunte
         private IEnumerable<object> ParupunteDrawCoroutine(string callString, string scriptname)
         {
             //○はパルプンテを唱えた！の部分
-            timerText.Set(CreateUIText(callString), 2.0f);
+            timerText.Set(CreateMainText(callString), 2.0f);
             var mess = new RequestDataPackage(callString);
             tcpManager.SendToAll(mess.ToJson());
 
@@ -253,7 +270,7 @@ namespace Inferno.InfernoScripts.Parupunte
             yield return WaitForSeconds(2);
 
             //効果名
-            timerText.Set(CreateUIText(scriptname), 3.0f);
+            timerText.Set(CreateMainText(scriptname), 3.0f);
             mess = new RequestDataPackage(scriptname);
             tcpManager.SendToAll(mess.ToJson());
 
@@ -266,15 +283,24 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public void DrawParupunteText(string text, float duration)
         {
-            timerText.Set(CreateUIText(text), duration);
+            timerText.Set(CreateMainText(text), duration);
         }
 
-        private UIText CreateUIText(string text)
+        private UIText CreateMainText(string text)
         {
             return new UIText(text,
-                new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
+                new Point((int)(_screenWidth * _mainTextPositionScale.X), (int)(_screenHeight * _mainTextPositionScale.Y)),
                 0.8f, Color.White, 0, true, false, true);
         }
+
+        private UIText CreateSubText(string text)
+        {
+            return new UIText(text,
+                new Point((int)(_screenWidth * _subTextPositionScale.X),
+                (int)(_screenHeight * _subTextPositionScale.Y)),
+                0.4f, Color.White, 0, false, false, true);
+        }
+
 
         private string GetPlayerName()
         {
@@ -328,10 +354,10 @@ namespace Inferno.InfernoScripts.Parupunte
         public void AddProgressBar(ReduceCounter reduceCounter)
         {
             var prgoressbarData = new ProgressBarData(reduceCounter,
-                new Point(_screenWidth - 10, _screenHeight - 100), //画面右下
+                new Point(0, 15),
                 Color.FromArgb(200, 0, 127, 255),
                 Color.FromArgb(128, 0, 0, 0),
-                DrawType.TopToBottom, 10, 100, 2);
+                DrawType.RightToLeft, 100, 10, 2);
             RegisterProgressBar(prgoressbarData);
             RegisterCounter(reduceCounter);
         }
