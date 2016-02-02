@@ -2,6 +2,7 @@
 using GTA.Math;
 using GTA.Native;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 
@@ -51,7 +52,7 @@ namespace Inferno
                 {
                     if (Random.Next(0, 100) <= probability)
                     {
-                        NitroVehicle(veh);
+                        StartCoroutine(DelayCoroutine(veh));
                     }
                 }
             }
@@ -61,6 +62,15 @@ namespace Inferno
                 LogWrite(e.ToString());
             }
         }
+
+        /// <summary>
+        /// ニトロの発動を遅延させる
+        /// </summary>
+        private IEnumerable<object> DelayCoroutine(Vehicle v)
+        {
+            yield return WaitForSeconds(Random.Next(0,5));
+            NitroVehicle(v);
+        }  
 
         /// <summary>
         /// 車をニトロする
