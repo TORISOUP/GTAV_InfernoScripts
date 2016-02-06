@@ -110,6 +110,8 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FishHeaven.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\VehicleSpeedUp.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Gochiusa.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\InvisiblePeds.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\KillCitizens.cs" />

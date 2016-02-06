@@ -33,6 +33,11 @@ namespace Inferno
         public ReactiveProperty<Ped> PlayerPed = new ReactiveProperty<Ped>();
 
         /// <summary>
+        /// プレイヤの乗ってる車両
+        /// </summary>
+        public ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>(); 
+
+        /// <summary>
         /// 25ms周期のTick
         /// </summary>
         public static UniRx.IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
@@ -80,6 +85,7 @@ namespace Inferno
                 PlayerPed.Value = ped;
                 PedsNearPlayer.Value = World.GetNearbyPeds(ped, 500);
                 VehicleNearPlayer.Value = World.GetNearbyVehicles(ped, 500);
+                PlayerVehicle.Value = ped?.CurrentVehicle;
             }
             catch (Exception e)
             {

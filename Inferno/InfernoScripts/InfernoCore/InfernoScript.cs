@@ -48,6 +48,7 @@ namespace Inferno
         public Ped PlayerPed => cahcedPlayerPed ?? Game.Player.Character;
 
         private Ped cahcedPlayerPed;
+        public ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>();
 
         private Ped[] _cachedPeds = new Ped[0];
 
@@ -259,6 +260,7 @@ namespace Inferno
                     InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
                     InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
                     InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
+                    InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
                 });
 
             //TickイベントをObservable化しておく
