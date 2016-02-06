@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
-using System.Text;
-using System.Threading.Tasks;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+
     class BlackOut : ParupunteScript
     {
         private SoundPlayer soundPlayerStart;
@@ -24,7 +23,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(15 * 1000);
+            ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
@@ -38,6 +37,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GTA.World.SetBlackout(false);
                     soundPlayerStart = null;
                     soundPlayerEnd = null;
+                });
+
+            //周辺車両をエンストさせる
+            this.OnUpdateAsObservable
+                .Subscribe(_ =>
+                {
+                    var playerPos = core.PlayerPed.Position;
+                    var playerVehicle = core.GetPlayerVehicle();
+                    foreach (var v in core.CachedVehicles.Where(
+                        x=>x.IsSafeExist() 
+                        && x.IsInRangeOf(playerPos,1000)
+                        && x.IsAlive
+                        && x != playerVehicle))
+                    {
+                        v.EngineRunning = false;
+                        v.EnginePowerMultiplier = 0.0f;
+                        v.EngineTorqueMultiplier = 0.0f;
+
+                    }
                 });
         }
         
