@@ -158,10 +158,12 @@ namespace Inferno
 
         protected void StopCoroutine(uint id)
         {
-            if (coroutineSystem != null)
-            {
-                coroutineSystem.RemoveCoroutine(id);
-            }
+            coroutineSystem?.RemoveCoroutine(id);
+        }
+
+        protected void StopAllCoroutine()
+        {
+            coroutineSystem?.RemoveAllCoroutine();
         }
 
         protected bool IsCoroutineActive(uint id)

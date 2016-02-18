@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Markup.Localizer;
 
 namespace Inferno
 {
@@ -54,6 +55,17 @@ namespace Inferno
             {
                 //このタイミングでは消さない
                 _stopCoroutineList.Add(id);
+            }
+        }
+
+        /// <summary>
+        /// 全てのコルーチンを停止する
+        /// </summary>
+        public void RemoveAllCoroutine()
+        {
+            lock (_lockObject)
+            {
+                _coroutines.Clear();
             }
         }
 

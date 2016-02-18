@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+
     internal class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core) : base(core)
