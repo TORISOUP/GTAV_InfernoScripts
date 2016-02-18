@@ -87,6 +87,7 @@ namespace Inferno.InfernoScripts.World
                 {
                     currentSpeedType = nextType;
                     DrawText($"SpeedMax:[Type:{(currentSpeedType)}][OK]", 2.0f);
+                    StopAllCoroutine();
                     vehicleHashSet.Clear();
                 });
 
@@ -95,6 +96,8 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     excludeMissionVehicle = !excludeMissionVehicle;
+                    vehicleHashSet.Clear();
+                    StopAllCoroutine();
                     DrawText($"SpeedMax:ExcludeMissionVehicles[{excludeMissionVehicle}]");
                 });
 
@@ -122,10 +125,7 @@ namespace Inferno.InfernoScripts.World
         private IEnumerable<object> OriginalSpeedMaxCoroutine(Vehicle v)
         {
             var maxSpeed = Random.Next(100, 300);
-            var mySpeedType = currentSpeedType;
-
-            // 有効かつスピードタイプに変更が無い間実行
-            while (IsActive && v.IsSafeExist() && mySpeedType == currentSpeedType)
+            while (IsActive && v.IsSafeExist())
             {
                 if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
                 if (PlayerVehicle.Value == v) yield break;
@@ -139,12 +139,14 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private IEnumerable<object> VehicleSpeedMaxCorutine(Vehicle v)
         {
-
-            var maxSpeed = GetVehicleSpeed() * ((v.Handle % 10 == 0) ? -1 : 1);
-            var mySpeedType = currentSpeedType;
-
-            // 有効かつスピードタイプに変更が無い間実行
-            while (IsActive && v.IsSafeExist() && mySpeedType == currentSpeedType)
+            //たまに後ろに飛ぶ
+            var dir = (v.Handle % 10 == 0) ? -1 : 1;
+            var maxSpeed = GetVehicleSpeed() * dir;
+            if (currentSpeedType == SpeedType.High)
+            {
+                v.Speed = 100 * dir;
+            }
+            while (IsActive && v.IsSafeExist())
             {
                 if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
                 if (PlayerVehicle.Value == v) yield break;
