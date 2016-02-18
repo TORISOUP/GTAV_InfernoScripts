@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GTA;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(false, true)]
     class PerfectFreeze : ParupunteScript
     {
         public PerfectFreeze(ParupunteCore core) : base(core)
@@ -28,6 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             });
 
             this.OnUpdateAsObservable
+                .ThrottleFirst(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
                     var playerPos = core.PlayerPed.Position;
@@ -43,19 +44,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         v.FreezePosition = true;
                         freezedEntities.Add(v);
-                    }
-                    #endregion
-
-                    #region props
-                    var props = GTA.World.GetAllProps();
-                    foreach (var prop in props.Where(x =>
-                        x.IsSafeExist()
-                        && !freezedEntities.Contains(x)
-                        && x.IsInRangeOf(playerPos, FreezeRange)
-                    ))
-                    {
-                        prop.FreezePosition = true;
-                        freezedEntities.Add(prop);
                     }
                     #endregion
 

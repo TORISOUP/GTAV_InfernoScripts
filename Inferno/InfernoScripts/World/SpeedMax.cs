@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using UniRx;
@@ -12,16 +13,45 @@ namespace Inferno.InfernoScripts.World
     {
         HashSet<int> vehicleHashSet = new HashSet<int>();
 
+        enum SpeedType
+        {
+            Original,
+            Low,
+            Middle,
+            High,
+            Random
+        }
+
+        SpeedType currentSpeedType = SpeedType.Original;
+
+        private bool excludeMissionVehicle = false;
+
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("smax")
+            CreateInputKeywordAsObservable("snax")
                 .Subscribe(_ => IsActive = !IsActive);
 
             IsActiveAsObservable
-                .Subscribe(x => DrawText($"SpeedMax:{IsActive}"));
+                .Where(x => x)
+                .Subscribe(x =>
+                {
+                    DrawText($"SpeedMax:{IsActive}[Type:{(currentSpeedType)}][Exclude:{excludeMissionVehicle}]");
+                    vehicleHashSet.Clear();
+                });
+
+            IsActiveAsObservable
+                .Where(x => !x)
+                .Subscribe(x =>
+                {
+                    DrawText($"SpeedMax:{IsActive}");
+                    vehicleHashSet.Clear();
+                });
+
+            //ミッション開始直後に一瞬動作を止めるフラグ
+            var suspednFlag = false;
 
             OnTickAsObservable
-                .Where(_ => IsActive)
+                .Where(_ => IsActive && !suspednFlag)
                 .Subscribe(_ =>
                 {
                     foreach (var v in CachedVehicles
@@ -29,11 +59,43 @@ namespace Inferno.InfernoScripts.World
                                             x.IsSafeExist()
                                             && x.IsInRangeOf(PlayerPed.Position, 100.0f)
                                             && !vehicleHashSet.Contains(x.Handle)
+                                            && !(excludeMissionVehicle && x.IsPersistent)
                                         ))
                     {
                         vehicleHashSet.Add(v.Handle);
-                        StartCoroutine(VehicleSpeedMaxCorutine(v));
+                        if (currentSpeedType == SpeedType.Original)
+                        {
+                            StartCoroutine(OriginalSpeedMaxCoroutine(v));
+                        }
+                        else
+                        {
+                            StartCoroutine(VehicleSpeedMaxCorutine(v));
+                        }
+
                     }
+                });
+            var nextType = currentSpeedType;
+            OnKeyDownAsObservable
+                .Where(x => IsActive && x.KeyCode == Keys.F6)
+                .Do(_ =>
+                {
+                    nextType = GetNextSpeedType(nextType);
+                    DrawText($"SpeedMax:[Type:{nextType}]", 1.0f);
+                })
+                .Throttle(TimeSpan.FromSeconds(1))
+                .Subscribe(_ =>
+                {
+                    currentSpeedType = nextType;
+                    DrawText($"SpeedMax:[Type:{(currentSpeedType)}][OK]", 2.0f);
+                    vehicleHashSet.Clear();
+                });
+
+            OnKeyDownAsObservable
+                .Where(x => IsActive && x.KeyCode == Keys.F5)
+                .Subscribe(_ =>
+                {
+                    excludeMissionVehicle = !excludeMissionVehicle;
+                    DrawText($"SpeedMax:ExcludeMissionVehicles[{excludeMissionVehicle}]");
                 });
 
             OnTickAsObservable
@@ -43,25 +105,74 @@ namespace Inferno.InfernoScripts.World
                 .Where(x => x)
                 .Subscribe(_ => vehicleHashSet.Clear());
 
+            //ミッションが始まった時にしばらく動作を止める
+            OnTickAsObservable
+                .Where(_ => IsActive)
+                .Select(_ => Game.MissionFlag)
+                .DistinctUntilChanged()
+                .Where(x => x)
+                .Do(_ => suspednFlag = true)
+                .Delay(TimeSpan.FromSeconds(3))
+                .Subscribe(_ => suspednFlag = false);
         }
 
-        private IEnumerable<object> VehicleSpeedMaxCorutine(Vehicle v)
+        /// <summary>
+        /// オリジナルに近い挙動
+        /// </summary>
+        private IEnumerable<object> OriginalSpeedMaxCoroutine(Vehicle v)
         {
-            yield return WaitForSeconds(1);
-            var time = 0.0f;
-            var maxSpeed = Random.Next(5, 10);
-            var duration = (float)Random.Next(3, 20);
+            var maxSpeed = Random.Next(100, 300);
+            var mySpeedType = currentSpeedType;
 
-            while (IsActive && v.IsSafeExist())
+            // 有効かつスピードタイプに変更が無い間実行
+            while (IsActive && v.IsSafeExist() && mySpeedType == currentSpeedType)
             {
-                if (!v.IsInRangeOf(PlayerPed.Position, 600)) yield break;
-                if(PlayerVehicle.Value == v) yield break;
-                var currentSpeed = maxSpeed * ((float)Math.Cos(2 * Math.PI * (time / duration)) + 0.5f);
-                v.ApplyForce(currentSpeed * v.ForwardVector);
-                time += 0.1f;
+                if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
+                if (PlayerVehicle.Value == v) yield break;
+                v.Speed = maxSpeed;
                 yield return null;
             }
+        }
 
+        /// <summary>
+        /// カスタム版
+        /// </summary>
+        private IEnumerable<object> VehicleSpeedMaxCorutine(Vehicle v)
+        {
+
+            var maxSpeed = GetVehicleSpeed() * ((v.Handle % 10 == 0) ? -1 : 1);
+            var mySpeedType = currentSpeedType;
+
+            // 有効かつスピードタイプに変更が無い間実行
+            while (IsActive && v.IsSafeExist() && mySpeedType == currentSpeedType)
+            {
+                if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
+                if (PlayerVehicle.Value == v) yield break;
+                v.ApplyForce(maxSpeed * v.ForwardVector);
+                yield return null;
+            }
+        }
+
+        private SpeedType GetNextSpeedType(SpeedType current)
+        {
+            return (SpeedType)(((int)current + 1) % Enum.GetNames(typeof(SpeedType)).Length);
+        }
+
+        private float GetVehicleSpeed()
+        {
+            switch (currentSpeedType)
+            {
+                case SpeedType.Low:
+                    return Random.Next(5, 10);
+                case SpeedType.Middle:
+                    return Random.Next(10, 15);
+                case SpeedType.High:
+                    return Random.Next(20, 30);
+                case SpeedType.Random:
+                    return Random.Next(5, 30);
+                default:
+                    return 0;
+            }
         }
     }
 }
