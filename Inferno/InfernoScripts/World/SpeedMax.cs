@@ -142,7 +142,7 @@ namespace Inferno.InfernoScripts.World
             //たまに後ろに飛ぶ
             var dir = (v.Handle % 10 == 0) ? -1 : 1;
             var maxSpeed = GetVehicleSpeed() * dir;
-            if (currentSpeedType == SpeedType.High)
+            if (Math.Abs(maxSpeed) > 20)
             {
                 v.Speed = 100 * dir;
             }
