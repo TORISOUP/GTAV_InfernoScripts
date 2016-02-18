@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteDebug(true)]
     class PerfectFreeze : ParupunteScript
     {
         public PerfectFreeze(ParupunteCore core) : base(core)
@@ -16,11 +17,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override string Name { get; } = "パーフェクトフリーズ";
         public override string EndMessage { get; } = "おわり";
-        private readonly float FreezeRange = 30;
+        private readonly float FreezeRange = 60;
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20 * 1000);
+            ReduceCounter = new ReduceCounter(15 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
@@ -28,11 +29,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             });
 
             this.OnUpdateAsObservable
-                .ThrottleFirst(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
                     var playerPos = core.PlayerPed.Position;
                     var playerVehicle = core.GetPlayerVehicle();
+
+
+                    #region Ped
+                    foreach (var p in core.CachedPeds.Where(
+                        x => x.IsSafeExist()
+                        && !freezedEntities.Contains(x)
+                        && x.IsInRangeOf(playerPos, FreezeRange)
+                        && x.IsAlive
+                        && x != playerVehicle))
+                    {
+                        p.FreezePosition = true;
+                        freezedEntities.Add(p);
+                    }
+                    #endregion
 
                     #region Vehicle
                     foreach (var v in core.CachedVehicles.Where(
@@ -46,16 +60,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         freezedEntities.Add(v);
                     }
                     #endregion
-
-                    //離れていたら解除
-                    var deleteTargets = freezedEntities.FirstOrDefault(x =>
-                        x.IsSafeExist() && !x.IsInRangeOf(playerPos, FreezeRange + 5));
-
-                    if (deleteTargets != null)
-                    {
-                        deleteTargets.FreezePosition = false;
-                        freezedEntities.Remove(deleteTargets);
-                    }
 
                 });
 
