@@ -6,7 +6,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     class PerfectFreeze : ParupunteScript
     {
         public PerfectFreeze(ParupunteCore core) : base(core)
