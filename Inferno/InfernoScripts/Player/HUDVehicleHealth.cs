@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GTA;
+using GTA.Native;
 using UniRx;
 
 namespace Inferno
@@ -16,20 +17,15 @@ namespace Inferno
     {
 
         private UIContainer _mContainer = null;
-
-        /// <summary>
-        /// 描画するゲージの種類
-        /// </summary>
-        private enum DrawStatus
-        {
-            VheicleHelth,
-            BodyHealth,
-            EngineHealth
-        };
+        private int _screenHeight;
+        private int _screenWidth;
 
         protected override void Setup()
         {
-            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            var screenResolution = NativeFunctions.GetScreenResolution();
+            _screenHeight = (int)screenResolution.Y;
+            _screenWidth = (int)screenResolution.X;
+            _mContainer = new UIContainer(new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             OnDrawingTickAsObservable
                 .Where(_ => this.GetPlayerVehicle().IsSafeExist())
@@ -57,9 +53,9 @@ namespace Inferno
             {
                 vheicleMaxHealth = vheicleHealth;
             }
-            DrawHealthBar(vheicleHealth, vheicleMaxHealth, DrawStatus.VheicleHelth);
-            DrawHealthBar(bodyHealth, 1000.0f, DrawStatus.BodyHealth);
-            DrawHealthBar(engineHealth, 1000.0f, DrawStatus.EngineHealth);
+            DrawHealthBar(vheicleHealth, vheicleMaxHealth, new Point(5, 560), Color.FromArgb(200, 200, 0, 128));
+            DrawHealthBar(bodyHealth, 1000.0f, new Point(5, 570), Color.FromArgb(200, 0, 128, 200));
+            DrawHealthBar(engineHealth, 1000.0f, new Point(5, 580), Color.FromArgb(200, 128, 200, 0));
         }
 
         /// <summary>
@@ -67,10 +63,9 @@ namespace Inferno
         /// </summary>
         /// <param name="health"></param>
         /// <param name="maxHealth"></param>
-        /// <param name="drawStatus"></param>
-        private void DrawHealthBar(float health, float maxHealth, DrawStatus drawStatus)
+        /// <param name="vhicleHealthType"></param>
+        private void DrawHealthBar(float health, float maxHealth, Point pos, Color foreGroundColor)
         {
-            var pos = default(Point);
             var width = 180;
             var height = 5;
             var margin = 2;
@@ -79,23 +74,9 @@ namespace Inferno
             var barPosition = default(Point);
             var barSize = default(Size);
             var backGroundColor = Color.FromArgb(128, 0, 0, 0);
-            var foreGroundColor = default(Color);
 
-            switch (drawStatus)
-            {
-                case DrawStatus.VheicleHelth:
-                    pos = new Point(5, 560);
-                    foreGroundColor = Color.FromArgb(200, 255, 128, 0);
-                    break;
-                case DrawStatus.BodyHealth:
-                    pos = new Point(5, 570);
-                    foreGroundColor = Color.FromArgb(200, 0, 255, 200);
-                    break;
-                case DrawStatus.EngineHealth:
-                    pos = new Point(5, 580);
-                    foreGroundColor = Color.FromArgb(200, 255, 0, 128);
-                    break;
-            }
+            var t = Function.Call<float>(Hash._GET_SCREEN_ASPECT_RATIO, true);
+            width = (int)(width + (width*(1.75f - t)));
 
             barLength = (int)(width * (health / maxHealth));
             if (barLength < 0) barLength = 0;
