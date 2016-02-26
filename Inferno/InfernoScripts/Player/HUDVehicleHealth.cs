@@ -49,10 +49,7 @@ namespace Inferno
             var engineHealth = vheicle.EngineHealth;
             var vheicleHealth = vheicle.Health;
             var vheicleMaxHealth = vheicle.MaxHealth;
-            if (vheicleHealth > vheicleMaxHealth)
-            {
-                vheicleMaxHealth = vheicleHealth;
-            }
+
             DrawHealthBar(vheicleHealth, vheicleMaxHealth, new Point(5, 560), Color.FromArgb(200, 200, 0, 128));
             DrawHealthBar(bodyHealth, 1000.0f, new Point(5, 570), Color.FromArgb(200, 0, 128, 200));
             DrawHealthBar(engineHealth, 1000.0f, new Point(5, 580), Color.FromArgb(200, 128, 200, 0));
@@ -77,6 +74,11 @@ namespace Inferno
 
             var t = Function.Call<float>(Hash._GET_SCREEN_ASPECT_RATIO, true);
             width = (int)(width + (width*(1.75f - t)));
+
+            if (health > maxHealth)
+            {
+                maxHealth = health;
+            }
 
             barLength = (int)(width * (health / maxHealth));
             if (barLength < 0) barLength = 0;
