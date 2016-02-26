@@ -28,7 +28,7 @@ namespace Inferno
             _mContainer = new UIContainer(new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             OnDrawingTickAsObservable
-                .Where(_ => this.GetPlayerVehicle().IsSafeExist())
+                .Where(_ => this.GetPlayerVehicle().IsSafeExist() && PlayerPed.IsAlive)
                 .Subscribe(_ =>
                 {
                     _mContainer.Items.Clear();
