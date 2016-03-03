@@ -156,6 +156,7 @@
     <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
     <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
     <Compile Include="InfernoScripts\Player\Floating.cs" />
+    <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs" />
     <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
     <Compile Include="InfernoScripts\Player\PlayerHelthAlert.cs" />
     <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
