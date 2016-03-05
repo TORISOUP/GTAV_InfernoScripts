@@ -17,7 +17,7 @@ namespace Inferno
         private Dictionary<int, System.Tuple<Vehicle, Entity>> targets = new Dictionary<int, System.Tuple<Vehicle, Entity>>();
 
         //攻撃半径
-        private float attackRadius = 500;
+        private float attackRadius = 350;
 
         protected override void Setup()
         {
@@ -51,7 +51,7 @@ namespace Inferno
 
                     foreach (var point in array)
                     {
-                        NativeFunctions.CreateLight(point, 255, 80, 80, 0.1f, insensity);
+                        NativeFunctions.CreateLight(point, 255, 80, 80, 10.0f, insensity);
                     }
                 });
         }
@@ -147,10 +147,10 @@ namespace Inferno
                     if (target.IsInRangeOf(plane.Position, attackRadius) && Random.Next(0, 100) < 5)
                     {
                         //たまに攻撃
-                        var pos = target.Position.Around(10);
-                        Function.Call(Hash.SET_VEHICLE_SHOOT_AT_TARGET, ped, target, pos.X, pos.Y, pos.Z);
-
                         targets[id] = new Tuple<Vehicle, Entity>(plane, target);
+                        yield return AttackCoroutine(plane, ped, target);
+                        yield return WaitForSeconds(5);
+                        break;
                     }
 
                     yield return null;
@@ -184,7 +184,7 @@ namespace Inferno
             //プレイヤの近くの市民
             var targetPeds = CachedPeds
                 .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
-                            && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle));
+                            && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle)).Concat(new Ped[] { PlayerPed });
 
             var targetVehicles = CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
@@ -199,6 +199,34 @@ namespace Inferno
         private bool IsPlaneActive(Vehicle plane, Ped ped)
         {
             return ped.IsSafeExist() && plane.IsSafeExist() && ped.IsAlive && plane.IsAlive;
+        }
+
+        /// <summary>
+        /// 爆撃コルーチン
+        /// </summary>
+        private IEnumerable<object> AttackCoroutine(Vehicle plane, Ped driver, Entity target)
+        {
+            var num = Random.Next(2, 5);
+            var targetArea = target.Position;
+            var speed = (target == PlayerPed || target == PlayerVehicle.Value) ? 150 : 500;
+            while (num-- > 0)
+            {
+                if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) yield break;
+                ShootAt(plane, driver, targetArea, speed);
+                yield return WaitForSeconds(0.5f);
+            }
+        }
+
+        /// <summary>
+        /// 爆撃する
+        /// </summary>
+        private void ShootAt(Vehicle plane, Ped driver, Vector3 targetArea,float speed)
+        {
+            var startPosition = plane.GetOffsetFromEntityInWorldCoords(0, 0, -1.0f);
+            var targetPosition = targetArea.AroundRandom2D(5.0f);
+            
+            NativeFunctions.ShootSingleBulletBetweenCoords(
+                startPosition, targetPosition, 100, WeaponHash.RPG, driver, speed);
         }
     }
 }
