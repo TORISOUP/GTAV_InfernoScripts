@@ -602,5 +602,24 @@ namespace Inferno
             var p = entity.Position;
             Function.Call(Hash.REQUEST_COLLISION_AT_COORD, p.X, p.Y, p.Z);
         }
+
+        public static void ShootSingleBulletBetweenCoords(Vector3 start, Vector3 end, int damage, WeaponHash weapon,
+            Ped owner, float speed)
+        {
+            Function.Call(Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
+
+                start.X, start.Y, start.Z,
+                end.X, end.Y, end.Z,
+                250, 1,
+                (int)weapon,
+                owner.Handle,
+                1, 0, speed
+            );
+        }
+
+        public static Vector3 GetOffsetFromEntityInWorldCoords(this Entity entity, float right, float forward, float up)
+        {
+            return Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS, entity, right, forward, up);
+        }
     }
 }

@@ -139,9 +139,7 @@ namespace Inferno
             }
 
             return OnTickAsObservable
-                .Skip(skipCount)
-                .First()
-                .Repeat()
+                .ThrottleFirst(TimeSpan.FromMilliseconds(millsecond))
                 .Publish().RefCount();
         }
 
