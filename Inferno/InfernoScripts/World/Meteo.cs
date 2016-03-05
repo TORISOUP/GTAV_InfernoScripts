@@ -4,6 +4,7 @@ using Inferno.ChaosMode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GTA.Native;
 using UniRx;
 
 namespace Inferno
@@ -38,7 +39,7 @@ namespace Inferno
                 });
 
             CreateTickAsObservable(1000)
-               .Where(_ => IsActive && Random.Next(0, 100) <= 15)
+               .Where(_ => IsActive && Random.Next(0, 100) <= 25)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -67,23 +68,15 @@ namespace Inferno
                 //たまに花火
                 var weapon = Random.Next(0, 100) < 3 ? (int)Weapon.FIREWORK : (int)Weapon.RPG;
 
-                var ped = NativeFunctions.CreateRandomPed(createPosition);
-                if (!ped.IsSafeExist()) return;
-                ped.MarkAsNoLongerNeeded();
-                if (!ped.IsSafeExist()) return;
-                ped.SetDropWeaponWhenDead(false); //武器を落とさない
-                ped.SetNotChaosPed(true);
-                ped.GiveWeapon(weapon, 1); //指定武器所持
-                ped.EquipWeapon(weapon); //武器装備
-                ped.IsVisible = false;
-                ped.FreezePosition = true;
-                ped.SetPedFiringPattern((int)FiringPattern.SingleShot);
-
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
 
-                //Aさん削除
-                StartCoroutine(MeteoShoot(ped, targetPosition, 8.0f));
+                //そこら辺の市民のせいにする
+                var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
+
+                NativeFunctions.ShootSingleBulletBetweenCoords(
+                      createPosition, targetPosition, 100, WeaponHash.RPG, ped, 200);
+
             }
             catch (Exception ex)
             {
@@ -104,18 +97,5 @@ namespace Inferno
             meteoLightPositionList.Remove(position);
         }
 
-        /// <summary>
-        /// 指定時間後にAさんを削除する
-        /// </summary>
-        /// <param name="ped"></param>
-        /// <param name="durationSecond"></param>
-        /// <returns></returns>
-        private IEnumerable<object> MeteoShoot(Ped ped, Vector3 targetPosition, float durationSecond)
-        {
-            ped.TaskShootAtCoord(targetPosition, 1000);
-            yield return WaitForSeconds(durationSecond);
-            if (!ped.IsSafeExist()) yield break;
-            ped.Delete();
-        }
     }
 }
