@@ -34,6 +34,7 @@ namespace Inferno.InfernoScripts.Player
                     CreateRpgBullet(v, ped, isRight ? 1.5f : -1.5f);
                     //左右交互に
                     isRight = !isRight;
+                    v.EngineHealth *= 0.9f;
                 });
         }
 
