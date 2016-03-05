@@ -40,6 +40,7 @@ namespace Inferno.InfernoScripts.World
                 });
 
             IsActiveAsObservable
+                .Skip(1)
                 .Where(x => !x)
                 .Subscribe(x =>
                 {
