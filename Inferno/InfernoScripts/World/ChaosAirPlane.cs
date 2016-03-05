@@ -12,9 +12,9 @@ namespace Inferno
     internal class ChaosAirPlane : InfernoScript
     {
         /// <summary>
-        /// 各戦闘機が狙っているターゲット
+        /// 各戦闘機が狙っている場所
         /// </summary>
-        private Dictionary<int, System.Tuple<Vehicle, Entity>> targets = new Dictionary<int, System.Tuple<Vehicle, Entity>>();
+        private Dictionary<int, Vector3?> targetArea = new Dictionary<int, Vector3?>();
 
         //攻撃半径
         private float attackRadius = 350;
@@ -39,19 +39,18 @@ namespace Inferno
 
             //ターゲット描画
             OnDrawingTickAsObservable
-                .Where(_ => IsActive && targets.Count > 0)
+                .Where(_ => IsActive && targetArea.Count > 0)
                 .Subscribe(_ =>
                 {
                     var insensity = 5;
 
-                    //攻撃半径に入っている対象のみに絞る
-                    var array = targets.Values
-                        .Where(x => x != null && x.Item1.IsSafeExist() && x.Item2.IsSafeExist()
-                                    && x.Item1.IsInRangeOf(x.Item2.Position, attackRadius)).Select(x => x.Item2.Position).ToArray();
+                    var array = targetArea.Values
+                        .Where(x => x != null)
+                        .Select(x => x.Value);
 
                     foreach (var point in array)
                     {
-                        NativeFunctions.CreateLight(point, 255, 80, 80, 10.0f, insensity);
+                        NativeFunctions.CreateLight(point, 255, 30, 30, 10.0f, insensity);
                     }
                 });
         }
@@ -87,7 +86,7 @@ namespace Inferno
                         plane = spawn.Item1;
                         ped = spawn.Item2;
                         //戦闘機稼働
-                        targets[id] = null;
+                        targetArea[id] = null;
                         StartCoroutine(AirPlaneCoroutine(plane, ped, id));
                     }
                 }
@@ -121,7 +120,7 @@ namespace Inferno
             while (IsActive && IsPlaneActive(plane, ped))
             {
                 var target = GetRandomTarget();
-                targets[id] = null;
+                targetArea[id] = null;
                 if (target.IsSafeExist())
                 {
                     ped.Task.ClearAll();
@@ -147,9 +146,10 @@ namespace Inferno
                     if (target.IsInRangeOf(plane.Position, attackRadius) && Random.Next(0, 100) < 5)
                     {
                         //たまに攻撃
-                        targets[id] = new Tuple<Vehicle, Entity>(plane, target);
+                        targetArea[id] = target.Position;
                         yield return AttackCoroutine(plane, ped, target);
                         yield return WaitForSeconds(5);
+                        targetArea[id] = null;
                         break;
                     }
 
@@ -206,25 +206,25 @@ namespace Inferno
         /// </summary>
         private IEnumerable<object> AttackCoroutine(Vehicle plane, Ped driver, Entity target)
         {
-            var num = Random.Next(2, 5);
+            var num = Random.Next(3, 5);
             var targetArea = target.Position;
             var speed = (target == PlayerPed || target == PlayerVehicle.Value) ? 150 : 500;
             while (num-- > 0)
             {
                 if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) yield break;
                 ShootAt(plane, driver, targetArea, speed);
-                yield return WaitForSeconds(0.5f);
+                yield return WaitForSeconds(0.8f);
             }
         }
 
         /// <summary>
         /// 爆撃する
         /// </summary>
-        private void ShootAt(Vehicle plane, Ped driver, Vector3 targetArea,float speed)
+        private void ShootAt(Vehicle plane, Ped driver, Vector3 targetArea, float speed)
         {
             var startPosition = plane.GetOffsetFromEntityInWorldCoords(0, 0, -1.0f);
-            var targetPosition = targetArea.AroundRandom2D(5.0f);
-            
+            var targetPosition = targetArea.AroundRandom2D(10.0f);
+
             NativeFunctions.ShootSingleBulletBetweenCoords(
                 startPosition, targetPosition, 100, WeaponHash.RPG, driver, speed);
         }
