@@ -105,6 +105,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenNinja.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />

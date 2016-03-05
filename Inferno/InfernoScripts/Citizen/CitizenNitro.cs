@@ -4,6 +4,7 @@ using GTA.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Inferno.ChaosMode;
 using UniRx;
 
 namespace Inferno
@@ -42,7 +43,6 @@ namespace Inferno
         {
             try
             {
-                //車の運転手を取れないので市民から車を取得する
                 var playerVehicle = this.GetPlayerVehicle();
 
                 var nitroAvailableVeles = CachedVehicles
@@ -68,9 +68,11 @@ namespace Inferno
         /// </summary>
         private IEnumerable<object> DelayCoroutine(Vehicle v)
         {
-            yield return WaitForSeconds(Random.Next(0,5));
+            yield return WaitForSeconds(Random.Next(0, 5));
+            var driver = v.GetPedOnSeat(VehicleSeat.Driver);
+            EscapeVehicle(driver);
             NitroVehicle(v);
-        }  
+        }
 
         /// <summary>
         /// 車をニトロする
@@ -85,7 +87,7 @@ namespace Inferno
 
             var velocitiesSpeed = _velocities[Random.Next(0, _velocities.Length)];
 
-            if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 10)
+            if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 15)
             {
                 vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, (Random.Next(20, 60) / 100.0f)) * vehicle.Quaternion;
             }
@@ -103,6 +105,34 @@ namespace Inferno
                 false,
                 0.1f
             });
+        }
+
+
+        //車に乗ってたら緊急脱出する
+        private void EscapeVehicle(Ped ped)
+        {
+            if (!ped.IsSafeExist()) return;
+
+            StartCoroutine(DelayParachute(ped));
+        }
+
+        private IEnumerable<object> DelayParachute(Ped ped)
+        {
+            ped.SetNotChaosPed(true);
+            ped.ClearTasksImmediately();
+            ped.Position += new Vector3(0, 0, 0.5f);
+            ped.SetToRagdoll();
+            yield return null;
+            ped.ApplyForce(new Vector3(0, 0, 40.0f));
+
+            ped.IsInvincible = true;
+            yield return WaitForSeconds(1.5f);
+            if (!ped.IsSafeExist()) yield break;
+            ped.IsInvincible = false;
+            ped.ParachuteTo(PlayerPed.Position);
+            yield return WaitForSeconds(15);
+            if (!ped.IsSafeExist()) yield break;
+            ped.SetNotChaosPed(false);
         }
     }
 }
