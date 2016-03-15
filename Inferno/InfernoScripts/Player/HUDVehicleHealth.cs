@@ -47,10 +47,17 @@ namespace Inferno
 
             var bodyHealth = vheicle.BodyHealth;
             var engineHealth = vheicle.EngineHealth;
-            var vheicleHealth = vheicle.Health;
-            var vheicleMaxHealth = vheicle.MaxHealth;
+            var vheiclePetrolTankHealth = vheicle.PetrolTankHealth;
 
-            DrawHealthBar(vheicleHealth, vheicleMaxHealth, new Point(5, 560), Color.FromArgb(200, 200, 0, 128));
+            var petrolTankHealthColor = Color.FromArgb(200, 200, 0, 128);
+
+            if (vheiclePetrolTankHealth < 0)
+            {
+                petrolTankHealthColor = Color.FromArgb(200, 255, 200, 0);
+                vheiclePetrolTankHealth += 1000.0f;
+            }
+
+            DrawHealthBar(vheiclePetrolTankHealth, 1000.0f, new Point(5, 560), petrolTankHealthColor);
             DrawHealthBar(bodyHealth, 1000.0f, new Point(5, 570), Color.FromArgb(200, 0, 128, 200));
             DrawHealthBar(engineHealth, 1000.0f, new Point(5, 580), Color.FromArgb(200, 128, 200, 0));
         }
