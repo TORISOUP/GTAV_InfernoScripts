@@ -15,7 +15,6 @@ namespace Inferno.InfernoScripts.Player
 
         protected override void Setup()
         {
-            var isRight = true;
 
             OnTickAsObservable
                 .Where(_ =>
@@ -31,9 +30,8 @@ namespace Inferno.InfernoScripts.Player
                     //そこら辺の市民のせいにする
                     var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
                     StartCoroutine(InvincibleVehicle(v, 2));
-                    CreateRpgBullet(v, ped, isRight ? 1.5f : -1.5f);
-                    //左右交互に
-                    isRight = !isRight;
+                    CreateRpgBullet(v, ped, 1.5f);
+                    CreateRpgBullet(v, ped, -1.5f);
                     v.EngineHealth *= 0.9f;
                 });
         }
