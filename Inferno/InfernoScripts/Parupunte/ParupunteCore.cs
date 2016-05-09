@@ -27,6 +27,11 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private Type[] _debugParuputeScripts;
 
+        /// <summary>
+        /// NoLongerNeededを遅延して設定する対象リスト
+        /// </summary>
+        private List<Entity> _autoReleaseEntitiesList = new List<Entity>();
+
         protected override int TickInterval { get; } = 100;
 
         private UIContainer _mainTextUiContainer;
@@ -79,6 +84,18 @@ namespace Inferno.InfernoScripts.Parupunte
 
             OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
                 .Subscribe(_ => ParupunteStart());
+
+            //パルプンテが停止したタイミングで開放
+            IsActiveAsObservable
+                .Where(x => !x)
+                .Subscribe(_ =>
+                {
+                    foreach (var entity in _autoReleaseEntitiesList.Where(entity => entity.IsSafeExist()))
+                    {
+                        entity.MarkAsNoLongerNeeded();
+                    }
+                    _autoReleaseEntitiesList.Clear();
+                });
 
             #endregion EventHook
 
@@ -360,6 +377,15 @@ namespace Inferno.InfernoScripts.Parupunte
                 DrawType.RightToLeft, 100, 10, 2);
             RegisterProgressBar(prgoressbarData);
             RegisterCounter(reduceCounter);
+        }
+
+
+        /// <summary>
+        /// パルプンテが終了した時に自動的に開放してくれる
+        /// </summary>
+        public void RegisterAutoReleaseEntity(Entity entity)
+        {
+            if (entity.IsSafeExist()) _autoReleaseEntitiesList.Add(entity);
         }
     }
 }
