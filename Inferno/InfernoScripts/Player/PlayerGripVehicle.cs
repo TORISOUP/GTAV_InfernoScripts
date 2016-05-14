@@ -12,7 +12,9 @@ namespace Inferno.InfernoScripts.Player
 {
     class PlayerGripVehicle : InfernoScript
     {
-        private bool isGriped = false;
+        private bool _isGriped = false;
+        private Vehicle _vehicle;
+        private Vector3 _ofsetPosition;
 
         protected override void Setup()
         {
@@ -21,7 +23,15 @@ namespace Inferno.InfernoScripts.Player
                 .Subscribe(_ => GripAction());
 
             OnTickAsObservable
-                .Where(_ => isGriped && !this.IsGamePadPressed(GameKey.Aim))
+                .Where(_ => _isGriped)
+                .Subscribe(_ =>
+                {
+                    var player = PlayerPed;
+                    Grip(player, _vehicle, _ofsetPosition);
+                });
+
+            OnTickAsObservable
+                .Where(_ => _isGriped && !this.IsGamePadPressed(GameKey.Aim))
                 .Subscribe(_ => GripRemove());
         }
 
@@ -32,7 +42,11 @@ namespace Inferno.InfernoScripts.Player
         {
             var player = PlayerPed;
             player.IsInvincible = false;
+            _isGriped = false;
             Function.Call(Hash.DETACH_ENTITY, player, false, false);
+            player.Task.Skydive();
+            player.Task.ClearAll();
+
         }
 
         /// <summary>
@@ -47,12 +61,14 @@ namespace Inferno.InfernoScripts.Player
             {
                 var isTouchingEntity = Function.Call<bool>(Hash.IS_ENTITY_TOUCHING_ENTITY, player, veh);
                 if (!isTouchingEntity) continue;
-                isGriped = true;
+                _isGriped = true;
+                var playerRHandCoords = player.GetBoneCoord(Bone.SKEL_R_Hand);
+
                 var ofsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
                     veh,
-                    player.Position.X,
-                    player.Position.Y,
-                    player.Position.Z);
+                    playerRHandCoords.X,
+                    playerRHandCoords.Y,
+                    playerRHandCoords.Z);
                 Grip(player, veh, ofsetPosition);
             }
         }
@@ -65,8 +81,10 @@ namespace Inferno.InfernoScripts.Player
         /// <param name="ofsetPosition"></param>
         private void Grip(Ped player, Vehicle vehicle, Vector3 ofsetPosition)
         {
-            player.SetToRagdoll();
+            player.SetToRagdoll(0, 1);
             player.IsInvincible = true;
+            _vehicle = vehicle;
+            _ofsetPosition = ofsetPosition;
             var forceToBreak = 99999.0f;
             var rotation = new Vector3(0.0f, 0.0f, 0.0f);
             var isCollision = true;
@@ -74,7 +92,7 @@ namespace Inferno.InfernoScripts.Player
                 player,
                 vehicle,
                 player.GetBoneIndex(Bone.SKEL_R_Hand),
-                0,
+                vehicle.GetBoneIndex("SKEL_ROOT"),
                 ofsetPosition.X,
                 ofsetPosition.Y,
                 ofsetPosition.Z,
@@ -88,7 +106,7 @@ namespace Inferno.InfernoScripts.Player
                 false, //?
                 false, //?
                 isCollision,
-                true, //?
+                false, //?
                 2); //?
         }
     }
