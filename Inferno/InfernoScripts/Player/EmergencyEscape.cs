@@ -32,7 +32,7 @@ namespace Inferno
             player.ClearTasksImmediately();
             player.Position += new Vector3(0, 0, 0.5f);
             player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, 40.0f) + playerVec.Velocity, InfernoUtilities.CreateRandomVector() * 10.0f);
+            player.ApplyForce(new Vector3(0, 0, 60.0f) + playerVec.Velocity, InfernoUtilities.CreateRandomVector() * 10.0f);
 
             StartCoroutine(DelayParachute());
         }

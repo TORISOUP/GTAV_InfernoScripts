@@ -1,7 +1,5 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using GTA;
 using GTA.Math;
@@ -55,7 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 else
                 {
                     EndMessageDisplayTime = 4.0f;
-                    return "フラッグ車走行不能！大洗女学園の勝利！";
+                    return "フラッグ車走行不能！大洗女子学園の勝利！";
                 }
             }
         }
@@ -133,7 +131,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             //遠目につくる
             var ppos = core.PlayerPed.Position;
-            var vp = SpawnTank(ppos + new Vector3(0, isForward ? -40 : 40, 0));
+            var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
             if (vp == null) ParupunteEnd();
             var ped = vp.Item2;
             var tank = vp.Item1;

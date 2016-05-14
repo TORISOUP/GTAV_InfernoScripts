@@ -36,7 +36,7 @@ namespace Inferno
                 .Subscribe(_ => RobberVehicle());
 
             //デフォルトではOFFにする
-         //   OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+            //   OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
 
         private void RobberVehicle()
@@ -104,14 +104,16 @@ namespace Inferno
             {
                 ped.Task.ClearAllImmediately();
             }
+            ped.Task.ClearAllImmediately();
             ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
 
-            foreach (var t in WaitForSeconds(20))
+            foreach (var t in Enumerable.Range(0, 5))
             {
                 //20秒間車に乗れたか監視する
                 if (!ped.IsSafeExist()) yield break;
                 if (ped.IsInVehicle()) break;
-                yield return null;
+                ped.Task.ClearAllImmediately();
+                yield return WaitForSeconds(5);
             }
 
             if (!ped.IsSafeExist()) yield break;
