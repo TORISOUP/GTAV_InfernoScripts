@@ -12,7 +12,7 @@ namespace Inferno.ChaosMode
     /// </summary>
     public class ChaosModeSettingLoader
     {
-        private readonly Encoding _encoding = Encoding.GetEncoding("Shift_JIS");
+        private readonly Encoding _encoding = Encoding.UTF8;
         private DebugLogger _debugLogger;
 
         protected virtual DebugLogger ChaosModeDebugLogger
