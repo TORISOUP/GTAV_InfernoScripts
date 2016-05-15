@@ -12,7 +12,7 @@ namespace Inferno
         public DebugLogger(string logPath)
         {
             this._logPath = logPath;
-            _encoding = Encoding.UTF8;
+            _encoding = Encoding.GetEncoding("Shift_JIS");
         }
 
         /// <summary>
