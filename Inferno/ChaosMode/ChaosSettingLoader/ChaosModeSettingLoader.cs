@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace Inferno.ChaosMode
 {
@@ -34,11 +34,9 @@ namespace Inferno.ChaosMode
         {
             //ファイルロード
             var readJson = ReadFile(filePath);
-
-            var jss = new JavaScriptSerializer();
             try
             {
-                var dto = jss.Deserialize<ChaosModeSettingDTO>(readJson);
+                var dto = JsonConvert.DeserializeObject<ChaosModeSettingDTO>(readJson);
                 return new ChaosModeSetting(dto);
             }
             catch (Exception e)
@@ -92,7 +90,6 @@ namespace Inferno.ChaosMode
             }
 
             //デフォルト設定を吐き出す
-            var jss = new JavaScriptSerializer();
             var dto = new ChaosModeSettingDTO();
             var chaosModeWeapons = new ChaosModeWeapons();
             dto.WeaponList = chaosModeWeapons.ExcludeClosedWeapons.Select(x => x.ToString()).ToArray();
@@ -102,8 +99,9 @@ namespace Inferno.ChaosMode
             {
                 using (var w = new StreamWriter(filePath, false, _encoding))
                 {
-                    var json = jss.Serialize(dto);
+                    var json = JsonConvert.SerializeObject(dto, Formatting.Indented);
                     w.WriteAsync(json);
+                    w.Flush();
                 }
             }
             catch (Exception e)
