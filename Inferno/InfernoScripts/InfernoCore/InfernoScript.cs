@@ -142,8 +142,45 @@ namespace Inferno
                 .ThrottleFirst(TimeSpan.FromMilliseconds(millsecond))
                 .Publish().RefCount();
         }
-
         #endregion forEvents
+
+        #region forAbort
+
+        /// <summary>
+        /// ゲーム中断時に自動開放する対象リスト
+        /// </summary>
+        private List<Entity>  _autoReleaseEntities = new List<Entity>();
+
+        /// <summary>
+        /// ゲーム中断時に自動開放する
+        /// </summary>
+        /// <param name="entity"></param>
+        protected void RegisterToAutoRelease(Entity entity)
+        {
+            _autoReleaseEntities.Add(entity);
+            _autoReleaseEntities.RemoveAll(x => !x.IsSafeExist());
+        }
+
+        private Subject<Unit> _onAbortSubject = new Subject<Unit>();
+        /// <summary>
+        /// ゲームが中断した時に実行される
+        /// </summary>
+        protected UniRx.IObservable<Unit> OnAbortAsync => _onAbortSubject.AsObservable();
+
+        protected override void Dispose(bool A_0)
+        {
+            IsActive = false;
+            foreach (var e in _autoReleaseEntities.Where(x=>x.IsSafeExist()))
+            {
+                e.MarkAsNoLongerNeeded();
+            }
+            _autoReleaseEntities.Clear();
+            _onAbortSubject.OnNext(Unit.Default);
+            _onAbortSubject.OnCompleted();
+            base.Dispose(A_0);
+        }
+
+        #endregion
 
         #region forCoroutine
 

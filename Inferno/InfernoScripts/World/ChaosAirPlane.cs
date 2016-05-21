@@ -101,11 +101,13 @@ namespace Inferno
             //戦闘機生成
             var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
+            RegisterToAutoRelease(plane);
             plane.Speed = 500;
             plane.PetrolTankHealth = 10;
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
             if (!ped.IsSafeExist()) return null;
+            RegisterToAutoRelease(ped);
             ped.SetNotChaosPed(true);
 
             return new Tuple<Vehicle, Ped>(plane, ped);

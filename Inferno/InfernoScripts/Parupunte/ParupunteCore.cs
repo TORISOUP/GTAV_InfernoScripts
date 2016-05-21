@@ -386,6 +386,8 @@ namespace Inferno.InfernoScripts.Parupunte
         public void RegisterAutoReleaseEntity(Entity entity)
         {
             if (entity.IsSafeExist()) _autoReleaseEntitiesList.Add(entity);
+            //中断時にも対応させる
+            RegisterToAutoRelease(entity);
         }
     }
 }
