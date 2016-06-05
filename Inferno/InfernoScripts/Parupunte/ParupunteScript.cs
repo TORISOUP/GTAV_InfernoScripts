@@ -193,9 +193,17 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテが終了した時に自動的に開放してくれる
         /// </summary>
-        protected void RegisterAutoReleaseEntity(Entity entity)
+        protected void AutoReleaseOnParupunteEnd(Entity entity)
         {
-            core.RegisterAutoReleaseEntity(entity);
+            core.AutoReleaseOnParupunteEnd(entity);
+        }
+
+        /// <summary>
+        /// ゲーム終了時に自動開放
+        /// </summary>
+        protected void AutoReleaseOnGameEnd(Entity entity)
+        {
+            core.AutoReleaseOnGameEnd(entity);
         }
     }
 }

@@ -383,11 +383,16 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテが終了した時に自動的に開放してくれる
         /// </summary>
-        public void RegisterAutoReleaseEntity(Entity entity)
+        public void AutoReleaseOnParupunteEnd(Entity entity)
         {
             if (entity.IsSafeExist()) _autoReleaseEntitiesList.Add(entity);
             //中断時にも対応させる
-            RegisterToAutoRelease(entity);
+            base.AutoReleaseOnGameEnd(entity);
+        }
+
+        public new void AutoReleaseOnGameEnd(Entity entity)
+        {
+            base.AutoReleaseOnGameEnd(entity);
         }
     }
 }

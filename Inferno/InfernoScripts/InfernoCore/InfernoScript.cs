@@ -155,10 +155,10 @@ namespace Inferno
         /// ゲーム中断時に自動開放する
         /// </summary>
         /// <param name="entity"></param>
-        protected void RegisterToAutoRelease(Entity entity)
+        protected void AutoReleaseOnGameEnd(Entity entity)
         {
-            _autoReleaseEntities.Add(entity);
             _autoReleaseEntities.RemoveAll(x => !x.IsSafeExist());
+            _autoReleaseEntities.Add(entity);
         }
 
         private Subject<Unit> _onAbortSubject = new Subject<Unit>();

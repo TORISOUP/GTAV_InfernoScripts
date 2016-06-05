@@ -219,7 +219,7 @@ namespace Inferno.InfernoScripts.World
                 var spawnHeliPosition = playerPosition + new Vector3(0, 0, 40);
                 var heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, spawnHeliPosition);
                 if (!heli.IsSafeExist()) return;
-                RegisterToAutoRelease(heli);
+                AutoReleaseOnGameEnd(heli);
                 heli.SetProofs(false, false, true, true, false, false, false, false);
                 heli.MaxHealth = 3000;
                 heli.Health = 3000;
@@ -300,7 +300,7 @@ namespace Inferno.InfernoScripts.World
         {
             if (!_heli.IsSafeExist()) return;
             var p = _heli.CreateRandomPedOnSeat(seat);
-            if (p.IsSafeExist()) { RegisterToAutoRelease(p);}
+            if (p.IsSafeExist()) { AutoReleaseOnGameEnd(p);}
         }
     }
 }

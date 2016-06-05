@@ -71,7 +71,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 if (p.IsSafeExist())
                 {
-                    RegisterAutoReleaseEntity(p);
+                    AutoReleaseOnParupunteEnd(p);
                     p.Rotation = core.PlayerPed.Rotation;
                     p.Health = 1;
                     StartCoroutine(DashCoroutine(p));
