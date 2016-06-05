@@ -101,15 +101,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 tank.EngineTorqueMultiplier = 20.0f;
                 tank.MaxSpeed = 300;
             }
-
-            this.OnFinishedAsObservable
-                .Subscribe(_ =>
-                {
-                    foreach (var x in tankList.Where(x => x.IsSafeExist() && x.IsAlive))
-                    {
-                        x.PetrolTankHealth = -1;
-                    }
-                });
         }
 
         #endregion
@@ -175,8 +166,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetNotChaosPed(true);
 
             //自動開放
-            RegisterAutoReleaseEntity(tank);
-            RegisterAutoReleaseEntity(ped);
+            AutoReleaseOnGameEnd(tank);
+            AutoReleaseOnGameEnd(ped);
 
             return new Tuple<Vehicle, Ped>(tank, ped);
         }
