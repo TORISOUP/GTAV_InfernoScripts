@@ -123,9 +123,10 @@ namespace Inferno.ChaosMode
             if (!PlayerPed.IsSafeExist()) return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
-            var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius);
+            var nearPeds =
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
 
-            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && x.IsHuman && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 var id = StartCoroutine(ChaosPedAction(ped));
