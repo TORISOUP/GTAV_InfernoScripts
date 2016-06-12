@@ -58,7 +58,7 @@ namespace Inferno
         //時間差で戦闘機を出現させる
         private IEnumerable<object> StartChaosPlanes()
         {
-            foreach (var i in Enumerable.Range(0, 4))
+            foreach (var i in Enumerable.Range(0, 2))
             {
                 StartCoroutine(PlaneManageCoroutine(i));
                 yield return WaitForSeconds(1);

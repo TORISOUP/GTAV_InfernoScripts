@@ -191,7 +191,7 @@ namespace Inferno.ChaosMode
                     break;
                 }
 
-                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius))
+                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10))
                 {
                     break;
                 }
