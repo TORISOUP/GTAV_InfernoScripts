@@ -14,8 +14,6 @@ namespace Inferno.Utilities
         protected DebugLogger _debugLogger;
         protected string _baseFilePath = @"./scripts/confs/";
 
-        private static object lockObject = new object();
-
         protected virtual DebugLogger DebugLogger
         {
             get
@@ -35,11 +33,10 @@ namespace Inferno.Utilities
         {
             var filePath = _baseFilePath + fileName;
             var readJson = "";
-            lock (lockObject)
-            {
-                //ファイルロード
-                readJson = ReadFile(filePath);
-            }
+
+            //ファイルロード
+            readJson = ReadFile(filePath);
+
             try
             {
                 return JsonConvert.DeserializeObject<T>(readJson);
