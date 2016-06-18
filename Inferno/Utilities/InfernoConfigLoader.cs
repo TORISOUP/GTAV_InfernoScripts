@@ -12,7 +12,9 @@ namespace Inferno.Utilities
     {
         protected readonly Encoding _encoding = Encoding.UTF8;
         protected DebugLogger _debugLogger;
-        protected string _baseFilePath = "@./scripts/confs/";
+        protected string _baseFilePath = @"./scripts/confs/";
+
+        private static object lockObject = new object();
 
         protected virtual DebugLogger DebugLogger
         {
@@ -32,8 +34,12 @@ namespace Inferno.Utilities
         public T LoadSettingFile(string fileName)
         {
             var filePath = _baseFilePath + fileName;
-            //ファイルロード
-            var readJson = ReadFile(filePath);
+            var readJson = "";
+            lock (lockObject)
+            {
+                //ファイルロード
+                readJson = ReadFile(filePath);
+            }
             try
             {
                 return JsonConvert.DeserializeObject<T>(readJson);

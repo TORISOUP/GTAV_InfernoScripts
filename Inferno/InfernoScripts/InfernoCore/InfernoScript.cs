@@ -20,6 +20,23 @@ namespace Inferno
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
 
+        protected virtual string ConfigFileName => null;
+
+        /// <summary>
+        /// 設定ファイルをロードする
+        /// </summary>
+        protected T LoadConfig<T>() where T : InfernoConfig, new()
+        {
+            if (string.IsNullOrEmpty(ConfigFileName))
+            {
+                throw new Exception("設定ファイル名が設定されていません");
+            }
+            var loader = new InfernoConfigLoader<T>();
+            var dto = loader.LoadSettingFile(ConfigFileName);
+            //バリデーションに引っかかったらデフォルト値を返す
+            return dto.Validate() ? dto : new T();
+        }
+
         /// <summary>
         /// スクリプトが動作中であるか
         /// </summary>
@@ -149,7 +166,7 @@ namespace Inferno
         /// <summary>
         /// ゲーム中断時に自動開放する対象リスト
         /// </summary>
-        private List<Entity>  _autoReleaseEntities = new List<Entity>();
+        private List<Entity> _autoReleaseEntities = new List<Entity>();
 
         /// <summary>
         /// ゲーム中断時に自動開放する
@@ -170,7 +187,7 @@ namespace Inferno
         protected override void Dispose(bool A_0)
         {
             IsActive = false;
-            foreach (var e in _autoReleaseEntities.Where(x=>x.IsSafeExist()))
+            foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
             {
                 e.MarkAsNoLongerNeeded();
             }
