@@ -1,15 +1,28 @@
 ﻿using System;
 using System.Linq;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
+    class CitizenVehicleBombConfig : InfernoConfig
+    {
+        public int Probability { get; set; } = 10;
+
+        public override bool Validate()
+        {
+            return Probability > 0 && Probability <= 100;
+        }
+    }
+
     /// <summary>
     /// 爆雷
     /// </summary>
     internal class CitizenVehicleBomb : InfernoScript
     {
-        private float probability = 10;
+        protected override string ConfigFileName { get; } = "CitizenVehicleBomb.conf";
+        private CitizenVehicleBombConfig config;
+        private int Probability => config?.Probability ?? 10;
 
         protected override void Setup()
         {
@@ -37,7 +50,7 @@ namespace Inferno
 
             foreach (var vehicle in targetVehicles)
             {
-                if (Random.Next(0, 100) <= probability)
+                if (Random.Next(0, 100) <= Probability)
                 {
                     vehicle.PetrolTankHealth = -1;
                 }
