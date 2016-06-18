@@ -5,12 +5,31 @@ using Inferno.ChaosMode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
+    class ChaosAirPlaneConfig : InfernoConfig
+    {
+        public int AirPlaneCount { get; set; } = 2;
+
+        public override bool Validate()
+        {
+            //AirPlaneの数は1～30の範囲である
+            if (AirPlaneCount <= 0 || AirPlaneCount > 30) return false;
+
+            return true;
+        }
+    }
+
     internal class ChaosAirPlane : InfernoScript
     {
+        protected override string ConfigFileName { get; } = "ChaosAirPlane.conf";
+        protected ChaosAirPlaneConfig config;
+        
+        protected int AirPlaneCount => config?.AirPlaneCount ?? 2;
+
         /// <summary>
         /// 各戦闘機が狙っている場所
         /// </summary>
@@ -21,6 +40,8 @@ namespace Inferno
 
         protected override void Setup()
         {
+            config = LoadConfig<ChaosAirPlaneConfig>();
+            DrawText(config.AirPlaneCount.ToString());
             CreateInputKeywordAsObservable("abomb")
                 .Subscribe(_ =>
                 {
@@ -58,7 +79,7 @@ namespace Inferno
         //時間差で戦闘機を出現させる
         private IEnumerable<object> StartChaosPlanes()
         {
-            foreach (var i in Enumerable.Range(0, 2))
+            foreach (var i in Enumerable.Range(0, AirPlaneCount))
             {
                 StartCoroutine(PlaneManageCoroutine(i));
                 yield return WaitForSeconds(1);
