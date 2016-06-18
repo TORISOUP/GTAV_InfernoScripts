@@ -31,7 +31,6 @@ namespace Inferno
         private int Probability => config?.Probability ?? 7;
 
         private readonly string Keyword = "cnitro";
-        private readonly int probability = 7;
         private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
 
         protected override void Setup()
