@@ -27,7 +27,7 @@ namespace Inferno
     {
         protected override string ConfigFileName { get; } = "CitizenNitro.conf";
         private CitizenNitroConfig config;
-        private int Probability => config?.Probability ?? 8;
+        private int Probability => config?.Probability ?? 7;
 
         private readonly string Keyword = "cnitro";
         private readonly int probability = 7;

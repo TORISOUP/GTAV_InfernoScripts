@@ -3,17 +3,36 @@ using GTA.Math;
 using Inferno.ChaosMode;
 using System;
 using System.Collections.Generic;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
+    class SpawnParachuteCitizenArmyConfig : InfernoConfig
+    {
+        /// <summary>
+        /// 生成間隔
+        /// </summary>
+        public int SpawnDurationSeconds { get; set; } = 5;
+
+        public override bool Validate()
+        {
+            return SpawnDurationSeconds > 0;
+        }
+    }
+
     /// <summary>
     /// 市民を生成してパラシュート降下させる
     /// </summary>
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
+        protected override string ConfigFileName { get; } = "SpawnParachuteCitizenArmy.conf";
+        private SpawnParachuteCitizenArmyConfig config;
+        private int SpawnDurationSeconds => config?.SpawnDurationSeconds ?? 5;
+
         protected override void Setup()
         {
+            config = LoadConfig<SpawnParachuteCitizenArmyConfig>();
             CreateInputKeywordAsObservable("carmy")
                 .Subscribe(_ =>
                 {
@@ -23,7 +42,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            CreateTickAsObservable(5000)
+            CreateTickAsObservable(SpawnDurationSeconds * 1000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => CreateParachutePed());
         }

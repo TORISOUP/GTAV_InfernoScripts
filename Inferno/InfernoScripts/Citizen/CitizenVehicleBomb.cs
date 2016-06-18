@@ -26,6 +26,7 @@ namespace Inferno
 
         protected override void Setup()
         {
+            config = LoadConfig<CitizenVehicleBombConfig>();
             CreateInputKeywordAsObservable("vbomb")
                 .Subscribe(_ =>
                 {
