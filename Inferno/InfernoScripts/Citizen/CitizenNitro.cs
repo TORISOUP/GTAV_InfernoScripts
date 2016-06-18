@@ -10,21 +10,22 @@ using UniRx;
 
 namespace Inferno
 {
-    class CitizenNitroConfig : InfernoConfig
-    {
-        public int Probability { get; set; } = 7;
-
-        public override bool Validate()
-        {
-            return Probability > 0 && Probability <= 100;
-        }
-    }
 
     /// <summary>
     /// 市ニトロ
     /// </summary>
     public class CitizenNitro : InfernoScript
     {
+        class CitizenNitroConfig : InfernoConfig
+        {
+            public int Probability { get; set; } = 7;
+
+            public override bool Validate()
+            {
+                return Probability > 0 && Probability <= 100;
+            }
+        }
+
         protected override string ConfigFileName { get; } = "CitizenNitro.conf";
         private CitizenNitroConfig config;
         private int Probability => config?.Probability ?? 7;

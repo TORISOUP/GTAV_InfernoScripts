@@ -8,24 +8,25 @@ using UniRx;
 
 namespace Inferno
 {
-    class SpawnParachuteCitizenArmyConfig : InfernoConfig
-    {
-        /// <summary>
-        /// 生成間隔
-        /// </summary>
-        public int SpawnDurationSeconds { get; set; } = 5;
-
-        public override bool Validate()
-        {
-            return SpawnDurationSeconds > 0;
-        }
-    }
 
     /// <summary>
     /// 市民を生成してパラシュート降下させる
     /// </summary>
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
+        class SpawnParachuteCitizenArmyConfig : InfernoConfig
+        {
+            /// <summary>
+            /// 生成間隔
+            /// </summary>
+            public int SpawnDurationSeconds { get; set; } = 5;
+
+            public override bool Validate()
+            {
+                return SpawnDurationSeconds > 0;
+            }
+        }
+
         protected override string ConfigFileName { get; } = "SpawnParachuteCitizenArmy.conf";
         private SpawnParachuteCitizenArmyConfig config;
         private int SpawnDurationSeconds => config?.SpawnDurationSeconds ?? 5;
