@@ -5,21 +5,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Inferno.ChaosMode;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
+    class CitizenNitroConfig : InfernoConfig
+    {
+        public int Probability { get; set; } = 7;
+
+        public override bool Validate()
+        {
+            return Probability > 0 && Probability <= 100;
+        }
+    }
+
     /// <summary>
     /// 市ニトロ
     /// </summary>
     public class CitizenNitro : InfernoScript
     {
+        protected override string ConfigFileName { get; } = "CitizenNitro.conf";
+        private CitizenNitroConfig config;
+        private int Probability => config?.Probability ?? 8;
+
         private readonly string Keyword = "cnitro";
         private readonly int probability = 7;
         private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
 
         protected override void Setup()
         {
+            config = LoadConfig<CitizenNitroConfig>();
+
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
@@ -50,7 +67,7 @@ namespace Inferno
 
                 foreach (var veh in nitroAvailableVeles)
                 {
-                    if (Random.Next(0, 100) <= probability)
+                    if (Random.Next(0, 100) <= Probability)
                     {
                         StartCoroutine(DelayCoroutine(veh));
                     }

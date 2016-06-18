@@ -41,7 +41,6 @@ namespace Inferno
         protected override void Setup()
         {
             config = LoadConfig<ChaosAirPlaneConfig>();
-            DrawText(config.AirPlaneCount.ToString());
             CreateInputKeywordAsObservable("abomb")
                 .Subscribe(_ =>
                 {
