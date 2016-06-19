@@ -311,6 +311,8 @@
     <Compile Include="UniRx\System\Unit.cs" />
     <Compile Include="UniRx\TimeInterval.cs" />
     <Compile Include="UniRx\Timestamped.cs" />
+    <Compile Include="Utilities\InfernoConfig.cs" />
+    <Compile Include="Utilities\InfernoConfigLoader.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
     <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />

@@ -65,11 +65,11 @@ namespace InfernoTest
         {
             var testLoader = new TestChaosModeSettingLoader("{AAA,BBB}"); //jsonの文法違反
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(1000, result.Radius);
+            Assert.AreEqual(300, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
-            Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.ShootAccuracy);
             Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
@@ -87,12 +87,12 @@ namespace InfernoTest
                     "{\"AttackPlayerCorrectionProbabillity\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(1000, result.Radius);
+            Assert.AreEqual(300, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
                 result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
-            Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.ShootAccuracy);
             Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
@@ -107,11 +107,11 @@ namespace InfernoTest
         {
             var testLoader = new TestChaosModeSettingLoader("");
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(1000, result.Radius);
+            Assert.AreEqual(300, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
-            Assert.AreEqual(100, result.ShootAccuracy);
+            Assert.AreEqual(30, result.ShootAccuracy);
             Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
@@ -140,7 +140,7 @@ namespace InfernoTest
             /// <summary>
             /// テスト時はログを吐かないようにMockに挿し替える
             /// </summary>
-            protected override DebugLogger ChaosModeDebugLogger
+            protected override DebugLogger DebugLogger
             {
                 get
                 {

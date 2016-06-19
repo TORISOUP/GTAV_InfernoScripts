@@ -5,18 +5,56 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTA.Native;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
     internal class Meteo : InfernoScript
     {
+
+        #region config
+        class MeteoConfig : InfernoConfig
+        {
+            /// <summary>
+            /// プレイヤを中心としたメテオ落下範囲[m]
+            /// </summary>
+            public int Radius { get; set; } = 30;
+
+            /// <summary>
+            /// メテオを落下させるのかの判定頻度[ms]
+            /// </summary>
+            public int DurationMillSeconds { get; set; } = 1000;
+
+            /// <summary>
+            /// メテオを落下させる確率
+            /// </summary>
+            public int Probability { get; set; } = 25;
+
+            public override bool Validate()
+            {
+                if (Radius <= 0) return false;
+                if (DurationMillSeconds <= 0) return false;
+                if (Probability <= 0 || Probability > 100) return false;
+                return true;
+            }
+        }
+
+        protected override string ConfigFileName { get; } = "Meteo.conf";
+        private MeteoConfig config;
+        private int Radius => config?.Radius ?? 30;
+        private int DurationMillSeconds => config?.DurationMillSeconds ?? 1000;
+        private int Probability => config?.Probability ?? 25;
+        #endregion
+
         private readonly List<Vector3> meteoLightPositionList = new List<Vector3>();
 
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
 
         protected override void Setup()
         {
+            config = LoadConfig<MeteoConfig>();
+
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
                 {
@@ -38,8 +76,8 @@ namespace Inferno
                     }
                 });
 
-            CreateTickAsObservable(1000)
-               .Where(_ => IsActive && Random.Next(0, 100) <= 25)
+            CreateTickAsObservable(DurationMillSeconds)
+               .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -51,7 +89,7 @@ namespace Inferno
                 if (!player.IsSafeExist()) return;
 
                 var playerPosition = player.Position;
-                var range = 30;
+                var range = Radius;
                 var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);
 
                 if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)

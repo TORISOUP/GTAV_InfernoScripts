@@ -1,18 +1,33 @@
 ﻿using System;
 using System.Linq;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
 {
+
     /// <summary>
     /// 爆雷
     /// </summary>
     internal class CitizenVehicleBomb : InfernoScript
     {
-        private float probability = 10;
+        class CitizenVehicleBombConfig : InfernoConfig
+        {
+            public int Probability { get; set; } = 10;
+
+            public override bool Validate()
+            {
+                return Probability > 0 && Probability <= 100;
+            }
+        }
+
+        protected override string ConfigFileName { get; } = "CitizenVehicleBomb.conf";
+        private CitizenVehicleBombConfig config;
+        private int Probability => config?.Probability ?? 10;
 
         protected override void Setup()
         {
+            config = LoadConfig<CitizenVehicleBombConfig>();
             CreateInputKeywordAsObservable("vbomb")
                 .Subscribe(_ =>
                 {
@@ -37,7 +52,7 @@ namespace Inferno
 
             foreach (var vehicle in targetVehicles)
             {
-                if (Random.Next(0, 100) <= probability)
+                if (Random.Next(0, 100) <= Probability)
                 {
                     vehicle.PetrolTankHealth = -1;
                 }

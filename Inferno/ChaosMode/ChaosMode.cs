@@ -45,9 +45,8 @@ namespace Inferno.ChaosMode
             //敵対関係のグループを作成
             chaosRelationShipId = World.AddRelationshipGroup("Inferno:ChaosPeds");
             
-
             var chaosSettingLoader = new ChaosModeSettingLoader();
-            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"./scripts/chaosmode/default.conf");
+            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
