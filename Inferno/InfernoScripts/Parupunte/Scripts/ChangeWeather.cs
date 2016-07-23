@@ -25,6 +25,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             weather = Enum.GetValues(typeof(Weather))
                 .Cast<Weather>()
+                .Where(x => x != Weather.Unknown)
                 .OrderBy(x => random.Next())
                 .FirstOrDefault();
 

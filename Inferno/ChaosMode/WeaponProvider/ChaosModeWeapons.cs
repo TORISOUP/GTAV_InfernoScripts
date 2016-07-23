@@ -59,6 +59,9 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.MARKSMANPISTOL,
                 Weapon.MACHINEPISTOL,
                 Weapon.GUSENBERG,
+                Weapon.REVOLVER,
+                Weapon.COMPACTRIFLE,
+                Weapon.DOUBLEBARRELSHOTGUN
             };
 
             //近距離系
@@ -93,8 +96,15 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.PISTOL,
                 Weapon.APPISTOL,
                 Weapon.COMBATPISTOL,
+                Weapon.HEAVYPISTOL,
+                Weapon.PISTOL50,
+                Weapon.FLAREGUN,
+                Weapon.REVOLVER,
                 Weapon.MICROSMG,
+                Weapon.MACHINEPISTOL,
+                Weapon.COMPACTRIFLE,
                 Weapon.SAWNOFFSHOTGUN,
+                Weapon.DOUBLEBARRELSHOTGUN,
                 Weapon.STUNGUN,
             };
 

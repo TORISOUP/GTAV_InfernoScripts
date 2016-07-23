@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using GTA;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte
@@ -42,6 +43,11 @@ namespace Inferno.InfernoScripts.Parupunte
         /// nullまたは空文字列なら表示しない
         /// </summary>
         public virtual string EndMessage { get; }
+
+        /// <summary>
+        /// 終了メッセージの表示時間[s]
+        /// </summary>
+        public float EndMessageDisplayTime = 2.0f;
 
         /// <summary>
         /// パルプンテの処理が実行中であるか
@@ -128,7 +134,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (!string.IsNullOrEmpty(EndMessage))
             {
-                core.DrawParupunteText(EndMessage, 2.0f);
+                core.DrawParupunteText(EndMessage, EndMessageDisplayTime);
             }
         }
 
@@ -182,6 +188,22 @@ namespace Inferno.InfernoScripts.Parupunte
         protected void AddProgressBar(ReduceCounter counter)
         {
             core.AddProgressBar(counter);
+        }
+
+        /// <summary>
+        /// パルプンテが終了した時に自動的に開放してくれる
+        /// </summary>
+        protected void AutoReleaseOnParupunteEnd(Entity entity)
+        {
+            core.AutoReleaseOnParupunteEnd(entity);
+        }
+
+        /// <summary>
+        /// ゲーム終了時に自動開放
+        /// </summary>
+        protected void AutoReleaseOnGameEnd(Entity entity)
+        {
+            core.AutoReleaseOnGameEnd(entity);
         }
     }
 }

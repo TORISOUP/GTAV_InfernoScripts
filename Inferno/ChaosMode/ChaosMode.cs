@@ -45,9 +45,8 @@ namespace Inferno.ChaosMode
             //敵対関係のグループを作成
             chaosRelationShipId = World.AddRelationshipGroup("Inferno:ChaosPeds");
             
-
             var chaosSettingLoader = new ChaosModeSettingLoader();
-            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"./scripts/chaosmode/default.conf");
+            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
@@ -123,9 +122,10 @@ namespace Inferno.ChaosMode
             if (!PlayerPed.IsSafeExist()) return;
 
             //まだ処理をしていない市民に対してコルーチンを回す
-            var nearPeds = World.GetNearbyPeds(PlayerPed, chaosModeSetting.Radius);
+            var nearPeds =
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
 
-            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && x.IsHuman && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 var id = StartCoroutine(ChaosPedAction(ped));
@@ -190,7 +190,7 @@ namespace Inferno.ChaosMode
                     break;
                 }
 
-                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius))
+                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10))
                 {
                     break;
                 }

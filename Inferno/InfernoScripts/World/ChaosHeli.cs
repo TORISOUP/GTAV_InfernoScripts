@@ -47,6 +47,9 @@ namespace Inferno.InfernoScripts.World
                     if (_heli.IsSafeExist()) return;
                     ResetHeli();
                 });
+
+            this.OnAbortAsync
+                .Subscribe(_ => ReleasePedAndHeli());
         }
 
         /// <summary>
@@ -96,22 +99,6 @@ namespace Inferno.InfernoScripts.World
                 MoveHeli(_heliDriver, targetPosition);
 
                 SpawnPassengersToEmptySeat();
-
-                ////各座席ごとの処理
-                //foreach (var seat in vehicleSeat)
-                //{
-                //    if (!CheckRapeling(_heli, seat)) continue;
-                //    var ped = _heli.GetPedOnSeat(seat);
-                //    if (!ped.IsSafeExist()) continue;
-                //    if(raperingPedList.Contains(ped)) continue;
-                //    if (Random.Next(100) <= 30)
-                //    {
-                //        //ラペリング降下のコルーチン
-                //        var id = StartCoroutine(PassengerRapeling(ped, seat));
-                //        raperingPedList.Add(ped);
-                //        coroutineIds.Add(id);
-                //    }
-                //}
 
                 yield return WaitForSeconds(1);
             }
@@ -232,6 +219,7 @@ namespace Inferno.InfernoScripts.World
                 var spawnHeliPosition = playerPosition + new Vector3(0, 0, 40);
                 var heli = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Maverick, spawnHeliPosition);
                 if (!heli.IsSafeExist()) return;
+                AutoReleaseOnGameEnd(heli);
                 heli.SetProofs(false, false, true, true, false, false, false, false);
                 heli.MaxHealth = 3000;
                 heli.Health = 3000;
@@ -311,7 +299,8 @@ namespace Inferno.InfernoScripts.World
         private void CreatePassenger(VehicleSeat seat)
         {
             if (!_heli.IsSafeExist()) return;
-            _heli.CreateRandomPedOnSeat(seat);
+            var p = _heli.CreateRandomPedOnSeat(seat);
+            if (p.IsSafeExist()) { AutoReleaseOnGameEnd(p);}
         }
     }
 }

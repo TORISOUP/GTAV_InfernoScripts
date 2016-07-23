@@ -20,6 +20,23 @@ namespace Inferno
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
 
+        protected virtual string ConfigFileName => null;
+
+        /// <summary>
+        /// 設定ファイルをロードする
+        /// </summary>
+        protected T LoadConfig<T>() where T : InfernoConfig, new()
+        {
+            if (string.IsNullOrEmpty(ConfigFileName))
+            {
+                throw new Exception("設定ファイル名が設定されていません");
+            }
+            var loader = new InfernoConfigLoader<T>();
+            var dto = loader.LoadSettingFile(ConfigFileName);
+            //バリデーションに引っかかったらデフォルト値を返す
+            return dto.Validate() ? dto : new T();
+        }
+
         /// <summary>
         /// スクリプトが動作中であるか
         /// </summary>
@@ -142,8 +159,45 @@ namespace Inferno
                 .ThrottleFirst(TimeSpan.FromMilliseconds(millsecond))
                 .Publish().RefCount();
         }
-
         #endregion forEvents
+
+        #region forAbort
+
+        /// <summary>
+        /// ゲーム中断時に自動開放する対象リスト
+        /// </summary>
+        private List<Entity> _autoReleaseEntities = new List<Entity>();
+
+        /// <summary>
+        /// ゲーム中断時に自動開放する
+        /// </summary>
+        /// <param name="entity"></param>
+        protected void AutoReleaseOnGameEnd(Entity entity)
+        {
+            _autoReleaseEntities.RemoveAll(x => !x.IsSafeExist());
+            _autoReleaseEntities.Add(entity);
+        }
+
+        private Subject<Unit> _onAbortSubject = new Subject<Unit>();
+        /// <summary>
+        /// ゲームが中断した時に実行される
+        /// </summary>
+        protected UniRx.IObservable<Unit> OnAbortAsync => _onAbortSubject.AsObservable();
+
+        protected override void Dispose(bool A_0)
+        {
+            IsActive = false;
+            foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
+            {
+                e.MarkAsNoLongerNeeded();
+            }
+            _autoReleaseEntities.Clear();
+            _onAbortSubject.OnNext(Unit.Default);
+            _onAbortSubject.OnCompleted();
+            base.Dispose(A_0);
+        }
+
+        #endregion
 
         #region forCoroutine
 

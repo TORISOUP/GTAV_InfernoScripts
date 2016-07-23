@@ -57,9 +57,14 @@ namespace Inferno
                 vheiclePetrolTankHealth += 1000.0f;
             }
 
-            DrawHealthBar(vheiclePetrolTankHealth, 1000.0f, new Point(5, 560), petrolTankHealthColor);
-            DrawHealthBar(bodyHealth, 1000.0f, new Point(5, 570), Color.FromArgb(200, 0, 128, 200));
-            DrawHealthBar(engineHealth, 1000.0f, new Point(5, 580), Color.FromArgb(200, 128, 200, 0));
+            //レーダーマップとの干渉回避
+            var safeZoneSize = Function.Call<float>(Hash.GET_SAFE_ZONE_SIZE);
+            var barXPosition = 550 - (int)(545 * safeZoneSize);
+            var barYPosition = 240 + (int)(315 * safeZoneSize);
+
+            DrawHealthBar(vheiclePetrolTankHealth, 1000.0f, new Point(barXPosition, barYPosition), petrolTankHealthColor);
+            DrawHealthBar(bodyHealth, 1000.0f, new Point(barXPosition, barYPosition + 10), Color.FromArgb(200, 0, 128, 200));
+            DrawHealthBar(engineHealth, 1000.0f, new Point(barXPosition, barYPosition + 20), Color.FromArgb(200, 128, 200, 0));
         }
 
         /// <summary>

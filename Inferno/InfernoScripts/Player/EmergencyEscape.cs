@@ -1,5 +1,7 @@
-﻿using GTA;
+﻿using System.Collections.Generic;
+using GTA;
 using GTA.Math;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
@@ -30,7 +32,17 @@ namespace Inferno
             player.ClearTasksImmediately();
             player.Position += new Vector3(0, 0, 0.5f);
             player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, 8.0f) + playerVec.Velocity);
+            player.ApplyForce(new Vector3(0, 0, 60.0f) + playerVec.Velocity, InfernoUtilities.CreateRandomVector() * 10.0f);
+
+            StartCoroutine(DelayParachute());
+        }
+
+        private IEnumerable<object> DelayParachute()
+        {
+            PlayerPed.IsInvincible = true;
+            yield return WaitForSeconds(1.5f);
+            PlayerPed.IsInvincible = false;
+            PlayerPed.ParachuteTo(PlayerPed.Position);
         }
     }
 }

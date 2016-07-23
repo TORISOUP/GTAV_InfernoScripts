@@ -57,6 +57,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="ScriptHookVDotNet, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -105,12 +109,16 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenNinja.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FishHeaven.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\Garupan.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\MultiLeggedRace.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnVheicle.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\VehicleSpeedUp.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Gochiusa.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\InvisiblePeds.cs" />
@@ -304,6 +312,8 @@
     <Compile Include="UniRx\System\Unit.cs" />
     <Compile Include="UniRx\TimeInterval.cs" />
     <Compile Include="UniRx\Timestamped.cs" />
+    <Compile Include="Utilities\InfernoConfig.cs" />
+    <Compile Include="Utilities\InfernoConfigLoader.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
     <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
