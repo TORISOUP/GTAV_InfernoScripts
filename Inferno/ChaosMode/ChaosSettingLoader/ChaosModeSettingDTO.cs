@@ -6,7 +6,7 @@
     public class ChaosModeSettingDTO
     {
         public int Radius { get; set; } = 300;
-        public int Interval { get; set; } = 500;
+        public int Interval { get; set; } = 1510;
         public bool IsChangeMissionCharacterWeapon { get; set; } = true;
         public int DefaultMissionCharacterTreatment { get; set; } = 1;
         public bool IsAttackPlayerCorrectionEnabled { get; set; } = false;
