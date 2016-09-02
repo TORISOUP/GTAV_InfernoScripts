@@ -4,6 +4,7 @@ using GTA.Native;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Inferno.Utilities;
 using UniRx;
 
 namespace Inferno
@@ -13,12 +14,36 @@ namespace Inferno
     /// </summary>
     public class PlayerVehicleNitro : InfernoScript
     {
+
+        class PlayerNitroConf : InfernoConfig
+        {
+            public float StarightAccelerationSpeed { get; set; } = 50;
+            public float JumpAccelerationSpeed { get; set; } = 20;
+            public float CoolDownSeconds { get; set; } = 10.0f;
+
+            public override bool Validate()
+            {
+                if (CoolDownSeconds <= 0) return false;
+                return true;
+            }
+        }
+
+        protected override string ConfigFileName { get; } = "PlayerNitro.conf";
+
+        private PlayerNitroConf conf;
+
         private bool _isNitroOk = true;
 
         protected override int TickInterval => 50;
 
+        private float StarightAccelerationSpeed => conf?.StarightAccelerationSpeed ?? 50;
+        private float JumpAccelerationSpeed => conf?.JumpAccelerationSpeed ?? 20;
+        private float CoolDownSeconds => conf?.CoolDownSeconds ?? 10.0f;
+
         protected override void Setup()
         {
+            conf = LoadConfig<PlayerNitroConf>();
+
             IsActive = true;
             OnTickAsObservable
                 .Where(
@@ -49,12 +74,11 @@ namespace Inferno
                 rotation = this.GetStickValue().Y / 250.0f;
             }
 
-            if (Game.Player.WantedLevel == 0)
-            {
-                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
-            }
+
+            vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
+
             var deadZone = 0.25f;
-            var addSpeed = ((rotation > deadZone || rotation < -deadZone) ? 20.0f : 50.0f);
+            var addSpeed = ((rotation > deadZone || rotation < -deadZone) ? JumpAccelerationSpeed : StarightAccelerationSpeed);
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
                 vehicle.Speed -= addSpeed;
@@ -67,17 +91,7 @@ namespace Inferno
             NitroAction(driver, vehicle);
         }
 
-        private void ChangeDirverAndVehicleState(Ped driver, Vehicle vehicle, bool isInvincible)
-        {
-            if (driver.IsSafeExist())
-            {
-                driver.IsInvincible = isInvincible;
-            }
-            if (vehicle.IsSafeExist())
-            {
-                vehicle.IsInvincible = isInvincible;
-            }
-        }
+
 
         /// <summary>
         /// ニトロ処理
@@ -85,8 +99,6 @@ namespace Inferno
         private void NitroAction(Ped driver, Vehicle vehicle)
         {
             _isNitroOk = false;
-
-            ChangeDirverAndVehicleState(driver, vehicle, true);
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
@@ -106,7 +118,7 @@ namespace Inferno
         private IEnumerable<Object> NitroAfterTreatment(Ped driver, Vehicle vehicle)
         {
             //カウンタ作成
-            var counter = new ReduceCounter(10000);
+            var counter = new ReduceCounter((int)(CoolDownSeconds * 1000));
             //カウンタを描画
             RegisterProgressBar(
                 new ProgressBarData(counter, new Point(0, 30),
@@ -117,26 +129,7 @@ namespace Inferno
             //カウンタを自動カウント
             RegisterCounter(counter);
 
-            //3秒まつ
-
-            foreach (var s in WaitForSeconds(3))
-            {
-                if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
-                {
-                    //死んだりクルマから降りたらリセット
-                    counter.Finish();
-                    _isNitroOk = true;
-                    ChangeDirverAndVehicleState(driver, vehicle, false);
-                    yield break;
-                }
-                yield return s;
-            }
-
-            ChangeDirverAndVehicleState(driver, vehicle, false);
-
-            //７秒まつ
-
-            foreach (var s in WaitForSeconds(7))
+            foreach (var s in WaitForSeconds(CoolDownSeconds))
             {
                 if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
                 {
