@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Player
         protected override void Setup()
         {
             OnTickAsObservable
-                .Where(_ => this.IsGamePadPressed(GameKey.Aim))
+                .Where(_ => this.IsGamePadPressed(GameKey.Jump))
                 .Subscribe(_ => GripAction());
 
             OnTickAsObservable
@@ -31,7 +31,7 @@ namespace Inferno.InfernoScripts.Player
                 });
 
             OnTickAsObservable
-                .Where(_ => _isGriped && !this.IsGamePadPressed(GameKey.Aim))
+                .Where(_ => _isGriped && !this.IsGamePadPressed(GameKey.Jump))
                 .Subscribe(_ => GripRemove());
         }
 
@@ -44,9 +44,8 @@ namespace Inferno.InfernoScripts.Player
             player.IsInvincible = false;
             _isGriped = false;
             Function.Call(Hash.DETACH_ENTITY, player, false, false);
-            player.Task.Skydive();
-            player.Task.ClearAll();
-
+            player.Task.ClearAllImmediately();
+            player.SetToRagdoll();
         }
 
         /// <summary>
