@@ -26,8 +26,7 @@ namespace Inferno.InfernoScripts.Player
                 .Where(_ => _isGriped)
                 .Subscribe(_ =>
                 {
-                    var player = PlayerPed;
-                    Grip(player, _vehicle, _ofsetPosition);
+                    Grip(PlayerPed, _vehicle, _ofsetPosition);
                 });
 
             OnTickAsObservable
@@ -40,12 +39,11 @@ namespace Inferno.InfernoScripts.Player
         /// </summary>
         private void GripRemove()
         {
-            var player = PlayerPed;
-            player.IsInvincible = false;
+            PlayerPed.IsInvincible = false;
             _isGriped = false;
-            Function.Call(Hash.DETACH_ENTITY, player, false, false);
-            player.Task.ClearAllImmediately();
-            player.SetToRagdoll();
+            Function.Call(Hash.DETACH_ENTITY, PlayerPed, false, false);
+            PlayerPed.Task.ClearAllImmediately();
+            PlayerPed.SetToRagdoll();
         }
 
         /// <summary>
@@ -53,22 +51,21 @@ namespace Inferno.InfernoScripts.Player
         /// </summary>
         private void GripAction()
         {
-            var player = PlayerPed;
             var gripAvailableVeles = CachedVehicles
-                            .Where(x => x.IsSafeExist() && x.IsInRangeOf(player.Position, 10.0f));
+                            .Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, 10.0f));
             foreach (var veh in gripAvailableVeles)
             {
-                var isTouchingEntity = Function.Call<bool>(Hash.IS_ENTITY_TOUCHING_ENTITY, player, veh);
+                var isTouchingEntity = Function.Call<bool>(Hash.IS_ENTITY_TOUCHING_ENTITY, PlayerPed, veh);
                 if (!isTouchingEntity) continue;
                 _isGriped = true;
-                var playerRHandCoords = player.GetBoneCoord(Bone.SKEL_R_Hand);
+                var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
 
                 var ofsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
                     veh,
                     playerRHandCoords.X,
                     playerRHandCoords.Y,
                     playerRHandCoords.Z);
-                Grip(player, veh, ofsetPosition);
+                Grip(PlayerPed, veh, ofsetPosition);
             }
         }
 
