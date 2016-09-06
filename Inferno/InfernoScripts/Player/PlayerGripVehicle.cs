@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Player
         protected override void Setup()
         {
             OnTickAsObservable
-                .Where(_ => this.IsGamePadPressed(GameKey.Jump))
+                .Where(_ => !_isGriped && this.IsGamePadPressed(GameKey.Jump))
                 .Subscribe(_ => GripAction());
 
             OnTickAsObservable
