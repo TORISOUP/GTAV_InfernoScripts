@@ -52,21 +52,20 @@ namespace Inferno.InfernoScripts.Player
         private void GripAction()
         {
             var gripAvailableVeles = CachedVehicles
-                            .Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, 10.0f));
-            foreach (var veh in gripAvailableVeles)
-            {
-                var isTouchingEntity = Function.Call<bool>(Hash.IS_ENTITY_TOUCHING_ENTITY, PlayerPed, veh);
-                if (!isTouchingEntity) continue;
-                _isGriped = true;
-                var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
+                .Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, 10.0f))
+                .OrderBy(x => x.Position.DistanceTo(PlayerPed.Position))
+                .First();
 
-                var ofsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
-                    veh,
-                    playerRHandCoords.X,
-                    playerRHandCoords.Y,
-                    playerRHandCoords.Z);
-                Grip(PlayerPed, veh, ofsetPosition);
-            }
+            if (!gripAvailableVeles.IsTouchingEntity(PlayerPed)) return;
+            _isGriped = true;
+            var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
+
+            var ofsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
+                gripAvailableVeles,
+                playerRHandCoords.X,
+                playerRHandCoords.Y,
+                playerRHandCoords.Z);
+            Grip(PlayerPed, gripAvailableVeles, ofsetPosition);
         }
 
         /// <summary>
