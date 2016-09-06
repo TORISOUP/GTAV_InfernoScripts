@@ -30,7 +30,7 @@ namespace Inferno.InfernoScripts.Player
                 });
 
             OnTickAsObservable
-                .Where(_ => _isGriped && !this.IsGamePadPressed(GameKey.Jump))
+                .Where(_ => _isGriped && (!this.IsGamePadPressed(GameKey.Jump) || PlayerPed.IsDead))
                 .Subscribe(_ => GripRemove());
         }
 
