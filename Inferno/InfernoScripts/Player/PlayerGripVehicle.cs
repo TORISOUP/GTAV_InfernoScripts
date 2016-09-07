@@ -54,9 +54,9 @@ namespace Inferno.InfernoScripts.Player
             var gripAvailableVeles = CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, 10.0f))
                 .OrderBy(x => x.Position.DistanceTo(PlayerPed.Position))
-                .First();
+                .FirstOrDefault();
 
-            if (!gripAvailableVeles.IsTouchingEntity(PlayerPed)) return;
+            if (gripAvailableVeles == null || !gripAvailableVeles.IsTouching(PlayerPed)) return;
             _isGriped = true;
             var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
 
