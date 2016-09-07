@@ -12,11 +12,6 @@ namespace Inferno
             return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
         }
 
-        public static bool IsTouchingEntity(this Entity targetEntity, Entity entity)
-        {
-            return Function.Call<bool>(Hash.IS_ENTITY_TOUCHING_ENTITY, entity, targetEntity);
-        }
-
         /// <summary>
         /// スティックの入力状態の取得
         /// </summary>
