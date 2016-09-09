@@ -214,7 +214,8 @@ namespace Inferno
 
             var targets = targetPeds.Concat(targetVehicles.Cast<Entity>()).ToArray();
 
-            return targets.Length > 0 ? targets[Random.Next(targets.Length)] : null;
+            //ターゲットが周りにいない場合は誰も攻撃しない
+            return targets.Length > 5 ? targets[Random.Next(targets.Length)] : null;
         }
 
         //戦闘機が動作可能な状態であるか
