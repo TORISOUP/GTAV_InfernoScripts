@@ -17,7 +17,7 @@ namespace Inferno
 
         class PlayerNitroConf : InfernoConfig
         {
-            public float StarightAccelerationSpeed { get; set; } = 50;
+            public float StraightAccelerationSpeed { get; set; } = 50;
             public float JumpAccelerationSpeed { get; set; } = 20;
             public float CoolDownSeconds { get; set; } = 10.0f;
 
@@ -36,7 +36,7 @@ namespace Inferno
 
         protected override int TickInterval => 50;
 
-        private float StarightAccelerationSpeed => conf?.StarightAccelerationSpeed ?? 50;
+        private float StraightAccelerationSpeed => conf?.StraightAccelerationSpeed ?? 50;
         private float JumpAccelerationSpeed => conf?.JumpAccelerationSpeed ?? 20;
         private float CoolDownSeconds => conf?.CoolDownSeconds ?? 10.0f;
 
@@ -78,7 +78,7 @@ namespace Inferno
             vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
 
             var deadZone = 0.25f;
-            var addSpeed = ((rotation > deadZone || rotation < -deadZone) ? JumpAccelerationSpeed : StarightAccelerationSpeed);
+            var addSpeed = ((rotation > deadZone || rotation < -deadZone) ? JumpAccelerationSpeed : StraightAccelerationSpeed);
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
                 vehicle.Speed -= addSpeed;
