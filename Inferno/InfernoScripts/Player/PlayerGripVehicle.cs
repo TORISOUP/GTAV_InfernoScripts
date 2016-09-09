@@ -81,12 +81,12 @@ namespace Inferno.InfernoScripts.Player
             _isGriped = true;
             var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
 
-            var ofsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
+            var offsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
                 gripAvailableVeles,
                 playerRHandCoords.X,
                 playerRHandCoords.Y,
                 playerRHandCoords.Z);
-            Grip(PlayerPed, gripAvailableVeles, ofsetPosition);
+            Grip(PlayerPed, gripAvailableVeles, offsetPosition);
         }
 
         /// <summary>
