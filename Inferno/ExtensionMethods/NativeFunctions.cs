@@ -187,7 +187,7 @@ namespace Inferno
         /// <param name="vehicle">車両</param>
         /// <param name="timeout">タイムアウト[ms] この秒数以上かかった場合は車内にワープする</param>
         /// <param name="vehicleSeat">座席</param>
-        public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, GTA.VehicleSeat vehicleSeat)
+        public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, VehicleSeat vehicleSeat)
         {
             if (!ped.IsSafeExist() || !vehicle.IsSafeExist()) return;
             Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int)vehicleSeat, 1, 1, 0);
@@ -232,7 +232,7 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="vehicle"></param>
         /// <param name="vehicleSeat"></param>
-        public static void SetIntoVehicle(this Ped ped, Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        public static void SetIntoVehicle(this Ped ped, Vehicle vehicle, VehicleSeat vehicleSeat)
         {
             Function.Call(Hash.SET_PED_INTO_VEHICLE, ped, vehicle, (int)vehicleSeat);
         }
@@ -242,7 +242,7 @@ namespace Inferno
         /// </summary>
         /// <param name="vehicle"></param>
         /// <param name="vehicleSeat"></param>
-        public static bool IsSeatFree(this Vehicle vehicle, GTA.VehicleSeat vehicleSeat)
+        public static bool IsSeatFree(this Vehicle vehicle, VehicleSeat vehicleSeat)
         {
             return Function.Call<bool>(Hash.IS_VEHICLE_SEAT_FREE, vehicle, (int)vehicleSeat);
         }
