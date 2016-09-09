@@ -18,8 +18,13 @@ namespace Inferno.InfernoScripts.Player
 
         protected override void Setup()
         {
+            //0.3秒間押しっぱなしなら発動
             OnTickAsObservable
-                .Where(_ => !this.GetPlayerVehicle().IsSafeExist() && !_isGriped && this.IsGamePadPressed(GameKey.Jump))
+                .Select(_ => !this.GetPlayerVehicle().IsSafeExist()
+                && !_isGriped
+                && this.IsGamePadPressed(GameKey.Reload)
+                ).Buffer(3, 1)
+                .Where(x => x.All(v => v))
                 .Subscribe(_ => GripAction());
 
             OnTickAsObservable
@@ -30,8 +35,13 @@ namespace Inferno.InfernoScripts.Player
                 });
 
             OnTickAsObservable
-                .Where(_ => _isGriped && (!this.IsGamePadPressed(GameKey.Jump) || PlayerPed.IsDead))
+                .Where(_ => _isGriped && (!this.IsGamePadPressed(GameKey.Reload) || PlayerPed.IsDead))
                 .Subscribe(_ => GripRemove());
+
+            this.OnAbortAsync.Subscribe(_ =>
+            {
+                SetPlayerProof(false);
+            });
         }
 
         /// <summary>
@@ -39,11 +49,22 @@ namespace Inferno.InfernoScripts.Player
         /// </summary>
         private void GripRemove()
         {
-            PlayerPed.IsInvincible = false;
+            SetPlayerProof(false);
             _isGriped = false;
             Function.Call(Hash.DETACH_ENTITY, PlayerPed, false, false);
             PlayerPed.Task.ClearAllImmediately();
             PlayerPed.SetToRagdoll();
+        }
+
+        private void SetPlayerProof(bool hasCollisionProof)
+        {
+            PlayerPed.SetProofs(
+                PlayerPed.IsBulletProof,
+                PlayerPed.IsFireProof,
+                PlayerPed.IsExplosionProof,
+                hasCollisionProof,
+                PlayerPed.IsMeleeProof, 
+                false, false, false);
         }
 
         /// <summary>
@@ -77,7 +98,7 @@ namespace Inferno.InfernoScripts.Player
         private void Grip(Ped player, Vehicle vehicle, Vector3 ofsetPosition)
         {
             player.SetToRagdoll(0, 1);
-            player.IsInvincible = true;
+            SetPlayerProof(true);
             _vehicle = vehicle;
             _ofsetPosition = ofsetPosition;
             var forceToBreak = 99999.0f;
