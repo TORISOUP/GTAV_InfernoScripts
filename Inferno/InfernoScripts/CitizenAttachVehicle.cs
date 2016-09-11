@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts
     class CitizenAttachVehicle : InfernoScript
     {
         #region conf
-        protected override string ConfigFileName { get; } = "CitizenAttachVehicleConfig.conf";
+        protected override string ConfigFileName { get; } = "CitizenAttachVehicle.conf";
         private CitizenAttachVehicleConfig config;
         private string EnableKeyCode => config?.EnableKeyCode ?? "K";
         private string DisableKeyCode => config?.DisableKeyCode ?? "J";
