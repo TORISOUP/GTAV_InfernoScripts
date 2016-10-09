@@ -40,7 +40,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             player.CanRagdoll = true;
             player.SetToRagdoll(3000);
             player.IsCollisionProof = true;
-            if (player.IsInvincible)
+
+            if (player.IsInVehicle())
             {
                 player.CurrentVehicle.IsCollisionProof = true;
             }

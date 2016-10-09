@@ -185,7 +185,7 @@ namespace Inferno.ChaosMode
             //以下ループ
             do
             {
-                if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist())
+                if (!ped.IsSafeExist() || ped.IsDead || !PlayerPed.IsSafeExist())
                 {
                     break;
                 }
@@ -207,6 +207,11 @@ namespace Inferno.ChaosMode
                 }
 
                 yield return RandomWait();
+
+                if (!ped.IsSafeExist() || ped.IsDead)
+                {
+                    break;
+                }
 
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
