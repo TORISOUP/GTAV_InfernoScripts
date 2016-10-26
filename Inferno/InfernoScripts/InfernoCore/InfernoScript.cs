@@ -16,6 +16,9 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
+
+
+
         protected Random Random = new Random();
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
@@ -178,24 +181,22 @@ namespace Inferno
             _autoReleaseEntities.Add(entity);
         }
 
-        private Subject<Unit> _onAbortSubject = new Subject<Unit>();
+        private UniRx.IObservable<Unit> _onAbortObservable;
+
         /// <summary>
         /// ゲームが中断した時に実行される
         /// </summary>
-        protected UniRx.IObservable<Unit> OnAbortAsync => _onAbortSubject.AsObservable();
-
-        protected override void Dispose(bool A_0)
+        protected UniRx.IObservable<Unit> OnAbortAsync
         {
-            IsActive = false;
-            foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
+            get
             {
-                e.MarkAsNoLongerNeeded();
+                return _onAbortObservable ??
+                       (_onAbortObservable =
+                           Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
+                               h => Aborted -= h).AsUnitObservable());
             }
-            _autoReleaseEntities.Clear();
-            _onAbortSubject.OnNext(Unit.Default);
-            _onAbortSubject.OnCompleted();
-            base.Dispose(A_0);
         }
+
 
         #endregion
 
@@ -355,6 +356,16 @@ namespace Inferno
             OnTickAsObservable.Skip(1).Subscribe(_ =>
             {
                 Context.RunOnCurrentThread();
+            });
+
+            OnAbortAsync.Subscribe(_ =>
+            {
+                IsActive = false;
+                foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
+                {
+                    e.MarkAsNoLongerNeeded();
+                }
+                _autoReleaseEntities.Clear();
             });
 
             try
