@@ -113,6 +113,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenNinja.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\ElectricalShock.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FishHeaven.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />

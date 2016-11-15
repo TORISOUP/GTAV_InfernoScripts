@@ -17,20 +17,32 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override string Name
-        {
-            get { return name; }
-        }
+        public override string Name => name;
 
         public override void OnSetUp()
         {
             random = new Random();
 
-            switch (random.Next(0, 100) % 1)
+            switch (random.Next(0, 100) % 4)
             {
                 case 0:
                     pedModel = new Model(PedHash.LamarDavis);
                     name = "ニガ～♪";
+                    break;
+
+                case 1:
+                    pedModel = new Model(PedHash.LesterCrest);
+                    name = "レレレのレ～";
+                    break;
+
+                case 2:
+                    pedModel = new Model(PedHash.Fabien);
+                    name = "誰かヨガって言いました？";
+                    break;
+
+                case 3:
+                    pedModel = new Model(PedHash.Lazlow);
+                    name = "フェイムオアシェイム";
                     break;
             }
         }

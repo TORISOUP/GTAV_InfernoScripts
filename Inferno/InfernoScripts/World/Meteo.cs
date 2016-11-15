@@ -104,7 +104,7 @@ namespace Inferno
                 var createPosition = targetPosition + direction * 100;
 
                 //たまに花火
-                var weapon = Random.Next(0, 100) < 3 ? (int)Weapon.FIREWORK : (int)Weapon.RPG;
+                var weapon = Random.Next(0, 100) < 3 ? WeaponHash.Firework : WeaponHash.RPG;
 
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
@@ -113,7 +113,7 @@ namespace Inferno
                 var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
 
                 NativeFunctions.ShootSingleBulletBetweenCoords(
-                      createPosition, targetPosition, 100, WeaponHash.RPG, ped, 200);
+                      createPosition, targetPosition, 100, weapon, ped, 200);
 
             }
             catch (Exception ex)

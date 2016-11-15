@@ -610,9 +610,9 @@ namespace Inferno
 
                 start.X, start.Y, start.Z,
                 end.X, end.Y, end.Z,
-                250, 1,
+                damage, 1,
                 (int)weapon,
-                owner.Handle,
+                owner?.Handle ?? 0,
                 1, 0, speed
             );
         }
