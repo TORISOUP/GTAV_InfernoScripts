@@ -18,6 +18,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
         private PlanType planType;
         private string _name;
+        private List<Entity> resources = new List<Entity>();
+ 
 
         public Garupan(ParupunteCore core) : base(core)
         {
@@ -75,6 +77,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Where(_ => !core.PlayerPed.IsAlive)
                 .FirstOrDefault()
                 .Subscribe(_ => ParupunteEnd());
+
+            this.OnFinishedAsObservable
+                .Subscribe(_ =>
+                {
+                    foreach (var t in resources)
+                    {
+                        if (t.IsSafeExist())
+                        {
+                            t.MarkAsNoLongerNeeded();
+                            t.Health = -1;
+                        }
+                    }
+                });
         }
 
         #region こそこそ作戦
@@ -83,8 +98,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(25 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-
-            var tankList = new List<Vehicle>();
 
             //戦車を遠目にたくさん配置して、遭遇したら攻撃してくる
             foreach (var i in Enumerable.Range(0, 12))
@@ -95,8 +108,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var ped = vp.Item2;
                 ped.Task.FightAgainst(core.PlayerPed);
                 var tank = vp.Item1;
-                tankList.Add(tank);
-
+                resources.Add(tank);
+                resources.Add(ped);
                 tank.EnginePowerMultiplier = 20.0f;
                 tank.EngineTorqueMultiplier = 20.0f;
                 tank.MaxSpeed = 300;
@@ -129,7 +142,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             tank.EnginePowerMultiplier = 20.0f;
             tank.EngineTorqueMultiplier = 20.0f;
             tank.MaxSpeed = 300;
-
+            resources.Add(tank);
+            resources.Add(ped);
             this.OnFinishedAsObservable
                 .Where(_ => tank.IsSafeExist() && tank.IsAlive)
                 .Subscribe(_ => tank.PetrolTankHealth = -1);
