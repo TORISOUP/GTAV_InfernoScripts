@@ -96,6 +96,7 @@
     <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosController.cs" />
     <Compile Include="ChaosMode\WeaponProvider\ChaosModeWeapons.cs" />
     <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs" />
+    <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
     <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
@@ -104,6 +105,8 @@
     <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
     <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
+    <Compile Include="InfernoScripts\Event\ChasoMode\ChasoModeEvent.cs" />
+    <Compile Include="InfernoScripts\Event\IEventMessage.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Drawer\TimerUITextManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
@@ -127,6 +130,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuFunnel.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MultiLeggedRace.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\RpgOnly.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnVheicle.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Transform.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\VehicleSpeedUp.cs" />
@@ -193,6 +197,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\InfernoConfig.cs" />
     <Compile Include="Utilities\InfernoConfigLoader.cs" />
+    <Compile Include="Utilities\InfernoScheduler.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
     <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />

@@ -123,7 +123,8 @@ namespace Inferno
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent => InfernoCore.OnRecievedEventMessage;
+        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent 
+            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
 
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する

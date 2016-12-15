@@ -20,6 +20,15 @@ namespace Inferno
         private static readonly Subject<IEventMessage> EventMessageSubject = new Subject<IEventMessage>();
 
         /// <summary>
+        /// イベントメッセージを発行する
+        /// </summary>
+        /// <param name="message"></param>
+        public static void Publish(IEventMessage message)
+        {
+            EventMessageSubject.OnNext(message);
+        }
+
+        /// <summary>
         /// 発行されたイベントメッセージ
         /// </summary>
         public static UniRx.IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
@@ -105,13 +114,6 @@ namespace Inferno
             _debugLogger.Log(message);
         }
 
-        /// <summary>
-        /// イベントメッセージを発行する
-        /// </summary>
-        /// <param name="message"></param>
-        public void PublishMessage(IEventMessage message)
-        {
-            EventMessageSubject.OnNext(message);
-        }
+
     }
 }
