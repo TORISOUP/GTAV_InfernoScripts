@@ -130,7 +130,7 @@ namespace Inferno
             AutoReleaseOnGameEnd(ped);
             ped.SetNotChaosPed(true);
 
-            return new Tuple<Vehicle, Ped>(plane, ped);
+            return new System.Tuple<Vehicle, Ped>(plane, ped);
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <summary>
         /// 市民を2人をランダムに抽出する
         /// </summary>
-        private Tuple<Ped, Ped> ChoisePeds(IEnumerable<Ped> originalGroup)
+        private System.Tuple<Ped, Ped> ChoisePeds(IEnumerable<Ped> originalGroup)
         {
             var playerPosition = core.PlayerPed.Position;
             var targetGroup = originalGroup.Concat(new[] { core.PlayerPed }).Where(x =>
@@ -53,7 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var p1 = targetGroup[random.Next(0, targetGroup.Length)];
             var p2 = targetGroup[random.Next(0, targetGroup.Length)];
-            return new Tuple<Ped, Ped>(p1, p2);
+            return new System.Tuple<Ped, Ped>(p1, p2);
         }
 
         private IEnumerable<object> SwapPedPosition(Ped p1, Ped p2)

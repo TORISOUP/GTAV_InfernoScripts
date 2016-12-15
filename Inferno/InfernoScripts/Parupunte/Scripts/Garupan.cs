@@ -162,12 +162,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
         #endregion
 
-        private Tuple<Vehicle, Ped> SpawnTank(float range)
+        private System.Tuple<Vehicle, Ped> SpawnTank(float range)
         {
             return SpawnTank(core.PlayerPed.Position.Around(range));
         }
 
-        private Tuple<Vehicle, Ped> SpawnTank(Vector3 position)
+        private System.Tuple<Vehicle, Ped> SpawnTank(Vector3 position)
         {
             var model = new Model(VehicleHash.Rhino);
             //戦車生成
@@ -183,7 +183,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AutoReleaseOnGameEnd(tank);
             AutoReleaseOnGameEnd(ped);
 
-            return new Tuple<Vehicle, Ped>(tank, ped);
+            return new System.Tuple<Vehicle, Ped>(tank, ped);
         }
     }
 }
