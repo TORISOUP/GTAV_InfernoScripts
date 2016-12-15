@@ -24,7 +24,7 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// WeaponProvider
         /// </summary>
-        private IWeaponProvider weaponProvider;
+        private IWeaponProvider defaultWeaponProvider;
 
         /// <summary>
         /// 設定
@@ -51,7 +51,7 @@ namespace Inferno.ChaosMode
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
 
-            weaponProvider = new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
+            defaultWeaponProvider = new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
 
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
@@ -315,11 +315,11 @@ namespace Inferno.ChaosMode
                     ped.Task.ClearAllImmediately();
                     if (chaosModeSetting.IsStupidShooting)
                     {
-                        if (weaponProvider.IsProjectileWeapon(equipWeapon))
+                        if (equipWeapon.IsProjectileWeapon())
                         {
                             ped.ThrowProjectile(target.Position);
                         }
-                        else if (weaponProvider.IsShootWeapon(equipWeapon))
+                        else if (equipWeapon.IsShootWeapon())
                         {
                             ped.Task.ShootAt(target, 10000);
                         }
@@ -369,8 +369,8 @@ namespace Inferno.ChaosMode
 
                 //車に乗っているなら車用の武器を渡す
                 var weapon = ped.IsInVehicle()
-                    ? weaponProvider.GetRandomDriveByWeapon()
-                    : weaponProvider.GetRandomWeaponExcludeClosedWeapon();
+                    ? defaultWeaponProvider.GetRandomDriveByWeapon()
+                    : defaultWeaponProvider.GetRandomWeaponExcludeClosedWeapon();
 
                 var weaponhash = (int)weapon;
 

@@ -12,7 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     class SpawnFriend :ParupunteScript
     {
-        private ChaosModeWeapons weapons = new ChaosModeWeapons();
         private List<Ped> pedList = new List<Ped>(); 
         public SpawnFriend(ParupunteCore core) : base(core)
         {
@@ -62,7 +61,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.MaxHealth = 500;
             ped.Health = ped.MaxHealth;
 
-            var weaponhash = (int)weapons.AllWeapons[Random.Next(0,weapons.AllWeapons.Length)];
+            var weaponhash = (int)ChaosModeWeapons.GetRandomWeapon();
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備

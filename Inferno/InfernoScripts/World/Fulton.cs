@@ -25,7 +25,6 @@ namespace Inferno
         private Queue<PedHash> motherBasePeds = new Queue<PedHash>(30);
         private Queue<GTA.Native.VehicleHash> motherbaseVeh = new Queue<GTA.Native.VehicleHash>(30);
         private Random random = new Random();
-        private ChaosModeWeapons weapons = new ChaosModeWeapons();
 
         /// <summary>
         /// フルトン回収で車を吊り下げた時の音
@@ -259,7 +258,7 @@ namespace Inferno
             p.MaxHealth = 500;
             p.Health = p.MaxHealth;
 
-            var weaponhash = (int)weapons.AllWeapons[Random.Next(0, weapons.AllWeapons.Length)];
+            var weaponhash = (int)ChaosModeWeapons.GetRandomWeapon();
             p.SetDropWeaponWhenDead(false); //武器を落とさない
             p.GiveWeapon(weaponhash, 1000); //指定武器所持
             p.EquipWeapon(weaponhash); //武器装備

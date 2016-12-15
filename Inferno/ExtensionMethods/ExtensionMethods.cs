@@ -1,6 +1,8 @@
 ﻿using GTA;
 using GTA.Math;
 using System;
+using System.Linq;
+using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno
 {
@@ -161,5 +163,40 @@ namespace Inferno
             quaternion.W = (m01 - m10) * num2;
             return quaternion;
         }
+
+
+        #region Weapon
+
+        /// <summary>
+        /// 射撃系の武器であるか
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static bool IsShootWeapon(this Weapon weapon)
+        {
+            return ChaosModeWeapons.ShootWeapons.Contains(weapon);
+        }
+
+        /// <summary>
+        /// 近接系の武器であるか
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static bool IsCloseWeapon(this Weapon weapon)
+        {
+            return ChaosModeWeapons.ClosedWeapons.Contains(weapon);
+        }
+
+        /// <summary>
+        /// 投擲系の武器であるか
+        /// </summary>
+        /// <param name="weapon"></param>
+        /// <returns></returns>
+        public static bool IsProjectileWeapon(this Weapon weapon)
+        {
+            return ChaosModeWeapons.ProjectileWeapons.Contains(weapon);
+        }
+
+        #endregion
     }
 }

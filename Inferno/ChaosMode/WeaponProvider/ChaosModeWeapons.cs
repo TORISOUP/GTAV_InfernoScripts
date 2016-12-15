@@ -1,20 +1,23 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
     /// <summary>
     /// 有効な武器一覧を管理する
     /// </summary>
-    public class ChaosModeWeapons
+    public static class ChaosModeWeapons
     {
-        public Weapon[] ShootWeapons { get; }
-        public Weapon[] ClosedWeapons { get; }
-        public Weapon[] ProjectileWeapons { get; }
-        public Weapon[] ExcludeClosedWeapons { get; }
-        public Weapon[] DriveByWeapons { get; }
-        public Weapon[] AllWeapons { get; }
+        public static Weapon[] ShootWeapons { get; }
+        public static Weapon[] ClosedWeapons { get; }
+        public static Weapon[] ProjectileWeapons { get; }
+        public static Weapon[] ExcludeClosedWeapons { get; }
+        public static Weapon[] DriveByWeapons { get; }
+        public static Weapon[] AllWeapons { get; }
 
-        public ChaosModeWeapons()
+        private static Random random = new Random();
+
+        static ChaosModeWeapons()
         {
             //射撃系の武器
             ShootWeapons = new[]
@@ -117,6 +120,11 @@ namespace Inferno.ChaosMode.WeaponProvider
 
             AllWeapons = ShootWeapons.Concat(ClosedWeapons).Concat(ProjectileWeapons).ToArray();
             ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).ToArray();
+        }
+
+        public static Weapon GetRandomWeapon()
+        {
+            return AllWeapons[random.Next(0, AllWeapons.Length)];
         }
     }
 }
