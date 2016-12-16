@@ -27,9 +27,8 @@ namespace Inferno.ChaosMode
         {
             //デフォルト設定を吐き出す
             var dto = new ChaosModeSettingDTO();
-            var chaosModeWeapons = new ChaosModeWeapons();
-            dto.WeaponList = chaosModeWeapons.ExcludeClosedWeapons.Select(x => x.ToString()).ToArray();
-            dto.WeaponListForDriveBy = chaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray();
+            dto.WeaponList = ChaosModeWeapons.ExcludeClosedWeapons.Select(x => x.ToString()).ToArray();
+            dto.WeaponListForDriveBy = ChaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray();
             return dto;
         }
     }

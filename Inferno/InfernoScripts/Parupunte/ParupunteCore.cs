@@ -42,7 +42,6 @@ namespace Inferno.InfernoScripts.Parupunte
         private Vector2 _mainTextPositionScale = new Vector2(0.5f, 0.8f);
         private Vector2 _subTextPositionScale = new Vector2(0.0f, 0.0f);
 
-        public SynchronizationContext CoreContex => this.Context;
 
         protected override void Setup()
         {

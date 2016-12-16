@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Inferno.InfernoScripts.Event;
+using Inferno.InfernoScripts.Event.ChasoMode;
 using UniRx;
 
 namespace Inferno.ChaosMode
@@ -24,7 +26,10 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// WeaponProvider
         /// </summary>
-        private IWeaponProvider weaponProvider;
+        private IWeaponProvider defaultWeaponProvider;
+        private SingleWeaponProvider singleWeaponProvider;
+
+        private IWeaponProvider CurrentWeaponProvider => singleWeaponProvider ?? defaultWeaponProvider;
 
         /// <summary>
         /// 設定
@@ -44,14 +49,14 @@ namespace Inferno.ChaosMode
         {
             //敵対関係のグループを作成
             chaosRelationShipId = World.AddRelationshipGroup("Inferno:ChaosPeds");
-            
+
             var chaosSettingLoader = new ChaosModeSettingLoader();
             chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
 
-            weaponProvider = new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
+            defaultWeaponProvider = new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
 
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
@@ -115,6 +120,23 @@ namespace Inferno.ChaosMode
             CreateTickAsObservable(1000)
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
+
+            //イベントが来たら武器を変更する
+            OnRecievedInfernoEvent
+                .OfType<IEventMessage, ChasoModeEvent>()
+                .Subscribe(e =>
+                {
+                    if (e is ChangeToDefaultEvent)
+                    {
+                        singleWeaponProvider = null;
+                    }
+                    else if (e is ChangeWeaponEvent)
+                    {
+                        var s = (ChangeWeaponEvent)e;
+                        singleWeaponProvider = new SingleWeaponProvider(s.Weapon);
+                    }
+                });
+
         }
 
         private void CitizenChaos()
@@ -308,18 +330,18 @@ namespace Inferno.ChaosMode
                     //TODO:車から投擲物を投げる方法を調べる
                     ped.Task.ClearAll();
                     ped.TaskDriveBy(target, FiringPattern.BurstFireDriveby);
-                    
+
                 }
                 else
                 {
                     ped.Task.ClearAllImmediately();
                     if (chaosModeSetting.IsStupidShooting)
                     {
-                        if (weaponProvider.IsProjectileWeapon(equipWeapon))
+                        if (equipWeapon.IsProjectileWeapon())
                         {
                             ped.ThrowProjectile(target.Position);
                         }
-                        else if (weaponProvider.IsShootWeapon(equipWeapon))
+                        else if (equipWeapon.IsShootWeapon())
                         {
                             ped.Task.ShootAt(target, 10000);
                         }
@@ -369,8 +391,8 @@ namespace Inferno.ChaosMode
 
                 //車に乗っているなら車用の武器を渡す
                 var weapon = ped.IsInVehicle()
-                    ? weaponProvider.GetRandomDriveByWeapon()
-                    : weaponProvider.GetRandomWeaponExcludeClosedWeapon();
+                    ? CurrentWeaponProvider.GetRandomDriveByWeapon()
+                    : CurrentWeaponProvider.GetRandomWeaponExcludeClosedWeapon();
 
                 var weaponhash = (int)weapon;
 

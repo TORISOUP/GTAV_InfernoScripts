@@ -1,6 +1,7 @@
 ﻿using GTA;
 using System;
 using System.Windows.Forms;
+using Inferno.InfernoScripts.Event;
 using UniRx;
 
 namespace Inferno
@@ -16,6 +17,21 @@ namespace Inferno
 
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
         private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
+        private static readonly Subject<IEventMessage> EventMessageSubject = new Subject<IEventMessage>();
+
+        /// <summary>
+        /// イベントメッセージを発行する
+        /// </summary>
+        /// <param name="message"></param>
+        public static void Publish(IEventMessage message)
+        {
+            EventMessageSubject.OnNext(message);
+        }
+
+        /// <summary>
+        /// 発行されたイベントメッセージ
+        /// </summary>
+        public static UniRx.IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
 
         /// <summary>
         /// 周辺市民
@@ -97,5 +113,7 @@ namespace Inferno
         {
             _debugLogger.Log(message);
         }
+
+
     }
 }

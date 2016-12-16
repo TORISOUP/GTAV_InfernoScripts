@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Inferno.InfernoScripts.Event;
 using UniRx;
 
 namespace Inferno
@@ -16,14 +17,17 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-
-
-
+        
         protected Random Random = new Random();
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
 
         protected virtual string ConfigFileName => null;
+
+        private InfernoScheduler infernoScheduler;
+
+        protected IScheduler InfernoScriptScheduler 
+            => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -89,11 +93,6 @@ namespace Inferno
         #region forEvents
 
         /// <summary>
-        /// ObserveOn用
-        /// </summary>
-        protected SingleThreadSynchronizationContext Context;
-
-        /// <summary>
         /// 一定間隔のTickイベント
         /// </summary>
         public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
@@ -120,6 +119,12 @@ namespace Inferno
         }
 
         public UniRx.IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+
+        /// <summary>
+        /// InfernoEvent
+        /// </summary>
+        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent 
+            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
 
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
@@ -303,9 +308,6 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
-            Context = new SingleThreadSynchronizationContext();
-            SynchronizationContext.SetSynchronizationContext(Context);
-
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
                 .Where(_ => InfernoCore.Instance != null)
@@ -320,6 +322,7 @@ namespace Inferno
 
             //TickイベントをObservable化しておく
             Interval = TickInterval;
+
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                     .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
@@ -327,6 +330,9 @@ namespace Inferno
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+
+            //スケジューラ実行
+            OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
 
             //タイマのカウント
             OnTickAsObservable
@@ -353,10 +359,6 @@ namespace Inferno
                         .Subscribe(x => coroutineSystem.CoroutineLoop());
                 });
 
-            OnTickAsObservable.Skip(1).Subscribe(_ =>
-            {
-                Context.RunOnCurrentThread();
-            });
 
             OnAbortAsync.Subscribe(_ =>
             {
