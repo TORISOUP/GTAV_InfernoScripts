@@ -125,9 +125,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 {
                     try
                     {
-                        var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Command.Contains(x));
-                        if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return;
-                        ParupunteStart(IsonoParupunteScripts[result]);
+                        IsonoParupunte(command);
                     }
                     catch (Exception e)
                     {
@@ -169,10 +167,24 @@ namespace Inferno.InfernoScripts.Parupunte
 
             #endregion Drawer
 
-            //IsonoManager.Instance.OnRecievedMessageAsObservable
-            //    .Where(x => x.Contains("ぱるぷんて"))
-            //    .ObserveOn(Context)
-            //    .Subscribe(_ => ParupunteStart());
+        }
+
+
+        private void IsonoParupunte(IsonoMessage command)
+        {
+            switch (command.Command)
+            {
+                case "ぱるぷんて":
+                    ParupunteStart(ChooseParupounteScript());
+                    return;
+                case "とめる":
+                    ParupunteStop();
+                    return;
+            }
+
+            var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Command.Contains(x));
+            if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return;
+            ParupunteStart(IsonoParupunteScripts[result]);
         }
 
         /// <summary>

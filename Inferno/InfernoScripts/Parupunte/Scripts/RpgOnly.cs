@@ -3,6 +3,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("あーるぴーじー")]
     class RpgOnly : ParupunteScript
     {
         public RpgOnly(ParupunteCore core) : base(core)

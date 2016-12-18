@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("さんきんこうたい")]
     class MultiLeggedRace : ParupunteScript
     {
         public MultiLeggedRace(ParupunteCore core) : base(core)

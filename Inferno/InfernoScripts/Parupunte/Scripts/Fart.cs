@@ -9,6 +9,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("おなら")]
     class Fart : ParupunteScript
     {
         public Fart(ParupunteCore core) : base(core)

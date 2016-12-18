@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("だちょうくらぶ")]
     internal class DachoClub : ParupunteScript
     {
         public DachoClub(ParupunteCore core) : base(core)

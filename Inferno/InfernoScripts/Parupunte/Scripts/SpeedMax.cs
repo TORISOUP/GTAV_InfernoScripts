@@ -3,7 +3,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug]
+    [ParupunteIsono("すぴーどまっくす")]
     internal class SpeedMax : ParupunteScript
     {
         public SpeedMax(ParupunteCore core) : base(core)

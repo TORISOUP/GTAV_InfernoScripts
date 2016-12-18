@@ -9,6 +9,7 @@ using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("くるまついか")]
     class SpawnVheicle : ParupunteScript
     {
         private VehicleHash vehicleHash;

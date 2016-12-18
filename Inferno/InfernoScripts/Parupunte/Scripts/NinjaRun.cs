@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno
 {
+    [ParupunteIsono("ばりきじつ")]
     internal class NinjaRun : ParupunteScript
     {
         private float addSpeed = 1.0f;

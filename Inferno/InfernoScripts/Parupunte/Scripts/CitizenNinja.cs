@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("えどじだい")]
     internal class CitizenNinja : ParupunteScript
     {
         private Random random = new Random();

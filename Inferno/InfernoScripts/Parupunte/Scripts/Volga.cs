@@ -10,6 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// 上空からソロモンを落として大爆発させる
     /// </summary>
+    [ParupunteIsono("ぼるが")]
     internal class Volga : ParupunteScript
     {
         public Volga(ParupunteCore core) : base(core)

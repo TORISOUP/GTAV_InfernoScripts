@@ -7,7 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
+    [ParupunteIsono("ていでん")]
     class BlackOut : ParupunteScript
     {
         private SoundPlayer soundPlayerStart;

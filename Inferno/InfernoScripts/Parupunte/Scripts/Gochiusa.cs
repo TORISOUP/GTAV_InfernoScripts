@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("つきじ")]
     internal class Gochiusa : ParupunteScript
     {
         private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();

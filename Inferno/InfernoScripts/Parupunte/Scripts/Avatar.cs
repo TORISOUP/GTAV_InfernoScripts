@@ -9,6 +9,7 @@ using Inferno.ChaosMode.WeaponProvider;
 using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("ぶんしん")]
     class Avatar : ParupunteScript
     {
         private List<Ped> peds = new List<Ped>();

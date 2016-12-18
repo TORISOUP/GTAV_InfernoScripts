@@ -8,7 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// 尻から炎
     /// </summary>
-    [ParupunteDebug]
+    [ParupunteIsono("おしり")]
     internal class MagicFire : ParupunteScript
     {
         public MagicFire(ParupunteCore core) : base(core)

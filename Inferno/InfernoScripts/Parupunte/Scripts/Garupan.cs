@@ -9,6 +9,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("がるぱん")]
     class Garupan : ParupunteScript
     {
         enum PlanType

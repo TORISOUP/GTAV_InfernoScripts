@@ -10,6 +10,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("みかたしょうかん")]
     class SpawnFriend :ParupunteScript
     {
         private List<Ped> pedList = new List<Ped>(); 

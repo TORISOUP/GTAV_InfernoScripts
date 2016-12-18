@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("くるくる")]
     internal class KuruKuru : ParupunteScript
     {
         private IDisposable mainStream;

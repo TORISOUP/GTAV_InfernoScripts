@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("てきとうにしょうかん")]
     internal class SpawnCharacters : ParupunteScript
     {
         private Model pedModel;

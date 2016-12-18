@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("おさかなてんごく")]
     internal class FishHeaven : ParupunteScript
     {
         private HashSet<int> vehicles = new HashSet<int>();

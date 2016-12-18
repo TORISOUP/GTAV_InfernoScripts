@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("おなかいたい")]
     internal class Onakaitai : ParupunteScript
     {
         private readonly string petroEffect = "ent_sht_petrol";
