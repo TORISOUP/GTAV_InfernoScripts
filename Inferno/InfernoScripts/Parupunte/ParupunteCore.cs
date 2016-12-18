@@ -9,13 +9,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using Inferno.InfernoScripts.Event;
+using Inferno.InfernoScripts.Event.ChasoMode;
+using Inferno.InfernoScripts.Event.Isono;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
     internal class ParupunteCore : InfernoScript
     {
-        private TCPManager tcpManager = new TCPManager();
 
         /// <summary>
         /// パルプンテスクリプト一覧
@@ -26,6 +28,25 @@ namespace Inferno.InfernoScripts.Parupunte
         /// デバッグ用
         /// </summary>
         private Type[] _debugParuputeScripts;
+
+        /// <summary>
+        /// いその用パルプンテ
+        /// </summary>
+        private Dictionary<string, Type> _isonoParupunteScripts;
+
+        private Dictionary<string, Type> IsonoParupunteScripts
+        {
+            get
+            {
+                if (_isonoParupunteScripts != null) return _isonoParupunteScripts;
+                _isonoParupunteScripts =
+                    _parupunteScritpts
+                        .Select(x => new { type = x, isono = x.GetCustomAttribute<ParupunteIsono>() })
+                        .Where(x => !string.IsNullOrEmpty(x.isono?.Command))
+                        .ToDictionary(x => x.isono.Command, x => x.type);
+                return _isonoParupunteScripts;
+            }
+        }
 
         /// <summary>
         /// NoLongerNeededを遅延して設定する対象リスト
@@ -45,7 +66,6 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected override void Setup()
         {
-            tcpManager.ServerStartAsync();
             IsActive = false;
             timerText = new TimerUiTextManager(this);
 
@@ -69,20 +89,22 @@ namespace Inferno.InfernoScripts.Parupunte
                 return attribute != null && attribute.IsDebug;
             }).ToArray();
 
+
+
             #endregion ParunteScripts
 
             #region EventHook
 
             CreateInputKeywordAsObservable("rnt")
                 .Where(_ => !IsActive)
-                .Subscribe(_ => ParupunteStart());
+                .Subscribe(_ => ParupunteStart(ChooseParupounteScript()));
 
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
             OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
-                .Subscribe(_ => ParupunteStart());
+                .Subscribe(_ => ParupunteStart(ChooseParupounteScript()));
 
             //パルプンテが停止したタイミングで開放
             IsActiveAsObservable
@@ -94,6 +116,23 @@ namespace Inferno.InfernoScripts.Parupunte
                         entity.MarkAsNoLongerNeeded();
                     }
                     _autoReleaseEntitiesList.Clear();
+                });
+
+
+            OnRecievedInfernoEvent
+                .OfType<IEventMessage, IsonoMessage>()
+                .Subscribe(command =>
+                {
+                    try
+                    {
+                        var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Command.Contains(x));
+                        if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return;
+                        ParupunteStart(IsonoParupunteScripts[result]);
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.StackTrace);
+                    }
                 });
 
             #endregion EventHook
@@ -139,7 +178,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテの実行を開始する
         /// </summary>
-        private void ParupunteStart()
+        private void ParupunteStart(Type script)
         {
             if (IsActive)
             {
@@ -149,12 +188,7 @@ namespace Inferno.InfernoScripts.Parupunte
             IsActive = true;
 
             //ThreadPool上で初期化（プチフリ回避）
-            Observable.Start(() =>
-            {
-                //抽選
-                var scriptType = ChooseParupounteScript();
-                return Activator.CreateInstance(scriptType, this) as ParupunteScript;
-            }, Scheduler.ThreadPool)
+            Observable.Start(() => Activator.CreateInstance(script, this) as ParupunteScript, Scheduler.ThreadPool)
                 .OnErrorRetry((Exception ex) =>
                 {
                     LogWrite(ex.ToString());
@@ -279,16 +313,12 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             //○はパルプンテを唱えた！の部分
             timerText.Set(CreateMainText(callString), 2.0f);
-            var mess = new RequestDataPackage(callString);
-            tcpManager.SendToAll(mess.ToJson());
 
             //2秒画面に出す
             yield return WaitForSeconds(2);
 
             //効果名
             timerText.Set(CreateMainText(scriptname), 3.0f);
-            mess = new RequestDataPackage(scriptname);
-            tcpManager.SendToAll(mess.ToJson());
 
             //3秒画面に出す
             yield return WaitForSeconds(3);

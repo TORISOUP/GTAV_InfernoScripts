@@ -7,7 +7,8 @@ using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
 
-    internal class Isono : ParupunteScript
+    [ParupunteIsono("いその")]
+    class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core) : base(core)
         {
@@ -49,7 +50,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             foreach (var s in WaitForSeconds(10))
             {
                 //一定以上打ち上がったらおわり
-                if(player.Position.Z > targetPositionInAri.Z) break;
+                if (player.Position.Z > targetPositionInAri.Z) break;
 
                 foreach (var entity in entities.Where(x => x.IsSafeExist()))
                 {
@@ -68,7 +69,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 else
                 {
-                    
+
                     player.ApplyForce(Vector3.WorldUp * pedForcePower);
                 }
                 yield return null;

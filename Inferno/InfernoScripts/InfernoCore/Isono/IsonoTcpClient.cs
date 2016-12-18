@@ -52,7 +52,8 @@ namespace Inferno.Isono
                 }
                 catch (Exception e)
                 {
-                    logger.Log(e.ToString());
+                    logger.Log(e.Message);
+                    logger.Log(e.StackTrace);
                 }
             }));
             thread.Start();
@@ -84,7 +85,8 @@ namespace Inferno.Isono
                 }
                 catch (Exception e)
                 {
-                    logger.Log(e.ToString());
+                    logger.Log(e.Message);
+                    logger.Log(e.StackTrace);
                 }
                 finally
                 {
@@ -97,7 +99,8 @@ namespace Inferno.Isono
             catch (Exception e)
             {
                 Disconnect();
-                logger.Log(e.ToString());
+                logger.Log(e.Message);
+                logger.Log(e.StackTrace);
             }
         }
 

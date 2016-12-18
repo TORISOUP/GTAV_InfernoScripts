@@ -1,4 +1,5 @@
-﻿using Inferno.Isono;
+﻿using Inferno.InfernoScripts.Event.Isono;
+using Inferno.Isono;
 using UniRx;
 
 namespace Inferno
@@ -6,15 +7,6 @@ namespace Inferno
     //ISONO管理マネージャ
     public class IsonoManager : InfernoScript
     {
-        public static IsonoManager Instance { get; private set; }
-
-        public UniRx.IObservable<string> OnRecievedMessageAsObservable
-        {
-            get
-            {
-                return IsonoTcpClient.OnRecievedMessageAsObservable;
-            }
-        }
 
         private IsonoTcpClient isonoTcpClient;
 
@@ -22,7 +14,6 @@ namespace Inferno
 
         protected override void Setup()
         {
-            Instance = this;
             CreateInputKeywordAsObservable("isono")
                 .Subscribe(_ =>
                 {
@@ -36,6 +27,12 @@ namespace Inferno
                     {
                         IsonoTcpClient.Disconnect();
                     }
+                });
+
+            IsonoTcpClient.OnRecievedMessageAsObservable
+                .Subscribe(x =>
+                {
+                    InfernoCore.Publish( new IsonoMessage(x) );
                 });
         }
     }

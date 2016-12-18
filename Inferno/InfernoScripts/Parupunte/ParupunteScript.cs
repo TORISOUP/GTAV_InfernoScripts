@@ -25,6 +25,16 @@ namespace Inferno.InfernoScripts.Parupunte
         }
     }
 
+    public class ParupunteIsono : Attribute
+    {
+        public string Command;
+
+        public ParupunteIsono(string command = null)
+        {
+            Command = command;
+        }
+    }
+    
     internal abstract class ParupunteScript
     {
         private bool IsFinished = false;
