@@ -8,7 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug]
+    [ParupunteIsono("ひとはなび")]
     internal class Hitohanabi : ParupunteScript
     {
         public Hitohanabi(ParupunteCore core) : base(core)

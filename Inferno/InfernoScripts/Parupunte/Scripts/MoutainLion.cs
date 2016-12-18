@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("くーがー")]
     internal class MoutainLion : ParupunteScript
     {
         public MoutainLion(ParupunteCore core) : base(core)

@@ -4,6 +4,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("みんなばくはつ")]
     internal class KillCitizens : ParupunteScript
     {
         public KillCitizens(ParupunteCore core) : base(core)

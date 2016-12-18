@@ -9,6 +9,7 @@ using GTA.Native;
 using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("けつふぁんねる")]
     class KetsuFunnel : ParupunteScript
     {
         public KetsuFunnel(ParupunteCore core) : base(core)

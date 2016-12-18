@@ -121,11 +121,12 @@ namespace Inferno.InfernoScripts.Parupunte
 
             OnRecievedInfernoEvent
                 .OfType<IEventMessage, IsonoMessage>()
+                .ThrottleFirst(TimeSpan.FromSeconds(5))
                 .Subscribe(command =>
                 {
                     try
                     {
-                        IsonoParupunte(command);
+                        StartCoroutine(IsonoCoroutine(command.Command));
                     }
                     catch (Exception e)
                     {
@@ -169,23 +170,30 @@ namespace Inferno.InfernoScripts.Parupunte
 
         }
 
-
-        private void IsonoParupunte(IsonoMessage command)
+        private IEnumerable<object> IsonoCoroutine(string command)
         {
-            switch (command.Command)
+            var c = command;
+
+            if (c.Contains("とまれ"))
             {
-                case "ぱるぷんて":
-                    ParupunteStart(ChooseParupounteScript());
-                    return;
-                case "とめる":
-                    ParupunteStop();
-                    return;
+                ParupunteStop();
+                yield break;
             }
 
-            var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Command.Contains(x));
-            if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return;
+            if(IsActive) yield break;
+
+            if (c.Contains("ぱるぷんて"))
+            {
+                ParupunteStart(ChooseParupounteScript());
+                yield break;
+            }
+
+            var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Contains(x));
+            if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) yield break;
             ParupunteStart(IsonoParupunteScripts[result]);
         }
+
+
 
         /// <summary>
         /// パルプンテの実行を開始する

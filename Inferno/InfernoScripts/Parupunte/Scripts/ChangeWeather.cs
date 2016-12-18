@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("てんこうへんか")]
     internal class ChangeWeather : ParupunteScript
     {
         private string name;

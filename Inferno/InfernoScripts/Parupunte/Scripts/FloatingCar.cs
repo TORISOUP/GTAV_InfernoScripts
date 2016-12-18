@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("ふわふわ")]
     internal class FloatingCar : ParupunteScript
     {
         public FloatingCar(ParupunteCore core) : base(core)

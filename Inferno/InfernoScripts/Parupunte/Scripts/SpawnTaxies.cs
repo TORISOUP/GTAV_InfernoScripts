@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("たくしー")]
     internal class SpawnTaxies : ParupunteScript
     {
         private string name;

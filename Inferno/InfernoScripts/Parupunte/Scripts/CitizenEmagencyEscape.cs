@@ -10,6 +10,7 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("きんきゅうだっしゅつ")]
     class CitizenEmagencyEscape : ParupunteScript
     {
         public CitizenEmagencyEscape(ParupunteCore core) : base(core)

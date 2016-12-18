@@ -10,6 +10,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("でんき")]
     class ElectricalShock : ParupunteScript
     {
         public ElectricalShock(ParupunteCore core) : base(core)

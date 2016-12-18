@@ -3,6 +3,7 @@ using System;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("いまなんじ")]
     internal class SetDateTime : ParupunteScript
     {
         private int hour;
