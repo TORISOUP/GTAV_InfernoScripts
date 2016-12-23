@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using GTA;
+using GTA.Math;
+using GTA.Native;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteDebug(true)]
     [ParupunteIsono("ていでん")]
     class BlackOut : ParupunteScript
     {
@@ -46,8 +51,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     var playerPos = core.PlayerPed.Position;
                     var playerVehicle = core.GetPlayerVehicle();
                     foreach (var v in core.CachedVehicles.Where(
-                        x=>x.IsSafeExist() 
-                        && x.IsInRangeOf(playerPos,1000)
+                        x => x.IsSafeExist()
+                        && x.IsInRangeOf(playerPos, 1000)
                         && x.IsAlive
                         && x != playerVehicle))
                     {
@@ -58,10 +63,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 });
         }
-        
+
 
         private IEnumerable<object> BlackOutStart()
         {
+            StartCoroutine(DrawBlackOutLine());
+
             //効果音に合わせてチカチカさせる
             soundPlayerStart?.Play();
             yield return WaitForSeconds(1.5f);
@@ -69,7 +76,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             for (var i = 0; i < 10; i++)
             {
                 GTA.World.SetBlackout(current);
-                if (Random.Next(0, 2)%2 == 0)
+                if (Random.Next(0, 2) % 2 == 0)
                 {
                     current = !current;
                 }
@@ -83,7 +90,43 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             soundPlayerEnd?.Play();
             yield return WaitForSeconds(1);
             ParupunteEnd();
-        } 
+        }
+
+        private IEnumerable<Vector3> GetAroundObjectPosition(Vector3 root, float distance, int n)
+        {
+            return core.CachedPeds
+                .Concat<Entity>(core.CachedVehicles)
+                .Concat<Entity>(GTA.World.GetAllProps())
+                .Where(x => x.IsSafeExist() && x.IsInRangeOf(root, distance))
+                .Select(x => x.Position)
+                .OrderBy(_ => Guid.NewGuid())
+                .Take(n).ToArray();
+
+        }
+
+        private IEnumerable<object> DrawBlackOutLine()
+        {
+            var targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
+
+            var d = core.OnDrawingTickAsObservable
+                .TakeUntil(this.OnFinishedAsObservable)
+                .Subscribe(_ =>
+                {
+                    var p = core.PlayerPed.Position;
+                    foreach (var t in targets)
+                    {
+                        DrawLine(p, t, Color.White);
+                    }
+                });
+
+            for (int i = 0; i < 10; i++)
+            {
+                yield return WaitForSeconds(0.35f);
+                targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
+
+            }
+            d?.Dispose();
+        }
 
         /// <summary>
         /// 効果音のロード
@@ -112,6 +155,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
+        }
+
+        private void DrawLine(Vector3 from, Vector3 to, Color col)
+        {
+            Function.Call(Hash.DRAW_LINE, from.X, from.Y, from.Z, to.X, to.Y, to.Z, col.R, col.G, col.B, col.A);
         }
     }
 }
