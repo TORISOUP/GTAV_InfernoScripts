@@ -11,7 +11,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     [ParupunteIsono("ていでん")]
     class BlackOut : ParupunteScript
     {
