@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("はっきんぐ")]
     class MassiveVehicleHack : ParupunteScript
     {
         public MassiveVehicleHack(ParupunteCore core) : base(core)
