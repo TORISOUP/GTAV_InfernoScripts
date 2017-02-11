@@ -130,6 +130,7 @@
     <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\Garupan.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuFunnel.cs" />
+    <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuWarp.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MassiveVehicleHack.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\MultiLeggedRace.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs" />
