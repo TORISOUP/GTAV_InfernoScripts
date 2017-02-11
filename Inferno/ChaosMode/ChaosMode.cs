@@ -31,6 +31,16 @@ namespace Inferno.ChaosMode
 
         private IWeaponProvider CurrentWeaponProvider => singleWeaponProvider ?? defaultWeaponProvider;
 
+        readonly private uint[] fishHashes = {
+           (uint) PedHash.Fish,
+           (uint) PedHash.HammerShark,
+           (uint) PedHash.Dolphin,
+           (uint) PedHash.Humpback,
+           (uint) PedHash.KillerWhale,
+           (uint) PedHash.Stingray,
+           (uint) PedHash.TigerShark
+        };
+
         /// <summary>
         /// 設定
         /// </summary>
@@ -145,9 +155,9 @@ namespace Inferno.ChaosMode
 
             //まだ処理をしていない市民に対してコルーチンを回す
             var nearPeds =
-                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(World.RenderingCamera.Position, chaosModeSetting.Radius));
 
-            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && x.IsHuman && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
                 var id = StartCoroutine(ChaosPedAction(ped));
@@ -175,6 +185,10 @@ namespace Inferno.ChaosMode
         private IEnumerable<Object> ChaosPedAction(Ped ped)
         {
             yield return RandomWait();
+
+            //魚なら除外する
+            var m = (uint)ped.Model.Hash;
+            if (fishHashes.Contains(m)) yield break;
 
             if (!ped.IsSafeExist()) yield break;
             var pedId = ped.Handle;
