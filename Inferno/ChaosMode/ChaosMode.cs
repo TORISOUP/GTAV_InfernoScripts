@@ -155,7 +155,7 @@ namespace Inferno.ChaosMode
 
             //まだ処理をしていない市民に対してコルーチンを回す
             var nearPeds =
-                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(World.RenderingCamera.Position, chaosModeSetting.Radius));
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
 
             foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {

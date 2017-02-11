@@ -11,7 +11,6 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(true)]
     class BeastFriends : ParupunteScript
     {
         private PedHash[] _animalsHash;
@@ -35,10 +34,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 _animalsHash = new[]
                 {
-                    PedHash.Babyd, 
+                    PedHash.Babyd,
                     PedHash.Baywatch01SMY,
                     PedHash.PrisMuscl01SMY,
-                    PedHash.Chimp, 
+                    PedHash.Chimp,
                     PedHash.Devin,
                     PedHash.Runner01AFY,
                     PedHash.SteveHains
@@ -96,7 +95,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (true)
             {
-                var centerPos = GTA.World.RenderingCamera.Position;
+                var centerPos = core.PlayerPed.Position;
 
                 var targetVehs = core.CachedVehicles.Where(x =>
                 x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 30) && !_setEntities.Contains(x.Handle) && !x.Driver.IsSafeExist());
