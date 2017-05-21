@@ -186,7 +186,6 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object> ChaosPedAction(Ped ped)
         {
-            yield return RandomWait();
 
             //魚なら除外する
             var m = (uint)ped.Model.Hash;

@@ -108,6 +108,8 @@
     <Compile Include="InfernoScripts\Event\ChasoMode\ChasoModeEvent.cs" />
     <Compile Include="InfernoScripts\Event\IEventMessage.cs" />
     <Compile Include="InfernoScripts\Event\Isono\IsonoMessage.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Coroutine\Awaitable.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutinePool.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Drawer\TimerUITextManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
@@ -175,7 +177,7 @@
     <Compile Include="InfernoScripts\Player\BondCar.cs" />
     <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
     <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\CoroutineSystem.cs" />
+    <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutineSystem.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
     <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
