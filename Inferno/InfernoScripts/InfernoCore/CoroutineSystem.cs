@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Markup.Localizer;
 
 namespace Inferno
 {
@@ -19,12 +18,7 @@ namespace Inferno
         private uint _coroutineIdIndex = 0;
         private readonly object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
-        private readonly DebugLogger logger;
-
-        public CoroutineSystem(DebugLogger logger = null)
-        {
-            this.logger = logger;
-        }
+        List<uint> endIdList = new List<uint>();
 
         /// <summary>
         /// コルーチンの登録
@@ -83,7 +77,6 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
-            KeyValuePair<uint, IEnumerator>[] coroutineArray;
 
             lock (_lockObject)
             {
@@ -93,15 +86,10 @@ namespace Inferno
                     _coroutines.Remove(stopId);
                 }
                 _stopCoroutineList.Clear();
-                coroutineArray = _coroutines.ToArray();
             }
 
-            var endIdList = new List<uint>();
-
-            //forの方がforeachよりちょっとだけはやい
-            for (int index = 0, max = coroutineArray.Length; index < max; index++)
+            foreach (var coroutine in _coroutines)
             {
-                var coroutine = coroutineArray[index];
                 try
                 {
                     if (!coroutine.Value.MoveNext())
@@ -111,7 +99,6 @@ namespace Inferno
                 }
                 catch (Exception e)
                 {
-                    logger?.Log(e.ToString());
                     endIdList.Add(coroutine.Key);
                 }
             }
@@ -121,6 +108,7 @@ namespace Inferno
                 {
                     _coroutines.Remove(id);
                 }
+                endIdList.Clear();
             }
         }
     }

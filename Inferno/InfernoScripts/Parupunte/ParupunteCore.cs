@@ -89,8 +89,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 return attribute != null && attribute.IsDebug;
             }).ToArray();
 
-
-
+            
             #endregion ParunteScripts
 
             #region EventHook
@@ -124,7 +123,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Select(c => IsonoMethod(c.Command))
                 .Where(x => x)
                 .AsUnitObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(5))
+                .ThrottleFirst(TimeSpan.FromSeconds(10))
                 .Retry()
                 .Subscribe();
 

@@ -2,6 +2,7 @@
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -175,6 +176,7 @@ namespace Inferno.ChaosMode
                 StopCoroutine(id);
             }
             coroutineIds.Clear();
+
         }
 
         /// <summary>
