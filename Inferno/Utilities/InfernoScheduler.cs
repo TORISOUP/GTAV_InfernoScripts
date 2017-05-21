@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using UniRx;
 
 namespace Inferno.Utilities
 {
     /// <summary>
     /// 指定したタイミングで実行されるスケジューラ
-    /// 雑に作ったので登録したイベントはキャンセルできない
     /// </summary>
     public class InfernoScheduler : IScheduler
     {
-        private Queue<Action> actionQueue;
 
         private object lockObject = new object();
+
+        private SchedulerQueue schedulerQueue = new SchedulerQueue(4);
+        private static Stopwatch stopWatch = Stopwatch.StartNew();
+
+        private TimeSpan Time { get { return stopWatch.Elapsed; } }
 
         public IDisposable Schedule(Action action)
         {
@@ -27,34 +27,53 @@ namespace Inferno.Utilities
             if (action == null)
                 throw new ArgumentNullException("action");
 
+            //実行する時間を決定
+            var doTime = Time + Scheduler.Normalize(dueTime);
+            var item = new ScheduledItem(action, doTime);
+
             lock (lockObject)
             {
-                if (actionQueue == null)
-                {
-                    actionQueue = new Queue<Action>();
-                }
-                actionQueue.Enqueue(action);
+                schedulerQueue.Enqueue(item);
             }
 
-            return Disposable.Empty;
+            return item.Cancellation;
         }
 
         public void Run()
         {
-            if (actionQueue == null) return;
             lock (lockObject)
             {
-                while (actionQueue.Count > 0)
+                if (schedulerQueue.Count == 0) return;
+
+                //登録されたアクションを実行
+                while (schedulerQueue.Count > 0)
                 {
-                    actionQueue.Dequeue().Invoke();
+                    //1個取り出す
+                    var c = schedulerQueue.Peek();
+
+                    if (c.IsCanceled)
+                    {
+                        //キャンセル済みなら破棄
+                        schedulerQueue.Dequeue();
+                        continue;
+                    }
+
+                    var wait = c.DueTime - Time;
+                    if (wait.Ticks <= 0)
+                    {
+                        //実行可能状態なら実行
+                        c.Invoke();
+                        schedulerQueue.Dequeue();
+                        continue;
+                    }
+
+                    //ここに到達する時は1つも処理できなかったとき
+                    //つまり実行できるアクションがまだ無い
+                    break;
                 }
             }
         }
 
-        public DateTimeOffset Now
-        {
-            get { return Scheduler.Now; }
-        }
-
+        public DateTimeOffset Now => Scheduler.Now;
     }
 }

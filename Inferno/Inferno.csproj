@@ -203,7 +203,9 @@
     <Compile Include="Utilities\InfernoConfigLoader.cs" />
     <Compile Include="Utilities\InfernoScheduler.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
+    <Compile Include="Utilities\PriorityQueue.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
+    <Compile Include="Utilities\ScheduledItem.cs" />
     <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
     <Compile Include="Utilities\TCPManager.cs" />
   </ItemGroup>

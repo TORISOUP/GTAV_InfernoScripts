@@ -44,7 +44,7 @@ namespace Inferno.InfernoScripts.Player
                     && this.IsGamePadPressed(GameKey.VehicleAttack)
                     && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
                  )
-                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds))
+                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScriptScheduler)
                 .Subscribe(_ =>
                 {
                     var v = PlayerVehicle.Value;
