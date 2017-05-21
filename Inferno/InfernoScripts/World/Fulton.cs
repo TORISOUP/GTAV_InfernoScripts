@@ -15,7 +15,6 @@ namespace Inferno
 {
     internal class Fulton : InfernoScript
     {
-        protected override int TickInterval { get; } = 100;
 
         /// <summary>
         /// フルトン回収のコルーチン対象になっているEntity
@@ -43,6 +42,7 @@ namespace Inferno
 
         protected override void Setup()
         {
+
             CreateInputKeywordAsObservable("fulton")
                 .Subscribe(_ =>
                 {
@@ -60,12 +60,12 @@ namespace Inferno
                 .Where(x => IsActive && x.KeyCode == Keys.F10 && motherBasePeds.Count > 0)
                 .Subscribe(_ => SpawnCitizen());
 
-            CreateTickAsObservable(500)
+            CreateTickAsObservable(TimeSpan.FromSeconds(0.5))
                 .Where(_ => IsActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))
                 .Subscribe(_ => FulutonUpdate());
 
             //プレイヤが死んだらリストクリア
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
@@ -185,7 +185,7 @@ namespace Inferno
             foreach (var s in WaitForSeconds(3))
             {
                 if (!entity.IsSafeExist() || entity.IsDead) yield break;
-                if(entity is Ped) { ((Ped)entity).SetToRagdoll(); }
+                if (entity is Ped) { ((Ped)entity).SetToRagdoll(); }
                 entity.ApplyForce(upForce * 1.07f);
 
                 yield return s;
@@ -270,7 +270,7 @@ namespace Inferno
         /// </summary>
         private IEnumerable<object> FriendCoroutine(Ped ped)
         {
-            while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position,100))
+            while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position, 100))
             {
                 yield return WaitForSeconds(1);
             }
@@ -279,7 +279,7 @@ namespace Inferno
                 ped.MarkAsNoLongerNeeded();
             }
         }
-             
+
         private void SpawnVehicle()
         {
             var hash = motherbaseVeh.Dequeue();

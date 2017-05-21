@@ -37,7 +37,7 @@ namespace Inferno.InfernoScripts.Player
         {
             config = LoadConfig<BondCarConfig>();
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ =>
                     PlayerVehicle.Value.IsSafeExist()
                     && this.IsGamePadPressed(GameKey.VehicleAim)

@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using UniRx;
 
 namespace Inferno
@@ -8,14 +9,10 @@ namespace Inferno
     /// </summary>
     public class PlayerRagdoll : InfernoScript
     {
-        protected override int TickInterval
-        {
-            get { return 50; }
-        }
 
         protected override void Setup()
         {
-            OnTickAsObservable
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                     .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
                     .Subscribe(_ =>
                     {

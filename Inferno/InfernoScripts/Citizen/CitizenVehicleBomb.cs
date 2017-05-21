@@ -37,7 +37,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            CreateTickAsObservable(5000)
+            CreateTickAsObservable(TimeSpan.FromSeconds(5))
                 .Where(_ => IsActive)
                 .Subscribe(_ => VehicleBombAction());
         }

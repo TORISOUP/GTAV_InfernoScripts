@@ -17,7 +17,7 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-        
+
         protected Random Random = new Random();
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
@@ -26,7 +26,7 @@ namespace Inferno
 
         private InfernoScheduler infernoScheduler;
 
-        protected IScheduler InfernoScriptScheduler 
+        protected IScheduler InfernoScriptScheduler
             => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
 
         /// <summary>
@@ -58,12 +58,6 @@ namespace Inferno
         /// </summary>
         protected UniRx.IObservable<bool> IsActiveAsObservable => _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
 
-        /// <summary>
-        /// スクリプトのTickイベントの実行頻度[ms]
-        /// コルーチンの実行間隔も影響を受けるので注意
-        /// </summary>
-        protected virtual int TickInterval => 100;
-
         #region Chace
 
         /// <summary>
@@ -93,7 +87,12 @@ namespace Inferno
         #region forEvents
 
         /// <summary>
-        /// 一定間隔のTickイベント
+        /// 100ms間隔のTickイベント
+        /// </summary>
+        public UniRx.IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
+
+        /// <summary>
+        /// 毎フレーム実行されるイベント
         /// </summary>
         public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
 
@@ -123,7 +122,7 @@ namespace Inferno
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent 
+        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent
             => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
 
         /// <summary>
@@ -150,22 +149,11 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 100ms単位でのTickイベントをOnTickAsObservableから生成する
-        /// </summary>
-        /// <param name="millsecond">ミリ秒(100ミリ秒以上で指定）</param>
+        /// 任意のTickObservableを生成する
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateTickAsObservable(int millsecond)
+        protected UniRx.IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
         {
-            var skipCount = (millsecond / TickInterval) - 1;
-
-            if (skipCount <= 0)
-            {
-                return OnTickAsObservable;
-            }
-
-            return OnTickAsObservable
-                .ThrottleFirst(TimeSpan.FromMilliseconds(millsecond))
-                .Publish().RefCount();
+            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Share();
         }
         #endregion forEvents
 
@@ -243,7 +231,8 @@ namespace Inferno
         /// <returns></returns>
         protected IEnumerable WaitForSeconds(float secound)
         {
-            var tick = TickInterval > 0 ? TickInterval : 10;
+            //TODO:修正
+            var tick = 10;
             var waitLoopCount = (int)(secound * 1000 / tick);
             for (var i = 0; i < waitLoopCount; i++)
             {
@@ -320,12 +309,15 @@ namespace Inferno
                     InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
                 });
 
-            //TickイベントをObservable化しておく
-            Interval = TickInterval;
+            Interval = 0;
 
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                    .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+                    .Select(_ => Unit.Default).Share(); //Subscribeされたらイベントハンドラを登録する
+
+            OnThinnedTickAsObservable =
+                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
+                    .Share();
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
@@ -335,7 +327,7 @@ namespace Inferno
             OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
 
             //タイマのカウント
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => _counterList.Any())
                 .Subscribe(_ =>
                 {
@@ -355,7 +347,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     ////コルーチンの実行
-                    OnTickAsObservable
+                    OnThinnedTickAsObservable
                         .Subscribe(x => coroutineSystem.CoroutineLoop());
                 });
 

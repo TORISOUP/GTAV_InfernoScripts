@@ -52,8 +52,6 @@ namespace Inferno.ChaosMode
 
         private MissionCharacterTreatmentType nextTreatType;
 
-        protected override int TickInterval => 100;
-
         private int chaosRelationShipId;
 
         protected override void Setup()
@@ -111,14 +109,16 @@ namespace Inferno.ChaosMode
             //interval設定
             Interval = chaosModeSetting.Interval;
 
+            var oneSecondTich = CreateTickAsObservable(TimeSpan.FromSeconds(1));
+
             //市民をカオス化する
-            CreateTickAsObservable(1000)
+            oneSecondTich
                 .Where(_ => IsActive && PlayerPed.IsSafeExist() && PlayerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
-            CreateTickAsObservable(1000)
-                .Where(_ => PlayerPed.IsSafeExist())
+            oneSecondTich
+                 .Where(_ => PlayerPed.IsSafeExist())
                 .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
@@ -128,7 +128,7 @@ namespace Inferno.ChaosMode
                     StopAllChaosCoroutine();
                 });
 
-            CreateTickAsObservable(1000)
+            oneSecondTich
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
 

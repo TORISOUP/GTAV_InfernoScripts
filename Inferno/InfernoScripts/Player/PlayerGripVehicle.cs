@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Player
         protected override void Setup()
         {
             //0.3秒間押しっぱなしなら発動
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Select(_ => !this.GetPlayerVehicle().IsSafeExist()
                 && !_isGriped
                 && this.IsGamePadPressed(GameKey.Reload)
@@ -27,14 +27,14 @@ namespace Inferno.InfernoScripts.Player
                 .Where(x => x.All(v => v))
                 .Subscribe(_ => GripAction());
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => _isGriped)
                 .Subscribe(_ =>
                 {
                     Grip(PlayerPed, _vehicle, _ofsetPosition);
                 });
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => _isGriped && (!this.IsGamePadPressed(GameKey.Reload) || PlayerPed.IsDead))
                 .Subscribe(_ => GripRemove());
 

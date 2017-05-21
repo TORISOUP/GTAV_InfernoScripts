@@ -76,7 +76,7 @@ namespace Inferno
                     }
                 });
 
-            CreateTickAsObservable(DurationMillSeconds)
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(DurationMillSeconds))
                .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
                 .Subscribe(_ => ShootMeteo());
         }

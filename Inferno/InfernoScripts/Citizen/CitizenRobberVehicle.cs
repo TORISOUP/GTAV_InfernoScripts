@@ -31,7 +31,7 @@ namespace Inferno
                     DrawText("CitizenRobberVehicle:" + IsActive, 3.0f);
                 });
 
-            CreateTickAsObservable(1000)
+            CreateTickAsObservable(TimeSpan.FromSeconds(1))
                 .Where(_ => IsActive)
                 .Subscribe(_ => RobberVehicle());
 
