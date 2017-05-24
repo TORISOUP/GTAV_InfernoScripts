@@ -17,6 +17,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private SoundPlayer soundPlayerStart;
         private SoundPlayer soundPlayerEnd;
 
+        private IDisposable drawingDisposable;
+
         public BlackOut(ParupunteCore core) : base(core)
         {
             SetUpSound();
@@ -41,6 +43,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GTA.World.SetBlackout(false);
                     soundPlayerStart = null;
                     soundPlayerEnd = null;
+                    drawingDisposable?.Dispose();
                 });
 
             //周辺車両をエンストさせる
@@ -107,7 +110,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
 
-            var d = core.OnDrawingTickAsObservable
+            drawingDisposable = core.OnDrawingTickAsObservable
                 .TakeUntil(this.OnFinishedAsObservable)
                 .Subscribe(_ =>
                 {
@@ -124,7 +127,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
 
             }
-            d?.Dispose();
+            drawingDisposable?.Dispose();
         }
 
         /// <summary>
