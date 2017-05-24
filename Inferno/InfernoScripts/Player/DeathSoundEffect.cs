@@ -30,7 +30,7 @@ namespace Inferno
             if (filePath.Length > 0)
             {
                 //プレイヤが死亡したら再生
-                OnTickAsObservable
+                OnThinnedTickAsObservable
                     .Select(_ => PlayerPed)
                     .Where(p => p.IsSafeExist())
                     .Select(p => p.IsAlive)

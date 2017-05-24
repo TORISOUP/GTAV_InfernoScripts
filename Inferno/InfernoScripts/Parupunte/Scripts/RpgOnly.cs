@@ -21,10 +21,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             this.OnFinishedAsObservable.Subscribe(_ =>
             {
-                InfernoCore.Publish(ChasoModeEvent.SetToDefault);
+                Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault);
             });
 
-            InfernoCore.Publish(new ChangeWeaponEvent(Weapon.RPG));
+            Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.RPG));
 
         }
     }

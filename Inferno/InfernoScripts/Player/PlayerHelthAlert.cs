@@ -20,8 +20,6 @@ namespace Inferno
         private int ScreenWidth;
         private int alertHelthValue = 25;
 
-        protected override int TickInterval => 50;
-
         protected override void Setup()
         {
             var screenResolution = NativeFunctions.GetScreenResolution();
@@ -34,7 +32,9 @@ namespace Inferno
             OnDrawingTickAsObservable
                 .Subscribe(_ => _mContainer.Draw());
 
-            OnTickAsObservable
+            var harlThinned = CreateTickAsObservable(TimeSpan.FromMilliseconds(50));
+
+            harlThinned
                 .Where(_ => PlayerPed.IsSafeExist() && PlayerPed.Health < alertHelthValue && PlayerPed.IsAlive)
                 .Subscribe(_ =>
                 {
@@ -48,7 +48,7 @@ namespace Inferno
                     _mContainer.Items.Add(rect);
                 });
 
-            OnTickAsObservable
+            harlThinned
                 .Select(_ => PlayerPed.IsSafeExist() && PlayerPed.Health < alertHelthValue)
                 .DistinctUntilChanged()
                 .Where(x => !x)

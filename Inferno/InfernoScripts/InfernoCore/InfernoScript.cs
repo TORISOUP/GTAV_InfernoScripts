@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Inferno.InfernoScripts.Event;
+using Inferno.InfernoScripts.InfernoCore.Coroutine;
 using UniRx;
 
 namespace Inferno
@@ -17,7 +18,7 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-        
+
         protected Random Random = new Random();
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
@@ -26,7 +27,7 @@ namespace Inferno
 
         private InfernoScheduler infernoScheduler;
 
-        protected IScheduler InfernoScriptScheduler 
+        protected IScheduler InfernoScriptScheduler
             => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
 
         /// <summary>
@@ -58,12 +59,6 @@ namespace Inferno
         /// </summary>
         protected UniRx.IObservable<bool> IsActiveAsObservable => _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
 
-        /// <summary>
-        /// スクリプトのTickイベントの実行頻度[ms]
-        /// コルーチンの実行間隔も影響を受けるので注意
-        /// </summary>
-        protected virtual int TickInterval => 100;
-
         #region Chace
 
         /// <summary>
@@ -93,7 +88,12 @@ namespace Inferno
         #region forEvents
 
         /// <summary>
-        /// 一定間隔のTickイベント
+        /// 100ms間隔のTickイベント
+        /// </summary>
+        public UniRx.IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
+
+        /// <summary>
+        /// たぶん16msごとに実行されるイベント
         /// </summary>
         public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
 
@@ -123,7 +123,7 @@ namespace Inferno
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent 
+        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent
             => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
 
         /// <summary>
@@ -150,22 +150,11 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 100ms単位でのTickイベントをOnTickAsObservableから生成する
-        /// </summary>
-        /// <param name="millsecond">ミリ秒(100ミリ秒以上で指定）</param>
+        /// 任意のTickObservableを生成する
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateTickAsObservable(int millsecond)
+        protected UniRx.IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
         {
-            var skipCount = (millsecond / TickInterval) - 1;
-
-            if (skipCount <= 0)
-            {
-                return OnTickAsObservable;
-            }
-
-            return OnTickAsObservable
-                .ThrottleFirst(TimeSpan.FromMilliseconds(millsecond))
-                .Publish().RefCount();
+            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Share();
         }
         #endregion forEvents
 
@@ -207,34 +196,24 @@ namespace Inferno
 
         #region forCoroutine
 
-        private CoroutineSystem coroutineSystem;
+        private CoroutinePool _coroutinePool;
 
         protected uint StartCoroutine(IEnumerable<Object> coroutine)
         {
-            return coroutineSystem.AddCoroutine(coroutine);
+            return _coroutinePool.RegisterCoroutine(coroutine);
         }
 
         protected void StopCoroutine(uint id)
         {
-            coroutineSystem?.RemoveCoroutine(id);
+            _coroutinePool.RemoveCoroutine(id);
         }
 
         protected void StopAllCoroutine()
         {
-            coroutineSystem?.RemoveAllCoroutine();
+            _coroutinePool.RemoveAllCoroutine();
         }
 
-        protected bool IsCoroutineActive(uint id)
-        {
-            if (coroutineSystem != null)
-            {
-                return coroutineSystem.ContainsCoroutine(id);
-            }
-            else
-            {
-                return false;
-            }
-        }
+
 
         /// <summary>
         /// 指定秒数待機するIEnumerable
@@ -243,16 +222,11 @@ namespace Inferno
         /// <returns></returns>
         protected IEnumerable WaitForSeconds(float secound)
         {
-            var tick = TickInterval > 0 ? TickInterval : 10;
-            var waitLoopCount = (int)(secound * 1000 / tick);
-            for (var i = 0; i < waitLoopCount; i++)
-            {
-                yield return i;
-            }
+            return Awaitable.ToCoroutine(TimeSpan.FromSeconds(secound));
         }
 
         /// <summary>
-        /// 0-10回待機してコルーチンの処理を分散する
+        /// 0-10回待機する
         /// </summary>
         /// <returns></returns>
         protected IEnumerable RandomWait()
@@ -308,6 +282,8 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
+            Interval = 16;
+
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
                 .Where(_ => InfernoCore.Instance != null)
@@ -320,12 +296,13 @@ namespace Inferno
                     InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
                 });
 
-            //TickイベントをObservable化しておく
-            Interval = TickInterval;
-
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                    .Select(_ => Unit.Default).Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
+                    .Select(_ => Unit.Default).Share(); //Subscribeされたらイベントハンドラを登録する
+
+            OnThinnedTickAsObservable =
+                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
+                    .Share();
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
@@ -335,7 +312,7 @@ namespace Inferno
             OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
 
             //タイマのカウント
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => _counterList.Any())
                 .Subscribe(_ =>
                 {
@@ -347,17 +324,11 @@ namespace Inferno
                     _counterList.RemoveAll(x => x.IsCompleted);
                 });
 
-            coroutineSystem = new CoroutineSystem();
+            _coroutinePool = new CoroutinePool(5);
 
-            //コルーチンの起動を分散する
-            Observable.Timer(TimeSpan.FromMilliseconds(Random.Next(0, 100)))
-                .First()
-                .Subscribe(_ =>
-                {
-                    ////コルーチンの実行
-                    OnTickAsObservable
-                        .Subscribe(x => coroutineSystem.CoroutineLoop());
-                });
+            //コルーチンを実行する
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
+                .Subscribe(_ => _coroutinePool.Run());
 
 
             OnAbortAsync.Subscribe(_ =>

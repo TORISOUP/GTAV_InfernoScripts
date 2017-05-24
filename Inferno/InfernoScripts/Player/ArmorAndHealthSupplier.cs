@@ -17,7 +17,7 @@ namespace Inferno
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             //ミッションが始まった時
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive)
                 .Select(_ => Game.MissionFlag)
                 .DistinctUntilChanged()
@@ -25,7 +25,7 @@ namespace Inferno
                 .Subscribe(_ => SupplyArmorAndHealth());
 
             //プレイヤが復活した時
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive && PlayerPed.IsSafeExist())
                 .Select(_ => PlayerPed.IsAlive)
                 .DistinctUntilChanged()

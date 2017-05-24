@@ -30,7 +30,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive && (uint)PlayerPed.Model.Hash == (uint)PedHash.Trevor)
                 .Select(_ => Game.Player.IsSpecialAbilityActive() && PlayerPed.IsAlive)
                 .DistinctUntilChanged()

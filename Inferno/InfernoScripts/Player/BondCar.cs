@@ -37,14 +37,14 @@ namespace Inferno.InfernoScripts.Player
         {
             config = LoadConfig<BondCarConfig>();
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ =>
                     PlayerVehicle.Value.IsSafeExist()
                     && this.IsGamePadPressed(GameKey.VehicleAim)
                     && this.IsGamePadPressed(GameKey.VehicleAttack)
                     && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
                  )
-                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds))
+                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScriptScheduler)
                 .Subscribe(_ =>
                 {
                     var v = PlayerVehicle.Value;

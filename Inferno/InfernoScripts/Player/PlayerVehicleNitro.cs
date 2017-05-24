@@ -34,8 +34,6 @@ namespace Inferno
 
         private bool _isNitroOk = true;
 
-        protected override int TickInterval => 50;
-
         private float StraightAccelerationSpeed => conf?.StraightAccelerationSpeed ?? 50;
         private float JumpAccelerationSpeed => conf?.JumpAccelerationSpeed ?? 20;
         private float CoolDownSeconds => conf?.CoolDownSeconds ?? 10.0f;
@@ -45,7 +43,7 @@ namespace Inferno
             conf = LoadConfig<PlayerNitroConf>();
 
             IsActive = true;
-            OnTickAsObservable
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(
                     _ =>
                         _isNitroOk && this.IsGamePadPressed(GameKey.VehicleAccelerate) && this.IsGamePadPressed(GameKey.VehicleHandbrake) &&

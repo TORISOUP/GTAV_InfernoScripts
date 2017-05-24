@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Markup.Localizer;
 
 namespace Inferno
 {
@@ -15,16 +14,17 @@ namespace Inferno
         /// コルーチンの辞書
         /// </summary>
         protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
-
+        private struct IdCoroutine
+        {
+            public uint id;
+            public IEnumerator coroutine;
+        }
         private uint _coroutineIdIndex = 0;
         private readonly object _lockObject = new object();
         private readonly List<uint> _stopCoroutineList = new List<uint>();
-        private readonly DebugLogger logger;
-
-        public CoroutineSystem(DebugLogger logger = null)
-        {
-            this.logger = logger;
-        }
+        List<uint> endIdList = new List<uint>();
+        Queue<IdCoroutine> newCoroutines = new Queue<IdCoroutine>(5);
+        private IEnumerator[] _actionCoroutines;
 
         /// <summary>
         /// コルーチンの登録
@@ -39,8 +39,13 @@ namespace Inferno
                 //WaitForSecondsを展開できるように
                 var enumrator = coroutine
                     .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>)x) : new object[] { x }).GetEnumerator();
-                _coroutines.Add(id, enumrator);
-                enumrator.MoveNext();
+
+                //すぐに追加せずに一旦キューに詰める
+                newCoroutines.Enqueue(new IdCoroutine()
+                {
+                    id = id,
+                    coroutine = enumrator
+                });
                 return id;
             }
         }
@@ -53,8 +58,11 @@ namespace Inferno
         {
             lock (_lockObject)
             {
-                //このタイミングでは消さない
-                _stopCoroutineList.Add(id);
+                if (_coroutines.Keys.Contains(id))
+                {
+                    //このタイミングでは消さない
+                    _stopCoroutineList.Add(id);
+                }
             }
         }
 
@@ -83,44 +91,43 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
-            KeyValuePair<uint, IEnumerator>[] coroutineArray;
 
             lock (_lockObject)
             {
+                //新規追加されたものを追加する
+                while (newCoroutines.Count > 0)
+                {
+                    var n = newCoroutines.Dequeue();
+                    _coroutines[n.id] = n.coroutine;
+                }
+
+
                 //開始前に削除登録されたものを消す
                 foreach (var stopId in _stopCoroutineList)
                 {
                     _coroutines.Remove(stopId);
                 }
                 _stopCoroutineList.Clear();
-                coroutineArray = _coroutines.ToArray();
-            }
 
-            var endIdList = new List<uint>();
-
-            //forの方がforeachよりちょっとだけはやい
-            for (int index = 0, max = coroutineArray.Length; index < max; index++)
-            {
-                var coroutine = coroutineArray[index];
-                try
+                foreach (var coroutine in _coroutines)
                 {
-                    if (!coroutine.Value.MoveNext())
+                    try
+                    {
+                        if (!coroutine.Value.MoveNext())
+                        {
+                            endIdList.Add(coroutine.Key);
+                        }
+                    }
+                    catch (Exception e)
                     {
                         endIdList.Add(coroutine.Key);
                     }
                 }
-                catch (Exception e)
-                {
-                    logger?.Log(e.ToString());
-                    endIdList.Add(coroutine.Key);
-                }
-            }
-            lock (_lockObject)
-            {
                 foreach (var id in endIdList)
                 {
                     _coroutines.Remove(id);
                 }
+                endIdList.Clear();
             }
         }
     }

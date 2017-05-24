@@ -48,7 +48,7 @@ namespace Inferno
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             //interval間隔で実行
-            CreateTickAsObservable(3000)
+            CreateTickAsObservable(TimeSpan.FromSeconds(3))
                 .Where(_ => IsActive)
                 .Subscribe(_ => CitizenNitroAction());
         }

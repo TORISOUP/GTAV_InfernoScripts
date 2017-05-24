@@ -63,7 +63,7 @@ namespace Inferno.InfernoScripts
                 });
 
             //車から降りたら終了
-            this.OnTickAsObservable
+            this.OnThinnedTickAsObservable
                 .Select(_ => PlayerPed.IsInVehicle())
                 .DistinctUntilChanged()
                 .Where(x => !x)

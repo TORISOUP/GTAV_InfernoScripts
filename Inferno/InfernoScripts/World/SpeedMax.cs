@@ -51,7 +51,7 @@ namespace Inferno.InfernoScripts.World
             //ミッション開始直後に一瞬動作を止めるフラグ
             var suspednFlag = false;
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive && !suspednFlag)
                 .Subscribe(_ =>
                 {
@@ -102,7 +102,7 @@ namespace Inferno.InfernoScripts.World
                     DrawText($"SpeedMax:ExcludeMissionVehicles[{excludeMissionVehicle}]");
                 });
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive)
                 .Select(_ => PlayerPed.IsAlive)
                 .DistinctUntilChanged()
@@ -110,7 +110,7 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ => vehicleHashSet.Clear());
 
             //ミッションが始まった時にしばらく動作を止める
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => IsActive)
                 .Select(_ => Game.MissionFlag)
                 .DistinctUntilChanged()

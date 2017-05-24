@@ -11,15 +11,13 @@ namespace Inferno.InfernoScripts.Player
     //ふわふわジャンプ
     class Floating : InfernoScript
     {
-        protected override int TickInterval { get; } = 50;
-
         protected override void Setup()
         {
-            this.OnTickAsObservable
+            this.CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(_ => this.IsGamePadPressed(GameKey.Sprint) && this.IsGamePadPressed(GameKey.Jump))
                 .Subscribe(_ =>
                 {
-                    PlayerPed.ApplyForce(Vector3.WorldUp *1.1f );
+                    PlayerPed.ApplyForce(Vector3.WorldUp * 1.1f);
                 });
         }
     }

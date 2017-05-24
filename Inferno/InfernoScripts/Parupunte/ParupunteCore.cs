@@ -1,16 +1,14 @@
-﻿using GTA;
-using GTA.Math;
-using GTA.Native;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
+using GTA;
+using GTA.Math;
+using GTA.Native;
 using Inferno.InfernoScripts.Event;
-using Inferno.InfernoScripts.Event.ChasoMode;
 using Inferno.InfernoScripts.Event.Isono;
 using UniRx;
 
@@ -53,8 +51,6 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private List<Entity> _autoReleaseEntitiesList = new List<Entity>();
 
-        protected override int TickInterval { get; } = 100;
-
         private UIContainer _mainTextUiContainer;
         private UIContainer _subTextUiContainer;
         private TimerUiTextManager timerText;
@@ -89,8 +85,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 return attribute != null && attribute.IsDebug;
             }).ToArray();
 
-
-
+            
             #endregion ParunteScripts
 
             #region EventHook
@@ -124,7 +119,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Select(c => IsonoMethod(c.Command))
                 .Where(x => x)
                 .AsUnitObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(5))
+                .ThrottleFirst(TimeSpan.FromSeconds(10))
                 .Retry()
                 .Subscribe();
 
@@ -147,7 +142,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 _mainTextUiContainer.Items.Add(timerText.Text);
             });
             //テキストが時間切れしたら消す
-            OnTickAsObservable.Select(_ => timerText.IsEnabled)
+            OnThinnedTickAsObservable.Select(_ => timerText.IsEnabled)
                 .DistinctUntilChanged()
                 .Where(x => !x)
                 .Subscribe(_ => _mainTextUiContainer.Items.Clear());

@@ -2,6 +2,7 @@
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -50,8 +51,6 @@ namespace Inferno.ChaosMode
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
         private MissionCharacterTreatmentType nextTreatType;
-
-        protected override int TickInterval => 100;
 
         private int chaosRelationShipId;
 
@@ -110,14 +109,16 @@ namespace Inferno.ChaosMode
             //interval設定
             Interval = chaosModeSetting.Interval;
 
+            var oneSecondTich = CreateTickAsObservable(TimeSpan.FromSeconds(1));
+
             //市民をカオス化する
-            CreateTickAsObservable(1000)
+            oneSecondTich
                 .Where(_ => IsActive && PlayerPed.IsSafeExist() && PlayerPed.IsAlive)
                 .Subscribe(_ => CitizenChaos());
 
             //プレイヤが死んだらリセット
-            CreateTickAsObservable(1000)
-                .Where(_ => PlayerPed.IsSafeExist())
+            oneSecondTich
+                 .Where(_ => PlayerPed.IsSafeExist())
                 .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
@@ -127,7 +128,7 @@ namespace Inferno.ChaosMode
                     StopAllChaosCoroutine();
                 });
 
-            CreateTickAsObservable(1000)
+            oneSecondTich
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
 
@@ -175,6 +176,7 @@ namespace Inferno.ChaosMode
                 StopCoroutine(id);
             }
             coroutineIds.Clear();
+
         }
 
         /// <summary>
@@ -184,7 +186,6 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private IEnumerable<Object> ChaosPedAction(Ped ped)
         {
-            yield return RandomWait();
 
             //魚なら除外する
             var m = (uint)ped.Model.Hash;

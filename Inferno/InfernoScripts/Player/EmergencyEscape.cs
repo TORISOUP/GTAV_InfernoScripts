@@ -34,7 +34,7 @@ namespace Inferno
         {
             conf = LoadConfig<EmergencyEscapeConf>();
 
-            OnTickAsObservable
+            OnThinnedTickAsObservable
                 .Where(_ => this.IsGamePadPressed(GameKey.VehicleHorn) && this.IsGamePadPressed(GameKey.VehicleExit))
                 .Subscribe(_ => EscapeVehicle());
         }

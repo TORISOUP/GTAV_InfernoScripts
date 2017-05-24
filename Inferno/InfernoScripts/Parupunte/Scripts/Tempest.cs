@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("てんぺすと")]
     internal class Tempest : ParupunteScript
     {
         private HashSet<Entity> entityList = new HashSet<Entity>();

@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
 using System.Drawing;
 using UniRx;
@@ -29,7 +30,7 @@ namespace Inferno
                 .Where(_ => _mContainer.Items.Count > 0)
                 .Subscribe(_ => _mContainer.Draw());
 
-            CreateTickAsObservable(500)
+            CreateTickAsObservable(TimeSpan.FromSeconds(0.5f))
                .Where(_ => PlayerPed.IsSafeExist())
                 .Select(x => PlayerPed.IsAlive)
                 .DistinctUntilChanged()

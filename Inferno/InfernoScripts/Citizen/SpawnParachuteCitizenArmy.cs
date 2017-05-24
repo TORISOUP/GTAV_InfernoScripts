@@ -43,7 +43,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            CreateTickAsObservable(SpawnDurationSeconds * 1000)
+            CreateTickAsObservable(TimeSpan.FromSeconds(SpawnDurationSeconds))
                 .Where(_ => IsActive)
                 .Subscribe(_ => CreateParachutePed());
         }

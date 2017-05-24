@@ -11,6 +11,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("けものふれんず")]
     class BeastFriends : ParupunteScript
     {
         private PedHash[] _animalsHash;
