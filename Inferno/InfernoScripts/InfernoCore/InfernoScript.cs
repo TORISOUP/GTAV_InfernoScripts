@@ -318,7 +318,7 @@ namespace Inferno
                 {
                     foreach (var c in _counterList)
                     {
-                        c.Update(Interval);
+                        c.Update(100);
                     }
                     //完了状態にあるタイマを全て削除
                     _counterList.RemoveAll(x => x.IsCompleted);

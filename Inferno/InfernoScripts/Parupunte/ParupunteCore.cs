@@ -116,9 +116,10 @@ namespace Inferno.InfernoScripts.Parupunte
 
             OnRecievedInfernoEvent
                 .OfType<IEventMessage, IsonoMessage>()
+                .Where(c => IsonoMethod(c.Command, true))
                 .ThrottleFirst(TimeSpan.FromSeconds(5), InfernoScriptScheduler)
                 .Retry()
-                .Subscribe();
+                .Subscribe(c => IsonoMethod(c.Command, false));
 
             #endregion EventHook
 
@@ -156,13 +157,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
         }
 
-        private bool IsonoMethod(string command)
+        private bool IsonoMethod(string command, bool isDryRun)
         {
             var c = command;
 
             if (c.Contains("とまれ"))
             {
-                ParupunteStop();
+                if (isDryRun) ParupunteStop();
                 return true;
             }
 
@@ -170,13 +171,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (c.Contains("ぱるぷんて"))
             {
-                ParupunteStart(ChooseParupounteScript());
+                if (isDryRun) ParupunteStart(ChooseParupounteScript());
                 return true;
             }
 
             var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Contains(x));
             if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return false;
-            ParupunteStart(IsonoParupunteScripts[result]);
+            if (isDryRun) ParupunteStart(IsonoParupunteScripts[result]);
             return true;
         }
 
