@@ -3,6 +3,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("くるましゅうり")]
     internal class RepairVehicles : ParupunteScript
     {
         public RepairVehicles(ParupunteCore core) : base(core)

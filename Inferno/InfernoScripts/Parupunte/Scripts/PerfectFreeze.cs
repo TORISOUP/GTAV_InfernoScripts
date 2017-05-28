@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("ぱーふぇくとふりーず")]
     class PerfectFreeze : ParupunteScript
     {
         public PerfectFreeze(ParupunteCore core) : base(core)

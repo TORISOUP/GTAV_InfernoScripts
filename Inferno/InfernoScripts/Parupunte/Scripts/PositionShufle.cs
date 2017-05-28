@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("あっちこっち")]
     internal class PositionShufle : ParupunteScript
     {
         private Random random = new Random();
@@ -18,6 +19,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override string Name { get; } = "あっちこっち";
         public override string EndMessage { get; } = "おわり";
 
+        //高速コルーチン(1フレーム単位で実行)
+        private CoroutineSystem _quickCoroutineSystem;
+
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
@@ -25,6 +29,22 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             StartCoroutine(SwapCoroutine());
+
+            _quickCoroutineSystem = new CoroutineSystem();
+
+            var d = core.OnTickAsObservable
+                .Subscribe(_ =>
+                {
+                    _quickCoroutineSystem?.CoroutineLoop();
+                });
+
+            this.OnFinishedAsObservable
+                .Subscribe(_ =>
+                {
+                    d.Dispose();
+                    _quickCoroutineSystem.RemoveAllCoroutine();
+                    _quickCoroutineSystem = null;
+                });
         }
 
         private IEnumerable<object> SwapCoroutine()
@@ -34,7 +54,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var peds = ChoisePeds(core.CachedPeds);
                 if (peds.Item1 != peds.Item2)
                 {
-                    StartCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
+                    //ポジションの入れ替えは高速コルーチンで実行
+                    _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
                 }
                 yield return WaitForSeconds(0.8f);
             }
@@ -58,6 +79,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> SwapPedPosition(Ped p1, Ped p2)
         {
+
             var isP1InVehicle = p1.IsInVehicle();
             var p1Pos = p1.Position;
             var v1 = p1.CurrentVehicle;
@@ -68,9 +90,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var v2 = p2.CurrentVehicle;
             var v2seat = GetPedSeat(p2, v2);
 
-            // p2を退避させる
-
             #region P2を退避
+            if (!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
 
             if (isP2InVehicle)
             {
@@ -102,7 +123,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             #endregion P1 -> P2
 
-            // yield return null;
+            yield return null;
             // p2 -> p1
 
             #region P2 -> P1

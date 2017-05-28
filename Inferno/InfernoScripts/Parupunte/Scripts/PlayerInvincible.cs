@@ -3,6 +3,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("むてき")]
     internal class PlayerInvincible : ParupunteScript
     {
         public PlayerInvincible(ParupunteCore core) : base(core)

@@ -9,6 +9,7 @@ using GTA.Math;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteDebug(false , true)]
+    [ParupunteIsono("けつるーら")]
     class KetsuWarp : ParupunteScript
     {
         public KetsuWarp(ParupunteCore core) : base(core)

@@ -2,6 +2,7 @@
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("けいさつ")]
     internal class ChangeWantedLevel : ParupunteScript
     {
         private string name;

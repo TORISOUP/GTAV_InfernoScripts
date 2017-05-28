@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteIsono("ばくはつしたい")]
     internal class ExplodeDeadBodies : ParupunteScript
     {
         private HashSet<int> explodedPedHandles;
