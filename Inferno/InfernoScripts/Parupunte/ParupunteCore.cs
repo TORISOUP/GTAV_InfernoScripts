@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -59,6 +60,9 @@ namespace Inferno.InfernoScripts.Parupunte
         private Vector2 _mainTextPositionScale = new Vector2(0.5f, 0.8f);
         private Vector2 _subTextPositionScale = new Vector2(0.0f, 0.0f);
 
+        private readonly Stopwatch _stopWatch = Stopwatch.StartNew();
+
+        private TimeSpan Time => _stopWatch.Elapsed;
 
         protected override void Setup()
         {
@@ -113,13 +117,17 @@ namespace Inferno.InfernoScripts.Parupunte
                     _autoReleaseEntitiesList.Clear();
                 });
 
+            var nextIsonoTime = Time;
 
             OnRecievedInfernoEvent
                 .OfType<IEventMessage, IsonoMessage>()
-                .Where(c => IsonoMethod(c.Command, true))
-                .ThrottleFirst(TimeSpan.FromSeconds(5), InfernoScriptScheduler)
+                .Where(_ => (nextIsonoTime - Time).Ticks <= 0)
                 .Retry()
-                .Subscribe(c => IsonoMethod(c.Command, false));
+                .Subscribe(c =>
+                {
+                    var r = IsonoMethod(c.Command);
+                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(5));
+                });
 
             #endregion EventHook
 
@@ -157,13 +165,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
         }
 
-        private bool IsonoMethod(string command, bool isDryRun)
+        private bool IsonoMethod(string command)
         {
             var c = command;
 
             if (c.Contains("とまれ"))
             {
-                if (isDryRun) ParupunteStop();
+                ParupunteStop();
                 return true;
             }
 
@@ -171,13 +179,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (c.Contains("ぱるぷんて"))
             {
-                if (isDryRun) ParupunteStart(ChooseParupounteScript());
+                ParupunteStart(ChooseParupounteScript());
                 return true;
             }
 
             var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Contains(x));
             if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return false;
-            if (isDryRun) ParupunteStart(IsonoParupunteScripts[result]);
+            ParupunteStart(IsonoParupunteScripts[result]);
             return true;
         }
 
