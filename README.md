@@ -21,3 +21,6 @@ This library is under the MIT License.
 ### 使用ライブラリ
 UniRx  
 Copyright (c) 2014 Yoshifumi Kawai https://github.com/neuecc/UniRx/blob/master/LICENSE
+
+Json.NET
+Copyright (c) 2007 James Newton-King https://raw.githubusercontent.com/JamesNK/Newtonsoft.Json/master/LICENSE.md
