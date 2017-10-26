@@ -68,6 +68,12 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.MINISMG,
                 Weapon.AUTOSHOTGUN,
                 Weapon.COMPACTLAUNCHER,
+                Weapon.PistolMk2,
+                Weapon.SMGMk2,
+                Weapon.CombatMGMk2,
+                Weapon.AssaultRifleMk2,
+                Weapon.CarbineRifleMk2,
+                Weapon.HeavySniperMk2,
             };
 
             //近距離系
@@ -81,6 +87,16 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.GOLFCLUB,
                 Weapon.KNIFE,
                 Weapon.NIGHTSTICK,
+                Weapon.Bottle,
+                Weapon.Dagger,
+                Weapon.Hatchet,
+                Weapon.KnuckleDuster,
+                Weapon.Machete,
+                Weapon.Flashlight,
+                Weapon.SwitchBlade,
+                Weapon.Poolcue,
+                Weapon.Wrench,
+                Weapon.Battleaxe,
             };
 
             //投げる系
@@ -94,7 +110,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.FLARE,
                 Weapon.SMOKEGRENADE,
                 Weapon.PROXIMITYMINE,
-                Weapon.PIPEBOMB
+                Weapon.PIPEBOMB,
             };
 
             //ドライブバイ
@@ -116,6 +132,8 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.MINISMG,
                 Weapon.AUTOSHOTGUN,
                 Weapon.COMPACTLAUNCHER,
+                Weapon.PistolMk2,
+                Weapon.SMGMk2,
             };
 
             AllWeapons = ShootWeapons.Concat(ClosedWeapons).Concat(ProjectileWeapons).ToArray();

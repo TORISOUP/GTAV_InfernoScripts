@@ -143,7 +143,24 @@
         MINISMG = -1121678507,
         AUTOSHOTGUN = 317205821,
         COMPACTLAUNCHER = 125959754,
-        PIPEBOMB = -1169823560
+        PIPEBOMB = -1169823560,
+        Bottle = -102323637,
+        Dagger = -1834847097,
+        Hatchet = -102973651,
+        KnuckleDuster = -656458692,
+        Machete = -581044007,
+        Flashlight = -1951375401,
+        SwitchBlade = -538741184,
+        Poolcue = -1810795771,
+        Wrench = 419712736,
+        Battleaxe = -853065399,
+        PistolMk2 = 3219281620,
+        SMGMk2 = 2024373456,
+        CombatMGMk2 = 3686625920,
+        AssaultRifleMk2 = 961495388,
+        CarbineRifleMk2 = 4208062921,
+        HeavySniperMk2 = 177293209,
+        HomingLauncher = 1672152130
     }
 
     public enum VehicleWeapon
