@@ -59,6 +59,8 @@
         BurstFireTank = -490063247
     }
 
+    
+
     public enum Weapon
     {
         UNARMED = -1569615261,
@@ -154,11 +156,11 @@
         Poolcue = -1810795771,
         Wrench = 419712736,
         Battleaxe = -853065399,
-        PistolMk2 = 3219281620,
+        PistolMk2 = -1075685676,
         SMGMk2 = 2024373456,
-        CombatMGMk2 = 3686625920,
+        CombatMGMk2 = -608341376,
         AssaultRifleMk2 = 961495388,
-        CarbineRifleMk2 = 4208062921,
+        CarbineRifleMk2 = -86904375,
         HeavySniperMk2 = 177293209,
         HomingLauncher = 1672152130
     }
