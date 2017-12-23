@@ -126,7 +126,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(c =>
                 {
                     var r = IsonoMethod(c.Command);
-                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(5));
+                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(4));
                 });
 
             #endregion EventHook
@@ -171,8 +171,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (c.Contains("とまれ"))
             {
-                ParupunteStop();
-                return true;
+       //         ParupunteStop();
+         //       return true;
             }
 
             if (IsActive) return false;

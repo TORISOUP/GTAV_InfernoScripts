@@ -8,7 +8,7 @@ using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteDebug(false , true)]
+
     [ParupunteIsono("けつるーら")]
     class KetsuWarp : ParupunteScript
     {
@@ -28,7 +28,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             foreach (var w in WaitForSeconds(10))
             {
-                var blip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists());
+                var blip = GTA.World.GetActiveBlips()
+                    .FirstOrDefault(x => x.Exists() && (int)x.Color == 84 && x.Type == 4);
+
                 if (blip != null)
                 {
                     StartCoroutine(MoveToCoroutine());
@@ -40,26 +42,53 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> MoveToCoroutine()
         {
+            core.DrawParupunteText("いってらっしゃい！", 3);
+
             var target = core.PlayerPed.IsInVehicle() ? (Entity)core.PlayerPed.CurrentVehicle : (Entity)core.PlayerPed;
             target.IsInvincible = true;
 
+            target.ApplyForce(Vector3.WorldUp * 300.0f);
+            GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
+
             if (target is Ped)
             {
-                ((Ped)target).SetToRagdoll();
+                var p = (Ped)target;
+                p.Task.Skydive();
             }
+
+
+            yield return WaitForSeconds(1);
 
 
             while (target.IsSafeExist())
             {
-                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists());
+                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && (int)x.Color == 84 && x.Type == 4);
                 if (targetBlip == null || !targetBlip.Exists())
                 {
-                    ParupunteEnd();
                     if (target.IsSafeExist())
                     {
                         target.IsInvincible = false;
+                        if (target is Ped)
+                        {
+                            var p = (Ped)target;
+                            p.ParachuteTo(p.Position);
+                        }
                     }
+                    ParupunteEnd();
+                    core.DrawParupunteText("おわり", 3);
                     yield break;
+                }
+
+                if (target is Ped)
+                {
+                    if (!((Ped)target).IsInParachuteFreeFall)
+                    {
+                        target.IsInvincible = false;
+                        ParupunteEnd();
+                        core.DrawParupunteText("おわり", 3);
+                        yield break;
+                    }
+
                 }
 
                 var goal = targetBlip.Position;
@@ -67,7 +96,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var dir = (goal - current).Normalized;
 
                 var toVector = (goal - current);
-                var horizontalLength = new Vector3(toVector.X, toVector.Y,0).Length();
+                var horizontalLength = new Vector3(toVector.X, toVector.Y, 0).Length();
 
 
                 if (horizontalLength < 30)
@@ -75,7 +104,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     if (target.IsSafeExist())
                     {
                         target.IsInvincible = false;
+                        if (target is Ped)
+                        {
+                            var p = (Ped)target;
+                            p.ParachuteTo(p.Position);
+                        }
                     }
+                    core.DrawParupunteText("ついたぞ", 3);
                     ParupunteEnd();
                     yield break;
                 }
@@ -87,7 +122,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 else
                 {
-                    target.ApplyForce((dir + Vector3.WorldUp * 0.5f) * 60.0f);
+                    target.ApplyForce((dir + Vector3.WorldUp * 0.5f) * 250.0f);
                     GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
                 }
 
@@ -98,6 +133,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 target.IsInvincible = false;
             }
+
             ParupunteEnd();
 
         }
