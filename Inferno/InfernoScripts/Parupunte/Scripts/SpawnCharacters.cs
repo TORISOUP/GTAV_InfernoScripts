@@ -56,30 +56,30 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     name = "猿の惑星";
                     break;
 
-			    case 6:
-				    pedModel = new Model(PedHash.Zombie01);
-					name = "ウォーキング・デッド";
-				    break;
+		case 6:
+		    pedModel = new Model(PedHash.Zombie01);
+		    name = "ウォーキング・デッド";
+		    break;
 					
-	            case 7:
-				    pedModel = new Model(PedHash.RsRanger01AMO);
-					name = "それは外宇宙からやってきた";
-				    break;
+	        case 7:
+		    pedModel = new Model(PedHash.RsRanger01AMO);
+		    name = "それは外宇宙からやってきた";
+		    break;
 
                 case 8:
-				    pedModel = new Model(PedHash.ImpoRage),
-					name = "インポマン";
-				    break;
+		    pedModel = new Model(PedHash.ImpoRage),
+		    name = "インポマン";
+		    break;
 
-				case 9:
-				    pedModel = new Model(PedHash.MovAlien01),
-					name = "ロスサントス決戦";
-				    break;
+		case 9:
+		    pedModel = new Model(PedHash.MovAlien01),
+		    name = "ロスサントス決戦";
+		    break;
 					
-	            case 10:
-				    pedModel = new Model(PedHash.Clown01SMY),
-					name = "らんらんる～";
-				    break;
+	        case 10:
+	            pedModel = new Model(PedHash.Clown01SMY),
+	            name = "らんらんる～";
+		    break;
             }
         }
 
