@@ -1,4 +1,4 @@
-﻿using GTA;
+using GTA;
 using GTA.Native;
 using System;
 using System.Collections.Generic;
@@ -24,11 +24,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             random = new Random();
 
-            switch (random.Next(0, 100) % 4)
+            switch (random.Next(0, 100) % 11)
             {
                 case 0:
                     pedModel = new Model(PedHash.LamarDavis);
-                    name = "ニガ～♪";
+                    name = "ジャマーデイビス";
                     break;
 
                 case 1:
@@ -45,6 +45,41 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     pedModel = new Model(PedHash.Lazlow);
                     name = "フェイムオアシェイム";
                     break;
+                    
+                case 4:
+                    pedModel = new Model(PedHash.CrisFormage);
+                    name = "キフロム！";
+                    break;
+
+                case 5:
+                    pedModel = new Model(PedHash.Chimp);
+                    name = "猿の惑星";
+                    break;
+
+		case 6:
+		    pedModel = new Model(PedHash.Zombie01);
+		    name = "ウォーキング・デッド";
+		    break;
+					
+	        case 7:
+		    pedModel = new Model(PedHash.RsRanger01AMO);
+		    name = "それは外宇宙からやってきた";
+		    break;
+
+                case 8:
+		    pedModel = new Model(PedHash.ImpoRage),
+		    name = "インポマン";
+		    break;
+
+		case 9:
+		    pedModel = new Model(PedHash.MovAlien01),
+		    name = "ロスサントス決戦";
+		    break;
+					
+	        case 10:
+	            pedModel = new Model(PedHash.Clown01SMY),
+	            name = "らんらんる～";
+		    break;
             }
         }
 
