@@ -27,6 +27,11 @@ namespace Inferno
 
         private InfernoScheduler infernoScheduler;
 
+        private InfernoSynchronizationContext _infernoSynchronizationContext;
+
+        protected InfernoSynchronizationContext InfernoSynchronizationContext
+            => _infernoSynchronizationContext ?? (_infernoSynchronizationContext = new InfernoSynchronizationContext());
+
         protected IScheduler InfernoScriptScheduler
             => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
 
@@ -310,6 +315,17 @@ namespace Inferno
 
             //スケジューラ実行
             OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
+
+            // SynchronizationContextの実行
+            OnTickAsObservable
+                .Subscribe(_ =>
+                {
+                    if (SynchronizationContext.Current == null)
+                    {
+                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
+                    }
+                    InfernoSynchronizationContext.Update();
+                });
 
             //タイマのカウント
             OnThinnedTickAsObservable

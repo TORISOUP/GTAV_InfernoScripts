@@ -62,8 +62,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
-    <Reference Include="ScriptHookVDotNet2">
-      <HintPath>.\ScriptHookVDotNet2.dll</HintPath>
+    <Reference Include="ScriptHookVDotNet2, Version=2.10.3.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>X:\Project2\GTA\InfernoProject\Inferno\Inferno\ScriptHookVDotNet2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -199,10 +200,12 @@
     <Compile Include="InfernoScripts\World\Fulton.cs" />
     <Compile Include="InfernoScripts\World\Meteo.cs" />
     <Compile Include="InfernoScripts\World\SpeedMax.cs" />
+    <Compile Include="InfernoScripts\World\TestScript.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\InfernoConfig.cs" />
     <Compile Include="Utilities\InfernoConfigLoader.cs" />
     <Compile Include="Utilities\InfernoScheduler.cs" />
+    <Compile Include="Utilities\InfernoSynchronizationContext.cs" />
     <Compile Include="Utilities\InfernoUtilities.cs" />
     <Compile Include="Utilities\PriorityQueue.cs" />
     <Compile Include="Utilities\RequestDataPackage.cs" />
