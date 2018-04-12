@@ -5,11 +5,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class InvisibleVehicles : ParupunteScript
     {
-        public InvisibleVehicles(ParupunteCore core) : base(core)
+        public InvisibleVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "光学迷彩(車両)";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("光学迷彩(車両)", "");
 
         public override void OnSetUp()
         {

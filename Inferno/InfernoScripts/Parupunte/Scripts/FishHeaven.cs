@@ -14,12 +14,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Model fishModel = new Model(PedHash.TigerShark);
         private List<Ped> createdFishList = new List<Ped>();
 
-        public FishHeaven(ParupunteCore core) : base(core)
+        public FishHeaven(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "おさかな天国";
-        public override string EndMessage { get; } = "おさかな地獄";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("おさかな天国", "おさかな地獄");
 
         public override void OnStart()
         {

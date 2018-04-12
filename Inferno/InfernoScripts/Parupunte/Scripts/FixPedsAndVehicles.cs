@@ -7,11 +7,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class FixPedsAndVehicles : ParupunteScript
     {
-        public FixPedsAndVehicles(ParupunteCore core) : base(core)
+        public FixPedsAndVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "周辺の人&車両回復";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("周辺の人&車両回復", "");
 
         public override void OnSetUp()
         {

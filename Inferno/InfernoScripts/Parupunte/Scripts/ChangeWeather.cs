@@ -11,13 +11,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private string name;
         private Weather weather;
 
-        public ChangeWeather(ParupunteCore core) : base(core)
+        public ChangeWeather(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
-        }
-
-        public override string Name
-        {
-            get { return name; }
         }
 
         public override void OnSetUp()
@@ -32,6 +27,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var weatherName = GetWeatherName(weather);
             name = "天候変化" + "：" + weatherName;
+        }
+
+        public override void OnSetNames()
+        {
+            Name = name;
         }
 
         public override void OnStart()

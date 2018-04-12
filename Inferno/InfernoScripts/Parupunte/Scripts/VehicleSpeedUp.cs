@@ -7,11 +7,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class VehicleSpeedUp : ParupunteScript
     {
-        public VehicleSpeedUp(ParupunteCore core) : base(core)
+        public VehicleSpeedUp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "エンジンパワーアップ";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("エンジンパワーアップ", "");
+
 
         public override void OnSetUp()
         {

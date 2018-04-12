@@ -14,12 +14,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     class SpawnFriend :ParupunteScript
     {
         private List<Ped> pedList = new List<Ped>(); 
-        public SpawnFriend(ParupunteCore core) : base(core)
+        public SpawnFriend(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "味方召喚";
-        public override string EndMessage { get; } = "定時なんで帰ります";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("味方召喚", "定時なんで帰ります");
 
         public override void OnStart()
         {

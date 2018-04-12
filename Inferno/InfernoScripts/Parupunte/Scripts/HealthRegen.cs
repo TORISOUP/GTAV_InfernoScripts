@@ -7,12 +7,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private ReduceCounter reduceCounter;
 
-        public HealthRegen(ParupunteCore core) : base(core)
+        public HealthRegen(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "リジェネ";
-        public override string EndMessage => "おわり";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("リジェネ", "おわり");
+
         private uint coroutineId = 0;
 
         public override void OnSetUp()

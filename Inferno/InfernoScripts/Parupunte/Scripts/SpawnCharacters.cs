@@ -14,11 +14,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private string name;
         private Random random;
 
-        public SpawnCharacters(ParupunteCore core) : base(core)
+        public SpawnCharacters(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => name;
+        public override ParupunteConfigElement DefaultElement { get; }
+            = null;
+
+        public override void OnSetNames()
+        {
+            Name = name;
+        }
 
         public override void OnSetUp()
         {

@@ -11,11 +11,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private HashSet<Entity> entityList = new HashSet<Entity>();
 
-        public Tempest(ParupunteCore core) : base(core)
+        public Tempest(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "テンペスト";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("テンペスト", "");
 
         public override void OnSetUp()
         {

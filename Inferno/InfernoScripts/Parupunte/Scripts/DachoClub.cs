@@ -8,12 +8,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("だちょうくらぶ")]
     internal class DachoClub : ParupunteScript
     {
-        public DachoClub(ParupunteCore core) : base(core)
+        public DachoClub(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "ダチョウ倶楽部";
-        public override string EndMessage { get; } = "ありがとうございました";
+        public override ParupunteConfigElement DefaultElement { get; } 
+            = new ParupunteConfigElement("ダチョウ倶楽部", "ありがとうございました");
 
         public override void OnStart()
         {

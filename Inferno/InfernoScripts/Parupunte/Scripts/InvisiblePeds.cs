@@ -6,11 +6,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class InvisiblePeds : ParupunteScript
     {
-        public InvisiblePeds(ParupunteCore core) : base(core)
+        public InvisiblePeds(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "光学迷彩(仲間除くNPC)";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("光学迷彩(仲間除くNPC)", "");
 
         public override void OnSetUp()
         {

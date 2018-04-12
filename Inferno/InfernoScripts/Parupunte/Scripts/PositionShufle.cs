@@ -12,12 +12,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private Random random = new Random();
 
-        public PositionShufle(ParupunteCore core) : base(core)
+        public PositionShufle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "あっちこっち";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("あっちこっち", "おわり");
 
         //高速コルーチン(1フレーム単位で実行)
         private CoroutineSystem _quickCoroutineSystem;

@@ -11,12 +11,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("ひとはなび")]
     internal class Hitohanabi : ParupunteScript
     {
-        public Hitohanabi(ParupunteCore core) : base(core)
+        public Hitohanabi(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "ひとはなび";
-        public override string EndMessage => "きたねぇ花火だ";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("ひとはなび", "きたねぇ花火だ");
 
         public override void OnSetUp()
         {

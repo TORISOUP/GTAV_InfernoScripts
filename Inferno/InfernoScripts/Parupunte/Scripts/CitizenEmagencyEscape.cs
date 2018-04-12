@@ -13,11 +13,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("きんきゅうだっしゅつ")]
     class CitizenEmagencyEscape : ParupunteScript
     {
-        public CitizenEmagencyEscape(ParupunteCore core) : base(core)
+        public CitizenEmagencyEscape(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "磯野～！緊急脱出しようぜ！";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("磯野～！緊急脱出しようぜ！", "");
+
         public override void OnStart()
         {
             var playerPos = core.PlayerPed.Position;

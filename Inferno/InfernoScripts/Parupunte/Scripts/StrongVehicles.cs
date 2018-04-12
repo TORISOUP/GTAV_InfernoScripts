@@ -6,11 +6,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class StrongVehicles : ParupunteScript
     {
-        public StrongVehicles(ParupunteCore core) : base(core)
+        public StrongVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "車両パワーうｐ";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("車両パワーうｐ", "");
+
 
         public override void OnSetUp()
         {

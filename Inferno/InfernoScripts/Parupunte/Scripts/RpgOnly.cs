@@ -6,12 +6,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("あーるぴーじー")]
     class RpgOnly : ParupunteScript
     {
-        public RpgOnly(ParupunteCore core) : base(core)
+        public RpgOnly(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "RPG ONLY";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("RPG ONLY", "おわり");
 
         public override void OnStart()
         {

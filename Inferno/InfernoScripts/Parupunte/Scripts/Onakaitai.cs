@@ -17,12 +17,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private List<Ped> targetPeds = new List<Ped>();
 
-        public Onakaitai(ParupunteCore core) : base(core)
+        public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => AffectAllPed ? "みんなおなかいたい" : "おなかいたい";
-        public override string EndMessage => "ついでに着火";
+        public override void OnSetNames()
+        {
+            Name = AffectAllPed ? "みんなおなかいたい" : "おなかいたい";
+            EndMessage = () => "ついでに着火";
+        }
 
         public override void OnSetUp()
         {

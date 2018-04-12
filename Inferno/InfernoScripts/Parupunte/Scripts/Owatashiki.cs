@@ -2,11 +2,12 @@
 {
     internal class Owatashiki : ParupunteScript
     {
-        public Owatashiki(ParupunteCore core) : base(core)
+        public Owatashiki(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "オワタ式の可能性";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("オワタ式の可能性", "");
 
         public override void OnSetUp()
         {

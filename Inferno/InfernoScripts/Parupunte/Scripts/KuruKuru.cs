@@ -10,13 +10,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private IDisposable mainStream;
 
-        public KuruKuru(ParupunteCore core) : base(core)
+        public KuruKuru(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
         }
 
-        public override string Name { get; } = "くるくる";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("くるくる!", "おわり");
 
         public override void OnSetUp()
         {

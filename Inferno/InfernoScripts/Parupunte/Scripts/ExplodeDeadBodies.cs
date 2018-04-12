@@ -11,12 +11,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private HashSet<int> explodedPedHandles;
 
-        public ExplodeDeadBodies(ParupunteCore core) : base(core)
+        public ExplodeDeadBodies(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "ば・く・は・つ・し・た・い";
-        public override string EndMessage => "ば・く・は・つ・し・な・い";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("ば・く・は・つ・し・た・い！", "ば・く・は・つ・し・な・い");
 
         public override void OnSetUp()
         {

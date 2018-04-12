@@ -13,11 +13,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("ぼるが")]
     internal class Volga : ParupunteScript
     {
-        public Volga(ParupunteCore core) : base(core)
+        public Volga(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "頭の中に爆弾が！";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("頭の中に爆弾が", "");
+
 
         public override void OnStart()
         {

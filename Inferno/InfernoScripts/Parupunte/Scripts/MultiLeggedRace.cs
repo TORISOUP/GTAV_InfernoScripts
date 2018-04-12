@@ -11,15 +11,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("さんきんこうたい")]
     class MultiLeggedRace : ParupunteScript
     {
-        public MultiLeggedRace(ParupunteCore core) : base(core)
+        public MultiLeggedRace(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
         private List<Ped> explosionList = new List<Ped>();
         private List<Ped> allPedList = new List<Ped>();
 
-        public override string Name { get; } = "参　勤　交　代";
-        public override string EndMessage { get; } = "大　政　奉　還";
+
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("参　勤　交　代", "大　政　奉　還");
 
         public override void OnStart()
         {

@@ -7,11 +7,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("くーがー")]
     internal class MoutainLion : ParupunteScript
     {
-        public MoutainLion(ParupunteCore core) : base(core)
+        public MoutainLion(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "近すぎちゃって♪ どうしようもない♪";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("近すぎちゃって♪ どうしようもない♪", "");
 
         public override void OnStart()
         {

@@ -19,14 +19,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IDisposable drawingDisposable;
 
-        public BlackOut(ParupunteCore core) : base(core)
+        public BlackOut(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             SetUpSound();
         }
 
-        public override string Name { get; } = "ctOS 停電";
-        public override string EndMessage { get; } = "ctOS 復旧";
-
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("ctOS 停電", "ctOS 復旧");
+        
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(20 * 1000);

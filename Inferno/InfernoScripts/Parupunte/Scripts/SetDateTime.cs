@@ -9,13 +9,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private int hour;
         private string name;
 
-        public SetDateTime(ParupunteCore core) : base(core)
+        public SetDateTime(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name
+        public override ParupunteConfigElement DefaultElement { get; }
+            = null;
+
+        public override void OnSetNames()
         {
-            get { return name; }
+            Name = name;
         }
 
         public override void OnSetUp()

@@ -8,12 +8,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("ふわふわ")]
     internal class FloatingCar : ParupunteScript
     {
-        public FloatingCar(ParupunteCore core) : base(core)
+        public FloatingCar(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "ふわふわ";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("ふわふわ", "おわり");
 
         public override void OnSetUp()
         {

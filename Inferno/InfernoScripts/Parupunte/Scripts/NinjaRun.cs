@@ -2,6 +2,7 @@
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Parupunte;
 using UniRx;
 
@@ -11,12 +12,12 @@ namespace Inferno
     internal class NinjaRun : ParupunteScript
     {
         private float addSpeed = 1.0f;
-        public NinjaRun(ParupunteCore core) : base(core)
+        public NinjaRun(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "バリキ・ジツ";
-        public override string EndMessage => "もうオシマイだ！";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("バリキ・ジツ", "もうオシマイだ！");
 
         public override void OnSetUp()
         {

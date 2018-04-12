@@ -9,11 +9,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteDebug(false, true)]
     class Transform : ParupunteScript
     {
-        public Transform(ParupunteCore core) : base(core)
+        public Transform(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "変身GOGOベイビー";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("変身GOGOベイビー", "");
 
         public override void OnStart()
         {

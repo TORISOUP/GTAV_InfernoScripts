@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using GTA;
 using Inferno.InfernoScripts.Event;
 using UniRx;
@@ -34,7 +35,21 @@ namespace Inferno.InfernoScripts.Parupunte
             Command = command;
         }
     }
-    
+
+    public class ParupunteAttribute : Attribute
+    {
+        public string DefaultStartMessage;
+        public string DefaultSubMessage;
+        public string DefaultEndMessage;
+
+        public ParupunteAttribute(string defaultStartMessage, string defaultSubMessage, string defaultEndMessage)
+        {
+            DefaultStartMessage = defaultStartMessage;
+            DefaultEndMessage = defaultEndMessage;
+            DefaultSubMessage = defaultSubMessage;
+        }
+    }
+
     internal abstract class ParupunteScript
     {
         private bool IsFinished = false;
@@ -42,18 +57,18 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// 開始時に表示されるメインメッセージ
         /// </summary>
-        public abstract string Name { get; }
+        public string Name { get; protected set; }
 
         /// <summary>
         /// 画面右下に常に表示されるミニメッセージ
         /// </summary>
-        public virtual string SubName { get; }
+        public string SubName { get; protected set; }
 
         /// <summary>
         /// 終了時に表示されるメッセージ
         /// nullまたは空文字列なら表示しない
         /// </summary>
-        public virtual string EndMessage { get; }
+        public Func<string> EndMessage { get; protected set; }
 
         /// <summary>
         /// 終了メッセージの表示時間[s]
@@ -85,13 +100,30 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected Random Random;
 
-        protected ParupunteScript(ParupunteCore core)
+        public virtual ParupunteConfigElement DefaultElement { get; } = null;
+
+        protected readonly ParupunteConfigElement Config;
+
+        protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
         {
             this.core = core;
             coroutineIds = new List<uint>();
             core.LogWrite(this.ToString());
             IsFinished = false;
             Random = new Random();
+
+            Config = element ?? DefaultElement;
+
+        }
+
+        /// <summary>
+        /// OnSetUpのあとに呼ばれる
+        /// </summary>
+        public virtual void OnSetNames()
+        {
+            Name = Config.StartMessage;
+            SubName = Config.SubMessage;
+            EndMessage = () => Config.FinishMessage;
         }
 
         /// <summary>
@@ -143,9 +175,10 @@ namespace Inferno.InfernoScripts.Parupunte
             }
             coroutineIds.Clear();
 
-            if (!string.IsNullOrEmpty(EndMessage))
+            var endMessage = EndMessage();
+            if (!string.IsNullOrEmpty(endMessage))
             {
-                core.DrawParupunteText(EndMessage, EndMessageDisplayTime);
+                core.DrawParupunteText(endMessage, EndMessageDisplayTime);
             }
         }
 

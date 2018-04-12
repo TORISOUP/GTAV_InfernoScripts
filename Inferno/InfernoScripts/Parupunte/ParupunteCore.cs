@@ -256,6 +256,7 @@ namespace Inferno.InfernoScripts.Parupunte
             try
             {
                 script.OnSetUp();
+                script.OnSetNames();
             }
             catch (Exception e)
             {

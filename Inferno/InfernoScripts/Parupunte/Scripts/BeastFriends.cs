@@ -20,13 +20,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private bool isBeast = false;
 
-        public BeastFriends(ParupunteCore core) : base(core)
+        public BeastFriends(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             isBeast = Random.Next(0, 100) <= 80;
         }
 
-        public override string Name => isBeast ? "けものフレンズ" : "のけものフレンズ";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; } = null;
+
+        public override void OnSetNames()
+        {
+            Name = isBeast ? "けものフレンズ" : "のけものフレンズ";
+            EndMessage = () => "おわり";
+        }
 
         public override void OnStart()
         {

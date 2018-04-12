@@ -12,12 +12,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("けつるーら")]
     class KetsuWarp : ParupunteScript
     {
-        public KetsuWarp(ParupunteCore core) : base(core)
+        public KetsuWarp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "行き先を選べ!";
-        public override string SubName { get; } = "ケツルーラ";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("行き先を選べ!", "ケツルーラ");
 
         public override void OnStart()
         {

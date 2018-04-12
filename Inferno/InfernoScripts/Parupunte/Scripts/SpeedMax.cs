@@ -6,12 +6,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("すぴーどまっくす")]
     internal class SpeedMax : ParupunteScript
     {
-        public SpeedMax(ParupunteCore core) : base(core)
+        public SpeedMax(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "光速進行";
-        public override string EndMessage => "法定速度を守ってマナーよく運転しましょう";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("光速進行", "法定速度を守ってマナーよく運転しましょう");
 
         public override void OnSetUp()
         {

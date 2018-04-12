@@ -7,11 +7,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("みんなばくはつ")]
     internal class KillCitizens : ParupunteScript
     {
-        public KillCitizens(ParupunteCore core) : base(core)
+        public KillCitizens(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "周辺市民全員即死";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("周辺市民全員即死!", "");
 
         private uint coroutineId = 0;
 

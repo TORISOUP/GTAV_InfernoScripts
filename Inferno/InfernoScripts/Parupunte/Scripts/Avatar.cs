@@ -14,12 +14,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private List<Ped> peds = new List<Ped>();
 
-        public Avatar(ParupunteCore core) : base(core)
+        public Avatar(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "ブンシンノジツ";
-        public override string EndMessage { get; } = "おわり";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("ブンシンノジツ", "おわり");
 
         public override void OnStart()
         {

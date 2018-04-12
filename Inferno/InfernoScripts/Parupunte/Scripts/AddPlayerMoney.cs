@@ -4,11 +4,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     internal class AddPlayerMoney : ParupunteScript
     {
-        public AddPlayerMoney(ParupunteCore core) : base(core)
+        public AddPlayerMoney(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "今じゃあケツをふく紙にもなりゃしねってのによぉ!";
+        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("今じゃあケツをふく紙にもなりゃしねってのによぉ", "");
 
         public override void OnSetUp()
         {

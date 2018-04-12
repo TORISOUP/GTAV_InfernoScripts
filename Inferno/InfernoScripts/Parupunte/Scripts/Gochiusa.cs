@@ -11,12 +11,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
 
-        public Gochiusa(ParupunteCore core) : base(core)
+        public Gochiusa(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "あぁ^～築地が漁業するんじゃぁ^～";
-        public override string EndMessage { get; } = "大漁";
+        public override ParupunteConfigElement DefaultElement { get; }
+            = new ParupunteConfigElement("あぁ^～築地が漁業するんじゃぁ^～", "大漁");
 
         public override void OnStart()
         {

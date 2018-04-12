@@ -5,23 +5,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("けいさつ")]
     internal class ChangeWantedLevel : ParupunteScript
     {
-        private string name;
         private int wantedLevelThreshold = 1;
         private int wantedLevel = Game.Player.WantedLevel;
 
-        public ChangeWantedLevel(ParupunteCore core) : base(core)
+        public ChangeWantedLevel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override void OnSetUp()
+        public override ParupunteConfigElement DefaultElement { get; } = null;
+
+        public override void OnSetNames()
         {
-            name = wantedLevel >= wantedLevelThreshold ? "無罪放免" : "日頃の行いが悪い";
+            Name = wantedLevel >= wantedLevelThreshold ? "無罪放免" : "日頃の行いが悪い";
         }
 
-        public override string Name
-        {
-            get { return name; }
-        }
 
         public override void OnStart()
         {
