@@ -37,17 +37,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnUpdate()
         {
             var playerPos = core.PlayerPed.Position;
-            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() 
+            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
             && x.IsInRangeOf(playerPos, 20)
             && !entityList.Contains(x)
             && !x.IsCutsceneOnlyPed()))
             {
 
-                    entityList.Add(ped);
-                    StartCoroutine(TemepenstCoroutine(ped));
-                
+                entityList.Add(ped);
+                StartCoroutine(TemepenstCoroutine(ped));
+
             }
-            foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist() 
+            foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
             && x.IsInRangeOf(playerPos, 20)
             && !entityList.Contains(x)
             ))
@@ -69,7 +69,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (entity is Ped)
                 {
                     var p = entity as Ped;
-                    if(p.IsDead) yield break;
+                    if (p.IsDead) yield break;
                     p.SetToRagdoll();
                 }
 
