@@ -6,14 +6,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    //[ParupunteConfigAttribute("変身GOGOベイビー")]
     [ParupunteDebug(false, true)]
     class Transform : ParupunteScript
     {
-        public Transform(ParupunteCore core) : base(core)
+        public Transform(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name { get; } = "変身GOGOベイビー";
 
         public override void OnStart()
         {

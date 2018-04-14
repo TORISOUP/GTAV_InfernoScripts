@@ -23,6 +23,8 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private Type[] _parupunteScritpts;
 
+        private Dictionary<string, ParupunteConfigElement> _parupunteConfigs;
+
         /// <summary>
         /// デバッグ用
         /// </summary>
@@ -91,6 +93,12 @@ namespace Inferno.InfernoScripts.Parupunte
 
 
             #endregion ParunteScripts
+
+            #region Config
+
+            SetConfigData(_parupunteScritpts);
+
+            #endregion
 
             #region EventHook
 
@@ -165,14 +173,54 @@ namespace Inferno.InfernoScripts.Parupunte
 
         }
 
+        // Configファイルの設定を行う
+        private void SetConfigData(Type[] parupunteScripts)
+        {
+            var configRepository = new ParupunteConfigRepository();
+
+            // jsonから読み込んだConfig値
+            var loadConfig = configRepository.LoadSettingFile();
+
+            // デフォルト値
+            var defaultConfig = parupunteScripts
+                .Select(x => new { x.Name, Attribute = x.GetCustomAttribute<ParupunteConfigAttribute>() })
+                .Where(x => x.Attribute != null)
+                .ToDictionary(x => x.Name, x =>
+                {
+                    var a = x.Attribute;
+                    return new ParupunteConfigElement(a.DefaultStartMessage, a.DefaultSubMessage, a.DefaultEndMessage);
+                });
+
+            // 合成したConfig値
+            var mergedConfig = new Dictionary<string, ParupunteConfigElement>();
+
+            // デフォルト値のConfを、読み込んだConf値で上書きする
+            foreach (var kv in defaultConfig)
+            {
+                var value = kv.Value;
+                if (loadConfig.ContainsKey(kv.Key))
+                {
+                    value = loadConfig[kv.Key];
+                }
+                mergedConfig[kv.Key] = value;
+            }
+
+            // 最終的なconfをファイルに書き出す
+            configRepository.SaveSettings(mergedConfig);
+
+            // 設定完了
+            _parupunteConfigs = mergedConfig;
+        }
+
+
         private bool IsonoMethod(string command)
         {
             var c = command;
 
             if (c.Contains("とまれ"))
             {
-       //         ParupunteStop();
-         //       return true;
+                //       ParupunteStop();
+                //       return true;
             }
 
             if (IsActive) return false;
@@ -202,8 +250,12 @@ namespace Inferno.InfernoScripts.Parupunte
 
             IsActive = true;
 
+            var conf = _parupunteConfigs.ContainsKey(script.Name)
+                ? _parupunteConfigs[script.Name]
+                : ParupunteConfigElement.Default;
+
             //ThreadPool上で初期化（プチフリ回避）
-            Observable.Start(() => Activator.CreateInstance(script, this) as ParupunteScript, Scheduler.ThreadPool)
+            Observable.Start(() => Activator.CreateInstance(script, this, conf) as ParupunteScript, Scheduler.ThreadPool)
                 .OnErrorRetry((Exception ex) =>
                 {
                     LogWrite(ex.ToString());
@@ -256,6 +308,7 @@ namespace Inferno.InfernoScripts.Parupunte
             try
             {
                 script.OnSetUp();
+                script.OnSetNames();
             }
             catch (Exception e)
             {

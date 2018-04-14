@@ -9,15 +9,13 @@ using GTA.Native;
 using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ケツファンネル", "弾切れ")]
     [ParupunteIsono("けつふぁんねる")]
     class KetsuFunnel : ParupunteScript
     {
-        public KetsuFunnel(ParupunteCore core) : base(core)
+        public KetsuFunnel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name { get; } = "ケツファンネル";
-        public override string EndMessage { get; } = "弾切れ";
 
         public override void OnStart()
         {

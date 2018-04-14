@@ -14,7 +14,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private VehicleHash vehicleHash;
         private String _name;
-        public SpawnVheicle(ParupunteCore core) : base(core)
+        public SpawnVheicle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
 
         }
@@ -31,7 +31,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             _name = Game.GetGXTEntry(vehicleGxtEntry);
         }
 
-        public override string Name => $"{_name}生成";
+        public override void OnSetNames()
+        {
+            Name = $"{_name}生成";
+        }
+
         public override void OnStart()
         {
 

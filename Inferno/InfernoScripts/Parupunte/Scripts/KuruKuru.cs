@@ -5,18 +5,16 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("くるくる", "おわり")]
     [ParupunteIsono("くるくる")]
     internal class KuruKuru : ParupunteScript
     {
         private IDisposable mainStream;
 
-        public KuruKuru(ParupunteCore core) : base(core)
+        public KuruKuru(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
         }
-
-        public override string Name { get; } = "くるくる";
-        public override string EndMessage { get; } = "おわり";
 
         public override void OnSetUp()
         {

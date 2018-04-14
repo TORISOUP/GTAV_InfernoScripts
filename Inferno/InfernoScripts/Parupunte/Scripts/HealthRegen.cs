@@ -3,16 +3,16 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("リジェネ", "おわり")]
     internal class HealthRegen : ParupunteScript
     {
         private ReduceCounter reduceCounter;
 
-        public HealthRegen(ParupunteCore core) : base(core)
+        public HealthRegen(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name => "リジェネ";
-        public override string EndMessage => "おわり";
+
         private uint coroutineId = 0;
 
         public override void OnSetUp()

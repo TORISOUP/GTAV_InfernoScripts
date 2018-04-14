@@ -12,11 +12,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("おなら")]
     class Fart : ParupunteScript
     {
-        public Fart(ParupunteCore core) : base(core)
+        public Fart(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "3";
+
         public override void OnStart()
         {
             var ptfxName = "core";
@@ -62,14 +62,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
-                            playerPos.X,
-                            playerPos.Y,
-                            playerPos.Z,
-                            -1,
-                            0.5f,
-                            true,
-                            false,
-                            0.5f
+                playerPos.X,
+                playerPos.Y,
+                playerPos.Z,
+                -1,
+                0.5f,
+                true,
+                false,
+                0.5f
             });
 
             foreach (var e in targets)

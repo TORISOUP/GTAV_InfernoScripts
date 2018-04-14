@@ -6,17 +6,16 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("パーフェクトフリーズ", "おわり")]
     [ParupunteIsono("ぱーふぇくとふりーず")]
     class PerfectFreeze : ParupunteScript
     {
-        public PerfectFreeze(ParupunteCore core) : base(core)
+        public PerfectFreeze(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
         private HashSet<Entity> freezedEntities = new HashSet<Entity>();
 
-        public override string Name { get; } = "パーフェクトフリーズ";
-        public override string EndMessage { get; } = "おわり";
         private readonly float FreezeRange = 60;
 
         public override void OnStart()

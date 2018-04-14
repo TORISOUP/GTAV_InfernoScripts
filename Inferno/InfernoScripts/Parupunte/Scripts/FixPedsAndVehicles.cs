@@ -5,13 +5,12 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("周辺の人&車両回復", "")]
     internal class FixPedsAndVehicles : ParupunteScript
     {
-        public FixPedsAndVehicles(ParupunteCore core) : base(core)
+        public FixPedsAndVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name => "周辺の人&車両回復";
 
         public override void OnSetUp()
         {

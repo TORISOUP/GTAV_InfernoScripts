@@ -4,13 +4,12 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("車両パワーうｐ")]
     internal class StrongVehicles : ParupunteScript
     {
-        public StrongVehicles(ParupunteCore core) : base(core)
+        public StrongVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name => "車両パワーうｐ";
 
         public override void OnSetUp()
         {

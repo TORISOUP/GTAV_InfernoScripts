@@ -1,12 +1,11 @@
 ﻿namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("オワタ式の可能性")]
     internal class Owatashiki : ParupunteScript
     {
-        public Owatashiki(ParupunteCore core) : base(core)
+        public Owatashiki(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name => "オワタ式の可能性";
 
         public override void OnSetUp()
         {

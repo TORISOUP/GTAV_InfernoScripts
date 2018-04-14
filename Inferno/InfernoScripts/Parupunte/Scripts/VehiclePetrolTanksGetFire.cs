@@ -2,13 +2,12 @@
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("周辺車両一斉発火")]
     internal class VehiclePetrolTanksGetFire : ParupunteScript
     {
-        public VehiclePetrolTanksGetFire(ParupunteCore core) : base(core)
+        public VehiclePetrolTanksGetFire(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name => "周辺車両一斉発火";
 
         public override void OnSetUp()
         {

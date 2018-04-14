@@ -9,14 +9,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// プレイヤの近くに飛行機を墜落させる
     /// </summary>
-
+    [ParupunteConfigAttribute("メーデー！メーデー！メーデー！")]
     internal class Mayday : ParupunteScript
     {
-        public Mayday(ParupunteCore core) : base(core)
+        public Mayday(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name => "メーデー！メーデー！";
 
         public override void OnSetUp()
         {

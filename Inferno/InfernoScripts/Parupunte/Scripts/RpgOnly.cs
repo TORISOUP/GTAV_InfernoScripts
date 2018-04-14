@@ -3,15 +3,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("RPG ONLY", "おわり")]
     [ParupunteIsono("あーるぴーじー")]
     class RpgOnly : ParupunteScript
     {
-        public RpgOnly(ParupunteCore core) : base(core)
+        public RpgOnly(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name { get; } = "RPG ONLY";
-        public override string EndMessage { get; } = "おわり";
 
         public override void OnStart()
         {

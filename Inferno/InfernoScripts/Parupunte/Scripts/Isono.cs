@@ -6,15 +6,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
+    [ParupunteConfigAttribute("磯野ー！空飛ぼうぜ！")]
     [ParupunteIsono("いその")]
     class Isono : ParupunteScript
     {
-        public Isono(ParupunteCore core) : base(core)
+        public Isono(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override string Name { get; } = "磯野ー！空飛ぼうぜ！";
 
         public override void OnSetUp()
         {

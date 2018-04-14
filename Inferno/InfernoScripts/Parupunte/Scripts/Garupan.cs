@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private List<Entity> resources = new List<Entity>();
  
 
-        public Garupan(ParupunteCore core) : base(core)
+        public Garupan(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
@@ -42,12 +42,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
-        public override string Name => _name;
-        public override string SubName => "ガルパンは、いいぞ";
-
-        public override string EndMessage
+        public override void OnSetNames()
         {
-            get
+            Name = _name;
+            SubName = "ガルパンは、いいぞ";
+            EndMessage = () =>
             {
                 if (core.PlayerPed.IsAlive)
                 {
@@ -58,7 +57,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     EndMessageDisplayTime = 4.0f;
                     return "フラッグ車走行不能！大洗女子学園の勝利！";
                 }
-            }
+            };
         }
 
         public override void OnStart()

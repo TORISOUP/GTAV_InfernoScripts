@@ -8,15 +8,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// 尻から炎
     /// </summary>
+    [ParupunteConfigAttribute("ただし魔法は尻から出る", "　お　し　り　")]
     [ParupunteIsono("おしり")]
     internal class MagicFire : ParupunteScript
     {
-        public MagicFire(ParupunteCore core) : base(core)
+        public MagicFire(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        public override string Name { get; } = "ただし魔法は尻から出る";
-        public override string EndMessage => "　お　し　り　";
         private uint coroutineId = 0;
 
         public override void OnSetUp()
