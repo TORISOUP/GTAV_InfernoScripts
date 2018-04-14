@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts
             FinishMessage = finishMessage;
         }
 
-        public static ParupunteConfigElement NoUse = new ParupunteConfigElement("", "");
+        public static ParupunteConfigElement Default = new ParupunteConfigElement("", "");
     }
 
     internal class ParupunteConfigDto

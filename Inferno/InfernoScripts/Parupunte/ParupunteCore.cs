@@ -252,7 +252,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             var conf = _parupunteConfigs.ContainsKey(script.Name)
                 ? _parupunteConfigs[script.Name]
-                : new ParupunteConfigElement("", "");
+                : ParupunteConfigElement.Default;
 
             //ThreadPool上で初期化（プチフリ回避）
             Observable.Start(() => Activator.CreateInstance(script, this, conf) as ParupunteScript, Scheduler.ThreadPool)
