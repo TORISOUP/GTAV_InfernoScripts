@@ -29,11 +29,15 @@ namespace Inferno.InfernoScripts
         }
 
         public static ParupunteConfigElement Default = new ParupunteConfigElement("", "");
+
+        public ParupunteConfigDto ToDto()
+        {
+            return new ParupunteConfigDto(StartMessage, SubMessage, FinishMessage);
+        }
     }
 
     internal class ParupunteConfigDto
     {
-        public string ParupunteName { get; set; }
 
         [DefaultValue("")]
         public string StartMessage { get; set; }
@@ -44,12 +48,16 @@ namespace Inferno.InfernoScripts
         [DefaultValue("")]
         public string FinishMessage { get; set; }
 
-        public ParupunteConfigDto(string parupunteName, string startMessage, string subMessage, string finishMessage)
+        public ParupunteConfigDto(string startMessage, string subMessage, string finishMessage)
         {
-            ParupunteName = parupunteName;
             StartMessage = startMessage;
             SubMessage = subMessage;
             FinishMessage = finishMessage;
+        }
+
+        public ParupunteConfigElement ToDomain()
+        {
+            return new ParupunteConfigElement(StartMessage, SubMessage, FinishMessage);
         }
     }
 }

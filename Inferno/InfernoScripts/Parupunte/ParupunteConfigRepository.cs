@@ -55,9 +55,9 @@ namespace Inferno.InfernoScripts
 
             try
             {
-                var dto = JsonConvert.DeserializeObject<ParupunteConfigDto[]>(readString);
-                return dto.ToDictionary(x => x.ParupunteName,
-                    x => new ParupunteConfigElement(x.StartMessage, x.SubMessage, x.FinishMessage));
+                var dto = JsonConvert.DeserializeObject<Dictionary<string, ParupunteConfigDto>>(readString);
+                return dto.Select(x => new { Key = x.Key, Value = x.Value.ToDomain() })
+                    .ToDictionary(x => x.Key, x => x.Value);
             }
             catch (Exception e)
             {
@@ -76,12 +76,7 @@ namespace Inferno.InfernoScripts
                 Directory.CreateDirectory(directoryPath);
             }
 
-            var dto = configs.Select(x =>
-            {
-                var name = x.Key;
-                var elem = x.Value;
-                return new ParupunteConfigDto(name, elem.StartMessage, elem.SubMessage, elem.FinishMessage);
-            }).ToArray();
+            var dto = configs.ToDictionary(x => x.Key, x => x.Value.ToDto());
 
             try
             {
