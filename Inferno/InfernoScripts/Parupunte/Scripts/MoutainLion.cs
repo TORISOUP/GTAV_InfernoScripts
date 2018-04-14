@@ -4,15 +4,13 @@ using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("近すぎちゃって♪ どうしようもない♪")]
     [ParupunteIsono("くーがー")]
     internal class MoutainLion : ParupunteScript
     {
         public MoutainLion(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("近すぎちゃって♪ どうしようもない♪", "");
 
         public override void OnStart()
         {

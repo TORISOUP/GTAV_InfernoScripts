@@ -9,6 +9,7 @@ using Inferno.ChaosMode.WeaponProvider;
 using UniRx;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ブンシンノジツ", "おわり")]
     [ParupunteIsono("ぶんしん")]
     class Avatar : ParupunteScript
     {
@@ -17,8 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public Avatar(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("ブンシンノジツ", "おわり");
 
         public override void OnStart()
         {

@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("あぁ^～築地が漁業するんじゃぁ^～", "大漁")]
     [ParupunteIsono("つきじ")]
     internal class Gochiusa : ParupunteScript
     {
@@ -14,9 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public Gochiusa(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("あぁ^～築地が漁業するんじゃぁ^～", "大漁");
 
         public override void OnStart()
         {

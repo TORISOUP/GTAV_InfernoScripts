@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("大量車両ハッキング")]
     [ParupunteIsono("はっきんぐ")]
     class MassiveVehicleHack : ParupunteScript
     {
@@ -20,9 +21,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         //演出用の線を引くリスト
         private List<System.Tuple<Entity, Entity>> drawLineList = new List<System.Tuple<Entity, Entity>>();
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("大量車両ハッキング", "");
 
         public override void OnStart()
         {

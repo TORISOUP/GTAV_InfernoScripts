@@ -25,8 +25,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             isBeast = Random.Next(0, 100) <= 80;
         }
 
-        public override ParupunteConfigElement DefaultElement { get; } = null;
-
         public override void OnSetNames()
         {
             Name = isBeast ? "けものフレンズ" : "のけものフレンズ";

@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("あっちこっち", "おわり")]
     [ParupunteIsono("あっちこっち")]
     internal class PositionShufle : ParupunteScript
     {
@@ -15,9 +16,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public PositionShufle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("あっちこっち", "おわり");
 
         //高速コルーチン(1フレーム単位で実行)
         private CoroutineSystem _quickCoroutineSystem;
@@ -57,7 +55,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     //ポジションの入れ替えは高速コルーチンで実行
                     _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
                 }
-                yield return WaitForSeconds(0.8f);
+                yield return WaitForSeconds(1.5f);
             }
         }
 

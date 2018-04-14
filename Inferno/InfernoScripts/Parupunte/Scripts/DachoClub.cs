@@ -5,15 +5,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ダチョウ倶楽部", "ありがとうございました")]
     [ParupunteIsono("だちょうくらぶ")]
     internal class DachoClub : ParupunteScript
     {
         public DachoClub(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } 
-            = new ParupunteConfigElement("ダチョウ倶楽部", "ありがとうございました");
 
         public override void OnStart()
         {

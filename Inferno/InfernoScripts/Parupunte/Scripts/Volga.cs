@@ -10,15 +10,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// 上空からソロモンを落として大爆発させる
     /// </summary>
+    [ParupunteConfigAttribute("頭の中に爆弾が!")]
     [ParupunteIsono("ぼるが")]
     internal class Volga : ParupunteScript
     {
         public Volga(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("頭の中に爆弾が", "");
-
 
         public override void OnStart()
         {

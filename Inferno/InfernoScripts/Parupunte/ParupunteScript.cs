@@ -36,13 +36,13 @@ namespace Inferno.InfernoScripts.Parupunte
         }
     }
 
-    public class ParupunteAttribute : Attribute
+    public class ParupunteConfigAttribute : Attribute
     {
-        public string DefaultStartMessage;
-        public string DefaultSubMessage;
-        public string DefaultEndMessage;
+        public string DefaultStartMessage = "";
+        public string DefaultSubMessage = "";
+        public string DefaultEndMessage = "";
 
-        public ParupunteAttribute(string defaultStartMessage, string defaultSubMessage, string defaultEndMessage)
+        public ParupunteConfigAttribute(string defaultStartMessage = "", string defaultEndMessage = "", string defaultSubMessage = "")
         {
             DefaultStartMessage = defaultStartMessage;
             DefaultEndMessage = defaultEndMessage;
@@ -100,8 +100,6 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected Random Random;
 
-        public virtual ParupunteConfigElement DefaultElement { get; } = null;
-
         protected readonly ParupunteConfigElement Config;
 
         protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
@@ -112,7 +110,7 @@ namespace Inferno.InfernoScripts.Parupunte
             IsFinished = false;
             Random = new Random();
 
-            Config = element ?? DefaultElement;
+            Config = element;
 
         }
 

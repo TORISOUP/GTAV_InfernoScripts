@@ -5,14 +5,12 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("エンジンパワーアップ")]
     internal class VehicleSpeedUp : ParupunteScript
     {
         public VehicleSpeedUp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("エンジンパワーアップ", "");
-
 
         public override void OnSetUp()
         {

@@ -12,7 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override ParupunteConfigElement DefaultElement { get; } = null;
 
         public override void OnSetNames()
         {

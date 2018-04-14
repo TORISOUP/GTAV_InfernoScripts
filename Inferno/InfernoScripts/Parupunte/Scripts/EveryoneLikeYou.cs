@@ -9,17 +9,15 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("いっぱいちゅき", "よく見たらクソむかつく")]
     [ParupunteIsono("いっぱいちゅき")]
     class EveryoneLikeYou : ParupunteScript
     {
         private HashSet<Entity> entityList = new HashSet<Entity>();
 
-        public EveryoneLikeYou(ParupunteCore core) : base(core)
+        public EveryoneLikeYou(ParupunteCore core, ParupunteConfigElement config) : base(core, config)
         {
         }
-
-        public override string Name { get; } = "いっぱいちゅき";
-
 
         public override void OnStart()
         {

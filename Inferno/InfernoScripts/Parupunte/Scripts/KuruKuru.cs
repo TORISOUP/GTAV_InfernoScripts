@@ -5,6 +5,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("くるくる", "おわり")]
     [ParupunteIsono("くるくる")]
     internal class KuruKuru : ParupunteScript
     {
@@ -14,9 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("くるくる!", "おわり");
 
         public override void OnSetUp()
         {

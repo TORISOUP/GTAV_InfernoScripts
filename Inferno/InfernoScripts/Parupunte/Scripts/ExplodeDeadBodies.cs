@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ば・く・は・つ・し・た・い！", "ば・く・は・つ・し・な・い")]
     [ParupunteIsono("ばくはつしたい")]
     internal class ExplodeDeadBodies : ParupunteScript
     {
@@ -14,9 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public ExplodeDeadBodies(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("ば・く・は・つ・し・た・い！", "ば・く・は・つ・し・な・い");
 
         public override void OnSetUp()
         {

@@ -10,14 +10,13 @@ using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("磯野～！緊急脱出しようぜ！")]
     [ParupunteIsono("きんきゅうだっしゅつ")]
     class CitizenEmagencyEscape : ParupunteScript
     {
         public CitizenEmagencyEscape(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("磯野～！緊急脱出しようぜ！", "");
 
         public override void OnStart()
         {

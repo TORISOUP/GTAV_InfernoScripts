@@ -3,15 +3,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("無敵", "おわり")]
     [ParupunteIsono("むてき")]
     internal class PlayerInvincible : ParupunteScript
     {
         public PlayerInvincible(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("無敵", "おわり");
 
         public override void OnSetUp()
         {

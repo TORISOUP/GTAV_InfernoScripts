@@ -4,6 +4,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("周辺市民全員即死")]
     [ParupunteIsono("みんなばくはつ")]
     internal class KillCitizens : ParupunteScript
     {
@@ -11,8 +12,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("周辺市民全員即死!", "");
 
         private uint coroutineId = 0;
 

@@ -7,6 +7,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("おさかな天国", "おさかな地獄")]
     [ParupunteIsono("おさかなてんごく")]
     internal class FishHeaven : ParupunteScript
     {
@@ -17,9 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public FishHeaven(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("おさかな天国", "おさかな地獄");
 
         public override void OnStart()
         {

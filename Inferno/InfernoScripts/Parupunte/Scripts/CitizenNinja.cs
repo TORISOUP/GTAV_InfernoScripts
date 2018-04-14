@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("江　戸　時　代", "　現　代　")]
     [ParupunteIsono("えどじだい")]
     internal class CitizenNinja : ParupunteScript
     {
@@ -18,8 +19,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public CitizenNinja(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("江　戸　時　代", "　現　代　");
         
         public override void OnStart()
         {

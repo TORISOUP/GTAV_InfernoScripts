@@ -10,6 +10,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("味方召喚", "定時なんで帰ります")]
     [ParupunteIsono("みかたしょうかん")]
     class SpawnFriend :ParupunteScript
     {
@@ -17,9 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public SpawnFriend(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("味方召喚", "定時なんで帰ります");
 
         public override void OnStart()
         {

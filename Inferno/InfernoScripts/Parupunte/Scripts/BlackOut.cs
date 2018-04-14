@@ -11,6 +11,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ctOS 停電", "ctOS 復旧")]
     [ParupunteIsono("ていでん")]
     class BlackOut : ParupunteScript
     {
@@ -23,8 +24,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             SetUpSound();
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("ctOS 停電", "ctOS 復旧");
         
         public override void OnStart()
         {

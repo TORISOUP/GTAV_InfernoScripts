@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("テンペスト")]
     [ParupunteIsono("てんぺすと")]
     internal class Tempest : ParupunteScript
     {
@@ -14,8 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public Tempest(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; } = new ParupunteConfigElement("テンペスト", "");
 
         public override void OnSetUp()
         {

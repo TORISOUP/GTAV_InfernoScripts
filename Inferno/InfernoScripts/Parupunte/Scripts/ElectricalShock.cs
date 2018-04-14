@@ -10,15 +10,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("エレクトリカルショック", "おわり")]
     [ParupunteIsono("でんき")]
     class ElectricalShock : ParupunteScript
     {
         public ElectricalShock(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("エレクトリカルショック！", "おわり");
 
         public override void OnStart()
         {

@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno
 {
+    [ParupunteConfigAttribute("バリキ・ジツ", "もうオシマイだ！")]
     [ParupunteIsono("ばりきじつ")]
     internal class NinjaRun : ParupunteScript
     {
@@ -15,9 +16,6 @@ namespace Inferno
         public NinjaRun(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("バリキ・ジツ", "もうオシマイだ！");
 
         public override void OnSetUp()
         {

@@ -8,6 +8,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("参　勤　交　代", "大　政　奉　還")]
     [ParupunteIsono("さんきんこうたい")]
     class MultiLeggedRace : ParupunteScript
     {
@@ -17,10 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private List<Ped> explosionList = new List<Ped>();
         private List<Ped> allPedList = new List<Ped>();
-
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("参　勤　交　代", "大　政　奉　還");
 
         public override void OnStart()
         {

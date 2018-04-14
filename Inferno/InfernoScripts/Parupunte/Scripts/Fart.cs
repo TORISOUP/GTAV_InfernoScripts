@@ -16,8 +16,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("3", "");
 
         public override void OnStart()
         {

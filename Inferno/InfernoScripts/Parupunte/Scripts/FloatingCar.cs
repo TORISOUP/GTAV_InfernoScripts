@@ -5,15 +5,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ふわふわ", "おわり")]
     [ParupunteIsono("ふわふわ")]
     internal class FloatingCar : ParupunteScript
     {
         public FloatingCar(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("ふわふわ", "おわり");
 
         public override void OnSetUp()
         {

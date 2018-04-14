@@ -8,16 +8,13 @@ using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-
+    [ParupunteConfigAttribute("行き先を選べ!")]
     [ParupunteIsono("けつるーら")]
     class KetsuWarp : ParupunteScript
     {
         public KetsuWarp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("行き先を選べ!", "ケツルーラ");
 
         public override void OnStart()
         {

@@ -8,15 +8,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
+    [ParupunteConfigAttribute("ひとはなび", "きたねぇ花火だ")]
     [ParupunteIsono("ひとはなび")]
     internal class Hitohanabi : ParupunteScript
     {
         public Hitohanabi(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override ParupunteConfigElement DefaultElement { get; }
-            = new ParupunteConfigElement("ひとはなび", "きたねぇ花火だ");
 
         public override void OnSetUp()
         {

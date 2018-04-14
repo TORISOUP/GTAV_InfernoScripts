@@ -31,8 +31,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             _name = Game.GetGXTEntry(vehicleGxtEntry);
         }
 
-        public override ParupunteConfigElement DefaultElement { get; } = null;
-
         public override void OnSetNames()
         {
             Name = $"{_name}生成";
