@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,27 @@ namespace Inferno.InfernoScripts
         }
 
         public static ParupunteConfigElement NoUse = new ParupunteConfigElement("", "");
+    }
+
+    internal class ParupunteConfigDto
+    {
+        public string ParupunteName { get; set; }
+
+        [DefaultValue("")]
+        public string StartMessage { get; set; }
+
+        [DefaultValue("")]
+        public string SubMessage { get; set; }
+
+        [DefaultValue("")]
+        public string FinishMessage { get; set; }
+
+        public ParupunteConfigDto(string parupunteName, string startMessage, string subMessage, string finishMessage)
+        {
+            ParupunteName = parupunteName;
+            StartMessage = startMessage;
+            SubMessage = subMessage;
+            FinishMessage = finishMessage;
+        }
     }
 }

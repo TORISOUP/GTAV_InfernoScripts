@@ -115,6 +115,7 @@
     <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
     <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoTcpClient.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteConfigElement.cs" />
+    <Compile Include="InfernoScripts\Parupunte\ParupunteConfigRepository.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
     <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
     <Compile Include="InfernoScripts\Parupunte\Scripts\AddPlayerMoney.cs" />
