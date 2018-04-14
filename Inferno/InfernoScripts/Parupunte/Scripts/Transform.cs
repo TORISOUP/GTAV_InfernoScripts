@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("変身GOGOベイビー")]
+    //[ParupunteConfigAttribute("変身GOGOベイビー")]
     [ParupunteDebug(false, true)]
     class Transform : ParupunteScript
     {

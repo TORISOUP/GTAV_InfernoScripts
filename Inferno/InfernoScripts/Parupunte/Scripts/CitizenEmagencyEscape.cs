@@ -30,7 +30,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ))
             {
                 var car = ped.CurrentVehicle;
-                if (car.IsSafeExist() && car.PetrolTankHealth > 0)
+                if (car.IsSafeExist() && car.PetrolTankHealth > 0 && !car.IsRequiredForMission())
                 {
                     car.PetrolTankHealth = -700;
                 }
