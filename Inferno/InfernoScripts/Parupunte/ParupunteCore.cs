@@ -111,7 +111,19 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ => ParupunteStop());
 
             OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
-                .Subscribe(_ => ParupunteStart(ChooseParupounteScript()));
+                .ThrottleFirst(TimeSpan.FromSeconds(2f), InfernoScriptScheduler)
+                .Subscribe(_ =>
+                {
+                    if (IsActive)
+                    {
+                        ParupunteStop();
+                    }
+                    else
+                    {
+                        ParupunteStart(ChooseParupounteScript());
+                    }
+                    
+                });
 
             //パルプンテが停止したタイミングで開放
             IsActiveAsObservable
