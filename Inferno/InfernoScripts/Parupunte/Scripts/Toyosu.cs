@@ -6,13 +6,13 @@ using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("あぁ^～築地が漁業するんじゃぁ^～", "大漁")]
-    [ParupunteIsono("つきじ")]
-    internal class Tsukiji : ParupunteScript
+    [ParupunteConfigAttribute("あぁ^～豊洲が漁業するんじゃぁ^～", "大漁")]
+    [ParupunteIsono("とよす")]
+    internal class Toyosu : ParupunteScript
     {
         private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
 
-        public Tsukiji(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
+        public Toyosu(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
