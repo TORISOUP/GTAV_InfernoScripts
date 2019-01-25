@@ -6,7 +6,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     internal class ChangeWantedLevel : ParupunteScript
     {
         private int wantedLevelThreshold = 1;
-        private int wantedLevel = Game.Player.WantedLevel;
+        private int wantedLevel;
 
         public ChangeWantedLevel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -21,6 +21,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
+            //確実にメインスレッドで取得するためにここで取得
+            wantedLevel = Game.Player.WantedLevel;
+
             if (wantedLevel >= wantedLevelThreshold)
             {
                 Game.Player.WantedLevel = 0;
