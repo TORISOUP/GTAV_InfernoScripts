@@ -27,7 +27,7 @@ namespace Inferno.ChaosMode.WeaponProvider
             CustomClosedWeapons = weaponArray.Intersect(ChaosModeWeapons.ClosedWeapons).ToArray();
             CustomProjectileWeapons = weaponArray.Intersect(ChaosModeWeapons.ProjectileWeapons).ToArray();
             CustomDriveByWeapons = weaponListForDriveBy.Intersect(ChaosModeWeapons.DriveByWeapons).ToArray();
-            CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons).ToArray();
+            CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons).Concat(CustomClosedWeapons).ToArray();
         }
 
         /// <summary>
