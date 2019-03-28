@@ -388,6 +388,7 @@ namespace Inferno.ChaosMode
         {
             ped.SetFleeAttributes(0, 0);
             ped.SetCombatAttributes(46, true);
+            //非武装（近接武器）で武装した市民を攻撃できるか
             ped.SetCombatAttributes(5, true);
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
         }
