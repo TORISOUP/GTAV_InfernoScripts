@@ -60,7 +60,7 @@ namespace Inferno
                 .Where(x => IsActive && x.KeyCode == Keys.F10 && motherBasePeds.Count > 0)
                 .Subscribe(_ => SpawnCitizen());
 
-            CreateTickAsObservable(TimeSpan.FromSeconds(0.5))
+            CreateTickAsObservable(TimeSpan.FromSeconds(0.25))
                 .Where(_ => IsActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))
                 .Subscribe(_ => FulutonUpdate());
 
@@ -120,7 +120,7 @@ namespace Inferno
                 ))
             {
                 if (entity.HasBeenDamagedByPed(PlayerPed) && (
-                   entity.HasBeenDamagedBy(Weapon.UNARMED)
+                   entity.HasBeenDamagedBy(Weapon.UNARMED) || entity.HasBeenDamagedBy(Weapon.STUNGUN)
                     ))
                 {
                     fulutonedEntityList.Add(entity.Handle);

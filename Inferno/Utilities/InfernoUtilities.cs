@@ -1,5 +1,6 @@
 ﻿using GTA.Math;
 using System;
+using System.Threading.Tasks;
 
 namespace Inferno.Utilities
 {
@@ -24,6 +25,21 @@ namespace Inferno.Utilities
             var randomVector = new Vector3((float)x, (float)y, (float)z);
             randomVector.Normalize();
             return randomVector;
+        }
+    }
+
+    public static class TaskExtension
+    {
+        public static async void Forget(this Task task)
+        {
+            try
+            {
+                await task;
+            }
+            catch (Exception e)
+            {
+                
+            }
         }
     }
 }

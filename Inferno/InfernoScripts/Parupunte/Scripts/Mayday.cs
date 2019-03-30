@@ -1,14 +1,19 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     /// <summary>
     /// プレイヤの近くに飛行機を墜落させる
     /// </summary>
+    [ParupunteDebug(true)]
     [ParupunteConfigAttribute("メーデー！メーデー！メーデー！")]
     internal class Mayday : ParupunteScript
     {
@@ -29,9 +34,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             //飛行機生成
             var model = new Model(VehicleHash.Jet);
-            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -1000, 200));
+            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, 0, 100));
             if (!plane.IsSafeExist()) yield break;
-            plane.Speed = 300;
+            plane.Speed = 0;
             plane.MarkAsNoLongerNeeded();
 
             //ラマー生成
@@ -67,7 +72,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 yield return null;
             }
+
+            DeletePlaneAfter(plane).Forget(); //TODO: CancellationToken
             ParupunteEnd();
+        }
+
+        private async Task DeletePlaneAfter(Vehicle plane, CancellationToken token = default(CancellationToken))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(10), token);
+            if (plane.IsSafeExist())
+            {
+                plane.Delete();
+            }
         }
     }
 }
