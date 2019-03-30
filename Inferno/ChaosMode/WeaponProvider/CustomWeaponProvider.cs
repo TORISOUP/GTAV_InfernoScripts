@@ -11,6 +11,7 @@ namespace Inferno.ChaosMode.WeaponProvider
         protected Weapon[] CustomProjectileWeapons;
         protected Weapon[] CustomExcludeClosedWeapons;
         protected Weapon[] CustomDriveByWeapons;
+        protected Weapon[] AllWeapons;
         private readonly Random _random;
 
         /// <summary>
@@ -23,11 +24,22 @@ namespace Inferno.ChaosMode.WeaponProvider
             _random = new Random();
             //渡された武器リストから有効な武器のみにフィルタリング
             var weaponArray = weaponList as Weapon[] ?? weaponList.ToArray();
+            AllWeapons = weaponArray;
             CustomShootWeapons = weaponArray.Intersect(ChaosModeWeapons.ShootWeapons).ToArray();
             CustomClosedWeapons = weaponArray.Intersect(ChaosModeWeapons.ClosedWeapons).ToArray();
             CustomProjectileWeapons = weaponArray.Intersect(ChaosModeWeapons.ProjectileWeapons).ToArray();
             CustomDriveByWeapons = weaponListForDriveBy.Intersect(ChaosModeWeapons.DriveByWeapons).ToArray();
             CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons).Concat(CustomClosedWeapons).ToArray();
+        }
+
+        public Weapon GetRandomCloseWeapons()
+        {
+            return CustomClosedWeapons.Length == 0 ? Weapon.UNARMED : CustomClosedWeapons[_random.Next(0, CustomClosedWeapons.Length)];
+        }
+
+        public Weapon GetRandomAllWeapons()
+        {
+            return AllWeapons.Length ==0 ? Weapon.UNARMED : AllWeapons[_random.Next(0, AllWeapons.Length)];
         }
 
         /// <summary>
@@ -48,8 +60,8 @@ namespace Inferno.ChaosMode.WeaponProvider
         public Weapon GetRandomDriveByWeapon()
         {
             return CustomDriveByWeapons.Length > 0
-                            ? CustomDriveByWeapons[_random.Next(0, CustomDriveByWeapons.Length)]
-                            : Weapon.UNARMED;
+                ? CustomDriveByWeapons[_random.Next(0, CustomDriveByWeapons.Length)]
+                : Weapon.UNARMED;
         }
     }
 }

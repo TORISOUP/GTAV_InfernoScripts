@@ -60,7 +60,8 @@ namespace Inferno.InfernoScripts.World
                 }
 
                 var randomVector = InfernoUtilities.CreateRandomVector();
-                ped.ApplyForce(randomVector * Random.Next(800, 1400));
+                ped.ApplyForce(randomVector * Random.Next(10, 20));
+                ped.Kill();
                 Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
             }
             else if (ped.HasBeenDamagedBy(Weapon.KNIFE))
@@ -80,7 +81,7 @@ namespace Inferno.InfernoScripts.World
             {
                 NativeFunctions.ShootSingleBulletBetweenCoords(
                     ped.Position + new Vector3(0, 0, 1),
-                    ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, attacker, 1.0f);
+                    ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, null, 1.0f);
                 Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
             }
             else if (ped.HasBeenDamagedBy(Weapon.HAMMER))

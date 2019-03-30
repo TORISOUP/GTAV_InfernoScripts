@@ -14,7 +14,7 @@
         public string[] WeaponList { get; set; } = new[] { "" };
         public string[] WeaponListForDriveBy { get; set; } = new[] { "" };
         public bool IsStupidShooting { get; set; } = true;
-        public int ShootAccuracy { get; set; } = 30;
-        public int WeaponChangeProbabillity { get; set; } = 30;
+        public int ShootAccuracy { get; set; } = 15;
+        public int WeaponChangeProbabillity { get; set; } = 20;
     }
 }

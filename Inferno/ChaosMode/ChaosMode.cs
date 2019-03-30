@@ -52,6 +52,8 @@ namespace Inferno.ChaosMode
 
         private MissionCharacterTreatmentType nextTreatType;
 
+        private bool _isBaseball = false;
+
         private int chaosRelationShipId;
 
         protected override void Setup()
@@ -104,6 +106,20 @@ namespace Inferno.ChaosMode
                     DrawText("CharacterChaos:" + currentTreatType.ToString() + "[OK]", 3.0f);
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
+                });
+
+            CreateInputKeywordAsObservable("yakyu")
+                .Subscribe(_ =>
+                {
+                    _isBaseball = !_isBaseball;
+                    if (_isBaseball)
+                    {
+                        DrawText("BaseBallMode:On", 3.0f);
+                    }
+                    else
+                    {
+                        DrawText("BaseBallMode:Off", 3.0f);
+                    }
                 });
 
             //interval設定
@@ -254,7 +270,7 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                foreach (var s in WaitForSeconds(2 + (float)Random.NextDouble() * 3))
+                foreach (var s in WaitForSeconds(5 + (float)Random.NextDouble() * 3))
                 {
                     if (ped.IsSafeExist() && ped.IsFleeing())
                     {
@@ -407,13 +423,22 @@ namespace Inferno.ChaosMode
                 if (!chaosChecker.IsPedChangebalWeapon(ped)) return Weapon.UNARMED;
 
                 //車に乗っているなら車用の武器を渡す
-                var weapon = ped.IsInVehicle()
-                    ? CurrentWeaponProvider.GetRandomDriveByWeapon()
-                    : CurrentWeaponProvider.GetRandomWeaponExcludeClosedWeapon();
+                var weapon = Weapon.UNARMED;
+                if (_isBaseball)
+                {
+                    weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
+                }
+                else
+                {
+                    weapon = ped.IsInVehicle()
+                        ? CurrentWeaponProvider.GetRandomDriveByWeapon()
+                        : CurrentWeaponProvider.GetRandomAllWeapons();
+                }
 
                 var weaponhash = (int)weapon;
 
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
+                ped.Weapons.RemoveAll();
                 ped.GiveWeapon(weaponhash, 1000); //指定武器所持
                 ped.EquipWeapon(weaponhash); //武器装備
                 return weapon;

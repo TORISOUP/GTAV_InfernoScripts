@@ -15,6 +15,16 @@ namespace Inferno.ChaosMode.WeaponProvider
             current = weapon;
         }
 
+        public Weapon GetRandomCloseWeapons()
+        {
+            return current;
+        }
+
+        public Weapon GetRandomAllWeapons()
+        {
+            return current;
+        }
+
         public Weapon GetRandomWeaponExcludeClosedWeapon()
         {
             return current;

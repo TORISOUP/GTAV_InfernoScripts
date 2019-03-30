@@ -2,6 +2,11 @@
 {
     internal interface IWeaponProvider
     {
+
+        Weapon GetRandomCloseWeapons();
+
+        Weapon GetRandomAllWeapons();
+
         /// <summary>
         /// 遠距離攻撃系の武器を取得する
         /// </summary>
