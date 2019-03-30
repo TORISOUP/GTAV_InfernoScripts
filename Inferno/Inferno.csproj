@@ -98,6 +98,7 @@
     <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs" />
     <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs" />
     <Compile Include="ExtensionMethods\NativeFunctions.cs" />
+    <Compile Include="InfernoScripts\World\BombBat.cs" />
     <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
     <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
