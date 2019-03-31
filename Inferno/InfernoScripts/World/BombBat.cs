@@ -53,11 +53,10 @@ namespace Inferno.InfernoScripts.World
 
             if (ped.HasBeenDamagedBy(Weapon.BAT))
             {
-                if (ped.IsPlayer)
-                {
-                    GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade, 40.0f,
-                        0.5f);
-                }
+
+                GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade, 40.0f,
+                    0.5f);
+
 
                 var randomVector = InfernoUtilities.CreateRandomVector();
                 ped.ApplyForce(randomVector * Random.Next(10, 20));
@@ -90,9 +89,10 @@ namespace Inferno.InfernoScripts.World
                 Shock(ped);
                 Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
 
-            }else if (ped.HasBeenDamagedBy(Weapon.Poolcue))
+            }
+            else if (ped.HasBeenDamagedBy(Weapon.Poolcue))
             {
-                var blowVector =- ped.ForwardVector;
+                var blowVector = -ped.ForwardVector;
                 ped.SetToRagdoll(1);
                 ped.Velocity = blowVector * 10;
                 ped.ApplyForce(blowVector * Random.Next(20, 40));
