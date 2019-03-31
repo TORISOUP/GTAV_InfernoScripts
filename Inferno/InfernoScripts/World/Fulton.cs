@@ -48,6 +48,12 @@ namespace Inferno
                 {
                     IsActive = !IsActive;
                     DrawText("Fulton:" + IsActive, 3.0f);
+
+                    if (IsActive)
+                    {
+                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    }
+
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -69,8 +75,18 @@ namespace Inferno
                 .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
-                .Subscribe(_ => fulutonedEntityList.Clear());
+                .Subscribe(_ =>
+                {
+
+                    if (IsActive)
+                    {
+                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    }
+                    fulutonedEntityList.Clear();
+                });
             SetUpSound();
+
+
         }
 
         /// <summary>

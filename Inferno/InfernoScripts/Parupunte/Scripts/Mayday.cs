@@ -13,7 +13,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// <summary>
     /// プレイヤの近くに飛行機を墜落させる
     /// </summary>
-    [ParupunteDebug(true)]
     [ParupunteConfigAttribute("メーデー！メーデー！メーデー！")]
     internal class Mayday : ParupunteScript
     {
