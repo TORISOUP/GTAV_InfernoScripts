@@ -13,17 +13,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
 
+        public override void OnSetUp()
+        {
+            //確実にメインスレッドで取得するためにここで取得
+            wantedLevel = Game.Player.WantedLevel;
+        }
+
         public override void OnSetNames()
         {
             Name = wantedLevel >= wantedLevelThreshold ? "無罪放免" : "日頃の行いが悪い";
         }
 
-
         public override void OnStart()
         {
-            //確実にメインスレッドで取得するためにここで取得
-            wantedLevel = Game.Player.WantedLevel;
-
             if (wantedLevel >= wantedLevelThreshold)
             {
                 Game.Player.WantedLevel = 0;
