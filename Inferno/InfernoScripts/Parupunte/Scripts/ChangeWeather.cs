@@ -86,6 +86,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 case Weather.Christmas:
                     return "クリスマス";
 
+                case Weather.Halloween:
+                    return "ハロウィン";
+
                 default:
                     return "わからん";
             }
