@@ -14,6 +14,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private VehicleHash vehicleHash;
         private String _name;
+        private Vehicle _veh;
+        private Ped _ped;
         public SpawnVheicle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
 
@@ -38,18 +40,36 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
+            StartCoroutine(SpawnVehicle());
+        }
 
-            var v = GTA.World.CreateVehicle(new Model(vehicleHash), core.PlayerPed.Position + Vector3.WorldUp * 5.0f);
-            if (v.IsSafeExist())
+        protected override void OnFinished()
+        {
+            if (_veh.IsSafeExist()) _veh.MarkAsNoLongerNeeded();
+        }
+
+        private IEnumerable<object> SpawnVehicle()
+        {
+            _veh = GTA.World.CreateVehicle(new Model(vehicleHash), core.PlayerPed.Position + Vector3.WorldUp * 5.0f);
+            AutoReleaseOnParupunteEnd(_veh);
+            if (_veh.IsSafeExist())
             {
-                v.MarkAsNoLongerNeeded();
-                v.FreezePosition = false;
-                v.ApplyForce(Vector3.WorldUp * 5.0f);
-                var p = v.CreateRandomPedAsDriver();
-                if(p.IsSafeExist()) p.MarkAsNoLongerNeeded();
+                _veh.FreezePosition = false;
+                _veh.ApplyForce(Vector3.WorldUp * 5.0f);
+                _ped = _veh.CreateRandomPedAsDriver();
+                //市民は勝手に消える状態にしないと自分で運転しない
+                if (_ped.IsSafeExist()) _ped.MarkAsNoLongerNeeded();
+
+                //車がすぐに消えないように数秒待つ
+                for (var i = 0; i < 20; i++)
+                {
+                    //車が画面に映ったらすぐに勝手に消える可能性はかなり低いので待機を終了する
+                    if (!_veh.IsSafeExist() || _veh.IsOnScreen) break;
+
+                    yield return null;
+                }
             }
             ParupunteEnd();
-
         }
     }
 }
