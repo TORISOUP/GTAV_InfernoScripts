@@ -1,10 +1,6 @@
 ﻿using Inferno.ChaosMode.WeaponProvider;
-using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using Inferno.Utilities;
-using Newtonsoft.Json;
 
 namespace Inferno.ChaosMode
 {
