@@ -13,12 +13,18 @@ namespace Inferno.InfernoScripts.Player
 
                 .Subscribe(_ =>
                 {
-                    var blip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists());
+                    var blip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
                     if (blip == null) return;
                     var targetHeight = GTA.World.GetGroundHeight(blip.Position);
                     //地面ピッタリだと地面に埋まるので少し上空を指定する
-                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 3);
+                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f );
 
+                    var tryPos = GTA.World.GetSafeCoordForPed(targetPos);
+                    if (tryPos != Vector3.Zero)
+                    {
+                        targetPos = tryPos;
+                    }
+                    
                     var targetEntity = default(Entity);
 
                     if (PlayerPed.IsInVehicle())
@@ -33,8 +39,9 @@ namespace Inferno.InfernoScripts.Player
                     }
 
                     targetEntity.Position = targetPos;
-                    targetEntity.ApplyForce(new Vector3(0, 0, 10));
+                    targetEntity.ApplyForce(new Vector3(0, 0, 1));
                 });
         }
+
     }
 }

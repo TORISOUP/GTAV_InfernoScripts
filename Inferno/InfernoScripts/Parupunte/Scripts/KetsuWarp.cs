@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             foreach (var w in WaitForSeconds(10))
             {
                 var blip = GTA.World.GetActiveBlips()
-                    .FirstOrDefault(x => x.Exists() && (int)x.Color == 84 && x.Type == 4);
+                    .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
 
                 if (blip != null)
                 {
@@ -59,7 +59,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (target.IsSafeExist())
             {
-                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && (int)x.Color == 84 && x.Type == 4);
+                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
                 if (targetBlip == null || !targetBlip.Exists())
                 {
                     if (target.IsSafeExist())

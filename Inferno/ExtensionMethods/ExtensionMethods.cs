@@ -2,6 +2,7 @@
 using GTA.Math;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno
@@ -37,6 +38,7 @@ namespace Inferno
             {
                 return false;
             }
+
             return vehicle == Game.Player.Character.CurrentVehicle;
         }
 
@@ -98,7 +100,7 @@ namespace Inferno
                 y * -q.Z + z * q.Y - w * q.X + x * q.W,
                 z * -q.X + x * q.Z - w * q.Y + y * q.W,
                 x * -q.Y + y * q.X - w * q.Z + z * q.W
-                );
+            );
         }
 
         public static Quaternion ToQuaternion(this Vector3 forward)
@@ -135,6 +137,7 @@ namespace Inferno
                 quaternion.Z = (m01 - m10) * num;
                 return quaternion;
             }
+
             if ((m00 >= m11) && (m00 >= m22))
             {
                 var num7 = (float)Math.Sqrt(((1f + m00) - m11) - m22);
@@ -145,6 +148,7 @@ namespace Inferno
                 quaternion.W = (m12 - m21) * num4;
                 return quaternion;
             }
+
             if (m11 > m22)
             {
                 var num6 = (float)Math.Sqrt(((1f + m11) - m00) - m22);
@@ -155,6 +159,7 @@ namespace Inferno
                 quaternion.W = (m20 - m02) * num3;
                 return quaternion;
             }
+
             var num5 = (float)Math.Sqrt(((1f + m22) - m00) - m11);
             var num2 = 0.5f / num5;
             quaternion.X = (m20 + m02) * num2;
@@ -198,5 +203,6 @@ namespace Inferno
         }
 
         #endregion
+
     }
 }

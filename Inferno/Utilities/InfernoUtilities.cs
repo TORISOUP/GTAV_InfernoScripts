@@ -36,9 +36,9 @@ namespace Inferno.Utilities
             {
                 await task;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                
+                // ignore
             }
         }
     }
