@@ -18,7 +18,6 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-
         protected Random Random = new Random();
 
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
@@ -44,6 +43,7 @@ namespace Inferno
             {
                 throw new Exception("設定ファイル名が設定されていません");
             }
+
             var loader = new InfernoConfigLoader<T>();
             var dto = loader.LoadSettingFile(ConfigFileName);
             //バリデーションに引っかかったらデフォルト値を返す
@@ -62,7 +62,8 @@ namespace Inferno
         /// <summary>
         /// IsActiveが変化したことを通知する
         /// </summary>
-        protected UniRx.IObservable<bool> IsActiveAsObservable => _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+        protected UniRx.IObservable<bool> IsActiveAsObservable =>
+            _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
 
         #region Chace
 
@@ -72,21 +73,18 @@ namespace Inferno
         public Ped PlayerPed => cahcedPlayerPed ?? Game.Player.Character;
 
         private Ped cahcedPlayerPed;
-        public ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>();
+        public readonly ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>();
 
-        private Ped[] _cachedPeds = new Ped[0];
 
         /// <summary>
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
-        public Ped[] CachedPeds => _cachedPeds;
-
-        private Vehicle[] _cachedVehicles = new Vehicle[0];
-
+        public Ped[] CachedPeds => InfernoCore.Instance.PedsNearPlayer.Value;
+        
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
-        public ReadOnlyCollection<Vehicle> CachedVehicles => Array.AsReadOnly(_cachedVehicles ?? new Vehicle[0]);
+        public Vehicle[] CachedVehicles => InfernoCore.Instance.VehicleNearPlayer.Value;
 
         #endregion Chace
 
@@ -116,9 +114,10 @@ namespace Inferno
                 if (_onKeyDownAsObservable != null) return _onKeyDownAsObservable;
                 _onKeyDownAsObservable =
                     Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
-                        h => KeyDown -= h)
+                            h => KeyDown -= h)
                         .Select(e => e.EventArgs)
-                        .Publish().RefCount();
+                        .Publish()
+                        .RefCount();
                 return _onKeyDownAsObservable;
             }
         }
@@ -149,7 +148,8 @@ namespace Inferno
                 .Select(x => x.Aggregate((p, c) => p + c))
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
-                .First().Repeat() //1回動作したらBufferをクリア
+                .First()
+                .Repeat() //1回動作したらBufferをクリア
                 .Publish()
                 .RefCount();
         }
@@ -161,6 +161,7 @@ namespace Inferno
         {
             return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Share();
         }
+
         #endregion forEvents
 
         #region forAbort
@@ -192,10 +193,10 @@ namespace Inferno
                 return _onAbortObservable ??
                        (_onAbortObservable =
                            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
-                               h => Aborted -= h).AsUnitObservable());
+                                   h => Aborted -= h)
+                               .AsUnitObservable());
             }
         }
-
 
         #endregion
 
@@ -217,7 +218,6 @@ namespace Inferno
         {
             _coroutinePool.RemoveAllCoroutine();
         }
-
 
 
         /// <summary>
@@ -295,15 +295,14 @@ namespace Inferno
                 .First()
                 .Subscribe(_ =>
                 {
-                    InfernoCore.Instance.PedsNearPlayer.Subscribe(x => _cachedPeds = x);
-                    InfernoCore.Instance.VehicleNearPlayer.Subscribe(x => _cachedVehicles = x);
                     InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
                     InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
                 });
 
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                    .Select(_ => Unit.Default).Share(); //Subscribeされたらイベントハンドラを登録する
+                    .Select(_ => Unit.Default)
+                    .Share(); //Subscribeされたらイベントハンドラを登録する
 
             OnThinnedTickAsObservable =
                 OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
@@ -324,6 +323,7 @@ namespace Inferno
                     {
                         SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
                     }
+
                     InfernoSynchronizationContext.Update();
                 });
 
@@ -336,6 +336,7 @@ namespace Inferno
                     {
                         c.Update(100);
                     }
+
                     //完了状態にあるタイマを全て削除
                     _counterList.RemoveAll(x => x.IsCompleted);
                 });
@@ -354,6 +355,7 @@ namespace Inferno
                 {
                     e.MarkAsNoLongerNeeded();
                 }
+
                 _autoReleaseEntities.Clear();
             });
 

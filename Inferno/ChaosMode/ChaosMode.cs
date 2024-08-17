@@ -169,7 +169,7 @@ namespace Inferno.ChaosMode
         private void CitizenChaos()
         {
             if (!PlayerPed.IsSafeExist()) return;
-
+            
             //まだ処理をしていない市民に対してコルーチンを回す
             var nearPeds =
                 CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));

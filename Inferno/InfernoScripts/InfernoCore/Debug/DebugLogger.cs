@@ -12,7 +12,7 @@ namespace Inferno
         public DebugLogger(string logPath)
         {
             this._logPath = logPath;
-            _encoding = Encoding.GetEncoding("Shift_JIS");
+            _encoding = Encoding.GetEncoding("UTF-8");
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Inferno
 
         public void Log(string message)
         {
-            var sendMessage = String.Format("[{0}] {1}", DateTime.Now, message);
+            var sendMessage = $"[{DateTime.Now}] {message}";
             WriteToText(sendMessage);
         }
     }
