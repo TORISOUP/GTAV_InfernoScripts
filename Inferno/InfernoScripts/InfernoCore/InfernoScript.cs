@@ -24,15 +24,17 @@ namespace Inferno
 
         protected virtual string ConfigFileName => null;
 
+        protected ulong FrameCount { get; private set; }
+
         private InfernoScheduler infernoScheduler;
 
         private InfernoSynchronizationContext _infernoSynchronizationContext;
 
-        protected InfernoSynchronizationContext InfernoSynchronizationContext
-            => _infernoSynchronizationContext ?? (_infernoSynchronizationContext = new InfernoSynchronizationContext());
+        private InfernoSynchronizationContext InfernoSynchronizationContext
+            => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
         protected IScheduler InfernoScriptScheduler
-            => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
+            => infernoScheduler ??= new InfernoScheduler();
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -80,7 +82,7 @@ namespace Inferno
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
         public Ped[] CachedPeds => InfernoCore.Instance.PedsNearPlayer.Value;
-        
+
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
@@ -287,7 +289,8 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
-            Interval = 16;
+            // 毎フレーム実行
+            Interval = 0;
 
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
@@ -313,19 +316,29 @@ namespace Inferno
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
 
             //スケジューラ実行
-            OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
+            OnTickAsObservable.Subscribe(_ =>
+            {
+                FrameCount++;
 
-            // SynchronizationContextの実行
-            OnTickAsObservable
-                .Subscribe(_ =>
+
+                try
                 {
-                    if (SynchronizationContext.Current == null)
-                    {
-                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
-                    }
+                    infernoScheduler?.Run();
+                }
+                catch
+                {
+                    // ignore
+                }
 
+                try
+                {
                     InfernoSynchronizationContext.Update();
-                });
+                }
+                catch
+                {
+                    // ignore
+                }
+            });
 
             //タイマのカウント
             OnThinnedTickAsObservable
@@ -359,14 +372,26 @@ namespace Inferno
                 _autoReleaseEntities.Clear();
             });
 
-            try
-            {
-                Setup();
-            }
-            catch (Exception e)
-            {
-                LogWrite(e.ToString());
-            }
+            // Setupは最初のTickタイミングまで遅らせる
+            // OnTickAsObservableとは独立させて実行しないとイベント登録順で
+            // 怪しい挙動をする可能性がある
+            Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                .Select(_ => Unit.Default)
+                .First()
+                .Subscribe(_ =>
+                {
+                    try
+                    {
+                        // SynchronizationContextはこのタイミングで設定しないといけない
+                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
+                        Setup();
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.ToString());
+                    }
+                });
         }
 
         /// <summary>
