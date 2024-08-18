@@ -193,7 +193,8 @@ namespace Inferno
         {
             get
             {
-                return _onAbortObservable ??= Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
+                return _onAbortObservable ??= Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke,
+                        h => Aborted += h,
                         h => Aborted -= h)
                     .AsUnitObservable();
             }
@@ -248,9 +249,20 @@ namespace Inferno
 
         #region forTaks
 
-        protected async ValueTask DelayFrame(int frame, CancellationToken ct)
+        protected Task DelayFrame(int frame, CancellationToken ct = default)
         {
-            // TODO: CreateDelayFrame
+            // TODO: Observableを直接awaitしたい
+            var task = new TaskCompletionSource<bool>();
+            if (ct.CanBeCanceled)
+            {
+                ct.Register(() => task.TrySetCanceled());
+            }
+
+            OnTickAsObservable
+                .Take(frame)
+                .LastOrDefault()
+                .Subscribe(_ => { }, () => task.TrySetResult(true));
+            return task.Task;
         }
 
         #endregion
