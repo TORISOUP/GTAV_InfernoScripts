@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.Coroutine;
@@ -192,11 +193,9 @@ namespace Inferno
         {
             get
             {
-                return _onAbortObservable ??
-                       (_onAbortObservable =
-                           Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
-                                   h => Aborted -= h)
-                               .AsUnitObservable());
+                return _onAbortObservable ??= Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
+                        h => Aborted -= h)
+                    .AsUnitObservable();
             }
         }
 
@@ -246,6 +245,15 @@ namespace Inferno
         }
 
         #endregion forCoroutine
+
+        #region forTaks
+
+        protected async ValueTask DelayFrame(int frame, CancellationToken ct)
+        {
+            // TODO: CreateDelayFrame
+        }
+
+        #endregion
 
         #region forDraw
 
@@ -405,9 +413,13 @@ namespace Inferno
         /// ログを吐く
         /// </summary>
         /// <param name="message">ログメッセージ</param>
-        public void LogWrite(string message)
+        public void LogWrite(string message, bool stackTrace = false)
         {
             InfernoCore.Instance.LogWrite(message + "\n");
+            if (stackTrace)
+            {
+                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            }
         }
 
         #endregion Debug
