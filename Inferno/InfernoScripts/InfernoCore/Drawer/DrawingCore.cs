@@ -1,6 +1,14 @@
 ﻿using GTA;
+using System.Linq;
+using System.Reactive.Linq;
 using System;
-using UniRx;
+using System.Reactive;
+using System.Reactive.Subjects;
+
+using System;
+using System.Reactive.Linq;
+using System.Reactive;
+using System.Reactive.Subjects;
 
 namespace Inferno
 {
@@ -13,7 +21,7 @@ namespace Inferno
 
         private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
 
-        public static UniRx.IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
 
         public DrawingCore()
         {

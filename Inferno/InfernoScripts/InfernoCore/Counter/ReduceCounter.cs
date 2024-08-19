@@ -1,4 +1,9 @@
-﻿using UniRx;
+﻿
+
+using System;
+using System.Reactive.Subjects;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace Inferno
 {
@@ -14,7 +19,7 @@ namespace Inferno
         /// カウンタが正常にカウント終了した時にOnNextを発行する
         /// 強制終了時はOnCompletedのみ通知
         /// </summary>
-        public UniRx.IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
+        public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
 
         public int Current { get; private set; }
         public float Rate => (float)Current / (float)_max;

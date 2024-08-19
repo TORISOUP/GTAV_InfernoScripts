@@ -2,7 +2,9 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using UniRx;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
 
 namespace Inferno.Isono
 {
@@ -22,7 +24,7 @@ namespace Inferno.Isono
 
         private Subject<string> _onRecievedMessageSubject = new Subject<string>();
 
-        public UniRx.IObservable<string> OnRecievedMessageAsObservable => _onRecievedMessageSubject.AsObservable();
+        public IObservable<string> OnRecievedMessageAsObservable => _onRecievedMessageSubject.AsObservable();
 
         /// <summary>
         /// コンストラクタ

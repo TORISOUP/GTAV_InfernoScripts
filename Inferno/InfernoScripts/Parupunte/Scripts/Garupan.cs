@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using GTA;
+using System.Reactive.Linq;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
-using UniRx;
+
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -75,7 +76,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //プレイヤが死んだら終了
             this.OnUpdateAsObservable
                 .Where(_ => !core.PlayerPed.IsAlive)
-                .FirstOrDefault()
+                .Take(1)
                 .Subscribe(_ => ParupunteEnd());
 
             this.OnFinishedAsObservable

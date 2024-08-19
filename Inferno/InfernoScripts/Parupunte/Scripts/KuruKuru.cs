@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using GTA.Math;
-using UniRx;
+using System.Reactive.Linq;
+
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {

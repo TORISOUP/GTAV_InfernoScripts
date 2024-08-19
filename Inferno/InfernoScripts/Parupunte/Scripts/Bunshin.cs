@@ -1,9 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GTA;
+using System.Linq;
+using System.Reactive.Linq;
+using System;
+using System.Reactive;
+using System.Reactive.Subjects;
+
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using UniRx;
+using System;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ブンシンノジツ", "おわり")]

@@ -1,14 +1,21 @@
 ﻿using GTA;
+using System.Linq;
+using System.Reactive.Linq;
+using System;
+using System.Reactive;
+using System.Reactive.Subjects;
+
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Windows.Forms;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.Event.ChasoMode;
-using UniRx;
+
 
 namespace Inferno.ChaosMode
 {
@@ -150,7 +157,7 @@ namespace Inferno.ChaosMode
 
             //イベントが来たら武器を変更する
             OnRecievedInfernoEvent
-                .OfType<IEventMessage, ChasoModeEvent>()
+                .OfType<ChasoModeEvent>()
                 .Subscribe(e =>
                 {
                     if (e is ChangeToDefaultEvent)

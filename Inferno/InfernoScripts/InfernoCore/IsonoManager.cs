@@ -1,6 +1,7 @@
 ﻿using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Isono;
-using UniRx;
+using System;
+
 
 namespace Inferno
 {

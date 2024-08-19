@@ -1,10 +1,12 @@
 ﻿using System;
 using GTA;
+using System.Reactive.Linq;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Parupunte;
-using UniRx;
+using Inferno.Utilities;
+
 
 namespace Inferno
 {
@@ -60,7 +62,7 @@ namespace Inferno
             //定期的にエフェクト再生
             this.OnUpdateAsObservable
                 .Where(_ => core.IsGamePadPressed(GameKey.Sprint))
-                .ThrottleFirst(TimeSpan.FromSeconds(1))
+                .Sample(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
                     StartFire();

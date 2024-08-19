@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
+using System.Reactive.Linq;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using UniRx;
+
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -35,7 +34,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             this.OnUpdateAsObservable
                 .Where(_ => core.PlayerPed.IsDead)
-                .FirstOrDefault()
+                .Take(1)
                 .Subscribe(_ =>
                 {
                     ParupunteEnd();

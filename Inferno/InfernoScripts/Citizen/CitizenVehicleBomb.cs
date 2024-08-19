@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Inferno.Utilities;
-using UniRx;
+using System.Reactive.Linq;
+
 
 namespace Inferno
 {

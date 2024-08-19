@@ -1,4 +1,10 @@
 ﻿using GTA;
+using System.Linq;
+using System.Reactive.Linq;
+using System;
+using System.Reactive;
+using System.Reactive.Subjects;
+
 using GTA.Math;
 using GTA.Native;
 using System;
@@ -9,7 +15,7 @@ using System.Media;
 using System.Windows.Forms;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using UniRx;
+
 
 namespace Inferno
 {

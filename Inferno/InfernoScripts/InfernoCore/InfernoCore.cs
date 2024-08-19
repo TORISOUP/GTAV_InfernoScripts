@@ -1,8 +1,12 @@
 ﻿using GTA;
+using System.Reactive.Linq;
 using System;
+using System.Reactive;
+using System.Reactive.Subjects;
 using System.Windows.Forms;
 using Inferno.InfernoScripts.Event;
-using UniRx;
+using Reactive.Bindings;
+
 
 namespace Inferno
 {
@@ -33,7 +37,7 @@ namespace Inferno
         /// <summary>
         /// 発行されたイベントメッセージ
         /// </summary>
-        public static UniRx.IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
+        public static IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
 
         /// <summary>
         /// 周辺市民
@@ -68,12 +72,12 @@ namespace Inferno
         /// <summary>
         /// 25ms周期のTick
         /// </summary>
-        public static UniRx.IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
+        public static IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
 
         /// <summary>
         /// キー入力
         /// </summary>
-        public static UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
+        public static IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
 
         public InfernoCore()
         {

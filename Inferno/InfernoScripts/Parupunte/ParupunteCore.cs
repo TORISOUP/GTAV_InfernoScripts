@@ -7,17 +7,19 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using GTA;
+using System.Reactive.Linq;
+using System.Reactive.Concurrency;
 using GTA.Math;
 using GTA.Native;
-using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.Event.Isono;
-using UniRx;
+using Inferno.Utilities;
+using Reactive.Bindings.Extensions;
+
 
 namespace Inferno.InfernoScripts.Parupunte
 {
     internal class ParupunteCore : InfernoScript
     {
-
         /// <summary>
         /// パルプンテスクリプト一覧
         /// </summary>
@@ -86,11 +88,11 @@ namespace Inferno.InfernoScripts.Parupunte
                     .ToArray();
 
             _debugParuputeScripts = _parupunteScritpts.Where(x =>
-            {
-                var attribute = x.GetCustomAttribute<ParupunteDebug>();
-                return attribute != null && attribute.IsDebug;
-            }).ToArray();
-
+                {
+                    var attribute = x.GetCustomAttribute<ParupunteDebug>();
+                    return attribute != null && attribute.IsDebug;
+                })
+                .ToArray();
 
             #endregion ParunteScripts
 
@@ -110,7 +112,8 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
-            OnKeyDownAsObservable.Where(x => x.KeyCode == Keys.NumPad0)
+            OnKeyDownAsObservable
+                .Where(x => x.KeyCode == Keys.NumPad0)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f), InfernoScriptScheduler)
                 .Subscribe(_ =>
                 {
@@ -122,7 +125,6 @@ namespace Inferno.InfernoScripts.Parupunte
                     {
                         ParupunteStart(ChooseParupounteScript());
                     }
-                    
                 });
 
             //パルプンテが停止したタイミングで開放
@@ -134,13 +136,14 @@ namespace Inferno.InfernoScripts.Parupunte
                     {
                         entity.MarkAsNoLongerNeeded();
                     }
+
                     _autoReleaseEntitiesList.Clear();
                 });
 
             var nextIsonoTime = Time;
 
             OnRecievedInfernoEvent
-                .OfType<IEventMessage, IsonoMessage>()
+                .OfType<IsonoMessage>()
                 .Where(_ => (nextIsonoTime - Time).Ticks <= 0)
                 .Retry()
                 .Subscribe(c =>
@@ -182,7 +185,6 @@ namespace Inferno.InfernoScripts.Parupunte
                 });
 
             #endregion Drawer
-
         }
 
         // Configファイルの設定を行う
@@ -214,6 +216,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 {
                     value = loadConfig[kv.Key];
                 }
+
                 mergedConfig[kv.Key] = value;
             }
 
@@ -267,11 +270,9 @@ namespace Inferno.InfernoScripts.Parupunte
                 : ParupunteConfigElement.Default;
 
             //ThreadPool上で初期化（プチフリ回避）
-            Observable.Start(() => Activator.CreateInstance(script, this, conf) as ParupunteScript, Scheduler.ThreadPool)
-                .OnErrorRetry((Exception ex) =>
-                {
-                    LogWrite(ex.ToString());
-                }, 3, TimeSpan.FromMilliseconds(300))
+            Observable.Start(() => Activator.CreateInstance(script, this, conf) as ParupunteScript,
+                    Scheduler.ThreadPool)
+                .OnErrorRetry((Exception ex) => { LogWrite(ex.ToString()); }, 3, TimeSpan.FromMilliseconds(300))
                 .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
                 {
                     //       LogWrite(ex.ToString());
@@ -298,6 +299,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 //デバッグ指定のやつがあるならそっち優先で取り出す
                 return _debugParuputeScripts[Random.Next(0, _debugParuputeScripts.Length)];
             }
+
             return _parupunteScritpts[Random.Next(0, _parupunteScritpts.Length)];
         }
 
@@ -368,6 +370,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     _subTextUiContainer.Items.Clear();
                     yield break;
                 }
+
                 yield return null; //100ms待機
             }
 
@@ -415,7 +418,8 @@ namespace Inferno.InfernoScripts.Parupunte
         private UIText CreateMainText(string text)
         {
             return new UIText(text,
-                new Point((int)(_screenWidth * _mainTextPositionScale.X), (int)(_screenHeight * _mainTextPositionScale.Y)),
+                new Point((int)(_screenWidth * _mainTextPositionScale.X),
+                    (int)(_screenHeight * _mainTextPositionScale.Y)),
                 0.8f, Color.White, 0, true, false, true);
         }
 
@@ -423,7 +427,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             return new UIText(text,
                 new Point((int)(_screenWidth * _subTextPositionScale.X),
-                (int)(_screenHeight * _subTextPositionScale.Y)),
+                    (int)(_screenHeight * _subTextPositionScale.Y)),
                 0.4f, Color.White, 0, false, false, true);
         }
 

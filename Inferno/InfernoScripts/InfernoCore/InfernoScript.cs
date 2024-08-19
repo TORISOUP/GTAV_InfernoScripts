@@ -1,16 +1,26 @@
 ﻿using GTA;
+using System.Linq;
+using System.Reactive.Linq;
+using System;
+using System.Reactive;
+using System.Reactive.Subjects;
+
 using Inferno.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.Coroutine;
-using UniRx;
+using Reactive.Bindings;
+
 
 namespace Inferno
 {
@@ -65,7 +75,7 @@ namespace Inferno
         /// <summary>
         /// IsActiveが変化したことを通知する
         /// </summary>
-        protected UniRx.IObservable<bool> IsActiveAsObservable =>
+        protected IObservable<bool> IsActiveAsObservable =>
             _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
 
         #region Chace
@@ -76,7 +86,7 @@ namespace Inferno
         public Ped PlayerPed => cahcedPlayerPed ?? Game.Player.Character;
 
         private Ped cahcedPlayerPed;
-        public readonly ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>();
+        public readonly ReactiveProperty<Vehicle> PlayerVehicle = new();
 
 
         /// <summary>
@@ -96,21 +106,21 @@ namespace Inferno
         /// <summary>
         /// 100ms間隔のTickイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
+        public IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
 
         /// <summary>
         /// たぶん16msごとに実行されるイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
+        public IObservable<Unit> OnTickAsObservable { get; private set; }
 
         /// <summary>
         /// 描画用のTickイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
+        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
 
-        private UniRx.IObservable<KeyEventArgs> _onKeyDownAsObservable;
+        private IObservable<KeyEventArgs> _onKeyDownAsObservable;
 
-        public UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable
+        public IObservable<KeyEventArgs> OnKeyDownAsObservable
         {
             get
             {
@@ -125,12 +135,12 @@ namespace Inferno
             }
         }
 
-        public UniRx.IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent
+        protected IObservable<IEventMessage> OnRecievedInfernoEvent
             => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
 
         /// <summary>
@@ -138,7 +148,7 @@ namespace Inferno
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
+        protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
             {
@@ -151,7 +161,7 @@ namespace Inferno
                 .Select(x => x.Aggregate((p, c) => p + c))
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
-                .First()
+                .Take(1)
                 .Repeat() //1回動作したらBufferをクリア
                 .Publish()
                 .RefCount();
@@ -160,9 +170,9 @@ namespace Inferno
         /// <summary>
         /// 任意のTickObservableを生成する
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
+        protected IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
         {
-            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Share();
+            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Publish().RefCount();
         }
 
         #endregion forEvents
@@ -184,19 +194,19 @@ namespace Inferno
             _autoReleaseEntities.Add(entity);
         }
 
-        private UniRx.IObservable<Unit> _onAbortObservable;
+        private IObservable<Unit> _onAbortObservable;
 
         /// <summary>
         /// ゲームが中断した時に実行される
         /// </summary>
-        protected UniRx.IObservable<Unit> OnAbortAsync
+        protected IObservable<Unit> OnAbortAsync
         {
             get
             {
                 return _onAbortObservable ??= Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke,
                         h => Aborted += h,
                         h => Aborted -= h)
-                    .AsUnitObservable();
+                    .Select(_ => Unit.Default);
             }
         }
 
@@ -249,20 +259,11 @@ namespace Inferno
 
         #region forTaks
 
-        protected Task DelayFrame(int frame, CancellationToken ct = default)
+        protected async Task DelayFrame(int frame, CancellationToken ct = default)
         {
-            // TODO: Observableを直接awaitしたい
-            var task = new TaskCompletionSource<bool>();
-            if (ct.CanBeCanceled)
-            {
-                ct.Register(() => task.TrySetCanceled());
-            }
-
-            OnTickAsObservable
+            await OnTickAsObservable
                 .Take(frame)
-                .LastOrDefault()
-                .Subscribe(_ => { }, () => task.TrySetResult(true));
-            return task.Task;
+                .ToTask(ct);
         }
 
         #endregion
@@ -315,7 +316,7 @@ namespace Inferno
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
                 .Where(_ => InfernoCore.Instance != null)
-                .First()
+                .Take(1)
                 .Subscribe(_ =>
                 {
                     InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
@@ -325,11 +326,11 @@ namespace Inferno
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                     .Select(_ => Unit.Default)
-                    .Share(); //Subscribeされたらイベントハンドラを登録する
+                    .Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
 
             OnThinnedTickAsObservable =
                 OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
-                    .Share();
+                    .Publish().RefCount();
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
@@ -398,7 +399,7 @@ namespace Inferno
             Observable
                 .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
-                .First()
+                .Take(1)
                 .Subscribe(_ =>
                 {
                     try

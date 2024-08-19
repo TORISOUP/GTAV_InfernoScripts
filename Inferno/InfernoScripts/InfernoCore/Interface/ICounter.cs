@@ -1,4 +1,5 @@
-﻿using UniRx;
+﻿using System;
+using System.Reactive;
 
 namespace Inferno
 {
@@ -30,7 +31,7 @@ namespace Inferno
         /// <summary>
         /// カウントが正常にカウント完了したことを通知する
         /// </summary>
-        UniRx.IObservable<Unit> OnFinishedAsync { get; }
+        IObservable<Unit> OnFinishedAsync { get; }
 
         /// <summary>
         /// タイマが完了状態であるか

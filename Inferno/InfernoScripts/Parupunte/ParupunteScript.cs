@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using GTA;
-using Inferno.InfernoScripts.Event;
-using UniRx;
+using System.Linq;
+using System.Reactive.Linq;
+using System;
+using System.Reactive;
+using System.Reactive.Subjects;
+
+using System.Reactive;
+using System.Reactive.Subjects;
+
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -141,10 +147,10 @@ namespace Inferno.InfernoScripts.Parupunte
             OnUpdate();
         }
 
-        protected UniRx.IObservable<Unit> OnUpdateAsObservable
+        protected IObservable<Unit> OnUpdateAsObservable
             => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
 
-        protected UniRx.IObservable<Unit> OnFinishedAsObservable
+        protected IObservable<Unit> OnFinishedAsObservable
             => onFinishedSubject ?? (onFinishedSubject = new Subject<Unit>());
 
         /// <summary>
