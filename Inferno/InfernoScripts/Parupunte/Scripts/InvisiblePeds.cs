@@ -1,12 +1,5 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System.Linq;
-
+﻿using System.Linq;
+using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -33,14 +26,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var player = core.PlayerPed;
             var playerGroup = player.CurrentPedGroup;
             var peds = core.CachedPeds.Where(
-                x => x.IsSafeExist() && !x.IsSameEntity(core.PlayerPed) && !x.IsCutsceneOnlyPed() && x.IsInRangeOf(player.Position, radius));
+                x => x.IsSafeExist() && !x.IsSameEntity(core.PlayerPed) && !x.IsCutsceneOnlyPed() &&
+                     x.IsInRangeOf(player.Position, radius));
 
             foreach (var ped in peds)
             {
-                if (PedGroup.Exists(playerGroup) && playerGroup.Contains(ped)) { continue; }
+                if (PedGroup.Exists(playerGroup) && playerGroup.Contains(ped)) continue;
 
                 var relationShip = ped.RelationshipGroup;
-                if (relationShip == core.GetGTAObjectHashKey("PLAYER")) { continue; }//ミッション上での仲間は除外する(誤判定が起きる場合があるので暫定)
+                if (relationShip == core.GetGTAObjectHashKey("PLAYER")) continue; //ミッション上での仲間は除外する(誤判定が起きる場合があるので暫定)
 
                 ped.IsVisible = false;
             }

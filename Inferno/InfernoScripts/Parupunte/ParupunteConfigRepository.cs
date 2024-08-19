@@ -11,7 +11,7 @@ namespace Inferno.InfernoScripts
     /// <summary>
     /// ParupunteConfigElementの管理
     /// </summary>
-    class ParupunteConfigRepository
+    internal class ParupunteConfigRepository
     {
         protected readonly Encoding _encoding = Encoding.UTF8;
         protected DebugLogger _debugLogger;
@@ -32,11 +32,7 @@ namespace Inferno.InfernoScripts
         /// </summary>
         public Dictionary<string, ParupunteConfigElement> LoadSettingFile()
         {
-
-            if (!File.Exists(_filePath))
-            {
-                return new Dictionary<string, ParupunteConfigElement>();
-            }
+            if (!File.Exists(_filePath)) return new Dictionary<string, ParupunteConfigElement>();
 
             var readString = "";
             try
@@ -56,7 +52,7 @@ namespace Inferno.InfernoScripts
             try
             {
                 var dto = JsonConvert.DeserializeObject<Dictionary<string, ParupunteConfigDto>>(readString);
-                return dto.Select(x => new { Key = x.Key, Value = x.Value.ToDomain() })
+                return dto.Select(x => new { x.Key, Value = x.Value.ToDomain() })
                     .ToDictionary(x => x.Key, x => x.Value);
             }
             catch (Exception e)
@@ -71,10 +67,7 @@ namespace Inferno.InfernoScripts
         {
             var directoryPath = Path.GetDirectoryName(_filePath);
             //存在しないならディレクトリを作る
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
 
             var dto = configs.ToDictionary(x => x.Key, x => x.Value.ToDto());
 
@@ -96,6 +89,5 @@ namespace Inferno.InfernoScripts
                 DebugLogger.Log(e.StackTrace);
             }
         }
-
     }
 }

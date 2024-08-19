@@ -1,15 +1,9 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
-using System;
+using GTA;
 
 namespace Inferno
 {
@@ -18,13 +12,13 @@ namespace Inferno
     /// </summary>
     public class ProgressBarDrawing : InfernoScript
     {
-        private UIContainer _mContainer = null;
+        private UIContainer _mContainer;
+
+        private readonly object lockObject = new();
+
+        private readonly List<ProgressBarData> progressBarDataList = new();
 
         public static ProgressBarDrawing Instance { get; private set; }
-
-        private List<ProgressBarData> progressBarDataList = new List<ProgressBarData>();
-
-        private object lockObject = new object();
 
         protected override void Setup()
         {
@@ -33,7 +27,7 @@ namespace Inferno
             _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
 
             //バー表示が設定されていたら描画
-            this.OnDrawingTickAsObservable
+            OnDrawingTickAsObservable
                 .Where(_ => !Game.IsPaused && Game.Player.IsAlive && progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
                 .Subscribe(_ =>
                 {
@@ -48,10 +42,7 @@ namespace Inferno
                         datas = progressBarDataList.ToArray();
                     }
 
-                    foreach (var progressBarData in datas)
-                    {
-                        AddProgressBarToContainer(progressBarData);
-                    }
+                    foreach (var progressBarData in datas) AddProgressBarToContainer(progressBarData);
                     _mContainer.Draw();
                 });
         }
@@ -91,7 +82,7 @@ namespace Inferno
 
                 case DrawType.LeftToRight:
                     barLength = (int)(width * data.ProgressBarStatus.Rate);
-                    barPosition = new Point((pos.X + width) - barLength, pos.Y);
+                    barPosition = new Point(pos.X + width - barLength, pos.Y);
                     barSize = new Size(barLength, height);
                     break;
 

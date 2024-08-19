@@ -1,16 +1,9 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
-using GTA.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using GTA;
+using GTA.Math;
+using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -18,14 +11,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("えどじだい")]
     internal class EdoPeriod : ParupunteScript
     {
-        private Random random = new Random();
-        private HashSet<int> ninjas = new HashSet<int>();
-        private List<Ped> pedList = new List<Ped>();
+        private readonly HashSet<int> ninjas = new();
+        private readonly List<Ped> pedList = new();
+        private readonly Random random = new();
 
         public EdoPeriod(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-        
+
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(20000);
@@ -34,12 +27,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
-            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 100) && x.IsAlive))
+            foreach (var ped in core.CachedPeds.Where(x =>
+                         x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 100) && x.IsAlive))
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
@@ -50,13 +42,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 foreach (var ped in pedList)
-                {
                     if (ped.IsSafeExist())
                     {
                         SetAnimRate(ped, 1);
                         Function.Call(Hash.TASK_FORCE_MOTION_STATE, ped, 0xFFF7E7A4, 0);
                     }
-                }
 
                 ParupunteEnd();
             });
@@ -65,8 +55,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnUpdate()
         {
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive
-                                                           && x.IsInRangeOf(core.PlayerPed.Position, 100) &&
-                                                           !ninjas.Contains(x.Handle)))
+                                                                           && x.IsInRangeOf(core.PlayerPed.Position,
+                                                                               100) &&
+                                                                           !ninjas.Contains(x.Handle)))
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
@@ -92,9 +83,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 if (random.Next(100) < 10)
-                {
-                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) * ped.Quaternion;
-                }
+                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) *
+                                     ped.Quaternion;
 
                 SetAnimRate(ped, 5.0f);
                 Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,

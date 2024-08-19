@@ -1,14 +1,8 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using GTA;
+using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -16,7 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("とよす")]
     internal class Toyosu : ParupunteScript
     {
-        private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
+        private readonly HashSet<Vehicle> vehicleList = new();
 
         public Toyosu(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -40,13 +34,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 );
 
             foreach (var v in targets)
-            {
                 if (!vehicleList.Contains(v))
                 {
                     vehicleList.Add(v);
                     StartCoroutine(VehiclePyonPyon(v));
                 }
-            }
         }
 
         private IEnumerable<object> VehiclePyonPyon(Vehicle v)

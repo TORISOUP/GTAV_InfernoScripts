@@ -1,17 +1,16 @@
-﻿using Inferno.InfernoScripts.Event.Isono;
+﻿using System;
+using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Isono;
-using System;
-
 
 namespace Inferno
 {
     //ISONO管理マネージャ
     public class IsonoManager : InfernoScript
     {
-
         private IsonoTcpClient isonoTcpClient;
 
-        private IsonoTcpClient IsonoTcpClient => isonoTcpClient ?? (isonoTcpClient = new IsonoTcpClient("127.0.0.1", 50082));
+        private IsonoTcpClient IsonoTcpClient =>
+            isonoTcpClient ?? (isonoTcpClient = new IsonoTcpClient("127.0.0.1", 50082));
 
         protected override void Setup()
         {
@@ -21,20 +20,13 @@ namespace Inferno
                     IsActive = !IsActive;
                     DrawText("Isono:" + IsActive);
                     if (IsActive)
-                    {
                         IsonoTcpClient.Connect();
-                    }
                     else
-                    {
                         IsonoTcpClient.Disconnect();
-                    }
                 });
 
             IsonoTcpClient.OnRecievedMessageAsObservable
-                .Subscribe(x =>
-                {
-                    InfernoCore.Publish( new IsonoMessage(x) );
-                });
+                .Subscribe(x => { InfernoCore.Publish(new IsonoMessage(x)); });
         }
     }
 }

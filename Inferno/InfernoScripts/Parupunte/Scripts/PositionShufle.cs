@@ -1,15 +1,8 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using GTA;
+using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -17,14 +10,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("あっちこっち")]
     internal class PositionShufle : ParupunteScript
     {
-        private Random random = new Random();
+        private readonly Random random = new();
+
+        //高速コルーチン(1フレーム単位で実行)
+        private CoroutineSystem _quickCoroutineSystem;
 
         public PositionShufle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        //高速コルーチン(1フレーム単位で実行)
-        private CoroutineSystem _quickCoroutineSystem;
 
         public override void OnStart()
         {
@@ -37,12 +30,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             _quickCoroutineSystem = new CoroutineSystem();
 
             var d = core.OnTickAsObservable
-                .Subscribe(_ =>
-                {
-                    _quickCoroutineSystem?.CoroutineLoop();
-                });
+                .Subscribe(_ => { _quickCoroutineSystem?.CoroutineLoop(); });
 
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
                     d.Dispose();
@@ -57,10 +47,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 var peds = ChoisePeds(core.CachedPeds);
                 if (peds.Item1 != peds.Item2)
-                {
                     //ポジションの入れ替えは高速コルーチンで実行
                     _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
-                }
                 yield return WaitForSeconds(1.5f);
             }
         }
@@ -68,22 +56,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <summary>
         /// 市民を2人をランダムに抽出する
         /// </summary>
-        private System.Tuple<Ped, Ped> ChoisePeds(IEnumerable<Ped> originalGroup)
+        private Tuple<Ped, Ped> ChoisePeds(IEnumerable<Ped> originalGroup)
         {
             var playerPosition = core.PlayerPed.Position;
-            var targetGroup = originalGroup.Concat(new[] { core.PlayerPed }).Where(x =>
-                 x.IsSafeExist()
-                 && x.IsInRangeOf(playerPosition, 150)
-                 && x.IsAlive).ToArray();
+            var targetGroup = originalGroup.Concat(new[] { core.PlayerPed })
+                .Where(x =>
+                    x.IsSafeExist()
+                    && x.IsInRangeOf(playerPosition, 150)
+                    && x.IsAlive)
+                .ToArray();
 
             var p1 = targetGroup[random.Next(0, targetGroup.Length)];
             var p2 = targetGroup[random.Next(0, targetGroup.Length)];
-            return new System.Tuple<Ped, Ped>(p1, p2);
+            return new Tuple<Ped, Ped>(p1, p2);
         }
 
         private IEnumerable<object> SwapPedPosition(Ped p1, Ped p2)
         {
-
             var isP1InVehicle = p1.IsInVehicle();
             var p1Pos = p1.Position;
             var v1 = p1.CurrentVehicle;
@@ -95,6 +84,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var v2seat = GetPedSeat(p2, v2);
 
             #region P2を退避
+
             if (!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
 
             if (isP2InVehicle)
@@ -149,7 +139,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             if (!veh.IsSafeExist()) return VehicleSeat.None;
             var seatList = new[]
-            {VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear};
+                { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
 
             foreach (var s in seatList)
             {

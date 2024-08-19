@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using System;
-
+﻿using System;
+using System.Linq;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -28,11 +27,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var radius = 50.0f;
             var player = core.PlayerPed;
             foreach (var vec in core.CachedVehicles.Where(
-                x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius)
-                ))
-            {
+                         x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius)
+                     ))
                 vec.Speed = vec.Handle % 10 == 0 ? -200 : 200;
-            }
         }
     }
 }

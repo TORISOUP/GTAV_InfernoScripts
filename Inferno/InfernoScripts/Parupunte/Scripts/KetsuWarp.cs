@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("行き先を選べ!")]
     [ParupunteIsono("けつるーら")]
-    class KetsuWarp : ParupunteScript
+    internal class KetsuWarp : ParupunteScript
     {
         public KetsuWarp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -39,6 +30,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     StartCoroutine(MoveToCoroutine());
                     yield break;
                 }
+
                 yield return null;
             }
         }
@@ -47,7 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             core.DrawParupunteText("いってらっしゃい！", 3);
 
-            var target = core.PlayerPed.IsInVehicle() ? (Entity)core.PlayerPed.CurrentVehicle : (Entity)core.PlayerPed;
+            var target = core.PlayerPed.IsInVehicle() ? core.PlayerPed.CurrentVehicle : (Entity)core.PlayerPed;
             target.IsInvincible = true;
 
             target.ApplyForce(Vector3.WorldUp * 300.0f);
@@ -65,7 +57,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (target.IsSafeExist())
             {
-                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                var targetBlip = GTA.World.GetActiveBlips()
+                    .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
                 if (targetBlip == null || !targetBlip.Exists())
                 {
                     if (target.IsSafeExist())
@@ -77,13 +70,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             p.ParachuteTo(p.Position);
                         }
                     }
+
                     ParupunteEnd();
                     core.DrawParupunteText("おわり", 3);
                     yield break;
                 }
 
                 if (target is Ped)
-                {
                     if (!((Ped)target).IsInParachuteFreeFall)
                     {
                         target.IsInvincible = false;
@@ -92,13 +85,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         yield break;
                     }
 
-                }
-
                 var goal = targetBlip.Position;
                 var current = target.Position;
                 var dir = (goal - current).Normalized;
 
-                var toVector = (goal - current);
+                var toVector = goal - current;
                 var horizontalLength = new Vector3(toVector.X, toVector.Y, 0).Length();
 
 
@@ -113,6 +104,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             p.ParachuteTo(p.Position);
                         }
                     }
+
                     core.DrawParupunteText("ついたぞ", 3);
                     ParupunteEnd();
                     yield break;
@@ -132,13 +124,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 yield return WaitForSeconds(0.5f);
             }
-            if (target.IsSafeExist())
-            {
-                target.IsInvincible = false;
-            }
+
+            if (target.IsSafeExist()) target.IsInvincible = false;
 
             ParupunteEnd();
-
         }
     }
 }

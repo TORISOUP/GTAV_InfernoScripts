@@ -1,7 +1,4 @@
-﻿using GTA.Math;
-using GTA.Native;
-using System.Linq;
-
+﻿using System.Linq;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -19,7 +16,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             foreach (var v in core.CachedVehicles.Where(
-                x => x.IsSafeExist() && x.IsAlive))
+                         x => x.IsSafeExist() && x.IsAlive))
             {
                 v.EnginePowerMultiplier = 200.0f;
                 v.EngineTorqueMultiplier = 200.0f;

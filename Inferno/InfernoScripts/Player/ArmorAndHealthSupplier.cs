@@ -1,13 +1,6 @@
-﻿using GTA;
-using System.Linq;
+﻿using System;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System.Reactive.Linq;
-using System;
-
+using GTA;
 
 namespace Inferno
 {
@@ -19,7 +12,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("SupplyArmorAndHealth:" + IsActive, 3.0f);
+                    DrawText("SupplyArmorAndHealth:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);

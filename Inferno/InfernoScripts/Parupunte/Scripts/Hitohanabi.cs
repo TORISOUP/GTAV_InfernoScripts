@@ -1,16 +1,9 @@
-﻿using GTA;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -44,15 +37,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             while (!ReduceCounter.IsCompleted)
             {
                 foreach (
-                    var targetPed in
+                        var targetPed in
                         core.CachedPeds.Where(
                             x => x.IsSafeExist()
-                            && x.IsAlive
-                            && x.IsHuman
-                            && !x.IsCutsceneOnlyPed()
-                            && x.IsInRangeOf(core.PlayerPed.Position, 50))
+                                 && x.IsAlive
+                                 && x.IsHuman
+                                 && !x.IsCutsceneOnlyPed()
+                                 && x.IsInRangeOf(core.PlayerPed.Position, 50))
                     )
-                {
                     //まだの人をリストにくわえる
                     if (pedList.Count < 30 && !pedList.Contains(targetPed))
                     {
@@ -61,7 +53,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
                     }
-                }
 
                 foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
                 {
@@ -76,6 +67,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         targetPed.ApplyForce(direction * lenght.Clamp(0, 5) * 4);
                     }
                 }
+
                 yield return null;
             }
 
@@ -85,6 +77,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 targetPed.Kill();
                 targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 10);
             }
+
             GTA.World.AddExplosion(targetPosition, GTA.ExplosionType.Rocket, 2.0f, 1.0f);
 
             //終了

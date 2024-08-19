@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA;
-using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.Utilities;
-
 
 namespace Inferno.InfernoScripts
 {
@@ -31,28 +23,22 @@ namespace Inferno.InfernoScripts
     /// <summary>
     /// 周辺市民を近くの車に引っ付ける
     /// </summary>
-    class CitizenAttachVehicle : InfernoScript
+    internal class CitizenAttachVehicle : InfernoScript
     {
-        #region conf
-        protected override string ConfigFileName { get; } = "CitizenAttachVehicle.conf";
-        private CitizenAttachVehicleConfig config;
-        private string EnableKeyCode => config?.EnableKeyCode ?? "K";
-        private string DisableKeyCode => config?.DisableKeyCode ?? "J";
-        #endregion
-
         /// <summary>
         /// 処理中の市民IDリスト
         /// 毎回判定するのでHashSet
         /// </summary>
-        private HashSet<int> processingPedIdSet = new HashSet<int>();
-        private List<Ped> processingPedList = new List<Ped>();
+        private readonly HashSet<int> processingPedIdSet = new();
+
+        private readonly List<Ped> processingPedList = new();
 
 
         protected override void Setup()
         {
             config = LoadConfig<CitizenAttachVehicleConfig>();
 
-            this.OnKeyDownAsObservable
+            OnKeyDownAsObservable
                 .Where(x => PlayerPed.IsInVehicle() && x.KeyCode.ToString() == EnableKeyCode)
                 .Subscribe(_ =>
                 {
@@ -60,7 +46,7 @@ namespace Inferno.InfernoScripts
                     StartAttachAction();
                 });
 
-            this.OnKeyDownAsObservable
+            OnKeyDownAsObservable
                 .Where(x => x.KeyCode.ToString() == DisableKeyCode)
                 .Subscribe(_ =>
                 {
@@ -69,17 +55,17 @@ namespace Inferno.InfernoScripts
                 });
 
             //車から降りたら終了
-            this.OnThinnedTickAsObservable
+            OnThinnedTickAsObservable
                 .Select(_ => PlayerPed.IsInVehicle())
                 .DistinctUntilChanged()
                 .Where(x => !x)
                 .Subscribe(_ => ReleaseAll());
 
-            this.OnAbortAsync
+            OnAbortAsync
                 .Subscribe(_ => ReleaseAll());
         }
 
-        void ReleaseAll()
+        private void ReleaseAll()
         {
             StopAllCoroutine();
             processingPedIdSet.Clear();
@@ -88,13 +74,14 @@ namespace Inferno.InfernoScripts
                 SetPedProof(p, false);
                 ReleaseVehicle(p);
             }
+
             processingPedList.Clear();
         }
 
         /// <summary>
         /// 周辺市民を車にくっつける
         /// </summary>
-        void StartAttachAction()
+        private void StartAttachAction()
         {
             var playerVeh = PlayerVehicle.Value;
             //プレイヤ周辺市民
@@ -106,8 +93,8 @@ namespace Inferno.InfernoScripts
 
 
             foreach (var p in peds
-                .Where(x => !processingPedIdSet.Contains(x.Handle))
-                .Where(p => playerVeh.IsSafeExist()))
+                         .Where(x => !processingPedIdSet.Contains(x.Handle))
+                         .Where(p => playerVeh.IsSafeExist()))
             {
                 processingPedIdSet.Add(p.Handle);
                 StartCoroutine(PedAttachCoroutine(p, playerVeh));
@@ -117,7 +104,7 @@ namespace Inferno.InfernoScripts
         /// <summary>
         /// 対象が有効な状態であるか
         /// </summary>
-        bool IsEnableStatus(Ped ped, Vehicle veh)
+        private bool IsEnableStatus(Ped ped, Vehicle veh)
         {
             return ped.IsSafeExist() && ped.IsAlive && veh.IsSafeExist() && veh.IsAlive;
         }
@@ -136,7 +123,7 @@ namespace Inferno.InfernoScripts
         /// <summary>
         /// くっつけるコルーチン
         /// </summary>
-        IEnumerable<object> PedAttachCoroutine(Ped ped, Vehicle veh)
+        private IEnumerable<object> PedAttachCoroutine(Ped ped, Vehicle veh)
         {
             var handleId = ped.Handle;
             ped.SetToRagdoll(1, 2);
@@ -163,7 +150,7 @@ namespace Inferno.InfernoScripts
             //オブジェクトが消失した、または車に触っていなかったら終了
             if (!IsEnableStatus(ped, veh) || !ped.IsTouching(veh))
             {
-                if (ped.IsSafeExist()) { SetPedProof(ped, false); }
+                if (ped.IsSafeExist()) SetPedProof(ped, false);
                 processingPedIdSet.Remove(ped.Handle);
                 yield break;
             }
@@ -185,10 +172,7 @@ namespace Inferno.InfernoScripts
                 yield return null;
             }
 
-            if (ped.IsSafeExist())
-            {
-                ReleaseVehicle(ped);
-            }
+            if (ped.IsSafeExist()) ReleaseVehicle(ped);
             processingPedIdSet.Remove(handleId);
         }
 
@@ -234,5 +218,13 @@ namespace Inferno.InfernoScripts
             ped.SetToRagdoll();
         }
 
+        #region conf
+
+        protected override string ConfigFileName { get; } = "CitizenAttachVehicle.conf";
+        private CitizenAttachVehicleConfig config;
+        private string EnableKeyCode => config?.EnableKeyCode ?? "K";
+        private string DisableKeyCode => config?.DisableKeyCode ?? "J";
+
+        #endregion
     }
 }

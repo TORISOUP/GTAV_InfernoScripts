@@ -1,12 +1,6 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System.Collections.Generic;
+using GTA;
 using GTA.Native;
-using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -31,6 +25,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 Spawn();
                 yield return s;
             }
+
             ParupunteEnd();
         }
 

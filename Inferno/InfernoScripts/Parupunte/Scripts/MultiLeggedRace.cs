@@ -2,42 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("参　勤　交　代", "大　政　奉　還")]
     [ParupunteIsono("さんきんこうたい")]
-    class MultiLeggedRace : ParupunteScript
+    internal class MultiLeggedRace : ParupunteScript
     {
+        private readonly List<Ped> explosionList = new();
+        private List<Ped> allPedList = new();
+
         public MultiLeggedRace(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
-        private List<Ped> explosionList = new List<Ped>();
-        private List<Ped> allPedList = new List<Ped>();
-
         public override void OnStart()
         {
-
             ReduceCounter = new ReduceCounter(15 * 500);
             AddProgressBar(ReduceCounter);
 
-            this.OnUpdateAsObservable
+            OnUpdateAsObservable
                 .Subscribe(_ =>
                 {
-                    if (core.PlayerPed.IsDead)
-                    {
-                        ParupunteEnd();
-                    }
+                    if (core.PlayerPed.IsDead) ParupunteEnd();
                 });
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
@@ -47,25 +36,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.0f);
                     ped.Kill();
                 }
+
                 ParupunteEnd();
             });
 
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
-            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
             allPedList =
-            core.CachedPeds.Where(x => x.IsSafeExist() && !x.IsRequiredForMission() && !x.IsCutsceneOnlyPed())
-                .Take(30).ToList();
+                core.CachedPeds.Where(x => x.IsSafeExist() && !x.IsRequiredForMission() && !x.IsCutsceneOnlyPed())
+                    .Take(30)
+                    .ToList();
 
             var playerPos = core.PlayerPed.Position;
             var num = 5;
 
             var i = -allPedList.Count / 2;
-            foreach (var p in allPedList.Where(x=>x.IsSafeExist()))
+            foreach (var p in allPedList.Where(x => x.IsSafeExist()))
             {
                 p.Task.ClearAllImmediately();
                 p.Position =
@@ -82,10 +71,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     StartCoroutine(DashCoroutine(p));
                     i++;
                 }
-
             }
-
-
         }
 
 
@@ -99,7 +85,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ped.Kill();
                 explosionList.Remove(ped);
             }
-
         }
 
         private void SetAnimRate(Ped ped, float rate)

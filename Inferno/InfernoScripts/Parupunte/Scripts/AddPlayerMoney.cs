@@ -1,10 +1,4 @@
 ﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {

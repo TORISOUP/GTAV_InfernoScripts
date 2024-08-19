@@ -10,38 +10,36 @@ namespace Inferno
     /// </summary>
     public class CoroutineSystem
     {
+        private readonly object _lockObject = new();
+        private readonly List<uint> _stopCoroutineList = new();
+
+        private readonly List<uint> endIdList = new();
+        private readonly Queue<IdCoroutine> newCoroutines = new(5);
+        private IEnumerator[] _actionCoroutines;
+        private uint _coroutineIdIndex;
+
         /// <summary>
         /// コルーチンの辞書
         /// </summary>
-        protected Dictionary<uint, IEnumerator> _coroutines = new Dictionary<uint, IEnumerator>();
-        private struct IdCoroutine
-        {
-            public uint id;
-            public IEnumerator coroutine;
-        }
-        private uint _coroutineIdIndex = 0;
-        private readonly object _lockObject = new object();
-        private readonly List<uint> _stopCoroutineList = new List<uint>();
-        List<uint> endIdList = new List<uint>();
-        Queue<IdCoroutine> newCoroutines = new Queue<IdCoroutine>(5);
-        private IEnumerator[] _actionCoroutines;
+        protected Dictionary<uint, IEnumerator> _coroutines = new();
 
         /// <summary>
         /// コルーチンの登録
         /// </summary>
         /// <param name="coroutine">登録するコルーチン</param>
         /// <returns></returns>
-        public uint AddCoroutine(IEnumerable<Object> coroutine)
+        public uint AddCoroutine(IEnumerable<object> coroutine)
         {
             lock (_lockObject)
             {
                 var id = unchecked(_coroutineIdIndex++);
                 //WaitForSecondsを展開できるように
                 var enumrator = coroutine
-                    .SelectMany(x => x is IEnumerable ? ((IEnumerable<object>)x) : new object[] { x }).GetEnumerator();
+                    .SelectMany(x => x is IEnumerable ? (IEnumerable<object>)x : new[] { x })
+                    .GetEnumerator();
 
                 //すぐに追加せずに一旦キューに詰める
-                newCoroutines.Enqueue(new IdCoroutine()
+                newCoroutines.Enqueue(new IdCoroutine
                 {
                     id = id,
                     coroutine = enumrator
@@ -59,10 +57,8 @@ namespace Inferno
             lock (_lockObject)
             {
                 if (_coroutines.Keys.Contains(id))
-                {
                     //このタイミングでは消さない
                     _stopCoroutineList.Add(id);
-                }
             }
         }
 
@@ -91,7 +87,6 @@ namespace Inferno
         /// </summary>
         public void CoroutineLoop()
         {
-
             lock (_lockObject)
             {
                 //新規追加されたものを追加する
@@ -103,32 +98,28 @@ namespace Inferno
 
 
                 //開始前に削除登録されたものを消す
-                foreach (var stopId in _stopCoroutineList)
-                {
-                    _coroutines.Remove(stopId);
-                }
+                foreach (var stopId in _stopCoroutineList) _coroutines.Remove(stopId);
                 _stopCoroutineList.Clear();
 
                 foreach (var coroutine in _coroutines)
-                {
                     try
                     {
-                        if (!coroutine.Value.MoveNext())
-                        {
-                            endIdList.Add(coroutine.Key);
-                        }
+                        if (!coroutine.Value.MoveNext()) endIdList.Add(coroutine.Key);
                     }
                     catch (Exception e)
                     {
                         endIdList.Add(coroutine.Key);
                     }
-                }
-                foreach (var id in endIdList)
-                {
-                    _coroutines.Remove(id);
-                }
+
+                foreach (var id in endIdList) _coroutines.Remove(id);
                 endIdList.Clear();
             }
+        }
+
+        private struct IdCoroutine
+        {
+            public uint id;
+            public IEnumerator coroutine;
         }
     }
 }

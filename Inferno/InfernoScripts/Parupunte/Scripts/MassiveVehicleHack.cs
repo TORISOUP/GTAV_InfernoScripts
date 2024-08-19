@@ -1,34 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using GTA;
-using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System.Reactive.Linq;
-using System;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("大量車両ハッキング")]
     [ParupunteIsono("はっきんぐ")]
-    class MassiveVehicleHack : ParupunteScript
+    internal class MassiveVehicleHack : ParupunteScript
     {
+        //演出用の線を引くリスト
+        private readonly List<Tuple<Entity, Entity>> drawLineList = new();
+
+        //ハック済み車両
+        private List<Vehicle> hacksList = new();
+
         public MassiveVehicleHack(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        //ハック済み車両
-        private List<Vehicle> hacksList = new List<Vehicle>();
-
-        //演出用の線を引くリスト
-        private List<System.Tuple<Entity, Entity>> drawLineList = new List<System.Tuple<Entity, Entity>>();
 
         public override void OnStart()
         {
@@ -53,16 +46,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 });
 
-            if (core.PlayerPed.IsInVehicle())
-            {
-                hacksList.Add(core.PlayerPed.CurrentVehicle);
-            }
+            if (core.PlayerPed.IsInVehicle()) hacksList.Add(core.PlayerPed.CurrentVehicle);
             StartCoroutine(HackCoroutine(core.PlayerPed));
             StartCoroutine(HackCoroutine(core.PlayerPed));
             StartCoroutine(HackCoroutine(core.PlayerPed));
         }
 
-        IEnumerable<object> HackCoroutine(Entity root)
+        private IEnumerable<object> HackCoroutine(Entity root)
         {
             if (!root.IsSafeExist()) yield break;
 
@@ -72,7 +62,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //ターゲットを探す
             var targetsList = core.CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(root.Position, 25))
-                .Except(hacksList).ToArray();
+                .Except(hacksList)
+                .ToArray();
 
             Vehicle target = null;
 
@@ -92,7 +83,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             hacksList.Add(target);
 
             //追加
-            drawLineList.Add(new System.Tuple<Entity, Entity>(root, target));
+            drawLineList.Add(new Tuple<Entity, Entity>(root, target));
             StartCoroutine(ControlleCoroutine(target));
 
             //伝播させる
@@ -104,14 +95,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
         //車両を暴走させるコルーチン
-        IEnumerable<object> ControlleCoroutine(Vehicle target)
+        private IEnumerable<object> ControlleCoroutine(Vehicle target)
         {
             var isBack = Random.Next(0, 100) < 30;
 
-            if (target.IsOnAllWheels && !isBack)
-            {
-                target.Speed *= 2.5f;
-            }
+            if (target.IsOnAllWheels && !isBack) target.Speed *= 2.5f;
 
             target.EngineRunning = true;
 
@@ -119,10 +107,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 target.CanWheelsBreak = false;
                 target.HandbrakeOn = false;
-                if (target.IsOnAllWheels)
-                {
-                    target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
-                }
+                if (target.IsOnAllWheels) target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
                 yield return null;
             }
         }

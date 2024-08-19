@@ -1,8 +1,8 @@
-﻿using Inferno;
+﻿using System;
+using System.Linq;
+using Inferno;
 using Inferno.ChaosMode;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 
 namespace InfernoTest
 {
@@ -20,17 +20,17 @@ namespace InfernoTest
             //0はAffectAllCharacter
             dto.DefaultMissionCharacterTreatment = 0;
             Assert.AreEqual(MissionCharacterTreatmentType.AffectAllCharacter
-                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
 
             //1はExcludeUniqueCharacter
             dto.DefaultMissionCharacterTreatment = 1;
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter
-                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
 
             //2はExcludeAllMissionCharacter
             dto.DefaultMissionCharacterTreatment = 2;
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter
-                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
         }
 
         [TestMethod]
@@ -39,7 +39,19 @@ namespace InfernoTest
             var dto = new ChaosModeSettingDTO();
             dto.DefaultMissionCharacterTreatment = -1;
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter
-                , (new ChaosModeSetting(dto).DefaultMissionCharacterTreatment));
+                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
+        }
+
+        private class TestSetting : ChaosModeSetting
+        {
+            public TestSetting(ChaosModeSettingDTO dto) : base(dto)
+            {
+            }
+
+            public Weapon[] TestEnableWeaponListFilter(string[] WeaponList)
+            {
+                return EnableWeaponListFilter(WeaponList);
+            }
         }
 
         #region EnableWeaponListFilterTest
@@ -48,7 +60,11 @@ namespace InfernoTest
         public void 正常な武器の文字列のみの配列からWeaponの配列が生成できる()
         {
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[] { Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), Weapon.ASSAULTSMG.ToString(), Weapon.STUNGUN.ToString() };
+            var testData = new[]
+            {
+                Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), Weapon.ASSAULTSMG.ToString(),
+                Weapon.STUNGUN.ToString()
+            };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数が同じ
@@ -61,7 +77,7 @@ namespace InfernoTest
         public void 不正な武器の文字列を含む配列からWeaponの配列が生成できる()
         {
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[] { Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), "STANGUN" };
+            var testData = new[] { Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), "STANGUN" };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は2
@@ -75,7 +91,7 @@ namespace InfernoTest
         public void 空配列を渡すと空のWeaponの配列が生成される()
         {
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[0];
+            var testData = new string[0];
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             Assert.AreEqual(0, resutl.Length);
@@ -95,7 +111,7 @@ namespace InfernoTest
         {
             var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon))).OrderBy(x => x.ToString()).ToArray();
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new String[] { "HOGE", "FUGA", "PIYO" };
+            var testData = new[] { "HOGE", "FUGA", "PIYO" };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は全ての武器数と同じ
@@ -105,17 +121,5 @@ namespace InfernoTest
         }
 
         #endregion EnableWeaponListFilterTest
-
-        private class TestSetting : ChaosModeSetting
-        {
-            public Weapon[] TestEnableWeaponListFilter(string[] WeaponList)
-            {
-                return this.EnableWeaponListFilter(WeaponList);
-            }
-
-            public TestSetting(ChaosModeSettingDTO dto) : base(dto)
-            {
-            }
-        }
     }
 }

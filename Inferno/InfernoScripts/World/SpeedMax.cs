@@ -1,36 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using System.Windows.Forms;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
 
 namespace Inferno.InfernoScripts.World
 {
-    class SpeedMax : InfernoScript
+    internal class SpeedMax : InfernoScript
     {
-        HashSet<int> vehicleHashSet = new HashSet<int>();
+        private readonly HashSet<int> vehicleHashSet = new();
+        private SpeedType currentSpeedType = SpeedType.Original;
 
-        enum SpeedType
-        {
-            Original,
-            Low,
-            Middle,
-            High,
-            Random
-        }
-
-        SpeedType currentSpeedType = SpeedType.Original;
-
-        private bool excludeMissionVehicle = false;
+        private bool excludeMissionVehicle;
 
         protected override void Setup()
         {
@@ -41,7 +23,7 @@ namespace Inferno.InfernoScripts.World
                 .Where(x => x)
                 .Subscribe(x =>
                 {
-                    DrawText($"SpeedMax:{IsActive}[Type:{(currentSpeedType)}][Exclude:{excludeMissionVehicle}]");
+                    DrawText($"SpeedMax:{IsActive}[Type:{currentSpeedType}][Exclude:{excludeMissionVehicle}]");
                     vehicleHashSet.Clear();
                 });
 
@@ -62,23 +44,18 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     foreach (var v in CachedVehicles
-                                        .Where(x =>
-                                            x.IsSafeExist()
-                                            && x.IsInRangeOf(PlayerPed.Position, 100.0f)
-                                            && !vehicleHashSet.Contains(x.Handle)
-                                            && !(excludeMissionVehicle && x.IsPersistent)
-                                        ))
+                                 .Where(x =>
+                                     x.IsSafeExist()
+                                     && x.IsInRangeOf(PlayerPed.Position, 100.0f)
+                                     && !vehicleHashSet.Contains(x.Handle)
+                                     && !(excludeMissionVehicle && x.IsPersistent)
+                                 ))
                     {
                         vehicleHashSet.Add(v.Handle);
                         if (currentSpeedType == SpeedType.Original)
-                        {
                             StartCoroutine(OriginalSpeedMaxCoroutine(v));
-                        }
                         else
-                        {
                             StartCoroutine(VehicleSpeedMaxCorutine(v));
-                        }
-
                     }
                 });
             var nextType = currentSpeedType;
@@ -93,7 +70,7 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     currentSpeedType = nextType;
-                    DrawText($"SpeedMax:[Type:{(currentSpeedType)}][OK]", 2.0f);
+                    DrawText($"SpeedMax:[Type:{currentSpeedType}][OK]", 2.0f);
                     StopAllCoroutine();
                     vehicleHashSet.Clear();
                 });
@@ -147,12 +124,9 @@ namespace Inferno.InfernoScripts.World
         private IEnumerable<object> VehicleSpeedMaxCorutine(Vehicle v)
         {
             //たまに後ろに飛ぶ
-            var dir = (v.Handle % 10 == 0) ? -1 : 1;
+            var dir = v.Handle % 10 == 0 ? -1 : 1;
             var maxSpeed = GetVehicleSpeed() * dir;
-            if (Math.Abs(maxSpeed) > 20)
-            {
-                v.Speed = 100 * dir;
-            }
+            if (Math.Abs(maxSpeed) > 20) v.Speed = 100 * dir;
             while (IsActive && v.IsSafeExist())
             {
                 if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
@@ -182,6 +156,15 @@ namespace Inferno.InfernoScripts.World
                 default:
                     return 0;
             }
+        }
+
+        private enum SpeedType
+        {
+            Original,
+            Low,
+            Middle,
+            High,
+            Random
         }
     }
 }

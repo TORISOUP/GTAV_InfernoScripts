@@ -1,10 +1,9 @@
-﻿using GTA;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System;
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System.Collections.Generic;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -13,9 +12,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private readonly string petroEffect = "ent_sht_petrol";
 
-        private bool AffectAllPed = false;
+        private bool AffectAllPed;
 
-        private List<Ped> targetPeds = new List<Ped>();
+        private List<Ped> targetPeds = new();
 
         public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -42,29 +41,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
-            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            }
 
-            if (AffectAllPed)
-            {
-                targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
-            }
+            if (AffectAllPed) targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
             targetPeds.Add(core.PlayerPed);
 
             //コルーチン起動
-            foreach (var ped in targetPeds)
-            {
-                StartCoroutine(OilCoroutine(ped));
-            }
+            foreach (var ped in targetPeds) StartCoroutine(OilCoroutine(ped));
 
             //終わったら着火する
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
-                {
-                    Ignition(ped);
-                }
+                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive)) Ignition(ped);
 
                 ParupunteEnd();
             });
@@ -87,7 +75,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var scale = 3.0f;
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0,
+                0, 0);
         }
 
         /// <summary>

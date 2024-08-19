@@ -1,16 +1,16 @@
-﻿using Inferno;
+﻿using System.Collections.Generic;
+using Inferno;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 
 namespace InfernoTest
 {
     [TestClass]
     public class CoroutineSystemTest
     {
+        private int actionCount;
         private TestCoroutineSystem testCoroutineSystem;
 
-        [TestInitialize()]
+        [TestInitialize]
         public void Initialize()
         {
             testCoroutineSystem = new TestCoroutineSystem();
@@ -29,9 +29,7 @@ namespace InfernoTest
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
         }
 
-        private int actionCount = 0;
-
-        private IEnumerable<Object> ExecuteEnumerator()
+        private IEnumerable<object> ExecuteEnumerator()
         {
             actionCount++;
             yield return null;
@@ -59,26 +57,16 @@ namespace InfernoTest
         public void RemoveCoroutineで該当のCoroutineが削除される()
         {
             //１０個登録
-            for (uint expected = 0; expected < 10; expected++)
-            {
-                testCoroutineSystem.AddCoroutine(testEnumerable(5));
-            }
+            for (uint expected = 0; expected < 10; expected++) testCoroutineSystem.AddCoroutine(testEnumerable(5));
 
             //IDは１０個全て存在する
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
-            for (uint id = 0; id < 10; id++)
-            {
-                Assert.IsTrue(testCoroutineSystem.IsContains(id));
-            }
+            for (uint id = 0; id < 10; id++) Assert.IsTrue(testCoroutineSystem.IsContains(id));
 
             //偶数のIDを除去
             for (uint id = 0; id < 10; id++)
-            {
                 if (id % 2 == 0)
-                {
                     testCoroutineSystem.RemoveCoroutine(id);
-                }
-            }
 
             //除去直後は消えていない
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
@@ -89,17 +77,11 @@ namespace InfernoTest
             //登録コルーチン数は５個になっている
             Assert.AreEqual(5, testCoroutineSystem.RegisteredCoroutineCount);
             for (uint id = 0; id < 10; id++)
-            {
                 if (id % 2 == 0)
-                {
                     //偶数のキーは存在しない
                     Assert.IsFalse(testCoroutineSystem.IsContains(id));
-                }
                 else
-                {
                     Assert.IsTrue(testCoroutineSystem.IsContains(id));
-                }
-            }
         }
 
         [TestMethod]
@@ -112,10 +94,7 @@ namespace InfernoTest
         public void ContainsCoroutineで該当のCoroutineが存在するかどうかチェックされる()
         {
             //１０個登録
-            for (uint expected = 0; expected < 10; expected++)
-            {
-                testCoroutineSystem.AddCoroutine(testEnumerable(5));
-            }
+            for (uint expected = 0; expected < 10; expected++) testCoroutineSystem.AddCoroutine(testEnumerable(5));
 
             //IDは１０個全て存在するか確認し、すぐに除去
             Assert.AreEqual(10, testCoroutineSystem.RegisteredCoroutineCount);
@@ -130,10 +109,7 @@ namespace InfernoTest
 
             //IDは１０個全て存在していない
             Assert.AreEqual(0, testCoroutineSystem.RegisteredCoroutineCount);
-            for (uint id = 0; id < 10; id++)
-            {
-                Assert.IsFalse(testCoroutineSystem.ContainsCoroutine(id));
-            }
+            for (uint id = 0; id < 10; id++) Assert.IsFalse(testCoroutineSystem.ContainsCoroutine(id));
         }
 
         [TestMethod]
@@ -152,15 +128,12 @@ namespace InfernoTest
             Assert.AreEqual(20, i);
         }
 
-        private IEnumerable<Object> testEnumerable(int actionCount)
+        private IEnumerable<object> testEnumerable(int actionCount)
         {
-            for (int i = 0; i < actionCount; i++)
-            {
-                yield return null;
-            }
+            for (var i = 0; i < actionCount; i++) yield return null;
         }
 
-        private IEnumerable<Object> nestEnumerable()
+        private IEnumerable<object> nestEnumerable()
         {
             yield return testEnumerable(5);
             yield return testEnumerable(10);
@@ -173,10 +146,7 @@ namespace InfernoTest
     /// </summary>
     public class TestCoroutineSystem : CoroutineSystem
     {
-        public int RegisteredCoroutineCount
-        {
-            get { return _coroutines.Count; }
-        }
+        public int RegisteredCoroutineCount => _coroutines.Count;
 
         public bool IsContains(uint Id)
         {

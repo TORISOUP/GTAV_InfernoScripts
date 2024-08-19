@@ -1,13 +1,6 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System;
+using GTA;
 using GTA.Math;
-using System;
-
 
 namespace Inferno
 {

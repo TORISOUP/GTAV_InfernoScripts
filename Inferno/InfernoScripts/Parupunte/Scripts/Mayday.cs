@@ -1,17 +1,11 @@
 ﻿using System;
-using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
-using GTA.Native;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
@@ -73,8 +67,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         GTA.World.AddExplosion(point, GTA.ExplosionType.Rocket, 20.0f, 1.5f);
                         yield return WaitForSeconds(0.2f);
                     }
+
                     break;
                 }
+
                 yield return null;
             }
 
@@ -82,13 +78,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ParupunteEnd();
         }
 
-        private async Task DeletePlaneAfter(Vehicle plane, CancellationToken token = default(CancellationToken))
+        private async Task DeletePlaneAfter(Vehicle plane, CancellationToken token = default)
         {
             await Task.Delay(TimeSpan.FromSeconds(10), token);
-            if (plane.IsSafeExist())
-            {
-                plane.Delete();
-            }
+            if (plane.IsSafeExist()) plane.Delete();
         }
     }
 }

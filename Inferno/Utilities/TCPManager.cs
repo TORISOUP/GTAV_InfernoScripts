@@ -4,27 +4,28 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Inferno
 {
     internal class TCPManager
     {
-        private int port = 50085;
+        private readonly Encoding encoding;
+        private readonly int port = 50085;
+        private readonly List<TcpClient> tcpClients;
         private TcpListener listener;
-        private List<TcpClient> tcpClients;
-        private System.Text.Encoding encoding;
 
         public TCPManager()
         {
             tcpClients = new List<TcpClient>();
-            encoding = System.Text.Encoding.UTF8;
+            encoding = Encoding.UTF8;
         }
 
         public void ServerStartAsync()
         {
-            this.listener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), port);
-            this.listener.Start();
+            listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+            listener.Start();
             Debug.Print("待受を開始しました");
             Accept();
         }
@@ -37,10 +38,10 @@ namespace Inferno
         {
             while (true)
             {
-                TcpClient client = await listener.AcceptTcpClientAsync();
+                var client = await listener.AcceptTcpClientAsync();
                 client.NoDelay = true;
                 tcpClients.Add(client);
-                Debug.Print("接続{0}", ((IPEndPoint)(client.Client.RemoteEndPoint)).Address);
+                Debug.Print("接続{0}", ((IPEndPoint)client.Client.RemoteEndPoint).Address);
             }
         }
 
@@ -63,9 +64,9 @@ namespace Inferno
             foreach (var client in tcpClients)
             {
                 //接続が切れていないか再確認
-                if (!client.Connected) { continue; }
+                if (!client.Connected) continue;
                 var ns = client.GetStream();
-                byte[] message_byte = encoding.GetBytes(message);
+                var message_byte = encoding.GetBytes(message);
                 try
                 {
                     do
@@ -76,10 +77,7 @@ namespace Inferno
                 catch (Exception e)
                 {
                     Debug.Print(e.Message);
-                    if (!client.Connected)
-                    {
-                        client.Close();
-                    }
+                    if (!client.Connected) client.Close();
                 }
             }
         }

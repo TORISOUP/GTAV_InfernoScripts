@@ -1,8 +1,8 @@
-﻿using Inferno;
+﻿using System;
+using Inferno;
 using Inferno.ChaosMode;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 
 namespace InfernoTest
 {
@@ -23,15 +23,16 @@ namespace InfernoTest
 
             Assert.AreEqual(100, result.Radius);
             Assert.AreEqual(3, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter, result.DefaultMissionCharacterTreatment);
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter,
+                result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(50, result.Interval);
             Assert.AreEqual(60, result.ShootAccuracy);
             Assert.AreEqual(100, result.WeaponChangeProbabillity);
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new Weapon[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
-            CollectionAssert.AreEqual(new Weapon[] { Weapon.MICROSMG }, result.WeaponListForDriveBy);
+            CollectionAssert.AreEqual(new[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
+            CollectionAssert.AreEqual(new[] { Weapon.MICROSMG }, result.WeaponListForDriveBy);
         }
 
         [TestMethod]
@@ -39,14 +40,16 @@ namespace InfernoTest
         {
             //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
             var testLoader =
-                new TestChaosModeSettingLoader("{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                new TestChaosModeSettingLoader(
+                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
             //設定されていない要素はデフォルト値
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+                result.DefaultMissionCharacterTreatment);
+            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
 
             //それ以外はjsonの通り
@@ -57,7 +60,7 @@ namespace InfernoTest
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new Weapon[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
+            CollectionAssert.AreEqual(new[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
         }
 
         [TestMethod]
@@ -67,14 +70,15 @@ namespace InfernoTest
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(300, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+                result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(30, result.ShootAccuracy);
             Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
             CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }
@@ -97,7 +101,7 @@ namespace InfernoTest
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
             CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }
@@ -109,14 +113,15 @@ namespace InfernoTest
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(300, result.Radius);
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter, result.DefaultMissionCharacterTreatment);
+            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+                result.DefaultMissionCharacterTreatment);
             Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(30, result.ShootAccuracy);
             Assert.AreEqual(30, result.WeaponChangeProbabillity);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
             CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
         }

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 
-
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("光学迷彩(車両)")]
@@ -27,10 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var vehicles = core.CachedVehicles.Where
                 (x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius));
 
-            foreach (var vehicle in vehicles)
-            {
-                vehicle.IsVisible = false;
-            }
+            foreach (var vehicle in vehicles) vehicle.IsVisible = false;
 
             if (player.IsInVehicle())
             {

@@ -1,53 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using System.Text;
-using System.Threading.Tasks;
-using GTA;
 using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using GTA.Native;
 
 namespace Inferno.InfernoScripts.Player
 {
-    class PlayerGripVehicle : InfernoScript
+    internal class PlayerGripVehicle : InfernoScript
     {
-        private bool _isGriped = false;
-        private Vehicle _vehicle;
+        private bool _isGriped;
         private Vector3 _ofsetPosition;
+        private Vehicle _vehicle;
 
         protected override void Setup()
         {
             //0.3秒間押しっぱなしなら発動
             OnThinnedTickAsObservable
                 .Select(_ => !this.GetPlayerVehicle().IsSafeExist()
-                && !_isGriped
-                && this.IsGamePadPressed(GameKey.Reload)
-                ).Buffer(3, 1)
+                             && !_isGriped
+                             && this.IsGamePadPressed(GameKey.Reload)
+                )
+                .Buffer(3, 1)
                 .Where(x => x.All(v => v))
                 .Subscribe(_ => GripAction());
 
             OnThinnedTickAsObservable
                 .Where(_ => _isGriped)
-                .Subscribe(_ =>
-                {
-                    Grip(PlayerPed, _vehicle, _ofsetPosition);
-                });
+                .Subscribe(_ => { Grip(PlayerPed, _vehicle, _ofsetPosition); });
 
             OnThinnedTickAsObservable
                 .Where(_ => _isGriped && (!this.IsGamePadPressed(GameKey.Reload) || PlayerPed.IsDead))
                 .Subscribe(_ => GripRemove());
 
-            this.OnAbortAsync.Subscribe(_ =>
-            {
-                SetPlayerProof(false);
-            });
+            OnAbortAsync.Subscribe(_ => { SetPlayerProof(false); });
         }
 
         /// <summary>
@@ -69,7 +55,7 @@ namespace Inferno.InfernoScripts.Player
                 PlayerPed.IsFireProof,
                 PlayerPed.IsExplosionProof,
                 hasCollisionProof,
-                PlayerPed.IsMeleeProof, 
+                PlayerPed.IsMeleeProof,
                 false, false, false);
         }
 

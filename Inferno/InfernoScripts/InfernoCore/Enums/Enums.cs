@@ -37,7 +37,7 @@
         VehicleAccelerateKey = 232,
         VehicleForwardTiltKey = 209,
         VehicleBackwardTiltKey = 224
-    };
+    }
 
     public enum FiringPattern
     {
@@ -59,7 +59,6 @@
         BurstFireTank = -490063247
     }
 
-    
 
     public enum Weapon
     {
@@ -177,7 +176,7 @@
         PLAYER_HUNTER = -1625648674,
         ENEMY_LASER = 1566990507,
         SEARCHLIGHT = -844344963,
-        RADAR = -764006018,
+        RADAR = -764006018
     }
 
     public enum ExplosionType
@@ -204,7 +203,7 @@
         SMOKEGRENADELAUNCHER = -1014218325,
         SMOKEGRENADE = -1832600771,
         BZGAS = -515713583,
-        FLARE = -1330848211,
+        FLARE = -1330848211
     }
 
     /// <summary>
@@ -219,7 +218,7 @@
 
     public enum PedTaskAction
     {
-        FALL_WITH_PARACHUTE = 334,
+        FALL_WITH_PARACHUTE = 334
     }
 
     public enum CutSceneOnlyPedHash : uint
@@ -342,6 +341,6 @@
         TrafficWardenCutscene = 0xDE2937F3,
         WadeCutscene = 0xD266D9D6,
         WeiChengCutscene = 0x30DB9D7B,
-        ZimborCutscene = 0xEAACAAF0,
+        ZimborCutscene = 0xEAACAAF0
     }
 }

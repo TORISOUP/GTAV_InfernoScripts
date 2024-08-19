@@ -1,10 +1,4 @@
 ﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
 using Hash = GTA.Native.Hash;
@@ -206,10 +200,15 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="waypoint"></param>
         /// <param name="speed"></param>
-        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed, DrivingStyle drivingStyle)
+        public static void DriveTo(this Vehicle vehicle,
+            Ped ped,
+            Vector3 waypoint,
+            float speed,
+            DrivingStyle drivingStyle)
         {
             if (!vehicle.IsSafeExist() || !ped.IsSafeExist()) return;
-            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, (int)drivingStyle, -1);
+            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1,
+                vehicle.Model.Hash, 1, (int)drivingStyle, -1);
         }
 
         /// <summary>
@@ -265,9 +264,18 @@ namespace Inferno
         /// <param name="unk1">不明</param>
         /// <param name="unk2">不明</param>
         /// <param name="unk3">不明</param>
-        public static void SetProofs(this Entity entity, bool bulletProof, bool fireProof, bool explosionProof, bool collisionProof, bool meleeProof, bool unk1, bool unk2, bool unk3)
+        public static void SetProofs(this Entity entity,
+            bool bulletProof,
+            bool fireProof,
+            bool explosionProof,
+            bool collisionProof,
+            bool meleeProof,
+            bool unk1,
+            bool unk2,
+            bool unk3)
         {
-            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof, meleeProof, unk1, unk2, unk3);
+            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof,
+                meleeProof, unk1, unk2, unk3);
         }
 
         /// <summary>
@@ -319,7 +327,7 @@ namespace Inferno
         }
 
         /// <summary>
-        ///　警官とし設定する
+        /// 警官とし設定する
         /// </summary>
         /// <param name="ped"></param>
         /// <param name="isPed"></param>
@@ -542,7 +550,7 @@ namespace Inferno
             });
         }
 
-        public static unsafe Vector2 GetScreenResolution()
+        public static Vector2 GetScreenResolution()
         {
             return new Vector2(UI.WIDTH, UI.HEIGHT);
         }
@@ -609,11 +617,14 @@ namespace Inferno
             Function.Call(Hash.REQUEST_COLLISION_AT_COORD, p.X, p.Y, p.Z);
         }
 
-        public static void ShootSingleBulletBetweenCoords(Vector3 start, Vector3 end, int damage, WeaponHash weapon,
-            Ped owner, float speed)
+        public static void ShootSingleBulletBetweenCoords(Vector3 start,
+            Vector3 end,
+            int damage,
+            WeaponHash weapon,
+            Ped owner,
+            float speed)
         {
             Function.Call(Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
-
                 start.X, start.Y, start.Z,
                 end.X, end.Y, end.Z,
                 damage, 1,

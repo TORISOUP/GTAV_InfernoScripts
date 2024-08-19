@@ -1,10 +1,4 @@
 ﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 
 namespace Inferno.ChaosMode
 {
@@ -21,10 +15,8 @@ namespace Inferno.ChaosMode
         public static void SetNotChaosPed(this Ped ped, bool toggle)
         {
             if (ped.IsSafeExist())
-            {
                 //所持金が555だとカオス化しないキャラクタという意味にする
                 ped.SetPedMoney(toggle ? 555 : 0);
-            }
         }
 
         /// <summary>

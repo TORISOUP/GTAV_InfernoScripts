@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reactive;
+using System.Reactive.Subjects;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System.Reactive;
-using System.Reactive.Subjects;
-
 
 namespace Inferno.InfernoScripts.Parupunte
 {
     /// <summary>
-    ///　デバッグ用Attribute
+    /// デバッグ用Attribute
     /// </summary>
     public class ParupunteDebug : Attribute
     {
@@ -44,11 +37,13 @@ namespace Inferno.InfernoScripts.Parupunte
 
     public class ParupunteConfigAttribute : Attribute
     {
+        public string DefaultEndMessage = "";
         public string DefaultStartMessage = "";
         public string DefaultSubMessage = "";
-        public string DefaultEndMessage = "";
 
-        public ParupunteConfigAttribute(string defaultStartMessage = "", string defaultEndMessage = "", string defaultSubMessage = "")
+        public ParupunteConfigAttribute(string defaultStartMessage = "",
+            string defaultEndMessage = "",
+            string defaultSubMessage = "")
         {
             DefaultStartMessage = defaultStartMessage;
             DefaultEndMessage = defaultEndMessage;
@@ -58,7 +53,45 @@ namespace Inferno.InfernoScripts.Parupunte
 
     internal abstract class ParupunteScript
     {
-        private bool IsFinished = false;
+        protected readonly ParupunteConfigElement Config;
+
+        /// <summary>
+        /// コア
+        /// </summary>
+        protected ParupunteCore core;
+
+        /// <summary>
+        /// このパルプンテスクリプト中で使用しているcoroutine一覧
+        /// </summary>
+        protected List<uint> coroutineIds;
+
+        /// <summary>
+        /// 終了メッセージの表示時間[s]
+        /// </summary>
+        public float EndMessageDisplayTime = 2.0f;
+
+        private bool IsFinished;
+        private Subject<Unit> onFinishedSubject;
+
+        private Subject<Unit> onUpdateSubject;
+
+        protected Random Random;
+
+        /// <summary>
+        /// 汎用カウンタ（終了時にCompletedになる）
+        /// </summary>
+        protected ReduceCounter ReduceCounter;
+
+        protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
+        {
+            this.core = core;
+            coroutineIds = new List<uint>();
+            core.LogWrite(ToString());
+            IsFinished = false;
+            Random = new Random();
+
+            Config = element;
+        }
 
         /// <summary>
         /// 開始時に表示されるメインメッセージ
@@ -77,48 +110,15 @@ namespace Inferno.InfernoScripts.Parupunte
         public Func<string> EndMessage { get; protected set; }
 
         /// <summary>
-        /// 終了メッセージの表示時間[s]
-        /// </summary>
-        public float EndMessageDisplayTime = 2.0f;
-
-        /// <summary>
         /// パルプンテの処理が実行中であるか
         /// </summary>
         public bool IsActive { get; private set; } = true;
 
-        /// <summary>
-        /// コア
-        /// </summary>
-        protected ParupunteCore core;
+        protected IObservable<Unit> OnUpdateAsObservable
+            => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
 
-        /// <summary>
-        /// このパルプンテスクリプト中で使用しているcoroutine一覧
-        /// </summary>
-        protected List<uint> coroutineIds;
-
-        private Subject<Unit> onUpdateSubject;
-        private Subject<Unit> onFinishedSubject;
-
-        /// <summary>
-        /// 汎用カウンタ（終了時にCompletedになる）
-        /// </summary>
-        protected ReduceCounter ReduceCounter;
-
-        protected Random Random;
-
-        protected readonly ParupunteConfigElement Config;
-
-        protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
-        {
-            this.core = core;
-            coroutineIds = new List<uint>();
-            core.LogWrite(this.ToString());
-            IsFinished = false;
-            Random = new Random();
-
-            Config = element;
-
-        }
+        protected IObservable<Unit> OnFinishedAsObservable
+            => onFinishedSubject ?? (onFinishedSubject = new Subject<Unit>());
 
         /// <summary>
         /// OnSetUpのあとに呼ばれる
@@ -134,7 +134,10 @@ namespace Inferno.InfernoScripts.Parupunte
         /// パルプンテの名前が出るより前に1回だけ実行される
         /// コンストラクタでの初期化の代わりにこっちを使う
         /// </summary>
-        public virtual void OnSetUp() {; }
+        public virtual void OnSetUp()
+        {
+            ;
+        }
 
         /// <summary>
         /// パルプンテの名前が出たあとに1回だけ実行される
@@ -146,12 +149,6 @@ namespace Inferno.InfernoScripts.Parupunte
             onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
         }
-
-        protected IObservable<Unit> OnUpdateAsObservable
-            => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
-
-        protected IObservable<Unit> OnFinishedAsObservable
-            => onFinishedSubject ?? (onFinishedSubject = new Subject<Unit>());
 
         /// <summary>
         /// 100msごとに実行される
@@ -173,17 +170,11 @@ namespace Inferno.InfernoScripts.Parupunte
             onFinishedSubject?.OnNext(Unit.Default);
             onFinishedSubject?.OnCompleted();
 
-            foreach (var id in coroutineIds)
-            {
-                StopCoroutine(id);
-            }
+            foreach (var id in coroutineIds) StopCoroutine(id);
             coroutineIds.Clear();
 
             var endMessage = EndMessage();
-            if (!string.IsNullOrEmpty(endMessage))
-            {
-                core.DrawParupunteText(endMessage, EndMessageDisplayTime);
-            }
+            if (!string.IsNullOrEmpty(endMessage)) core.DrawParupunteText(endMessage, EndMessageDisplayTime);
         }
 
         /// <summary>
@@ -253,6 +244,5 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             core.AutoReleaseOnGameEnd(entity);
         }
-
     }
 }

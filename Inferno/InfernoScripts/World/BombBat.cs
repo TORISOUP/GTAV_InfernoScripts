@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GTA;
-using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using GTA.Native;
-
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.World
@@ -20,10 +12,10 @@ namespace Inferno.InfernoScripts.World
     /// <summary>
     /// 人はバットで殴られると爆発する
     /// </summary>
-    class BombBat : InfernoScript
+    internal class BombBat : InfernoScript
     {
         private readonly string Keyword = "batman";
-        private List<Ped> pPed = new List<Ped>();
+        private readonly List<Ped> pPed = new();
 
         protected override void Setup()
         {
@@ -34,7 +26,7 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("BombBat:" + IsActive, 3.0f);
+                    DrawText("BombBat:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -56,10 +48,8 @@ namespace Inferno.InfernoScripts.World
 
         private void BomBatAction(Ped ped)
         {
-
             if (ped.HasBeenDamagedBy(Weapon.BAT))
             {
-
                 GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade, 40.0f,
                     0.5f);
 
@@ -94,7 +84,6 @@ namespace Inferno.InfernoScripts.World
                 if (!ped.IsInRangeOf(PlayerPed.Position, 10)) return;
                 Shock(ped);
                 Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
-
             }
             else if (ped.HasBeenDamagedBy(Weapon.Poolcue))
             {
@@ -111,12 +100,14 @@ namespace Inferno.InfernoScripts.World
         {
             var playerPos = PlayerPed.Position;
             GTA.World.AddExplosion(playerPos + Vector3.WorldUp * 10, GTA.ExplosionType.Grenade, 0.01f, 0.2f);
+
             #region Ped
+
             foreach (var p in CachedPeds.Where(
-                x => x.IsSafeExist()
-                     && x.IsInRangeOf(damagedPed.Position, 10)
-                     && x.IsAlive
-                     && !x.IsCutsceneOnlyPed()))
+                         x => x.IsSafeExist()
+                              && x.IsInRangeOf(damagedPed.Position, 10)
+                              && x.IsAlive
+                              && !x.IsCutsceneOnlyPed()))
             {
                 p.SetToRagdoll();
                 p.ApplyForce(Vector3.WorldUp * 5f);
@@ -127,15 +118,12 @@ namespace Inferno.InfernoScripts.World
             #region Vehicle
 
             foreach (var v in CachedVehicles.Where(
-                x => x.IsSafeExist()
-                     && x.IsInRangeOf(damagedPed.Position, 10)
-                     && x.IsAlive))
-            {
+                         x => x.IsSafeExist()
+                              && x.IsInRangeOf(damagedPed.Position, 10)
+                              && x.IsAlive))
                 v.ApplyForce(Vector3.WorldUp * 5f, Vector3.RandomXYZ());
-            }
 
             #endregion
-
         }
     }
 }

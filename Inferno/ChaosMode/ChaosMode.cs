@@ -1,67 +1,59 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Native;
-using Inferno.ChaosMode.WeaponProvider;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Forms;
-using Inferno.InfernoScripts.Event;
+using GTA;
+using GTA.Native;
+using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.Event.ChasoMode;
-
 
 namespace Inferno.ChaosMode
 {
     internal class ChaosMode : InfernoScript
     {
-        private readonly string Keyword = "chaos";
-        private CharacterChaosChecker chaosChecker;
-
         /// <summary>
         /// カオス化済み市民一覧
         /// </summary>
-        private HashSet<int> chaosedPedList = new HashSet<int>();
+        private readonly HashSet<int> chaosedPedList = new();
 
-        private List<uint> coroutineIds = new List<uint>();
+        private readonly List<uint> coroutineIds = new();
 
-        /// <summary>
-        /// WeaponProvider
-        /// </summary>
-        private IWeaponProvider defaultWeaponProvider;
-        private SingleWeaponProvider singleWeaponProvider;
-
-        private IWeaponProvider CurrentWeaponProvider => singleWeaponProvider ?? defaultWeaponProvider;
-
-        readonly private uint[] fishHashes = {
-           (uint) PedHash.Fish,
-           (uint) PedHash.HammerShark,
-           (uint) PedHash.Dolphin,
-           (uint) PedHash.Humpback,
-           (uint) PedHash.KillerWhale,
-           (uint) PedHash.Stingray,
-           (uint) PedHash.TigerShark
+        private readonly uint[] fishHashes =
+        {
+            (uint)PedHash.Fish,
+            (uint)PedHash.HammerShark,
+            (uint)PedHash.Dolphin,
+            (uint)PedHash.Humpback,
+            (uint)PedHash.KillerWhale,
+            (uint)PedHash.Stingray,
+            (uint)PedHash.TigerShark
         };
+
+        private readonly string Keyword = "chaos";
+
+        private bool _isBaseball;
+        private CharacterChaosChecker chaosChecker;
 
         /// <summary>
         /// 設定
         /// </summary>
         private ChaosModeSetting chaosModeSetting;
 
+        private int chaosRelationShipId;
+
         private MissionCharacterTreatmentType currentTreatType =
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
+        /// <summary>
+        /// WeaponProvider
+        /// </summary>
+        private IWeaponProvider defaultWeaponProvider;
+
         private MissionCharacterTreatmentType nextTreatType;
+        private SingleWeaponProvider singleWeaponProvider;
 
-        private bool _isBaseball = false;
-
-        private int chaosRelationShipId;
+        private IWeaponProvider CurrentWeaponProvider => singleWeaponProvider ?? defaultWeaponProvider;
 
         protected override void Setup()
         {
@@ -74,7 +66,8 @@ namespace Inferno.ChaosMode
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
 
-            defaultWeaponProvider = new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
+            defaultWeaponProvider =
+                new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
 
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
@@ -85,13 +78,15 @@ namespace Inferno.ChaosMode
                     StopAllChaosCoroutine();
                     if (IsActive)
                     {
-                        DrawText("ChaosMode:On/" + currentTreatType.ToString(), 3.0f);
-                        World.SetRelationshipBetweenGroups(Relationship.Hate, chaosRelationShipId, PlayerPed.RelationshipGroup);
+                        DrawText("ChaosMode:On/" + currentTreatType);
+                        World.SetRelationshipBetweenGroups(Relationship.Hate, chaosRelationShipId,
+                            PlayerPed.RelationshipGroup);
                     }
                     else
                     {
-                        DrawText("ChaosMode:Off", 3.0f);
-                        World.SetRelationshipBetweenGroups(Relationship.Neutral, chaosRelationShipId, PlayerPed.RelationshipGroup);
+                        DrawText("ChaosMode:Off");
+                        World.SetRelationshipBetweenGroups(Relationship.Neutral, chaosRelationShipId,
+                            PlayerPed.RelationshipGroup);
                     }
                 });
 
@@ -103,14 +98,14 @@ namespace Inferno.ChaosMode
                 .Do(_ =>
                 {
                     nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
-                    DrawText("CharacterChaos:" + nextTreatType.ToString(), 1.1f);
+                    DrawText("CharacterChaos:" + nextTreatType, 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
                     currentTreatType = nextTreatType;
                     chaosChecker.MissionCharacterTreatment = nextTreatType;
-                    DrawText("CharacterChaos:" + currentTreatType.ToString() + "[OK]", 3.0f);
+                    DrawText("CharacterChaos:" + currentTreatType + "[OK]");
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
                 });
@@ -120,13 +115,9 @@ namespace Inferno.ChaosMode
                 {
                     _isBaseball = !_isBaseball;
                     if (_isBaseball)
-                    {
-                        DrawText("BaseBallMode:On", 3.0f);
-                    }
+                        DrawText("BaseBallMode:On");
                     else
-                    {
-                        DrawText("BaseBallMode:Off", 3.0f);
-                    }
+                        DrawText("BaseBallMode:Off");
                 });
 
             //interval設定
@@ -141,7 +132,7 @@ namespace Inferno.ChaosMode
 
             //プレイヤが死んだらリセット
             oneSecondTich
-                 .Where(_ => PlayerPed.IsSafeExist())
+                .Where(_ => PlayerPed.IsSafeExist())
                 .Select(_ => PlayerPed.IsDead)
                 .DistinctUntilChanged()
                 .Where(x => x)
@@ -170,13 +161,12 @@ namespace Inferno.ChaosMode
                         singleWeaponProvider = new SingleWeaponProvider(s.Weapon);
                     }
                 });
-
         }
 
         private void CitizenChaos()
         {
             if (!PlayerPed.IsSafeExist()) return;
-            
+
             //まだ処理をしていない市民に対してコルーチンを回す
             var nearPeds =
                 CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
@@ -194,12 +184,8 @@ namespace Inferno.ChaosMode
         /// </summary>
         private void StopAllChaosCoroutine()
         {
-            foreach (var id in coroutineIds)
-            {
-                StopCoroutine(id);
-            }
+            foreach (var id in coroutineIds) StopCoroutine(id);
             coroutineIds.Clear();
-
         }
 
         /// <summary>
@@ -207,9 +193,8 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerable<Object> ChaosPedAction(Ped ped)
+        private IEnumerable<object> ChaosPedAction(Ped ped)
         {
-
             //魚なら除外する
             var m = (uint)ped.Model.Hash;
             if (fishHashes.Contains(m)) yield break;
@@ -242,36 +227,23 @@ namespace Inferno.ChaosMode
                     ped.RemovePedFromGroup();
                 }
             }
+
             //以下ループ
             do
             {
-                if (!ped.IsSafeExist() || ped.IsDead || !PlayerPed.IsSafeExist())
-                {
-                    break;
-                }
+                if (!ped.IsSafeExist() || ped.IsDead || !PlayerPed.IsSafeExist()) break;
 
-                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10))
-                {
-                    break;
-                }
+                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10)) break;
 
-                if (!chaosChecker.IsPedChaosAvailable(ped))
-                {
-                    break;
-                }
+                if (!chaosChecker.IsPedChaosAvailable(ped)) break;
 
                 //武器を変更する
                 if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
-                {
                     equipedWeapon = GiveWeaponTpPed(ped);
-                }
 
                 yield return RandomWait();
 
-                if (!ped.IsSafeExist() || ped.IsDead)
-                {
-                    break;
-                }
+                if (!ped.IsSafeExist() || ped.IsDead) break;
 
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
@@ -280,13 +252,10 @@ namespace Inferno.ChaosMode
                 foreach (var s in WaitForSeconds(5 + (float)Random.NextDouble() * 3))
                 {
                     if (ped.IsSafeExist() && ped.IsFleeing())
-                    {
                         //市民が攻撃をやめて逃げ始めたら再度セットする
                         break;
-                    }
                     yield return s;
                 }
-
             } while (ped.IsSafeExist() && ped.IsAlive);
 
             chaosedPedList.Remove(pedId);
@@ -305,14 +274,13 @@ namespace Inferno.ChaosMode
             //プレイヤへの攻撃補正が設定されているならプレイヤを攻撃対象にする
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
                 Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
-            {
                 return PlayerPed;
-            }
 
             //100m以内の市民
             var aroundPeds =
-                CachedPeds.Concat(new[] { PlayerPed }).Where(
-                    x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
+                CachedPeds.Concat(new[] { PlayerPed })
+                    .Where(
+                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
                     .ToArray();
 
             //100m以内の市民のうち、より近い人を選出
@@ -368,7 +336,6 @@ namespace Inferno.ChaosMode
                     //TODO:車から投擲物を投げる方法を調べる
                     ped.Task.ClearAll();
                     ped.TaskDriveBy(target, FiringPattern.BurstFireDriveby);
-
                 }
                 else
                 {
@@ -376,17 +343,11 @@ namespace Inferno.ChaosMode
                     if (chaosModeSetting.IsStupidShooting)
                     {
                         if (equipWeapon.IsProjectileWeapon())
-                        {
                             ped.ThrowProjectile(target.Position);
-                        }
                         else if (equipWeapon.IsShootWeapon())
-                        {
                             ped.Task.ShootAt(target, 10000);
-                        }
                         else
-                        {
                             ped.Task.FightAgainst(target, 60000);
-                        }
                     }
                     else
                     {
@@ -432,15 +393,11 @@ namespace Inferno.ChaosMode
                 //車に乗っているなら車用の武器を渡す
                 var weapon = Weapon.UNARMED;
                 if (_isBaseball)
-                {
                     weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
-                }
                 else
-                {
                     weapon = ped.IsInVehicle()
                         ? CurrentWeaponProvider.GetRandomDriveByWeapon()
                         : CurrentWeaponProvider.GetRandomAllWeapons();
-                }
 
                 var weaponhash = (int)weapon;
 
@@ -454,6 +411,7 @@ namespace Inferno.ChaosMode
             {
                 LogWrite("AttachPedWeaponError!" + e.Message);
             }
+
             return Weapon.UNARMED;
         }
     }

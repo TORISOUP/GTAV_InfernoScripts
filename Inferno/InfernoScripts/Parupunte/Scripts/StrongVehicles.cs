@@ -1,12 +1,5 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System.Linq;
-
+﻿using System.Linq;
+using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -34,15 +27,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var vehicles = core.CachedVehicles.Where(
                 x => x.IsSafeExist() && x.IsInRangeOf(player.Position, range));
 
-            foreach (var vehicle in vehicles)
-            {
-                EnhanceVehicleDurability(vehicle);
-            }
+            foreach (var vehicle in vehicles) EnhanceVehicleDurability(vehicle);
 
-            if (player.IsInVehicle())
-            {
-                EnhanceVehicleDurability(player.CurrentVehicle);
-            }
+            if (player.IsInVehicle()) EnhanceVehicleDurability(player.CurrentVehicle);
         }
 
         private void EnhanceVehicleDurability(Vehicle vehicle)

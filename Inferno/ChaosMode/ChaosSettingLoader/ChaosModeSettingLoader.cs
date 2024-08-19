@@ -1,5 +1,5 @@
-﻿using Inferno.ChaosMode.WeaponProvider;
-using System.Linq;
+﻿using System.Linq;
+using Inferno.ChaosMode.WeaponProvider;
 using Inferno.Utilities;
 
 namespace Inferno.ChaosMode

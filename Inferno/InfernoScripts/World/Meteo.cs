@@ -1,59 +1,16 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
-using Inferno.ChaosMode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using GTA.Math;
 using GTA.Native;
 using Inferno.Utilities;
-
 
 namespace Inferno
 {
     internal class Meteo : InfernoScript
     {
-
-        #region config
-        class MeteoConfig : InfernoConfig
-        {
-            /// <summary>
-            /// プレイヤを中心としたメテオ落下範囲[m]
-            /// </summary>
-            public int Radius { get; set; } = 30;
-
-            /// <summary>
-            /// メテオを落下させるのかの判定頻度[ms]
-            /// </summary>
-            public int DurationMillSeconds { get; set; } = 1000;
-
-            /// <summary>
-            /// メテオを落下させる確率
-            /// </summary>
-            public int Probability { get; set; } = 25;
-
-            public override bool Validate()
-            {
-                if (Radius <= 0) return false;
-                if (DurationMillSeconds <= 0) return false;
-                if (Probability <= 0 || Probability > 100) return false;
-                return true;
-            }
-        }
-
-        protected override string ConfigFileName { get; } = "Meteo.conf";
-        private MeteoConfig config;
-        private int Radius => config?.Radius ?? 30;
-        private int DurationMillSeconds => config?.DurationMillSeconds ?? 1000;
-        private int Probability => config?.Probability ?? 25;
-        #endregion
-
-        private readonly List<Vector3> meteoLightPositionList = new List<Vector3>();
+        private readonly List<Vector3> meteoLightPositionList = new();
 
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
 
@@ -65,7 +22,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("Meteo:" + IsActive, 3.0f);
+                    DrawText("Meteo:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -77,13 +34,11 @@ namespace Inferno
                 {
                     var insensity = 10;
                     foreach (var point in meteoLightPositionList.ToArray())
-                    {
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
-                    }
                 });
 
             CreateTickAsObservable(TimeSpan.FromMilliseconds(DurationMillSeconds))
-               .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
+                .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
                 .Subscribe(_ => ShootMeteo());
         }
 
@@ -119,8 +74,7 @@ namespace Inferno
                 var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
 
                 NativeFunctions.ShootSingleBulletBetweenCoords(
-                      createPosition, targetPosition, 100, weapon, ped, 200);
-
+                    createPosition, targetPosition, 100, weapon, ped, 200);
             }
             catch (Exception ex)
             {
@@ -141,5 +95,40 @@ namespace Inferno
             meteoLightPositionList.Remove(position);
         }
 
+        #region config
+
+        private class MeteoConfig : InfernoConfig
+        {
+            /// <summary>
+            /// プレイヤを中心としたメテオ落下範囲[m]
+            /// </summary>
+            public int Radius { get; } = 30;
+
+            /// <summary>
+            /// メテオを落下させるのかの判定頻度[ms]
+            /// </summary>
+            public int DurationMillSeconds { get; } = 1000;
+
+            /// <summary>
+            /// メテオを落下させる確率
+            /// </summary>
+            public int Probability { get; } = 25;
+
+            public override bool Validate()
+            {
+                if (Radius <= 0) return false;
+                if (DurationMillSeconds <= 0) return false;
+                if (Probability <= 0 || Probability > 100) return false;
+                return true;
+            }
+        }
+
+        protected override string ConfigFileName { get; } = "Meteo.conf";
+        private MeteoConfig config;
+        private int Radius => config?.Radius ?? 30;
+        private int DurationMillSeconds => config?.DurationMillSeconds ?? 1000;
+        private int Probability => config?.Probability ?? 25;
+
+        #endregion
     }
 }

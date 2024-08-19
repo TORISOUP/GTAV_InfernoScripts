@@ -1,12 +1,6 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System.Collections.Generic;
+using GTA;
 using GTA.Native;
-using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -41,16 +35,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var s in WaitForSeconds(1))
             {
-                var taxi = GTA.World.CreateVehicle(GTA.Native.VehicleHash.Taxi, player.Position.AroundRandom2D(20));
+                var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, player.Position.AroundRandom2D(20));
 
                 if (taxi.IsSafeExist())
                 {
                     taxi.MarkAsNoLongerNeeded();
                     var ped = taxi.CreateRandomPedAsDriver();
-                    if (ped.IsSafeExist()) { ped.MarkAsNoLongerNeeded(); }
+                    if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
                 }
+
                 yield return null;
             }
+
             ParupunteEnd();
         }
 

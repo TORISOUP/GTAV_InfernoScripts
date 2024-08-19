@@ -1,39 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("くるまついか")]
-    class SpawnVheicle : ParupunteScript
+    internal class SpawnVheicle : ParupunteScript
     {
-        private VehicleHash vehicleHash;
-        private String _name;
-        private Vehicle _veh;
+        private string _name;
         private Ped _ped;
+        private Vehicle _veh;
+        private VehicleHash vehicleHash;
+
         public SpawnVheicle(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
-
         }
 
         public override void OnSetUp()
         {
             vehicleHash = Enum
-                 .GetValues(typeof(VehicleHash))
-                 .Cast<VehicleHash>()
-                 .OrderBy(x => Random.Next())
-                 .FirstOrDefault();
+                .GetValues(typeof(VehicleHash))
+                .Cast<VehicleHash>()
+                .OrderBy(x => Random.Next())
+                .FirstOrDefault();
 
             var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)vehicleHash);
             _name = Game.GetGXTEntry(vehicleGxtEntry);
@@ -75,6 +67,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     yield return null;
                 }
             }
+
             ParupunteEnd();
         }
     }

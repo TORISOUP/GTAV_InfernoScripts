@@ -1,16 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
-using System;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -18,9 +11,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("おさかなてんごく")]
     internal class FishHeaven : ParupunteScript
     {
-        private HashSet<int> vehicles = new HashSet<int>();
-        private Model fishModel = new Model(PedHash.TigerShark);
-        private List<Ped> createdFishList = new List<Ped>();
+        private readonly List<Ped> createdFishList = new();
+        private readonly Model fishModel = new(PedHash.TigerShark);
+        private readonly HashSet<int> vehicles = new();
 
         public FishHeaven(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -30,9 +23,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
-            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            }
 
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
@@ -44,10 +35,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnFinished()
         {
-            foreach (var x in createdFishList.Where(x => x.IsSafeExist()))
-            {
-                x.Detach();
-            }
+            foreach (var x in createdFishList.Where(x => x.IsSafeExist())) x.Detach();
         }
 
         protected override void OnUpdate()
@@ -55,12 +43,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //周辺車両を監視
             var playerPos = core.PlayerPed.Position;
             foreach (var v in core.CachedVehicles.Where(
-                x => x.IsSafeExist()
-                && !vehicles.Contains(x.Handle)
-                && x.IsAlive
-                && x.IsInRangeOf(playerPos, 50)
-                && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist()
-                ))
+                         x => x.IsSafeExist()
+                              && !vehicles.Contains(x.Handle)
+                              && x.IsAlive
+                              && x.IsInRangeOf(playerPos, 50)
+                              && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist()
+                     ))
             {
                 vehicles.Add(v.Handle);
                 StartCoroutine(CitizenVehicleCoroutine(v));
@@ -86,13 +74,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     StartCoroutine(ShootFish(veh, f));
                     yield break;
                 }
+
                 yield return null;
             }
 
-            if (veh.IsSafeExist())
-            {
-                StartCoroutine(ShootFish(veh, f));
-            }
+            if (veh.IsSafeExist()) StartCoroutine(ShootFish(veh, f));
         }
 
         /// <summary>
@@ -129,6 +115,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (!IsActive) yield break;
                 yield return null;
             }
+
             //魚発射
             StartCoroutine(ShootFish(core.PlayerPed.CurrentVehicle, p));
         }
@@ -158,6 +145,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
                 yield break;
             }
+
             fish.Detach();
             fish.IsInvincible = false;
             fish.RequestCollision();
@@ -166,10 +154,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             yield return null;
 
-            if (fish.IsSafeExist())
-            {
-                fish.Velocity = fish.ForwardVector * (100 + veh.Speed);
-            }
+            if (fish.IsSafeExist()) fish.Velocity = fish.ForwardVector * (100 + veh.Speed);
 
             //速度が一定以下になったら爆発
             foreach (var x in WaitForSeconds(10))
@@ -179,15 +164,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
                     yield break;
                 }
+
                 if (fish.Velocity.Length() < 6) break;
                 yield return null;
             }
 
             if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
-            if (!fish.IsSafeExist())
-            {
-                yield break;
-            }
+            if (!fish.IsSafeExist()) yield break;
             GTA.World.AddExplosion(fish.Position, GTA.ExplosionType.Grenade, 1.0f, 1.0f);
         }
 
@@ -199,7 +182,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var scale = 3.0f;
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0,
+                0, 0);
         }
     }
 }

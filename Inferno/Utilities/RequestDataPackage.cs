@@ -8,16 +8,41 @@ namespace Inferno
     [DataContract]
     internal class RequestDataPackage
     {
-        private DataContractJsonSerializer jsonSerializer;
+        private readonly DataContractJsonSerializer jsonSerializer;
+
+        /// <summary>
+        /// キャラクタのアニメーション
+        /// </summary>
+        [DataMember] public string emotion;
+
+        /// <summary>
+        /// 運営コメントかどうか
+        /// </summary>
+        [DataMember] public bool isInterrupted;
+
+        /// <summary>
+        /// コメント投稿者
+        /// </summary>
+        [DataMember] public string name;
+
+        /// <summary>
+        /// コメントのカラー
+        /// </summary>
+        [DataMember] public string tag;
+
+        /// <summary>
+        /// 読み上げるメッセージ
+        /// </summary>
+        [DataMember] public string text;
 
         public RequestDataPackage(string text)
         {
             jsonSerializer = new DataContractJsonSerializer(typeof(RequestDataPackage));
-            this.name = "";
-            this.isInterrupted = true;
+            name = "";
+            isInterrupted = true;
             this.text = text;
-            this.tag = "";
-            this.emotion = "";
+            tag = "";
+            emotion = "";
         }
 
         public RequestDataPackage()
@@ -27,7 +52,7 @@ namespace Inferno
 
         public string ToJson()
         {
-            string result = "";
+            var result = "";
             using (var stream = new MemoryStream())
             {
                 jsonSerializer.WriteObject(stream, this);
@@ -36,6 +61,7 @@ namespace Inferno
                 var reader = new StreamReader(stream);
                 result = reader.ReadToEnd();
             }
+
             return result;
         }
 
@@ -47,35 +73,5 @@ namespace Inferno
                 return (RequestDataPackage)jsonSerializer.ReadObject(stream);
             }
         }
-
-        /// <summary>
-        /// キャラクタのアニメーション
-        /// </summary>
-        [DataMember]
-        public string emotion;
-
-        /// <summary>
-        /// コメントのカラー
-        /// </summary>
-        [DataMember]
-        public string tag;
-
-        /// <summary>
-        /// 読み上げるメッセージ
-        /// </summary>
-        [DataMember]
-        public string text;
-
-        /// <summary>
-        /// コメント投稿者
-        /// </summary>
-        [DataMember]
-        public string name;
-
-        /// <summary>
-        /// 運営コメントかどうか
-        /// </summary>
-        [DataMember]
-        public bool isInterrupted;
     }
 }

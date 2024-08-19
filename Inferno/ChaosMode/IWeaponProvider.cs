@@ -2,7 +2,6 @@
 {
     internal interface IWeaponProvider
     {
-
         Weapon GetRandomCloseWeapons();
 
         Weapon GetRandomAllWeapons();

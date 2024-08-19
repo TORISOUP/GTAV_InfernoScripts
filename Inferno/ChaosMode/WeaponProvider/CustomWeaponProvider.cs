@@ -6,13 +6,13 @@ namespace Inferno.ChaosMode.WeaponProvider
 {
     public class CustomWeaponProvider : IWeaponProvider
     {
-        protected Weapon[] CustomShootWeapons;
-        protected Weapon[] CustomClosedWeapons;
-        protected Weapon[] CustomProjectileWeapons;
-        protected Weapon[] CustomExcludeClosedWeapons;
-        protected Weapon[] CustomDriveByWeapons;
-        protected Weapon[] AllWeapons;
         private readonly Random _random;
+        protected Weapon[] AllWeapons;
+        protected Weapon[] CustomClosedWeapons;
+        protected Weapon[] CustomDriveByWeapons;
+        protected Weapon[] CustomExcludeClosedWeapons;
+        protected Weapon[] CustomProjectileWeapons;
+        protected Weapon[] CustomShootWeapons;
 
         /// <summary>
         /// 指定した武器リストからランダムに武器を提供する
@@ -29,17 +29,21 @@ namespace Inferno.ChaosMode.WeaponProvider
             CustomClosedWeapons = weaponArray.Intersect(ChaosModeWeapons.ClosedWeapons).ToArray();
             CustomProjectileWeapons = weaponArray.Intersect(ChaosModeWeapons.ProjectileWeapons).ToArray();
             CustomDriveByWeapons = weaponListForDriveBy.Intersect(ChaosModeWeapons.DriveByWeapons).ToArray();
-            CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons).Concat(CustomClosedWeapons).ToArray();
+            CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons)
+                .Concat(CustomClosedWeapons)
+                .ToArray();
         }
 
         public Weapon GetRandomCloseWeapons()
         {
-            return CustomClosedWeapons.Length == 0 ? Weapon.UNARMED : CustomClosedWeapons[_random.Next(0, CustomClosedWeapons.Length)];
+            return CustomClosedWeapons.Length == 0
+                ? Weapon.UNARMED
+                : CustomClosedWeapons[_random.Next(0, CustomClosedWeapons.Length)];
         }
 
         public Weapon GetRandomAllWeapons()
         {
-            return AllWeapons.Length ==0 ? Weapon.UNARMED : AllWeapons[_random.Next(0, AllWeapons.Length)];
+            return AllWeapons.Length == 0 ? Weapon.UNARMED : AllWeapons[_random.Next(0, AllWeapons.Length)];
         }
 
         /// <summary>

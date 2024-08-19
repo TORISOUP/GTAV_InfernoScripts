@@ -1,14 +1,8 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
+﻿using System;
 using System.Reactive;
-using System.Reactive.Subjects;
-
-using System;
 using System.Reactive.Linq;
-using System.Reactive;
 using System.Reactive.Subjects;
+using GTA;
 
 namespace Inferno
 {
@@ -17,11 +11,7 @@ namespace Inferno
     /// </summary>
     internal class DrawingCore : Script
     {
-        public static DrawingCore Instance { get; private set; }
-
-        private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
-
-        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+        private static readonly Subject<Unit> OnTickSubject = new();
 
         public DrawingCore()
         {
@@ -33,5 +23,9 @@ namespace Inferno
                 .Multicast(OnTickSubject)
                 .Connect();
         }
+
+        public static DrawingCore Instance { get; private set; }
+
+        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
     }
 }

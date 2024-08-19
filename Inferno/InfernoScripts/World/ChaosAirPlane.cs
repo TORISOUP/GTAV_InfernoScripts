@@ -1,22 +1,16 @@
-﻿using GTA;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Inferno.Utilities;
-
 
 namespace Inferno
 {
-    class ChaosAirPlaneConfig : InfernoConfig
+    internal class ChaosAirPlaneConfig : InfernoConfig
     {
         public int AirPlaneCount { get; set; } = 2;
 
@@ -31,18 +25,19 @@ namespace Inferno
 
     internal class ChaosAirPlane : InfernoScript
     {
-        protected override string ConfigFileName { get; } = "ChaosAirPlane.conf";
-        protected ChaosAirPlaneConfig config;
-        
-        protected int AirPlaneCount => config?.AirPlaneCount ?? 2;
+        //攻撃半径
+        private readonly float attackRadius = 350;
 
         /// <summary>
         /// 各戦闘機が狙っている場所
         /// </summary>
-        private Dictionary<int, Vector3?> targetArea = new Dictionary<int, Vector3?>();
+        private readonly Dictionary<int, Vector3?> targetArea = new();
 
-        //攻撃半径
-        private float attackRadius = 350;
+        protected ChaosAirPlaneConfig config;
+
+        protected override string ConfigFileName { get; } = "ChaosAirPlane.conf";
+
+        protected int AirPlaneCount => config?.AirPlaneCount ?? 2;
 
         protected override void Setup()
         {
@@ -51,14 +46,11 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("ChaosPlane:" + IsActive, 3.0f);
+                    DrawText("ChaosPlane:" + IsActive);
                 });
 
             OnAllOnCommandObservable
-                .Subscribe(_ =>
-                {
-                    IsActive = true;
-                });
+                .Subscribe(_ => { IsActive = true; });
 
             IsActiveAsObservable.Where(x => x)
                 .Subscribe(_ => StartCoroutine(StartChaosPlanes()));
@@ -74,10 +66,7 @@ namespace Inferno
                         .Where(x => x != null)
                         .Select(x => x.Value);
 
-                    foreach (var point in array)
-                    {
-                        NativeFunctions.CreateLight(point, 255, 30, 30, 10.0f, insensity);
-                    }
+                    foreach (var point in array) NativeFunctions.CreateLight(point, 255, 30, 30, 10.0f, insensity);
                 });
         }
 
@@ -116,16 +105,17 @@ namespace Inferno
                         StartCoroutine(AirPlaneCoroutine(plane, ped, id));
                     }
                 }
+
                 //5秒ごとにチェック
                 yield return WaitForSeconds(5);
             }
         }
 
-        private System.Tuple<Vehicle, Ped> SpawnAirPlane()
+        private Tuple<Vehicle, Ped> SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成
-            var plane = GTA.World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
+            var plane = World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist()) return null;
             AutoReleaseOnGameEnd(plane);
             plane.Speed = 500;
@@ -136,7 +126,7 @@ namespace Inferno
             AutoReleaseOnGameEnd(ped);
             ped.SetNotChaosPed(true);
 
-            return new System.Tuple<Vehicle, Ped>(plane, ped);
+            return new Tuple<Vehicle, Ped>(plane, ped);
         }
 
         /// <summary>
@@ -165,7 +155,8 @@ namespace Inferno
                 {
                     if (!IsPlaneActive(plane, ped))
                     {
-                        break; ;
+                        break;
+                        ;
                     }
 
                     //ターゲットが死亡していたらターゲット変更
@@ -183,6 +174,7 @@ namespace Inferno
 
                     yield return null;
                 }
+
                 yield return null;
             }
 
@@ -192,16 +184,14 @@ namespace Inferno
                 plane.MarkAsNoLongerNeeded();
             }
 
-            if (ped.IsSafeExist())
-            {
-                ped.MarkAsNoLongerNeeded();
-            }
+            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
         }
 
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target, float planeSpeed)
         {
             var tarPos = target.Position;
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, planeSpeed, -1.0, -1.0, 100, -500);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, planeSpeed, -1.0,
+                -1.0, 100, -500);
         }
 
         //キャッシュ市民から一人選出
@@ -212,7 +202,8 @@ namespace Inferno
             //プレイヤの近くの市民
             var targetPeds = CachedPeds
                 .Where(x => x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
-                            && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle)).Concat(new Ped[] { PlayerPed });
+                            && (!x.IsInVehicle() || x.CurrentVehicle != playerVehicle))
+                .Concat(new[] { PlayerPed });
 
             var targetVehicles = CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(PlayerPed.Position, 150)
@@ -237,7 +228,7 @@ namespace Inferno
         {
             var num = Random.Next(3, 5);
             var targetArea = target.Position;
-            var speed = (target == PlayerPed || target == PlayerVehicle.Value) ? 150 : 500;
+            var speed = target == PlayerPed || target == PlayerVehicle.Value ? 150 : 500;
             while (num-- > 0)
             {
                 if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) yield break;

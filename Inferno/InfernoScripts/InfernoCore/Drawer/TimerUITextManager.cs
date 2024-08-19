@@ -1,32 +1,27 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
+﻿using System;
 using System.Reactive;
-using System.Reactive.Subjects;
-
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
 using System.Reactive.Subjects;
+using GTA;
 
 namespace Inferno
 {
     /// <summary>
-    ///　時限式テキスト
+    /// 時限式テキスト
     /// </summary>
     internal class TimerUiTextManager
     {
-        private InfernoScript parent;
+        private readonly InfernoScript parent;
         private ReduceCounter reduceCounter;
+        private readonly Subject<Unit> setTextSubject = new();
         private UIText uiText;
-        private Subject<Unit> setTextSubject = new Subject<Unit>();
-        public IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
 
         public TimerUiTextManager(InfernoScript parent)
         {
             this.parent = parent;
         }
+
+        public IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
 
         /// <summary>
         /// 描画テキスト

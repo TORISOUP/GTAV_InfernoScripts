@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
-using GTA.Math;
 using System.Reactive.Linq;
-
+using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -32,40 +31,35 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     .Where(x => x.IsSafeExist()
                                 && x.IsInRangeOf(player.Position, 80.0f)
                                 && x != player.CurrentVehicle
-
                     );
-                foreach (var veh in targets)
-                {
-                    veh.Speed = 200;
-                }
+                foreach (var veh in targets) veh.Speed = 200;
                 ParupunteEnd();
             });
 
             //TODO 別の場所にHookする
             mainStream =
-            DrawingCore.OnDrawingTickAsObservable
-                .TakeUntil(ReduceCounter.OnFinishedAsync)
-                .Subscribe(_ =>
-                {
-                    var player = core.PlayerPed;
-                    var targets = core.CachedVehicles
-                        .Where(x => x.IsSafeExist()
-                                    && x.IsInRangeOf(player.Position, 80.0f)
-                                    && x != player.CurrentVehicle
-
-                        );
-                    var rate = (1.0f - ReduceCounter.Rate);
-                    foreach (var veh in targets)
+                DrawingCore.OnDrawingTickAsObservable
+                    .TakeUntil(ReduceCounter.OnFinishedAsync)
+                    .Subscribe(_ =>
                     {
-                        if (!veh.IsSafeExist()) continue;
-                        veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;
-                        if (rate > 0.5f)
+                        var player = core.PlayerPed;
+                        var targets = core.CachedVehicles
+                            .Where(x => x.IsSafeExist()
+                                        && x.IsInRangeOf(player.Position, 80.0f)
+                                        && x != player.CurrentVehicle
+                            );
+                        var rate = 1.0f - ReduceCounter.Rate;
+                        foreach (var veh in targets)
                         {
-                            veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
-                            veh.Speed = 40.0f * 2.0f * (rate - 0.5f);
+                            if (!veh.IsSafeExist()) continue;
+                            veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;
+                            if (rate > 0.5f)
+                            {
+                                veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
+                                veh.Speed = 40.0f * 2.0f * (rate - 0.5f);
+                            }
                         }
-                    }
-                });
+                    });
         }
 
         protected override void OnFinished()

@@ -1,10 +1,9 @@
 ﻿using System;
-using GTA.Math;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using System.Reactive.Linq;
-using System.Reactive;
+using System.Windows.Forms;
+using GTA.Math;
 
 namespace Inferno
 {
@@ -16,7 +15,7 @@ namespace Inferno
                 .Where(x => x.KeyCode == Keys.F8)
                 .Subscribe(_ =>
                 {
-                    DrawText("Ragdoll", 3.0f);
+                    DrawText("Ragdoll");
                     StartCoroutine(RagdollCoroutine());
                 });
         }
@@ -24,10 +23,11 @@ namespace Inferno
         private IEnumerable<object> RagdollCoroutine()
         {
             var peds = CachedPeds.Where(
-                x => x.IsSafeExist()
-                     && x.IsRequiredForMission()
-                     && x.CanRagdoll
-                     && x.IsInRangeOf(PlayerPed.Position, 15)).ToArray();
+                    x => x.IsSafeExist()
+                         && x.IsRequiredForMission()
+                         && x.CanRagdoll
+                         && x.IsInRangeOf(PlayerPed.Position, 15))
+                .ToArray();
 
             foreach (var ped in peds)
             {

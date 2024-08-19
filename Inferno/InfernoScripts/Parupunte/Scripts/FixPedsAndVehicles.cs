@@ -1,17 +1,10 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System.Linq;
+using GTA;
 using GTA.Native;
-using System.Linq;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("周辺の人&車両回復", "")]
+    [ParupunteConfigAttribute("周辺の人&車両回復")]
     internal class FixPedsAndVehicles : ParupunteScript
     {
         public FixPedsAndVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -54,10 +47,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 ped.Health = ped.MaxHealth;
 
-                if (ped.Armor < 100)
-                {
-                    ped.Armor = 100;
-                }
+                if (ped.Armor < 100) ped.Armor = 100;
             }
 
             player.Health = player.MaxHealth;

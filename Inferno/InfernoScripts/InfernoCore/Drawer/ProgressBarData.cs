@@ -18,17 +18,14 @@ namespace Inferno
     /// </summary>
     public class ProgressBarData
     {
-        public Point Position { get; }
-        public Color MainColor { get; }
-        public Color BackgorondColor { get; }
-        public int Width { get; }
-        public int Height { get; }
-        public IProgressBar ProgressBarStatus { get; }
-        public int Mergin { get; }
-        public DrawType DrawType { get; }
-
-        public ProgressBarData(IProgressBar barStatus, Point position, Color mainColor, Color backGroundColor,
-            DrawType drawType, int width, int height, int mergin = 10)
+        public ProgressBarData(IProgressBar barStatus,
+            Point position,
+            Color mainColor,
+            Color backGroundColor,
+            DrawType drawType,
+            int width,
+            int height,
+            int mergin = 10)
         {
             Position = position;
             MainColor = mainColor;
@@ -39,5 +36,14 @@ namespace Inferno
             Mergin = mergin;
             DrawType = drawType;
         }
+
+        public Point Position { get; }
+        public Color MainColor { get; }
+        public Color BackgorondColor { get; }
+        public int Width { get; }
+        public int Height { get; }
+        public IProgressBar ProgressBarStatus { get; }
+        public int Mergin { get; }
+        public DrawType DrawType { get; }
     }
 }

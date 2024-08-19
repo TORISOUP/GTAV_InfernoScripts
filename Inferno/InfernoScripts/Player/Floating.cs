@@ -1,21 +1,17 @@
 ﻿using System;
-using GTA.Math;
 using System.Reactive.Linq;
-
+using GTA.Math;
 
 namespace Inferno.InfernoScripts.Player
 {
     //ふわふわジャンプ
-    class Floating : InfernoScript
+    internal class Floating : InfernoScript
     {
         protected override void Setup()
         {
-            this.CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(_ => this.IsGamePadPressed(GameKey.Sprint) && this.IsGamePadPressed(GameKey.Jump))
-                .Subscribe(_ =>
-                {
-                    PlayerPed.ApplyForce(Vector3.WorldUp * 1.1f);
-                });
+                .Subscribe(_ => { PlayerPed.ApplyForce(Vector3.WorldUp * 1.1f); });
         }
     }
 }

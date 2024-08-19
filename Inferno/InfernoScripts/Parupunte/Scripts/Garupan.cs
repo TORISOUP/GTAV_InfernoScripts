@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTA;
 using System.Reactive.Linq;
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 
-
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("がるぱん")]
-    class Garupan : ParupunteScript
+    internal class Garupan : ParupunteScript
     {
-        enum PlanType
-        {
-            Kosokoso,
-            Kottsun
-        }
-        private PlanType planType;
+        private readonly List<Entity> resources = new();
         private string _name;
-        private List<Entity> resources = new List<Entity>();
- 
+        private PlanType planType;
+
 
         public Garupan(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -49,15 +43,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             SubName = "ガルパンは、いいぞ";
             EndMessage = () =>
             {
-                if (core.PlayerPed.IsAlive)
-                {
-                    return "おしまい";
-                }
-                else
-                {
-                    EndMessageDisplayTime = 4.0f;
-                    return "フラッグ車走行不能！大洗女子学園の勝利！";
-                }
+                if (core.PlayerPed.IsAlive) return "おしまい";
+
+                EndMessageDisplayTime = 4.0f;
+                return "フラッグ車走行不能！大洗女子学園の勝利！";
             };
         }
 
@@ -74,26 +63,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //プレイヤが死んだら終了
-            this.OnUpdateAsObservable
+            OnUpdateAsObservable
                 .Where(_ => !core.PlayerPed.IsAlive)
                 .Take(1)
                 .Subscribe(_ => ParupunteEnd());
 
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
                     foreach (var t in resources)
-                    {
                         if (t.IsSafeExist())
                         {
                             t.MarkAsNoLongerNeeded();
                             t.Health = -1;
                         }
-                    }
                 });
         }
 
         #region こそこそ作戦
+
         private void StartKosokoso()
         {
             ReduceCounter = new ReduceCounter(25 * 1000);
@@ -119,56 +107,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         #endregion
 
-        #region こっつん作戦
-
-        void KottsunStart()
-        {
-            //ニトロで挟んで圧死させる
-            ReduceCounter = new ReduceCounter(6 * 1000);
-            AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            StartCoroutine(KottsunTankCoroutine(true));
-            StartCoroutine(KottsunTankCoroutine(false));
-        }
-
-        //戦車を生成して数秒後に突進させる
-        IEnumerable<object> KottsunTankCoroutine(bool isForward)
-        {
-            //遠目につくる
-            var ppos = core.PlayerPed.Position;
-            var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
-            if (vp == null) ParupunteEnd();
-            var ped = vp.Item2;
-            var tank = vp.Item1;
-            tank.EnginePowerMultiplier = 20.0f;
-            tank.EngineTorqueMultiplier = 20.0f;
-            tank.MaxSpeed = 300;
-            resources.Add(tank);
-            resources.Add(ped);
-            this.OnFinishedAsObservable
-                .Where(_ => tank.IsSafeExist() && tank.IsAlive)
-                .Subscribe(_ => tank.PetrolTankHealth = -1);
-
-            yield return WaitForSeconds(3);
-            if (!tank.IsSafeExist()) yield break;
-            //演出用
-            Function.Call(Hash.ADD_EXPLOSION, tank.Position.X, tank.Position.Y, tank.Position.Z, -1, 0.0f, true, false, 0.1f);
-            tank.Speed = isForward ? 100 : -100;
-
-            yield return WaitForSeconds(2);
-            if (ped.IsSafeExist())
-            {
-                ped.Task.FightAgainst(core.PlayerPed);
-            }
-        }
-        #endregion
-
-        private System.Tuple<Vehicle, Ped> SpawnTank(float range)
+        private Tuple<Vehicle, Ped> SpawnTank(float range)
         {
             return SpawnTank(core.PlayerPed.Position.Around(range));
         }
 
-        private System.Tuple<Vehicle, Ped> SpawnTank(Vector3 position)
+        private Tuple<Vehicle, Ped> SpawnTank(Vector3 position)
         {
             var model = new Model(VehicleHash.Rhino);
             //戦車生成
@@ -184,7 +128,56 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AutoReleaseOnGameEnd(tank);
             AutoReleaseOnGameEnd(ped);
 
-            return new System.Tuple<Vehicle, Ped>(tank, ped);
+            return new Tuple<Vehicle, Ped>(tank, ped);
         }
+
+        private enum PlanType
+        {
+            Kosokoso,
+            Kottsun
+        }
+
+        #region こっつん作戦
+
+        private void KottsunStart()
+        {
+            //ニトロで挟んで圧死させる
+            ReduceCounter = new ReduceCounter(6 * 1000);
+            AddProgressBar(ReduceCounter);
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            StartCoroutine(KottsunTankCoroutine(true));
+            StartCoroutine(KottsunTankCoroutine(false));
+        }
+
+        //戦車を生成して数秒後に突進させる
+        private IEnumerable<object> KottsunTankCoroutine(bool isForward)
+        {
+            //遠目につくる
+            var ppos = core.PlayerPed.Position;
+            var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
+            if (vp == null) ParupunteEnd();
+            var ped = vp.Item2;
+            var tank = vp.Item1;
+            tank.EnginePowerMultiplier = 20.0f;
+            tank.EngineTorqueMultiplier = 20.0f;
+            tank.MaxSpeed = 300;
+            resources.Add(tank);
+            resources.Add(ped);
+            OnFinishedAsObservable
+                .Where(_ => tank.IsSafeExist() && tank.IsAlive)
+                .Subscribe(_ => tank.PetrolTankHealth = -1);
+
+            yield return WaitForSeconds(3);
+            if (!tank.IsSafeExist()) yield break;
+            //演出用
+            Function.Call(Hash.ADD_EXPLOSION, tank.Position.X, tank.Position.Y, tank.Position.Z, -1, 0.0f, true, false,
+                0.1f);
+            tank.Speed = isForward ? 100 : -100;
+
+            yield return WaitForSeconds(2);
+            if (ped.IsSafeExist()) ped.Task.FightAgainst(core.PlayerPed);
+        }
+
+        #endregion
     }
 }

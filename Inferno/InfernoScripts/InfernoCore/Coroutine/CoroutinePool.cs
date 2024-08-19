@@ -5,27 +5,24 @@ namespace Inferno.InfernoScripts.InfernoCore.Coroutine
     /// <summary>
     /// 複数のコルーチンを順繰りに実行する
     /// </summary>
-    class CoroutinePool
+    internal class CoroutinePool
     {
-        private readonly int _poolSize;
-        private int next = 0;
         private readonly CoroutineSystem[] _coroutines;
+        private readonly int _poolSize;
+        private int next;
+
+        public CoroutinePool(int poolSize)
+        {
+            _poolSize = poolSize;
+            _coroutines = new CoroutineSystem[poolSize];
+            for (var i = 0; i < _poolSize; i++) _coroutines[i] = new CoroutineSystem();
+        }
 
         /// <summary>
         /// poolのRunを呼び出すべき間隔
         /// 1つあたり100ms間隔になるようにする
         /// </summary>
         public int ExpectExecutionInterbalMillSeconds => 100 / _poolSize;
-
-        public CoroutinePool(int poolSize)
-        {
-            this._poolSize = poolSize;
-            _coroutines = new CoroutineSystem[poolSize];
-            for (var i = 0; i < _poolSize; i++)
-            {
-                _coroutines[i] = new CoroutineSystem();
-            }
-        }
 
         /// <summary>
         /// 次のコルーチンを実行する
@@ -52,18 +49,13 @@ namespace Inferno.InfernoScripts.InfernoCore.Coroutine
         public void RemoveCoroutine(uint coroutinId)
         {
             foreach (var c in _coroutines)
-            {
                 //どこに登録されたかわからないので全部叩く
                 c.RemoveCoroutine(coroutinId);
-            }
         }
 
         public void RemoveAllCoroutine()
         {
-            foreach (var c in _coroutines)
-            {
-                c.RemoveAllCoroutine();
-            }
+            foreach (var c in _coroutines) c.RemoveAllCoroutine();
         }
     }
 }

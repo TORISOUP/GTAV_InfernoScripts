@@ -1,41 +1,21 @@
-﻿using GTA;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
-using System;
-using System.Collections.Generic;
 using Inferno.Utilities;
-using System.Reactive.Linq;
-
 
 namespace Inferno
 {
-
     /// <summary>
     /// 市民を生成してパラシュート降下させる
     /// </summary>
     internal class SpawnParachuteCitizenArmy : InfernoScript
     {
-        class SpawnParachuteCitizenArmyConfig : InfernoConfig
-        {
-            /// <summary>
-            /// 生成間隔
-            /// </summary>
-            public int SpawnDurationSeconds { get; set; } = 5;
-
-            public override bool Validate()
-            {
-                return SpawnDurationSeconds > 0;
-            }
-        }
+        private SpawnParachuteCitizenArmyConfig config;
 
         protected override string ConfigFileName { get; } = "SpawnParachuteCitizenArmy.conf";
-        private SpawnParachuteCitizenArmyConfig config;
         private int SpawnDurationSeconds => config?.SpawnDurationSeconds ?? 5;
 
         protected override void Setup()
@@ -45,7 +25,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("SpawnParachuteCitizenArmy:" + IsActive, 3.0f);
+                    DrawText("SpawnParachuteCitizenArmy:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -63,7 +43,8 @@ namespace Inferno
             var velocity = PlayerPed.Velocity;
             //プレイヤが移動中ならその進行先に生成する
             var ped =
-                NativeFunctions.CreateRandomPed(playerPosition + 3 * velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
+                NativeFunctions.CreateRandomPed(
+                    playerPosition + 3 * velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
 
             if (!ped.IsSafeExist()) return;
 
@@ -85,7 +66,7 @@ namespace Inferno
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerable<Object> PedOnGroundedCheck(Ped ped)
+        private IEnumerable<object> PedOnGroundedCheck(Ped ped)
         {
             //市民無敵化
             ped.IsInvincible = true;
@@ -99,10 +80,7 @@ namespace Inferno
                 if (ped.IsDead) yield break;
 
                 //着地していたら監視終了
-                if (!ped.IsInAir)
-                {
-                    break;
-                }
+                if (!ped.IsInAir) break;
             }
 
             if (ped.IsSafeExist())
@@ -110,6 +88,19 @@ namespace Inferno
                 ped.SetNotChaosPed(false);
                 ped.IsInvincible = false;
                 ped.MarkAsNoLongerNeeded();
+            }
+        }
+
+        private class SpawnParachuteCitizenArmyConfig : InfernoConfig
+        {
+            /// <summary>
+            /// 生成間隔
+            /// </summary>
+            public int SpawnDurationSeconds { get; } = 5;
+
+            public override bool Validate()
+            {
+                return SpawnDurationSeconds > 0;
             }
         }
     }

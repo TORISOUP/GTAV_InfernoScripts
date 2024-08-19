@@ -1,13 +1,13 @@
-﻿using GTA.Math;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using GTA.Math;
 
 namespace Inferno.Utilities
 {
     //便利関数群
     public static class InfernoUtilities
     {
-        private static Random random;
+        private static readonly Random random;
 
         static InfernoUtilities()
         {

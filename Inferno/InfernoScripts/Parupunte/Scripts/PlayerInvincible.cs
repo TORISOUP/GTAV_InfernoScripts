@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System;
-
+﻿using System;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -28,10 +27,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!ReduceCounter.IsCompleted)
             {
-                if (!core.PlayerPed.IsInvincible)
-                {
-                    core.PlayerPed.IsInvincible = true;
-                }
+                if (!core.PlayerPed.IsInvincible) core.PlayerPed.IsInvincible = true;
                 yield return WaitForSeconds(1);
             }
         }

@@ -1,13 +1,7 @@
-﻿using GTA;
+﻿using System;
 using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
-using System.Linq;
-
 
 namespace Inferno.InfernoScripts.Player
 {
@@ -16,21 +10,18 @@ namespace Inferno.InfernoScripts.Player
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("moveto")
-
                 .Subscribe(_ =>
                 {
-                    var blip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                    var blip = GTA.World.GetActiveBlips()
+                        .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
                     if (blip == null) return;
                     var targetHeight = GTA.World.GetGroundHeight(blip.Position);
                     //地面ピッタリだと地面に埋まるので少し上空を指定する
-                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f );
+                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f);
 
                     var tryPos = GTA.World.GetSafeCoordForPed(targetPos);
-                    if (tryPos != Vector3.Zero)
-                    {
-                        targetPos = tryPos;
-                    }
-                    
+                    if (tryPos != Vector3.Zero) targetPos = tryPos;
+
                     var targetEntity = default(Entity);
 
                     if (PlayerPed.IsInVehicle())
@@ -48,6 +39,5 @@ namespace Inferno.InfernoScripts.Player
                     targetEntity.ApplyForce(new Vector3(0, 0, 1));
                 });
         }
-
     }
 }

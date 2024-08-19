@@ -6,12 +6,12 @@ namespace Inferno
 {
     public class DebugLogger
     {
-        private readonly string _logPath;
         private readonly Encoding _encoding;
+        private readonly string _logPath;
 
         public DebugLogger(string logPath)
         {
-            this._logPath = logPath;
+            _logPath = logPath;
             _encoding = Encoding.GetEncoding("UTF-8");
         }
 

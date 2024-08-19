@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
 
@@ -17,7 +9,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ケツファンネル", "弾切れ")]
     [ParupunteIsono("けつふぁんねる")]
-    class KetsuFunnel : ParupunteScript
+    internal class KetsuFunnel : ParupunteScript
     {
         public KetsuFunnel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -31,7 +23,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
 
             core.PlayerPed.IsExplosionProof = true;
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ => core.PlayerPed.IsExplosionProof = false);
             StartCoroutine(KetuCoroutine());
         }
@@ -47,7 +39,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     var ketsuDir = -core.PlayerPed.ForwardVector;
 
                     var targetList = core
-                        .CachedPeds.Cast<Entity>().Concat(core.CachedVehicles)
+                        .CachedPeds.Cast<Entity>()
+                        .Concat(core.CachedVehicles)
                         .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(playerPos, 100))
                         .Where(x => Vector3.Angle(ketsuDir, x.Position - playerPos) < 30);
 
@@ -60,9 +53,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     NativeFunctions.ShootSingleBulletBetweenCoords(
                         startPoint + dir * 1, target.Position, 100, WeaponHash.RPG, null, 500);
                 }
+
                 yield return WaitForSeconds(0.4f);
             }
         }
-
     }
 }

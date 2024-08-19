@@ -1,23 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using System;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ブンシンノジツ", "おわり")]
     [ParupunteIsono("ぶんしん")]
-    class Bunshin : ParupunteScript
+    internal class Bunshin : ParupunteScript
     {
-        private List<Ped> peds = new List<Ped>();
+        private readonly List<Ped> peds = new();
 
         public Bunshin(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -31,17 +25,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
                     foreach (var p in peds)
-                    {
-                        if (p.IsSafeExist()) p.MarkAsNoLongerNeeded();
-                    }
+                        if (p.IsSafeExist())
+                            p.MarkAsNoLongerNeeded();
                 });
         }
 
-        IEnumerable<object> SpawnCoroutine()
+        private IEnumerable<object> SpawnCoroutine()
         {
             foreach (var i in Enumerable.Range(0, 12))
             {
@@ -74,7 +67,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
-
         }
     }
 }

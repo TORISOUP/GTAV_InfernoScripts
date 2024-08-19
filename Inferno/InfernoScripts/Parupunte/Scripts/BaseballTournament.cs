@@ -1,6 +1,5 @@
-﻿using Inferno.InfernoScripts.Event.ChasoMode;
-using System;
-
+﻿using System;
+using Inferno.InfernoScripts.Event.ChasoMode;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -9,7 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     /// </summary>
     [ParupunteConfigAttribute("野球大会", "おわり")]
     [ParupunteIsono("やきゅう")]
-    class BaseballTournament : ParupunteScript
+    internal class BaseballTournament : ParupunteScript
     {
         public BaseballTournament(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -21,10 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            this.OnFinishedAsObservable.Subscribe(_ =>
-            {
-                Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault);
-            });
+            OnFinishedAsObservable.Subscribe(_ => { Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault); });
 
             Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.BAT));
         }

@@ -1,13 +1,7 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System.Collections.Generic;
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -18,11 +12,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("おしり")]
     internal class MagicFire : ParupunteScript
     {
+        private uint coroutineId;
+
         public MagicFire(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        private uint coroutineId = 0;
 
         public override void OnSetUp()
         {
@@ -48,9 +42,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
-            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            }
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
             while (!ReduceCounter.IsCompleted)
@@ -75,7 +67,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
 
             return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_flame",
-                    player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale,
+                0, 0, 0);
         }
     }
 }

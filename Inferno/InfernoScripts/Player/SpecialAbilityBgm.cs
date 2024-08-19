@@ -1,16 +1,10 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Native;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Media;
-
+using System.Reactive.Linq;
+using GTA;
+using GTA.Native;
 
 namespace Inferno
 {
@@ -31,7 +25,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("SpecialAbilityBGM:" + IsActive, 3.0f);
+                    DrawText("SpecialAbilityBGM:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -61,10 +55,7 @@ namespace Inferno
         /// </summary>
         private string[] LoadWavFilePaths(string targetPath)
         {
-            if (!Directory.Exists(targetPath))
-            {
-                return new string[0];
-            }
+            if (!Directory.Exists(targetPath)) return new string[0];
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }

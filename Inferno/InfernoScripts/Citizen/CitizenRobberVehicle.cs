@@ -1,16 +1,9 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using Inferno.ChaosMode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-
+using GTA;
+using Inferno.ChaosMode;
 
 namespace Inferno
 {
@@ -22,7 +15,7 @@ namespace Inferno
         /// <summary>
         /// プレイヤの周囲何ｍの市民が対象か
         /// </summary>
-        private float PlayerAroundDistance = 100.0f;
+        private readonly float PlayerAroundDistance = 100.0f;
 
         /// <summary>
         /// 車両強盗する確率
@@ -35,7 +28,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("CitizenRobberVehicle:" + IsActive, 3.0f);
+                    DrawText("CitizenRobberVehicle:" + IsActive);
                 });
 
             CreateTickAsObservable(TimeSpan.FromSeconds(1))
@@ -61,25 +54,20 @@ namespace Inferno
                                                    && !x.IsNotChaosPed());
 
             foreach (var targetPed in targetPeds)
-            {
                 try
                 {
                     //確率で強盗する
-                    if (Random.Next(0, 100) > probability)
-                    {
-                        continue;
-                    }
+                    if (Random.Next(0, 100) > probability) continue;
 
                     //市民周辺の車が対象
                     var targetVehicle =
                         CachedVehicles
-                            .FirstOrDefault(x => x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 40.0f) && x != targetPed.CurrentVehicle);
+                            .FirstOrDefault(x =>
+                                x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 40.0f) &&
+                                x != targetPed.CurrentVehicle);
 
                     //30%の確率でプレイヤの車を盗むように変更
-                    if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
-                    {
-                        targetVehicle = playerVehicle;
-                    }
+                    if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30) targetVehicle = playerVehicle;
                     if (!targetVehicle.IsSafeExist()) continue;
                     StartCoroutine(RobberVehicleCoroutine(targetPed, targetVehicle));
                 }
@@ -87,10 +75,9 @@ namespace Inferno
                 {
                     LogWrite(e.ToString());
                 }
-            }
         }
 
-        private IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
+        private IEnumerable<object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
         {
             yield return RandomWait();
             if (!ped.IsSafeExist()) yield break;
@@ -111,6 +98,7 @@ namespace Inferno
             {
                 ped.Task.ClearAllImmediately();
             }
+
             ped.Task.ClearAllImmediately();
             ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
 

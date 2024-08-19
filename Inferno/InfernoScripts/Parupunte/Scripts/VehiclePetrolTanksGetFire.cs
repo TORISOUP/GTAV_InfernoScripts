@@ -26,15 +26,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var vehicles = core.CachedVehicles.Where(
                 x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius));
 
-            foreach (var vehicle in vehicles)
-            {
-                vehicle.PetrolTankHealth = -1;
-            }
+            foreach (var vehicle in vehicles) vehicle.PetrolTankHealth = -1;
 
-            if (player.IsInVehicle())
-            {
-                player.CurrentVehicle.PetrolTankHealth = -1;
-            }
+            if (player.IsInVehicle()) player.CurrentVehicle.PetrolTankHealth = -1;
         }
     }
 }

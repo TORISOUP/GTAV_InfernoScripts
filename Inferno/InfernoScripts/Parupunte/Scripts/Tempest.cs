@@ -1,15 +1,8 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-
+using GTA;
+using GTA.Math;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -17,7 +10,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("てんぺすと")]
     internal class Tempest : ParupunteScript
     {
-        private HashSet<Entity> entityList = new HashSet<Entity>();
+        private readonly HashSet<Entity> entityList = new();
 
         public Tempest(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -44,26 +37,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var playerPos = core.PlayerPed.Position;
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
-            && !entityList.Contains(x)
-            && !x.IsCutsceneOnlyPed()))
+                                                           && x.IsInRangeOf(playerPos, 20)
+                                                           && !entityList.Contains(x)
+                                                           && !x.IsCutsceneOnlyPed()))
             {
-
                 entityList.Add(ped);
                 StartCoroutine(TemepenstCoroutine(ped));
-
             }
+
             foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
-            && !entityList.Contains(x)
-            ))
-            {
+                                                               && x.IsInRangeOf(playerPos, 20)
+                                                               && !entityList.Contains(x)
+                     ))
                 if (!entityList.Contains(veh))
                 {
                     entityList.Add(veh);
                     StartCoroutine(TemepenstCoroutine(veh));
                 }
-            }
         }
 
         private IEnumerable<object> TemepenstCoroutine(Entity entity)

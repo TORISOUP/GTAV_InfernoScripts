@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 
-
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("車両修復")]
@@ -28,15 +27,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var vehicles = core.CachedVehicles.Where
                 (x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius));
 
-            foreach (var vehicle in vehicles)
-            {
-                vehicle.Repair();
-            }
+            foreach (var vehicle in vehicles) vehicle.Repair();
 
-            if (player.IsInVehicle())
-            {
-                player.CurrentVehicle.Repair();
-            }
+            if (player.IsInVehicle()) player.CurrentVehicle.Repair();
         }
     }
 }

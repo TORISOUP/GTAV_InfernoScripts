@@ -1,45 +1,27 @@
-﻿using GTA;
+﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using System.Threading.Tasks;
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
-using System.Reactive.Linq;
-
 
 namespace Inferno
 {
-
     /// <summary>
     /// 市ニトロ
     /// </summary>
     public class CitizenNitro : InfernoScript
     {
-        class CitizenNitroConfig : InfernoConfig
-        {
-            public int Probability { get; set; } = 7;
-
-            public override bool Validate()
-            {
-                return Probability > 0 && Probability <= 100;
-            }
-        }
-
-        protected override string ConfigFileName { get; } = "CitizenNitro.conf";
-        private CitizenNitroConfig config;
-        private int Probability => config?.Probability ?? 7;
+        private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
 
         private readonly string Keyword = "cnitro";
-        private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
+        private CitizenNitroConfig config;
+
+        protected override string ConfigFileName { get; } = "CitizenNitro.conf";
+        private int Probability => config?.Probability ?? 7;
 
         protected override void Setup()
         {
@@ -50,7 +32,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("CitizenNitro:" + IsActive, 3.0f);
+                    DrawText("CitizenNitro:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -71,15 +53,12 @@ namespace Inferno
                 var playerVehicle = this.GetPlayerVehicle();
 
                 var nitroAvailableVeles = CachedVehicles
-                    .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
+                    .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) &&
+                                x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
 
                 foreach (var veh in nitroAvailableVeles)
-                {
                     if (Random.Next(0, 100) <= Probability)
-                    {
                         DelayCoroutine(veh);
-                    }
-                }
             }
             catch (Exception e)
             {
@@ -106,17 +85,13 @@ namespace Inferno
         /// <param name="vehicle"></param>
         private void NitroVehicle(Vehicle vehicle)
         {
-            if (!vehicle.IsSafeExist())
-            {
-                return;
-            }
+            if (!vehicle.IsSafeExist()) return;
 
             var velocitiesSpeed = _velocities[Random.Next(0, _velocities.Length)];
 
             if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 15)
-            {
-                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, (Random.Next(20, 60) / 100.0f)) * vehicle.Quaternion;
-            }
+                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, Random.Next(20, 60) / 100.0f) *
+                                     vehicle.Quaternion;
 
             vehicle.Speed += velocitiesSpeed;
 
@@ -164,6 +139,16 @@ namespace Inferno
 
             if (!ped.IsSafeExist()) return;
             ped.SetNotChaosPed(false);
+        }
+
+        private class CitizenNitroConfig : InfernoConfig
+        {
+            public int Probability { get; } = 7;
+
+            public override bool Validate()
+            {
+                return Probability > 0 && Probability <= 100;
+            }
         }
     }
 }

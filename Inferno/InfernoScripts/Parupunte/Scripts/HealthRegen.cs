@@ -1,20 +1,17 @@
-﻿using System.Collections.Generic;
-using System;
-
+﻿using System;
+using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("リジェネ", "おわり")]
     internal class HealthRegen : ParupunteScript
     {
+        private uint coroutineId;
         private ReduceCounter reduceCounter;
 
         public HealthRegen(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-
-        private uint coroutineId = 0;
 
         public override void OnSetUp()
         {
@@ -39,13 +36,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             while (!reduceCounter.IsCompleted)
             {
                 if (core.PlayerPed.Health < core.PlayerPed.MaxHealth)
-                {
                     core.PlayerPed.Health += 15;
-                }
                 else
-                {
                     core.PlayerPed.Armor += 20;
-                }
                 yield return WaitForSeconds(1);
             }
         }

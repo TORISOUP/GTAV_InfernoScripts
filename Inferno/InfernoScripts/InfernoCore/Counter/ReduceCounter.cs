@@ -1,9 +1,7 @@
-﻿
-
-using System;
-using System.Reactive.Subjects;
+﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace Inferno
 {
@@ -16,16 +14,6 @@ namespace Inferno
         private readonly Subject<Unit> _onFinishedSubject;
 
         /// <summary>
-        /// カウンタが正常にカウント終了した時にOnNextを発行する
-        /// 強制終了時はOnCompletedのみ通知
-        /// </summary>
-        public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
-
-        public int Current { get; private set; }
-        public float Rate => (float)Current / (float)_max;
-        public bool IsCompleted { get; private set; }
-
-        /// <summary>
         /// カウント回数を指定する
         /// AddCounterを利用する場合はミリ秒を与える
         /// </summary>
@@ -36,6 +24,16 @@ namespace Inferno
             _onFinishedSubject = new Subject<Unit>();
             IsCompleted = false;
         }
+
+        /// <summary>
+        /// カウンタが正常にカウント終了した時にOnNextを発行する
+        /// 強制終了時はOnCompletedのみ通知
+        /// </summary>
+        public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
+
+        public int Current { get; private set; }
+        public float Rate => Current / (float)_max;
+        public bool IsCompleted { get; private set; }
 
         public void Update(int countValue)
         {

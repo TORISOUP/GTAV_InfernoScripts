@@ -8,14 +8,7 @@ namespace Inferno.ChaosMode.WeaponProvider
     /// </summary>
     public static class ChaosModeWeapons
     {
-        public static Weapon[] ShootWeapons { get; }
-        public static Weapon[] ClosedWeapons { get; }
-        public static Weapon[] ProjectileWeapons { get; }
-        public static Weapon[] ExcludeClosedWeapons { get; }
-        public static Weapon[] DriveByWeapons { get; }
-        public static Weapon[] AllWeapons { get; }
-
-        private static Random random = new Random();
+        private static readonly Random random = new();
 
         static ChaosModeWeapons()
         {
@@ -73,7 +66,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.CombatMGMk2,
                 Weapon.AssaultRifleMk2,
                 Weapon.CarbineRifleMk2,
-                Weapon.HeavySniperMk2,
+                Weapon.HeavySniperMk2
             };
 
             //近距離系
@@ -96,7 +89,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.SwitchBlade,
                 Weapon.Poolcue,
                 Weapon.Wrench,
-                Weapon.Battleaxe,
+                Weapon.Battleaxe
             };
 
             //投げる系
@@ -110,7 +103,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.FLARE,
                 Weapon.SMOKEGRENADE,
                 Weapon.PROXIMITYMINE,
-                Weapon.PIPEBOMB,
+                Weapon.PIPEBOMB
             };
 
             //ドライブバイ
@@ -133,12 +126,19 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.AUTOSHOTGUN,
                 Weapon.COMPACTLAUNCHER,
                 Weapon.PistolMk2,
-                Weapon.SMGMk2,
+                Weapon.SMGMk2
             };
 
             AllWeapons = ShootWeapons.Concat(ClosedWeapons).Concat(ProjectileWeapons).ToArray();
             ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).ToArray();
         }
+
+        public static Weapon[] ShootWeapons { get; }
+        public static Weapon[] ClosedWeapons { get; }
+        public static Weapon[] ProjectileWeapons { get; }
+        public static Weapon[] ExcludeClosedWeapons { get; }
+        public static Weapon[] DriveByWeapons { get; }
+        public static Weapon[] AllWeapons { get; }
 
         public static Weapon GetRandomWeapon()
         {

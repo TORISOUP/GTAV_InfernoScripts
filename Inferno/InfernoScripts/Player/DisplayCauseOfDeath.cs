@@ -1,14 +1,8 @@
 ﻿using System;
-using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Math;
 using System.Drawing;
-
+using System.Reactive.Linq;
+using GTA;
+using GTA.Math;
 
 namespace Inferno
 {
@@ -17,11 +11,10 @@ namespace Inferno
     /// </summary>
     internal class DisplayCauseOfDeath : InfernoScript
     {
+        private readonly Vector2 _textPositionScale = new(0.5f, 0.75f);
         private UIContainer _mContainer;
         private int _screenHeight;
         private int _screenWidth;
-
-        private Vector2 _textPositionScale = new Vector2(0.5f, 0.75f);
 
         protected override void Setup()
         {
@@ -32,12 +25,12 @@ namespace Inferno
             _mContainer = new UIContainer(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
-            this.OnDrawingTickAsObservable
+            OnDrawingTickAsObservable
                 .Where(_ => _mContainer.Items.Count > 0)
                 .Subscribe(_ => _mContainer.Draw());
 
             CreateTickAsObservable(TimeSpan.FromSeconds(0.5f))
-               .Where(_ => PlayerPed.IsSafeExist())
+                .Where(_ => PlayerPed.IsSafeExist())
                 .Select(x => PlayerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Subscribe(isAlive =>
@@ -52,8 +45,9 @@ namespace Inferno
                     var damageName = damageWeapon.ToString();
                     if (PlayerPed.GetKiller() == PlayerPed) damageName += "(SUICIDE)";
                     var text = new UIText(damageName,
-                        new Point((int)(_screenWidth * _textPositionScale.X), (int)(_screenHeight * _textPositionScale.Y)),
-                        1.0f, Color.White, 0, true, false ,true);
+                        new Point((int)(_screenWidth * _textPositionScale.X),
+                            (int)(_screenHeight * _textPositionScale.Y)),
+                        1.0f, Color.White, 0, true, false, true);
 
                     _mContainer.Items.Add(text);
                 });

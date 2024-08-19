@@ -1,16 +1,17 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System;
+﻿using System;
+using GTA;
 
 namespace Inferno.ChaosMode
 {
     public class CharacterChaosChecker
     {
+        public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment,
+            bool isChangeMissonCharacterWeapon)
+        {
+            MissionCharacterTreatment = missionCharacterTreatment;
+            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
+        }
+
         /// <summary>
         /// ミッションキャラの武器を変更するか
         /// </summary>
@@ -21,12 +22,6 @@ namespace Inferno.ChaosMode
         /// </summary>
         public MissionCharacterTreatmentType MissionCharacterTreatment { get; set; }
 
-        public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment, bool isChangeMissonCharacterWeapon)
-        {
-            MissionCharacterTreatment = missionCharacterTreatment;
-            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
-        }
-
         /// <summary>
         /// カオス化対象であるか
         /// </summary>
@@ -34,7 +29,8 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化して良い</returns>
         public bool IsPedChaosAvailable(Ped ped)
         {
-            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() && IsChaosableMissionCharacter(ped);
+            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() &&
+                   IsChaosableMissionCharacter(ped);
         }
 
         /// <summary>
@@ -45,7 +41,7 @@ namespace Inferno.ChaosMode
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer
-                && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
+                   && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
         }
 
         /// <summary>

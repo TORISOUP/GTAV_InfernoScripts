@@ -1,13 +1,7 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System;
+﻿using System;
 using System.Drawing;
-
+using System.Reactive.Linq;
+using GTA;
 
 namespace Inferno
 {
@@ -16,15 +10,14 @@ namespace Inferno
     /// </summary>
     internal class PlayerHelthAlert : InfernoScript
     {
-        private float omega = 0.4f;
-        private float time = 0.0f;
-        private int amplitude = 25;
-        private int offset = 15;
-
+        private readonly int alertHelthValue = 25;
+        private readonly int amplitude = 25;
+        private readonly int offset = 15;
+        private readonly float omega = 0.4f;
         private UIContainer _mContainer;
         private int ScreenHeight;
         private int ScreenWidth;
-        private int alertHelthValue = 25;
+        private float time;
 
         protected override void Setup()
         {

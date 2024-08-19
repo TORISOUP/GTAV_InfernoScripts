@@ -1,12 +1,4 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using Inferno.Utilities;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +9,11 @@ using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GTA;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.Coroutine;
+using Inferno.Utilities;
 using Reactive.Bindings;
-
 
 namespace Inferno
 {
@@ -29,17 +22,122 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-        protected Random Random = new Random();
+        private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
 
-        private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
+        private InfernoSynchronizationContext _infernoSynchronizationContext;
+
+        private InfernoScheduler infernoScheduler;
+        protected Random Random = new();
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        protected InfernoScript()
+        {
+            // 毎フレーム実行
+            Interval = 0;
+
+            //初期化をちょっと遅延させる
+            Observable.Interval(TimeSpan.FromMilliseconds(10))
+                .Where(_ => InfernoCore.Instance != null)
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
+                    InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
+                });
+
+            OnTickAsObservable =
+                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                    .Select(_ => Unit.Default)
+                    .Publish()
+                    .RefCount(); //Subscribeされたらイベントハンドラを登録する
+
+            OnThinnedTickAsObservable =
+                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
+                    .Publish()
+                    .RefCount();
+
+            OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
+
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+
+            //スケジューラ実行
+            OnTickAsObservable.Subscribe(_ =>
+            {
+                FrameCount++;
+
+
+                try
+                {
+                    infernoScheduler?.Run();
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                try
+                {
+                    InfernoSynchronizationContext.Update();
+                }
+                catch
+                {
+                    // ignore
+                }
+            });
+
+            //タイマのカウント
+            OnThinnedTickAsObservable
+                .Where(_ => _counterList.Any())
+                .Subscribe(_ =>
+                {
+                    foreach (var c in _counterList) c.Update(100);
+
+                    //完了状態にあるタイマを全て削除
+                    _counterList.RemoveAll(x => x.IsCompleted);
+                });
+
+            _coroutinePool = new CoroutinePool(5);
+
+            //コルーチンを実行する
+            CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
+                .Subscribe(_ => _coroutinePool.Run());
+
+
+            OnAbortAsync.Subscribe(_ =>
+            {
+                IsActive = false;
+                foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
+
+                _autoReleaseEntities.Clear();
+            });
+
+            // Setupは最初のTickタイミングまで遅らせる
+            // OnTickAsObservableとは独立させて実行しないとイベント登録順で
+            // 怪しい挙動をする可能性がある
+            Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                .Select(_ => Unit.Default)
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    try
+                    {
+                        // SynchronizationContextはこのタイミングで設定しないといけない
+                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
+                        Setup();
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.ToString());
+                    }
+                });
+        }
 
         protected virtual string ConfigFileName => null;
 
         protected ulong FrameCount { get; private set; }
-
-        private InfernoScheduler infernoScheduler;
-
-        private InfernoSynchronizationContext _infernoSynchronizationContext;
 
         private InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
@@ -48,28 +146,12 @@ namespace Inferno
             => infernoScheduler ??= new InfernoScheduler();
 
         /// <summary>
-        /// 設定ファイルをロードする
-        /// </summary>
-        protected T LoadConfig<T>() where T : InfernoConfig, new()
-        {
-            if (string.IsNullOrEmpty(ConfigFileName))
-            {
-                throw new Exception("設定ファイル名が設定されていません");
-            }
-
-            var loader = new InfernoConfigLoader<T>();
-            var dto = loader.LoadSettingFile(ConfigFileName);
-            //バリデーションに引っかかったらデフォルト値を返す
-            return dto.Validate() ? dto : new T();
-        }
-
-        /// <summary>
         /// スクリプトが動作中であるか
         /// </summary>
         protected bool IsActive
         {
-            get { return _isActiveReactiveProperty.Value; }
-            set { _isActiveReactiveProperty.Value = value; }
+            get => _isActiveReactiveProperty.Value;
+            set => _isActiveReactiveProperty.Value = value;
         }
 
         /// <summary>
@@ -77,6 +159,49 @@ namespace Inferno
         /// </summary>
         protected IObservable<bool> IsActiveAsObservable =>
             _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+
+        /// <summary>
+        /// 設定ファイルをロードする
+        /// </summary>
+        protected T LoadConfig<T>() where T : InfernoConfig, new()
+        {
+            if (string.IsNullOrEmpty(ConfigFileName)) throw new Exception("設定ファイル名が設定されていません");
+
+            var loader = new InfernoConfigLoader<T>();
+            var dto = loader.LoadSettingFile(ConfigFileName);
+            //バリデーションに引っかかったらデフォルト値を返す
+            return dto.Validate() ? dto : new T();
+        }
+
+        #region forTaks
+
+        protected async Task DelayFrame(int frame, CancellationToken ct = default)
+        {
+            await OnTickAsObservable
+                .Take(frame)
+                .ToTask(ct);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 初期化処理はここに書く
+        /// </summary>
+        protected abstract void Setup();
+
+        #region Debug
+
+        /// <summary>
+        /// ログを吐く
+        /// </summary>
+        /// <param name="message">ログメッセージ</param>
+        public void LogWrite(string message, bool stackTrace = false)
+        {
+            InfernoCore.Instance.LogWrite(message + "\n");
+            if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+        }
+
+        #endregion Debug
 
         #region Chace
 
@@ -106,12 +231,12 @@ namespace Inferno
         /// <summary>
         /// 100ms間隔のTickイベント
         /// </summary>
-        public IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
+        public IObservable<Unit> OnThinnedTickAsObservable { get; }
 
         /// <summary>
         /// たぶん16msごとに実行されるイベント
         /// </summary>
-        public IObservable<Unit> OnTickAsObservable { get; private set; }
+        public IObservable<Unit> OnTickAsObservable { get; }
 
         /// <summary>
         /// 描画用のTickイベント
@@ -150,10 +275,7 @@ namespace Inferno
         /// <returns></returns>
         protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword))
-            {
-                throw new Exception("Keyword is empty.");
-            }
+            if (string.IsNullOrEmpty(keyword)) throw new Exception("Keyword is empty.");
 
             return OnKeyDownAsObservable
                 .Select(e => e.KeyCode.ToString())
@@ -182,7 +304,7 @@ namespace Inferno
         /// <summary>
         /// ゲーム中断時に自動開放する対象リスト
         /// </summary>
-        private List<Entity> _autoReleaseEntities = new List<Entity>();
+        private readonly List<Entity> _autoReleaseEntities = new();
 
         /// <summary>
         /// ゲーム中断時に自動開放する
@@ -214,9 +336,9 @@ namespace Inferno
 
         #region forCoroutine
 
-        private CoroutinePool _coroutinePool;
+        private readonly CoroutinePool _coroutinePool;
 
-        protected uint StartCoroutine(IEnumerable<Object> coroutine)
+        protected uint StartCoroutine(IEnumerable<object> coroutine)
         {
             return _coroutinePool.RegisterCoroutine(coroutine);
         }
@@ -249,24 +371,10 @@ namespace Inferno
         protected IEnumerable RandomWait()
         {
             var waitLoopCount = Random.Next(0, 10);
-            for (var i = 0; i < waitLoopCount; i++)
-            {
-                yield return i;
-            }
+            for (var i = 0; i < waitLoopCount; i++) yield return i;
         }
 
         #endregion forCoroutine
-
-        #region forTaks
-
-        protected async Task DelayFrame(int frame, CancellationToken ct = default)
-        {
-            await OnTickAsObservable
-                .Take(frame)
-                .ToTask(ct);
-        }
-
-        #endregion
 
         #region forDraw
 
@@ -292,7 +400,7 @@ namespace Inferno
 
         #region forTimer
 
-        private List<ICounter> _counterList = new List<ICounter>();
+        private readonly List<ICounter> _counterList = new();
 
         /// <summary>
         /// カウンタを登録して自動カウントさせる
@@ -304,137 +412,5 @@ namespace Inferno
         }
 
         #endregion forTimer
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        protected InfernoScript()
-        {
-            // 毎フレーム実行
-            Interval = 0;
-
-            //初期化をちょっと遅延させる
-            Observable.Interval(TimeSpan.FromMilliseconds(10))
-                .Where(_ => InfernoCore.Instance != null)
-                .Take(1)
-                .Subscribe(_ =>
-                {
-                    InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
-                    InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
-                });
-
-            OnTickAsObservable =
-                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                    .Select(_ => Unit.Default)
-                    .Publish().RefCount(); //Subscribeされたらイベントハンドラを登録する
-
-            OnThinnedTickAsObservable =
-                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
-                    .Publish().RefCount();
-
-            OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
-
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
-
-            //スケジューラ実行
-            OnTickAsObservable.Subscribe(_ =>
-            {
-                FrameCount++;
-
-
-                try
-                {
-                    infernoScheduler?.Run();
-                }
-                catch
-                {
-                    // ignore
-                }
-
-                try
-                {
-                    InfernoSynchronizationContext.Update();
-                }
-                catch
-                {
-                    // ignore
-                }
-            });
-
-            //タイマのカウント
-            OnThinnedTickAsObservable
-                .Where(_ => _counterList.Any())
-                .Subscribe(_ =>
-                {
-                    foreach (var c in _counterList)
-                    {
-                        c.Update(100);
-                    }
-
-                    //完了状態にあるタイマを全て削除
-                    _counterList.RemoveAll(x => x.IsCompleted);
-                });
-
-            _coroutinePool = new CoroutinePool(5);
-
-            //コルーチンを実行する
-            CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
-                .Subscribe(_ => _coroutinePool.Run());
-
-
-            OnAbortAsync.Subscribe(_ =>
-            {
-                IsActive = false;
-                foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
-                {
-                    e.MarkAsNoLongerNeeded();
-                }
-
-                _autoReleaseEntities.Clear();
-            });
-
-            // Setupは最初のTickタイミングまで遅らせる
-            // OnTickAsObservableとは独立させて実行しないとイベント登録順で
-            // 怪しい挙動をする可能性がある
-            Observable
-                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                .Select(_ => Unit.Default)
-                .Take(1)
-                .Subscribe(_ =>
-                {
-                    try
-                    {
-                        // SynchronizationContextはこのタイミングで設定しないといけない
-                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
-                        Setup();
-                    }
-                    catch (Exception e)
-                    {
-                        LogWrite(e.ToString());
-                    }
-                });
-        }
-
-        /// <summary>
-        /// 初期化処理はここに書く
-        /// </summary>
-        protected abstract void Setup();
-
-        #region Debug
-
-        /// <summary>
-        /// ログを吐く
-        /// </summary>
-        /// <param name="message">ログメッセージ</param>
-        public void LogWrite(string message, bool stackTrace = false)
-        {
-            InfernoCore.Instance.LogWrite(message + "\n");
-            if (stackTrace)
-            {
-                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
-            }
-        }
-
-        #endregion Debug
     }
 }

@@ -1,23 +1,16 @@
-using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using GTA;
+using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("てきとうにしょうかん")]
     internal class SpawnCharacters : ParupunteScript
     {
-        private Model pedModel;
         private string name;
+        private Model pedModel;
         private Random random;
 
         public SpawnCharacters(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -77,17 +70,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 case 8:
                     pedModel = new Model(PedHash.Imporage);
-		            name = "インポマン";
+                    name = "インポマン";
                     break;
 
                 case 9:
                     pedModel = new Model(PedHash.MovAlien01);
-		            name = "ロスサントス決戦";
+                    name = "ロスサントス決戦";
                     break;
 
                 case 10:
                     pedModel = new Model(PedHash.Clown01SMY);
-	                name = "らんらんる～";
+                    name = "らんらんる～";
                     break;
             }
         }
@@ -108,8 +101,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     ped.MarkAsNoLongerNeeded();
                     GiveWeaponTpPed(ped);
                 }
+
                 yield return s;
             }
+
             ParupunteEnd();
         }
 

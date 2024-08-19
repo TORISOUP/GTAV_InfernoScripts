@@ -6,28 +6,10 @@ namespace Inferno.Utilities
 {
     public class InfernoScheduler : IScheduler
     {
-        private readonly object _lockObject = new object();
-        private readonly PriorityQueue<ScheduledItem> _queue = new PriorityQueue<ScheduledItem>();
+        private readonly object _lockObject = new();
+        private readonly PriorityQueue<ScheduledItem> _queue = new();
 
         public DateTimeOffset Now => DateTimeOffset.UtcNow;
-
-        public void Run()
-        {
-            lock (_lockObject)
-            {
-                while (_queue.Count > 0)
-                {
-                    var next = _queue.Peek();
-                    if (next.DueTime > Now) break;
-
-                    _queue.Dequeue();
-                    if (!next.IsCanceled)
-                    {
-                        next.Invoke();
-                    }
-                }
-            }
-        }
 
         public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
@@ -60,12 +42,25 @@ namespace Inferno.Utilities
             }
         }
 
+        public void Run()
+        {
+            lock (_lockObject)
+            {
+                while (_queue.Count > 0)
+                {
+                    var next = _queue.Peek();
+                    if (next.DueTime > Now) break;
+
+                    _queue.Dequeue();
+                    if (!next.IsCanceled) next.Invoke();
+                }
+            }
+        }
+
         private class ScheduledItem : IComparable<ScheduledItem>
         {
-            private readonly InfernoScheduler _scheduler;
             private readonly Func<IScheduler, object, IDisposable> _action;
-            public DateTimeOffset DueTime { get; }
-            public bool IsCanceled { get; private set; }
+            private readonly InfernoScheduler _scheduler;
 
             public ScheduledItem(InfernoScheduler scheduler,
                 object state,
@@ -78,21 +73,24 @@ namespace Inferno.Utilities
                 State = state;
             }
 
+            public DateTimeOffset DueTime { get; }
+            public bool IsCanceled { get; private set; }
+
             private object State { get; }
-
-            public void Cancel() => IsCanceled = true;
-
-            public void Invoke()
-            {
-                if (!IsCanceled)
-                {
-                    _action(_scheduler, State);
-                }
-            }
 
             public int CompareTo(ScheduledItem other)
             {
                 return DueTime.CompareTo(other.DueTime);
+            }
+
+            public void Cancel()
+            {
+                IsCanceled = true;
+            }
+
+            public void Invoke()
+            {
+                if (!IsCanceled) _action(_scheduler, State);
             }
         }
     }

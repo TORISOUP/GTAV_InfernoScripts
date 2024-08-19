@@ -1,12 +1,11 @@
-﻿using Inferno.InfernoScripts.Event.ChasoMode;
-using System;
-
+﻿using System;
+using Inferno.InfernoScripts.Event.ChasoMode;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("RPG ONLY", "おわり")]
     [ParupunteIsono("あーるぴーじー")]
-    class RpgOnly : ParupunteScript
+    internal class RpgOnly : ParupunteScript
     {
         public RpgOnly(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -18,13 +17,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            this.OnFinishedAsObservable.Subscribe(_ =>
-            {
-                Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault);
-            });
+            OnFinishedAsObservable.Subscribe(_ => { Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault); });
 
             Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.RPG));
-
         }
     }
 }

@@ -1,13 +1,6 @@
-﻿using GTA;
+﻿using System;
 using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using System;
-using System.Linq;
-
+using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -23,7 +16,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            Random random = new Random();
+            var random = new Random();
 
             weather = Enum.GetValues(typeof(Weather))
                 .Cast<Weather>()

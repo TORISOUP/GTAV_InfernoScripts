@@ -4,7 +4,6 @@ using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
 
-
 namespace Inferno
 {
     /// <summary>
@@ -25,7 +24,6 @@ namespace Inferno
 
             //ファイルが存在した時のみ
             if (filePath.Length > 0)
-            {
                 //プレイヤが死亡したら再生
                 OnThinnedTickAsObservable
                     .Select(_ => PlayerPed)
@@ -34,15 +32,11 @@ namespace Inferno
                     .DistinctUntilChanged()
                     .Where(isAlive => !isAlive)
                     .Subscribe(_ => PlayAction());
-            }
         }
 
         private string[] LoadWavFiles(string targetPath)
         {
-            if (!Directory.Exists(targetPath))
-            {
-                return new string[0];
-            }
+            if (!Directory.Exists(targetPath)) return new string[0];
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }

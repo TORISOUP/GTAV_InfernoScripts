@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using GTA.Native;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("エレクトリカルショック", "おわり")]
     [ParupunteIsono("でんき")]
-    class ElectricalShock : ParupunteScript
+    internal class ElectricalShock : ParupunteScript
     {
         public ElectricalShock(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -34,7 +25,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             StartCoroutine(ElectricalCoroutine());
         }
 
-        IEnumerable<object> ElectricalCoroutine()
+        private IEnumerable<object> ElectricalCoroutine()
         {
             var pos = core.PlayerPed.Position;
             while (IsActive)
@@ -53,7 +44,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         Function.Call(Hash.SMASH_VEHICLE_WINDOW, ped.CurrentVehicle, 1);
                         Function.Call(Hash.SMASH_VEHICLE_WINDOW, ped.CurrentVehicle, 2);
                         Function.Call(Hash.SMASH_VEHICLE_WINDOW, ped.CurrentVehicle, 3);
-                        
+
                         NativeFunctions.ShootSingleBulletBetweenCoords(
                             pos + new Vector3(0, 0, random1) + vec,
                             ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, null, 1.0f);
@@ -63,10 +54,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         //適当な体の部位に向かって撃つ
                         var target = bones[Random.Next(0, bones.Length)];
                         NativeFunctions.ShootSingleBulletBetweenCoords(
-                               pos + new Vector3(0, 0, random1) + vec,
-                               ped.GetBoneCoord(target), 1, WeaponHash.StunGun, null, 1.0f);
+                            pos + new Vector3(0, 0, random1) + vec,
+                            ped.GetBoneCoord(target), 1, WeaponHash.StunGun, null, 1.0f);
                     }
                 }
+
                 yield return WaitForSeconds(0.7f);
             }
         }

@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Linq;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Native;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     //[ParupunteConfigAttribute("変身GOGOベイビー")]
     [ParupunteDebug(false, true)]
-    class Transform : ParupunteScript
+    internal class Transform : ParupunteScript
     {
         public Transform(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -22,7 +15,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-
             ReduceCounter = new ReduceCounter(30 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
@@ -33,11 +25,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var targetModel = new Model(targetHash);
 
             Game.Player.ChangeModel(targetModel);
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ => Game.Player.ChangeModel(initialModel));
-
         }
-
-
     }
 }

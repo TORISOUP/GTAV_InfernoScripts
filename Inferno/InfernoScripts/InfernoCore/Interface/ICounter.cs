@@ -19,16 +19,6 @@ namespace Inferno
         float Rate { get; }
 
         /// <summary>
-        /// カウンタを進行させる
-        /// </summary>
-        void Update(int countValue);
-
-        /// <summary>
-        /// カウンタを終了させる
-        /// </summary>
-        void Finish();
-
-        /// <summary>
         /// カウントが正常にカウント完了したことを通知する
         /// </summary>
         IObservable<Unit> OnFinishedAsync { get; }
@@ -37,5 +27,15 @@ namespace Inferno
         /// タイマが完了状態であるか
         /// </summary>
         bool IsCompleted { get; }
+
+        /// <summary>
+        /// カウンタを進行させる
+        /// </summary>
+        void Update(int countValue);
+
+        /// <summary>
+        /// カウンタを終了させる
+        /// </summary>
+        void Finish();
     }
 }

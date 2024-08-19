@@ -1,8 +1,7 @@
-﻿using GTA.Math;
-using GTA.Native;
+﻿using System;
 using System.Linq;
-using System;
-
+using GTA.Math;
+using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -34,18 +33,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             && x != player.CurrentVehicle
                             && !x.IsPersistent
                 );
-            foreach (var vehicle in targets)
-            {
-                vehicle.ApplyForce(Vector3.WorldUp);
-            }
+            foreach (var vehicle in targets) vehicle.ApplyForce(Vector3.WorldUp);
 
             if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
             {
                 var v = player.CurrentVehicle;
-                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
-                {
-                    v.ApplyForce(Vector3.WorldUp * 1.2f);
-                }
+                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v)) v.ApplyForce(Vector3.WorldUp * 1.2f);
             }
         }
     }

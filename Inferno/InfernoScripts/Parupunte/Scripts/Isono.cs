@@ -1,20 +1,13 @@
-﻿using GTA;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
-using System.Collections.Generic;
-using System.Linq;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("磯野ー！空飛ぼうぜ！")]
     [ParupunteIsono("いその")]
-    class Isono : ParupunteScript
+    internal class Isono : ParupunteScript
     {
         public Isono(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -46,10 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             player.SetToRagdoll(3000);
             player.IsCollisionProof = true;
 
-            if (player.IsInVehicle())
-            {
-                player.CurrentVehicle.IsCollisionProof = true;
-            }
+            if (player.IsInVehicle()) player.CurrentVehicle.IsCollisionProof = true;
 
             foreach (var s in WaitForSeconds(10))
             {
@@ -63,32 +53,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var p = entity as Ped;
                         p.SetToRagdoll(3000);
                     }
+
                     var direction = (targetPositionInAri - entity.Position).Normalized();
                     var power = entity is Ped ? pedForcePower : vehicleForcePower;
                     entity.ApplyForce(direction * power, Vector3.RandomXYZ());
                 }
-                if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
-                {
-                    player.CurrentVehicle.ApplyForce(Vector3.WorldUp * vehicleForcePower);
-                }
-                else
-                {
 
+                if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
+                    player.CurrentVehicle.ApplyForce(Vector3.WorldUp * vehicleForcePower);
+                else
                     player.ApplyForce(Vector3.WorldUp * pedForcePower);
-                }
                 yield return null;
             }
 
             //着地するまで
-            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
-            {
-                yield return null;
-            }
+            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir) yield return null;
             player.IsCollisionProof = false;
-            if (player.IsInVehicle())
-            {
-                player.CurrentVehicle.IsCollisionProof = false;
-            }
+            if (player.IsInVehicle()) player.CurrentVehicle.IsCollisionProof = false;
             ParupunteEnd();
         }
     }

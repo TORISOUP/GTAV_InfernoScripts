@@ -1,14 +1,7 @@
-﻿using GTA;
+﻿using System;
 using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno
@@ -17,10 +10,7 @@ namespace Inferno
     {
         private static Random _random;
 
-        private static Random Random
-        {
-            get { return _random ?? (_random = new Random()); }
-        }
+        private static Random Random => _random ?? (_random = new Random());
 
         public static Vehicle GetPlayerVehicle(this Script script)
         {
@@ -40,10 +30,7 @@ namespace Inferno
         /// <returns></returns>
         public static bool IsPlayerVehicle(this Vehicle vehicle)
         {
-            if (!vehicle.IsSafeExist())
-            {
-                return false;
-            }
+            if (!vehicle.IsSafeExist()) return false;
 
             return vehicle == Game.Player.Character.CurrentVehicle;
         }
@@ -118,9 +105,9 @@ namespace Inferno
         {
             forward.Normalize();
 
-            Vector3 vector = Vector3.Normalize(forward);
-            Vector3 vector2 = Vector3.Normalize(Vector3.Cross(up, vector));
-            Vector3 vector3 = Vector3.Cross(vector, vector2);
+            var vector = Vector3.Normalize(forward);
+            var vector2 = Vector3.Normalize(Vector3.Cross(up, vector));
+            var vector3 = Vector3.Cross(vector, vector2);
             var m00 = vector2.X;
             var m01 = vector2.Y;
             var m02 = vector2.Z;
@@ -131,7 +118,7 @@ namespace Inferno
             var m21 = vector.Y;
             var m22 = vector.Z;
 
-            float num8 = (m00 + m11) + m22;
+            var num8 = m00 + m11 + m22;
             var quaternion = new Quaternion();
             if (num8 > 0f)
             {
@@ -144,9 +131,9 @@ namespace Inferno
                 return quaternion;
             }
 
-            if ((m00 >= m11) && (m00 >= m22))
+            if (m00 >= m11 && m00 >= m22)
             {
-                var num7 = (float)Math.Sqrt(((1f + m00) - m11) - m22);
+                var num7 = (float)Math.Sqrt(1f + m00 - m11 - m22);
                 var num4 = 0.5f / num7;
                 quaternion.X = 0.5f * num7;
                 quaternion.Y = (m01 + m10) * num4;
@@ -157,7 +144,7 @@ namespace Inferno
 
             if (m11 > m22)
             {
-                var num6 = (float)Math.Sqrt(((1f + m11) - m00) - m22);
+                var num6 = (float)Math.Sqrt(1f + m11 - m00 - m22);
                 var num3 = 0.5f / num6;
                 quaternion.X = (m10 + m01) * num3;
                 quaternion.Y = 0.5f * num6;
@@ -166,7 +153,7 @@ namespace Inferno
                 return quaternion;
             }
 
-            var num5 = (float)Math.Sqrt(((1f + m22) - m00) - m11);
+            var num5 = (float)Math.Sqrt(1f + m22 - m00 - m11);
             var num2 = 0.5f / num5;
             quaternion.X = (m20 + m02) * num2;
             quaternion.Y = (m21 + m12) * num2;
@@ -209,6 +196,5 @@ namespace Inferno
         }
 
         #endregion
-
     }
 }

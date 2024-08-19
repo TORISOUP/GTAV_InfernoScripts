@@ -1,249 +1,249 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{66B723B1-4776-448B-947A-1F0792E77F7F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Inferno</RootNamespace>
-    <AssemblyName>Inferno</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
-    <TargetFrameworkProfile />
-    <LangVersion>9</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework" />
-    <Reference Include="ReactiveProperty, Version=9.6.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.9.6.0\lib\net472\ReactiveProperty.dll</HintPath>
-    </Reference>
-    <Reference Include="ReactiveProperty.Core, Version=9.6.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReactiveProperty.Core.9.6.0\lib\net472\ReactiveProperty.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ScriptHookVDotNet2, Version=2.11.6.0, Culture=neutral, processorArchitecture=Amd64">
-      <HintPath>..\packages\ScriptHookVDotNet2.2.11.6\lib\net48\ScriptHookVDotNet2.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive, Version=6.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.6.0.1\lib\net472\System.Reactive.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Linq.6.0.1\lib\net472\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.XML" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ChaosMode\ChaosMode.cs" />
-    <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSetting.cs" />
-    <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs" />
-    <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs" />
-    <Compile Include="ChaosMode\ChaosSettingLoader\ExstensionsMethods.cs" />
-    <Compile Include="ChaosMode\IWeaponProvider.cs" />
-    <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs" />
-    <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosController.cs" />
-    <Compile Include="ChaosMode\WeaponProvider\ChaosModeWeapons.cs" />
-    <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs" />
-    <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs" />
-    <Compile Include="ExtensionMethods\NativeFunctions.cs" />
-    <Compile Include="InfernoScripts\World\BombBat.cs" />
-    <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenRagdoll.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
-    <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
-    <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
-    <Compile Include="InfernoScripts\Event\ChasoMode\ChasoModeEvent.cs" />
-    <Compile Include="InfernoScripts\Event\IEventMessage.cs" />
-    <Compile Include="InfernoScripts\Event\Isono\IsonoMessage.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Coroutine\Awaitable.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutinePool.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Drawer\TimerUITextManager.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoTcpClient.cs" />
-    <Compile Include="InfernoScripts\Parupunte\ParupunteConfigElement.cs" />
-    <Compile Include="InfernoScripts\Parupunte\ParupunteConfigRepository.cs" />
-    <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs" />
-    <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\AddPlayerMoney.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\BaseballTournament.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Bunshin.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\BeastFriends.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\EdoPeriod.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\ElectricalShock.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\EveryoneLikeYou.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Fart.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\FishHeaven.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Garupan.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuFunnel.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuWarp.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\MassiveVehicleHack.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\MultiLeggedRace.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\RpgOnly.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnVheicle.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Transform.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\VehicleEnginePowerUp.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Toyosu.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\InvisiblePeds.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\KillCitizens.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Drawer\DrawingCore.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarData.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarDrawing.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Isono.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\HealthRegen.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\KuruKuru.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\MagicFire.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Mayday.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\MoutainLion.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\NinjaRun.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Onakaitai.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Owatashiki.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\PlayerInvincible.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\InvisibleVehicles.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\PositionShufle.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\RepairVehicles.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SetDateTime.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnFriend.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnTaxies.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnCharacters.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\SpeedMax.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\StrongVehicles.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Tempest.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\FloatingCar.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs" />
-    <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs" />
-    <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
-    <Compile Include="InfernoScripts\Player\BondCar.cs" />
-    <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
-    <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutineSystem.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
-    <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
-    <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
-    <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
-    <Compile Include="InfernoScripts\Player\Floating.cs" />
-    <Compile Include="InfernoScripts\Player\PlayerGripVehicle.cs" />
-    <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs" />
-    <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
-    <Compile Include="InfernoScripts\Player\PlayerHelthAlert.cs" />
-    <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
-    <Compile Include="InfernoScripts\Player\SpecialAbilityBgm.cs" />
-    <Compile Include="InfernoScripts\Player\Warp.cs" />
-    <Compile Include="InfernoScripts\World\ChaosAirPlane.cs" />
-    <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
-    <Compile Include="InfernoScripts\World\Fulton.cs" />
-    <Compile Include="InfernoScripts\World\Meteo.cs" />
-    <Compile Include="InfernoScripts\World\SpeedMax.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\InfernoConfig.cs" />
-    <Compile Include="Utilities\InfernoConfigLoader.cs" />
-    <Compile Include="Utilities\InfernoScheduler.cs" />
-    <Compile Include="Utilities\InfernoSynchronizationContext.cs" />
-    <Compile Include="Utilities\InfernoUtilities.cs" />
-    <Compile Include="Utilities\PriorityQueue.cs" />
-    <Compile Include="Utilities\RequestDataPackage.cs" />
-    <Compile Include="Utilities\ScheduledItem.cs" />
-    <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
-    <Compile Include="Utilities\TCPManager.cs" />
-    <Compile Include="Utilities\ThrottleFirst.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{66B723B1-4776-448B-947A-1F0792E77F7F}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Inferno</RootNamespace>
+        <AssemblyName>Inferno</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <TargetFrameworkProfile/>
+        <LangVersion>9</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup>
+        <StartupObject/>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+        <DebugSymbols>true</DebugSymbols>
+        <OutputPath>bin\x64\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <DebugType>full</DebugType>
+        <PlatformTarget>x64</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+        <OutputPath>bin\x64\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Optimize>true</Optimize>
+        <DebugType>pdbonly</DebugType>
+        <PlatformTarget>x64</PlatformTarget>
+        <ErrorReport>prompt</ErrorReport>
+        <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="mscorlib"/>
+        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+            <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="PresentationFramework"/>
+        <Reference Include="ReactiveProperty, Version=9.6.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+            <HintPath>..\packages\ReactiveProperty.9.6.0\lib\net472\ReactiveProperty.dll</HintPath>
+        </Reference>
+        <Reference Include="ReactiveProperty.Core, Version=9.6.0.0, Culture=neutral, PublicKeyToken=910d1732782c71cb, processorArchitecture=MSIL">
+            <HintPath>..\packages\ReactiveProperty.Core.9.6.0\lib\net472\ReactiveProperty.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="ScriptHookVDotNet2, Version=2.11.6.0, Culture=neutral, processorArchitecture=Amd64">
+            <HintPath>..\packages\ScriptHookVDotNet2.2.11.6\lib\net48\ScriptHookVDotNet2.dll</HintPath>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+        </Reference>
+        <Reference Include="System.ComponentModel.DataAnnotations"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Drawing"/>
+        <Reference Include="System.Reactive, Version=6.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+            <HintPath>..\packages\System.Reactive.6.0.1\lib\net472\System.Reactive.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Reactive.Linq, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+            <HintPath>..\packages\System.Reactive.Linq.6.0.1\lib\net472\System.Reactive.Linq.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Runtime.Serialization"/>
+        <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+            <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Web.Extensions"/>
+        <Reference Include="System.Windows"/>
+        <Reference Include="System.Windows.Forms"/>
+        <Reference Include="System.Xaml"/>
+        <Reference Include="System.XML"/>
+        <Reference Include="WindowsBase"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="ChaosMode\ChaosMode.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSetting.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ExstensionsMethods.cs"/>
+        <Compile Include="ChaosMode\IWeaponProvider.cs"/>
+        <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs"/>
+        <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosController.cs"/>
+        <Compile Include="ChaosMode\WeaponProvider\ChaosModeWeapons.cs"/>
+        <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
+        <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
+        <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
+        <Compile Include="InfernoScripts\World\BombBat.cs"/>
+        <Compile Include="InfernoScripts\CitizenAttachVehicle.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenRagdoll.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs"/>
+        <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs"/>
+        <Compile Include="InfernoScripts\Event\ChasoMode\ChasoModeEvent.cs"/>
+        <Compile Include="InfernoScripts\Event\IEventMessage.cs"/>
+        <Compile Include="InfernoScripts\Event\Isono\IsonoMessage.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Coroutine\Awaitable.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutinePool.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Counter\ReduceCounter.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\TimerUITextManager.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\IsonoManager.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoTcpClient.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\ParupunteConfigElement.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\ParupunteConfigRepository.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\ParupunteCore.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\ParupunteScript.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\AddPlayerMoney.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\BaseballTournament.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Bunshin.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\BeastFriends.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\EdoPeriod.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\ElectricalShock.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\EveryoneLikeYou.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\ExplodeDeadBodies.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Fart.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\FishHeaven.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\FixPedsAndVehicles.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Garupan.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuFunnel.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\KetsuWarp.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\MassiveVehicleHack.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\MultiLeggedRace.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\PerfectFreeze.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\RpgOnly.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnVheicle.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Transform.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\VehicleEnginePowerUp.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Toyosu.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\InvisiblePeds.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\KillCitizens.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Hitohanabi.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\DrawingCore.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarData.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\ProgressBarDrawing.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\ToastTextDrawing.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Interface\ICounter.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Interface\IProgressBar.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Isono.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\HealthRegen.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\KuruKuru.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\MagicFire.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Mayday.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\MoutainLion.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\NinjaRun.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Onakaitai.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Owatashiki.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\PlayerInvincible.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\InvisibleVehicles.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\PositionShufle.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\RepairVehicles.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SetDateTime.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnFriend.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnTaxies.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SpawnCharacters.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\SpeedMax.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\StrongVehicles.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Tempest.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\FloatingCar.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs"/>
+        <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs"/>
+        <Compile Include="InfernoScripts\Player\BondCar.cs"/>
+        <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs"/>
+        <Compile Include="ExtensionMethods\ExtensionMethods.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Coroutine\CoroutineSystem.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs"/>
+        <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs"/>
+        <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs"/>
+        <Compile Include="InfernoScripts\Player\EmergencyEscape.cs"/>
+        <Compile Include="InfernoScripts\Player\Floating.cs"/>
+        <Compile Include="InfernoScripts\Player\PlayerGripVehicle.cs"/>
+        <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs"/>
+        <Compile Include="InfernoScripts\Player\KillPlayer.cs"/>
+        <Compile Include="InfernoScripts\Player\PlayerHelthAlert.cs"/>
+        <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs"/>
+        <Compile Include="InfernoScripts\Player\SpecialAbilityBgm.cs"/>
+        <Compile Include="InfernoScripts\Player\Warp.cs"/>
+        <Compile Include="InfernoScripts\World\ChaosAirPlane.cs"/>
+        <Compile Include="InfernoScripts\World\ChaosHeli.cs"/>
+        <Compile Include="InfernoScripts\World\Fulton.cs"/>
+        <Compile Include="InfernoScripts\World\Meteo.cs"/>
+        <Compile Include="InfernoScripts\World\SpeedMax.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Utilities\InfernoConfig.cs"/>
+        <Compile Include="Utilities\InfernoConfigLoader.cs"/>
+        <Compile Include="Utilities\InfernoScheduler.cs"/>
+        <Compile Include="Utilities\InfernoSynchronizationContext.cs"/>
+        <Compile Include="Utilities\InfernoUtilities.cs"/>
+        <Compile Include="Utilities\PriorityQueue.cs"/>
+        <Compile Include="Utilities\RequestDataPackage.cs"/>
+        <Compile Include="Utilities\ScheduledItem.cs"/>
+        <Compile Include="Utilities\SingleThreadSynchronizationContext.cs"/>
+        <Compile Include="Utilities\TCPManager.cs"/>
+        <Compile Include="Utilities\ThrottleFirst.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="packages.config"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
 </Project>

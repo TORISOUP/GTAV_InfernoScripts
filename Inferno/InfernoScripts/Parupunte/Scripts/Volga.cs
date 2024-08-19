@@ -1,15 +1,9 @@
-﻿using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+﻿using System;
+using System.Collections.Generic;
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
-using System;
-using System.Collections.Generic;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -59,6 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ParupunteEnd();
                 yield break;
             }
+
             var ped = tuple.Item2;
             var plane = tuple.Item1;
 
@@ -76,6 +71,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     ParupunteEnd();
                     yield break;
                 }
+
                 SetPlaneTask(plane, ped, core.PlayerPed);
                 var delta = plane.Position - core.PlayerPed.Position;
                 delta.Z = 0;
@@ -103,7 +99,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
         {
             var tarPos = target.Position + new Vector3(0, 0, 50);
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 100.0, -1.0, -1.0, 100, 100);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 100.0, -1.0, -1.0,
+                100, 100);
         }
 
         private IEnumerable<object> VolgaCoroutine(Vector3 createPosition, Vector3 forward)
@@ -132,10 +129,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     ParupunteEnd();
                     yield break;
                 }
+
                 //着地するまで
                 if (!volga.IsInAir) break;
                 yield return null;
             }
+
             if (!volga.IsSafeExist())
             {
                 ParupunteEnd();

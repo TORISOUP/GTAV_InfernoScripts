@@ -1,15 +1,8 @@
-using GTA;
-using System.Linq;
-using System.Reactive.Linq;
 using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-using GTA.Native;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-
+using GTA;
+using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -37,26 +30,22 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnUpdate()
         {
-            explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x));//後の誤判定防止のため;
+            explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x)); //後の誤判定防止のため;
 
             var player = core.PlayerPed;
             var peds = core.CachedPeds.Where(x => x.IsSafeExist()
-                                                && !x.IsSameEntity(core.PlayerPed)
-                                                && x.IsDead
-                                                && !explodedPedHandles.Contains(x.Handle));
+                                                  && !x.IsSameEntity(core.PlayerPed)
+                                                  && x.IsDead
+                                                  && !explodedPedHandles.Contains(x.Handle));
 
             foreach (var ped in peds)
             {
                 var killer = ped.GetKiller();
-                if (killer.IsSafeExist() && killer is Ped)//殺害者がいたらそいつが起こした扱いの爆発を生成
-                {
+                if (killer.IsSafeExist() && killer is Ped) //殺害者がいたらそいつが起こした扱いの爆発を生成
                     GTA.World.AddOwnedExplosion((Ped)killer, ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
-                }
                 else
-                {
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
-                }
-                explodedPedHandles.Add(ped.Handle);//同一人物が2回以上爆発するのを防止するため
+                explodedPedHandles.Add(ped.Handle); //同一人物が2回以上爆発するのを防止するため
             }
         }
     }

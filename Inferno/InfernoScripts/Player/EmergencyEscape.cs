@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using GTA;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
+using GTA;
 using GTA.Math;
 using Inferno.Utilities;
-
 
 namespace Inferno
 {
@@ -17,20 +12,6 @@ namespace Inferno
     /// </summary>
     public class EmergencyEscape : InfernoScript
     {
-        #region config
-
-        class EmergencyEscapeConf : InfernoConfig
-        {
-            public float EscapePower { get; set; } = 60.0f;
-            public float OpenParachutoSeconds { get; set; } = 1.5f;
-            public override bool Validate()
-            {
-                return true;
-            }
-        }
-
-        #endregion
-
         private EmergencyEscapeConf conf;
         private float EscapePower => conf?.EscapePower ?? 60.0f;
         private float OpenParachutoSeconds => conf?.OpenParachutoSeconds ?? 1.5f;
@@ -59,7 +40,8 @@ namespace Inferno
             player.ClearTasksImmediately();
             player.Position += new Vector3(0, 0, 0.5f);
             player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, EscapePower) + playerVec.Velocity, InfernoUtilities.CreateRandomVector() * 10.0f);
+            player.ApplyForce(new Vector3(0, 0, EscapePower) + playerVec.Velocity,
+                InfernoUtilities.CreateRandomVector() * 10.0f);
 
             StartCoroutine(DelayParachute());
         }
@@ -71,5 +53,20 @@ namespace Inferno
             PlayerPed.IsInvincible = false;
             PlayerPed.ParachuteTo(PlayerPed.Position);
         }
+
+        #region config
+
+        private class EmergencyEscapeConf : InfernoConfig
+        {
+            public float EscapePower { get; } = 60.0f;
+            public float OpenParachutoSeconds { get; } = 1.5f;
+
+            public override bool Validate()
+            {
+                return true;
+            }
+        }
+
+        #endregion
     }
 }

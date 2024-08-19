@@ -1,12 +1,6 @@
 ﻿using System;
-using GTA;
-using System.Linq;
 using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
-
+using GTA;
 
 namespace Inferno
 {
@@ -15,16 +9,15 @@ namespace Inferno
     /// </summary>
     public class PlayerRagdoll : InfernoScript
     {
-
         protected override void Setup()
         {
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
-                    .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                    .Subscribe(_ =>
-                    {
-                        var playerChar = Game.Player;
-                        SetPlayerRagdoll(playerChar);
-                    });
+                .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                .Subscribe(_ =>
+                {
+                    var playerChar = Game.Player;
+                    SetPlayerRagdoll(playerChar);
+                });
         }
 
         private void SetPlayerRagdoll(Player PlayerChar)

@@ -4,28 +4,29 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using GTA;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Utilities;
 using Reactive.Bindings.Extensions;
 
-
 namespace Inferno.InfernoScripts.Parupunte
 {
     internal class ParupunteCore : InfernoScript
     {
         /// <summary>
-        /// パルプンテスクリプト一覧
+        /// NoLongerNeededを遅延して設定する対象リスト
         /// </summary>
-        private Type[] _parupunteScritpts;
+        private readonly List<Entity> _autoReleaseEntitiesList = new();
 
-        private Dictionary<string, ParupunteConfigElement> _parupunteConfigs;
+        private readonly Vector2 _mainTextPositionScale = new(0.5f, 0.8f);
+        private readonly Stopwatch _stopWatch = Stopwatch.StartNew();
+        private readonly Vector2 _subTextPositionScale = new(0.0f, 0.0f);
 
         /// <summary>
         /// デバッグ用
@@ -36,6 +37,20 @@ namespace Inferno.InfernoScripts.Parupunte
         /// いその用パルプンテ
         /// </summary>
         private Dictionary<string, Type> _isonoParupunteScripts;
+
+        private UIContainer _mainTextUiContainer;
+
+        private Dictionary<string, ParupunteConfigElement> _parupunteConfigs;
+
+        /// <summary>
+        /// パルプンテスクリプト一覧
+        /// </summary>
+        private Type[] _parupunteScritpts;
+
+        private int _screenHeight;
+        private int _screenWidth;
+        private UIContainer _subTextUiContainer;
+        private TimerUiTextManager timerText;
 
         private Dictionary<string, Type> IsonoParupunteScripts
         {
@@ -50,21 +65,6 @@ namespace Inferno.InfernoScripts.Parupunte
                 return _isonoParupunteScripts;
             }
         }
-
-        /// <summary>
-        /// NoLongerNeededを遅延して設定する対象リスト
-        /// </summary>
-        private List<Entity> _autoReleaseEntitiesList = new List<Entity>();
-
-        private UIContainer _mainTextUiContainer;
-        private UIContainer _subTextUiContainer;
-        private TimerUiTextManager timerText;
-        private int _screenHeight;
-        private int _screenWidth;
-        private Vector2 _mainTextPositionScale = new Vector2(0.5f, 0.8f);
-        private Vector2 _subTextPositionScale = new Vector2(0.0f, 0.0f);
-
-        private readonly Stopwatch _stopWatch = Stopwatch.StartNew();
 
         private TimeSpan Time => _stopWatch.Elapsed;
 
@@ -118,13 +118,9 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ =>
                 {
                     if (IsActive)
-                    {
                         ParupunteStop();
-                    }
                     else
-                    {
                         ParupunteStart(ChooseParupounteScript());
-                    }
                 });
 
             //パルプンテが停止したタイミングで開放
@@ -133,9 +129,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ =>
                 {
                     foreach (var entity in _autoReleaseEntitiesList.Where(entity => entity.IsSafeExist()))
-                    {
                         entity.MarkAsNoLongerNeeded();
-                    }
 
                     _autoReleaseEntitiesList.Clear();
                 });
@@ -176,7 +170,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Where(x => !x)
                 .Subscribe(_ => _mainTextUiContainer.Items.Clear());
 
-            this.OnDrawingTickAsObservable
+            OnDrawingTickAsObservable
                 .Where(_ => _mainTextUiContainer.Items.Any() || _subTextUiContainer.Items.Any())
                 .Subscribe(_ =>
                 {
@@ -212,10 +206,7 @@ namespace Inferno.InfernoScripts.Parupunte
             foreach (var kv in defaultConfig)
             {
                 var value = kv.Value;
-                if (loadConfig.ContainsKey(kv.Key))
-                {
-                    value = loadConfig[kv.Key];
-                }
+                if (loadConfig.ContainsKey(kv.Key)) value = loadConfig[kv.Key];
 
                 mergedConfig[kv.Key] = value;
             }
@@ -258,10 +249,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStart(Type script)
         {
-            if (IsActive)
-            {
-                return;
-            }
+            if (IsActive) return;
 
             IsActive = true;
 
@@ -295,10 +283,8 @@ namespace Inferno.InfernoScripts.Parupunte
         private Type ChooseParupounteScript()
         {
             if (_debugParuputeScripts.Any())
-            {
                 //デバッグ指定のやつがあるならそっち優先で取り出す
                 return _debugParuputeScripts[Random.Next(0, _debugParuputeScripts.Length)];
-            }
 
             return _parupunteScritpts[Random.Next(0, _parupunteScritpts.Length)];
         }

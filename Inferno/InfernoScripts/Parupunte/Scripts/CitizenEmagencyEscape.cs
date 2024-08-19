@@ -1,24 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
 using Inferno.ChaosMode;
-using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("磯野～！緊急脱出しようぜ！")]
     [ParupunteIsono("きんきゅうだっしゅつ")]
-    class CitizenEmagencyEscape : ParupunteScript
+    internal class CitizenEmagencyEscape : ParupunteScript
     {
         public CitizenEmagencyEscape(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -27,19 +17,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             var playerPos = core.PlayerPed.Position;
-            foreach (var ped in core.CachedPeds.Concat(new Ped[] {core.PlayerPed}).Where(
-                    x => x.IsSafeExist()
-                    && x.IsAlive
-                    && x.IsInVehicle()
-                    && !x.IsCutsceneOnlyPed()
-                    && x.IsInRangeOf(playerPos, 100)
-                ))
+            foreach (var ped in core.CachedPeds.Concat(new[] { core.PlayerPed })
+                         .Where(
+                             x => x.IsSafeExist()
+                                  && x.IsAlive
+                                  && x.IsInVehicle()
+                                  && !x.IsCutsceneOnlyPed()
+                                  && x.IsInRangeOf(playerPos, 100)
+                         ))
             {
                 var car = ped.CurrentVehicle;
                 if (car.IsSafeExist() && car.PetrolTankHealth > 0 && !car.IsRequiredForMission())
-                {
                     car.PetrolTankHealth = -700;
-                }
                 EscapeVehicle(ped);
             }
 
@@ -65,7 +54,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             ped.IsInvincible = true;
             yield return WaitForSeconds(1.5f);
-            if(!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist()) yield break;
             ped.IsInvincible = false;
             ped.ParachuteTo(core.PlayerPed.Position);
             yield return WaitForSeconds(10);
@@ -74,7 +63,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         }
 
 
-        IEnumerable<object> DelayFinished()
+        private IEnumerable<object> DelayFinished()
         {
             yield return WaitForSeconds(7);
             ParupunteEnd();

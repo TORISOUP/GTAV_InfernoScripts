@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GTA;
-using System.Linq;
-using System.Reactive.Linq;
-using System;
-using System.Reactive;
-using System.Reactive.Subjects;
-
 using GTA.Math;
-
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("いっぱいちゅき", "よく見たらクソむかつく")]
     [ParupunteIsono("いっぱいちゅき")]
-    class EveryoneLikeYou : ParupunteScript
+    internal class EveryoneLikeYou : ParupunteScript
     {
-        private HashSet<Entity> entityList = new HashSet<Entity>();
+        private readonly HashSet<Entity> entityList = new();
 
         public EveryoneLikeYou(ParupunteCore core, ParupunteConfigElement config) : base(core, config)
         {
@@ -46,22 +37,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                                            && !entityList.Contains(x)
                                                            && !x.IsCutsceneOnlyPed()))
             {
-
                 entityList.Add(ped);
                 StartCoroutine(MoveCoroutine(ped));
-
             }
+
             foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
                                                                && x.IsInRangeOf(playerPos, 30)
                                                                && !entityList.Contains(x)
-            ))
-            {
+                     ))
                 if (!entityList.Contains(veh))
                 {
                     entityList.Add(veh);
                     StartCoroutine(MoveCoroutine(veh));
                 }
-            }
         }
 
         private IEnumerable<object> MoveCoroutine(Entity entity)

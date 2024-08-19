@@ -12,8 +12,7 @@ namespace Inferno.Utilities
     {
         private readonly
             ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>
-            _mQueue =
-                new ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>();
+            _mQueue = new();
 
         public override void Post(SendOrPostCallback d, object state)
         {

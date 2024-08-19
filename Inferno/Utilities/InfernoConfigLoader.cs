@@ -11,8 +11,8 @@ namespace Inferno.Utilities
     public class InfernoConfigLoader<T> where T : new()
     {
         protected readonly Encoding _encoding = Encoding.UTF8;
-        protected DebugLogger _debugLogger;
         protected string _baseFilePath = @"./scripts/confs/";
+        protected DebugLogger _debugLogger;
 
         protected virtual DebugLogger DebugLogger
         {
@@ -63,6 +63,7 @@ namespace Inferno.Utilities
                 CreateDefaultSettingFile(filePath);
                 return "";
             }
+
             var readString = "";
             try
             {
@@ -76,6 +77,7 @@ namespace Inferno.Utilities
                 DebugLogger.Log(e.Message);
                 DebugLogger.Log(e.StackTrace);
             }
+
             return readString;
         }
 
@@ -86,10 +88,7 @@ namespace Inferno.Utilities
         {
             var directoryPath = Path.GetDirectoryName(filePath);
             //存在しないならディレクトリを作る
-            if (!Directory.Exists(directoryPath))
-            {
-                Directory.CreateDirectory(directoryPath);
-            }
+            if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
 
             //デフォルト設定を吐き出す
             var dto = CreateDefault();
