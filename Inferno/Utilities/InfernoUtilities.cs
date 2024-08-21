@@ -36,9 +36,29 @@ namespace Inferno.Utilities
             {
                 await task;
             }
-            catch (Exception)
+            catch (OperationCanceledException)
             {
                 // ignore
+            }
+            catch (Exception e)
+            {
+                ToastTextDrawing.Instance.DrawDebugText(e.ToString(), 300);
+            }
+        }
+        
+        public static async void Forget(this ValueTask task)
+        {
+            try
+            {
+                await task;
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore
+            }
+            catch (Exception e)
+            {
+                ToastTextDrawing.Instance.DrawDebugText(e.ToString(), 300);
             }
         }
     }

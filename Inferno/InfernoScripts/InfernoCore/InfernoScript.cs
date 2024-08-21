@@ -184,11 +184,24 @@ namespace Inferno
 
         #region forTaks
 
-        protected async Task DelayFrame(int frame, CancellationToken ct = default)
+        protected async Task DelayFrameAsync(int frame, CancellationToken ct = default)
         {
             await OnTickAsObservable
                 .Take(frame)
                 .ToTask(ct);
+        }
+        
+        protected async Task YieldAsync(CancellationToken ct = default)
+        {
+            await OnTickAsObservable
+                .Take(1)
+                .ToTask(ct);
+        }
+        
+        protected Task DelayRandomFrameAsync(int min, int max, CancellationToken ct)
+        {
+            var waitLoopCount = Random.Next(min, max);
+            return DelayFrameAsync(waitLoopCount, ct);
         }
 
         protected CancellationToken GetActivationCancellationToken()

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
@@ -52,8 +54,9 @@ namespace Inferno
             OnAllOnCommandObservable
                 .Subscribe(_ => { IsActive = true; });
 
-            IsActiveAsObservable.Where(x => x)
-                .Subscribe(_ => StartCoroutine(StartChaosPlanes()));
+            IsActiveAsObservable
+                .Where(x => x)
+                .Subscribe(_ => StartChaosPlanesAsync(GetActivationCancellationToken()).Forget());
 
             //ターゲット描画
             OnDrawingTickAsObservable
@@ -71,12 +74,12 @@ namespace Inferno
         }
 
         //時間差で戦闘機を出現させる
-        private IEnumerable<object> StartChaosPlanes()
+        private async ValueTask StartChaosPlanesAsync(CancellationToken ct)
         {
             foreach (var i in Enumerable.Range(0, AirPlaneCount))
             {
-                StartCoroutine(PlaneManageCoroutine(i));
-                yield return WaitForSeconds(1);
+                PlaneManageLoopAsync(i, ct).Forget();
+                await Task.Delay(TimeSpan.FromSeconds(1), ct);
             }
         }
 
@@ -85,11 +88,11 @@ namespace Inferno
         /// </summary>
         /// <param name="id">戦闘機に割り振るID</param>
         /// <returns></returns>
-        private IEnumerable<object> PlaneManageCoroutine(int id)
+        private async ValueTask PlaneManageLoopAsync(int id, CancellationToken ct)
         {
             var plane = default(Vehicle);
             var ped = default(Ped);
-            yield return RandomWait();
+            await DelayRandomFrameAsync(0, 10, ct);
             while (IsActive)
             {
                 if (!IsPlaneActive(plane, ped))
@@ -98,20 +101,19 @@ namespace Inferno
                     var spawn = SpawnAirPlane();
                     if (spawn != null)
                     {
-                        plane = spawn.Item1;
-                        ped = spawn.Item2;
+                        (plane, ped) = spawn.Value;
                         //戦闘機稼働
                         targetArea[id] = null;
-                        StartCoroutine(AirPlaneCoroutine(plane, ped, id));
+                        AirPlaneAsync(plane, ped, id, ct).Forget();
                     }
                 }
 
                 //5秒ごとにチェック
-                yield return WaitForSeconds(5);
+                await Task.Delay(TimeSpan.FromSeconds(5), ct);
             }
         }
 
-        private Tuple<Vehicle, Ped> SpawnAirPlane()
+        private (Vehicle v, Ped p)? SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成
@@ -126,13 +128,13 @@ namespace Inferno
             AutoReleaseOnGameEnd(ped);
             ped.SetNotChaosPed(true);
 
-            return new Tuple<Vehicle, Ped>(plane, ped);
+            return (plane, ped);
         }
 
         /// <summary>
-        /// 戦闘機のコルーチン
+        /// 戦闘機の制御
         /// </summary>
-        private IEnumerable<object> AirPlaneCoroutine(Vehicle plane, Ped ped, int id)
+        private async ValueTask AirPlaneAsync(Vehicle plane, Ped ped, int id, CancellationToken ct)
         {
             var speed = (float)Random.Next(50, 500);
             while (IsActive && IsPlaneActive(plane, ped))
@@ -147,11 +149,11 @@ namespace Inferno
 
                     //少しづつ耐久値を削る
                     plane.PetrolTankHealth -= 1.0f;
-                    yield return null;
+                    await YieldAsync(ct);
                 }
 
                 //しばらく待つ
-                foreach (var s in WaitForSeconds(10))
+                foreach (var _ in WaitForSeconds(10))
                 {
                     if (!IsPlaneActive(plane, ped))
                     {
@@ -166,16 +168,16 @@ namespace Inferno
                     {
                         //たまに攻撃
                         targetArea[id] = target.Position;
-                        yield return AttackCoroutine(plane, ped, target);
-                        yield return WaitForSeconds(5);
+                        await AttackAsync(plane, ped, target, ct);
+                        await Task.Delay(TimeSpan.FromSeconds(5), ct);
                         targetArea[id] = null;
                         break;
                     }
 
-                    yield return null;
+                    await YieldAsync(ct);
                 }
 
-                yield return null;
+                await YieldAsync(ct);
             }
 
             if (plane.IsSafeExist())
@@ -222,18 +224,18 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 爆撃コルーチン
+        /// 爆撃
         /// </summary>
-        private IEnumerable<object> AttackCoroutine(Vehicle plane, Ped driver, Entity target)
+        private async ValueTask AttackAsync(Vehicle plane, Ped driver, Entity target, CancellationToken ct)
         {
             var num = Random.Next(3, 5);
             var targetArea = target.Position;
             var speed = target == PlayerPed || target == PlayerVehicle.Value ? 150 : 500;
             while (num-- > 0)
             {
-                if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) yield break;
+                if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) return;
                 ShootAt(plane, driver, targetArea, speed);
-                yield return WaitForSeconds(0.8f);
+                await Task.Delay(TimeSpan.FromSeconds(0.8f), ct);
             }
         }
 
