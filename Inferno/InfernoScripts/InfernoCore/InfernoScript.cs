@@ -25,7 +25,7 @@ namespace Inferno
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
 
         private InfernoSynchronizationContext _infernoSynchronizationContext;
-
+        private CancellationTokenSource _activationCancellationTokenSource;
         private InfernoScheduler infernoScheduler;
         protected Random Random = new();
 
@@ -151,7 +151,16 @@ namespace Inferno
         protected bool IsActive
         {
             get => _isActiveReactiveProperty.Value;
-            set => _isActiveReactiveProperty.Value = value;
+            set
+            {
+                _isActiveReactiveProperty.Value = value;
+                if (!value)
+                {
+                    _activationCancellationTokenSource?.Cancel();
+                    _activationCancellationTokenSource?.Dispose();
+                    _activationCancellationTokenSource = null;
+                }
+            }
         }
 
         /// <summary>
@@ -180,6 +189,13 @@ namespace Inferno
             await OnTickAsObservable
                 .Take(frame)
                 .ToTask(ct);
+        }
+
+        protected CancellationToken GetActivationCancellationToken()
+        {
+            if (!IsActive) throw new Exception("Script is not active.");
+            _activationCancellationTokenSource ??= new CancellationTokenSource();
+            return _activationCancellationTokenSource.Token;
         }
 
         #endregion
