@@ -212,13 +212,11 @@ namespace Inferno.ChaosMode
                 yield break;
             }
 
-            if (!ped.IsRequiredForMission())
+            SetPedStatus(ped);
+
+            if (ped.IsRequiredForMission())
             {
-                //ミッション関係じゃないキャラならパラメータ変更
-                SetPedStatus(ped);
-            }
-            else
-            {
+                
                 var playerGroup = Game.Player.GetPlayerGroup();
                 if (!ped.IsPedGroupMember(playerGroup))
                 {
@@ -388,9 +386,7 @@ namespace Inferno.ChaosMode
                 ped.IsVisible = true;
                 if (ped.IsInVehicle())
                 {
-                    //TODO:車から投擲物を投げる方法を調べる
-                    ped.Task.ClearAll();
-                    ped.TaskDriveBy(target, FiringPattern.BurstFireDriveby);
+                    ped.Task.FightAgainst(target, 60000);
                 }
                 else
                 {
