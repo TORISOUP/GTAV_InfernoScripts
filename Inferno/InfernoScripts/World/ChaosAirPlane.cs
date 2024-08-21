@@ -145,7 +145,9 @@ namespace Inferno
                 {
                     ped.Task.ClearAll();
                     //周辺市民をターゲットにする
+                    
                     SetPlaneTask(plane, ped, target, speed);
+                    ped.SetCombatAttributes(53, true);
 
                     //少しづつ耐久値を削る
                     plane.PetrolTankHealth -= 1.0f;

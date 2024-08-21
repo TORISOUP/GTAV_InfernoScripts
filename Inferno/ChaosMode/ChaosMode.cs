@@ -216,7 +216,6 @@ namespace Inferno.ChaosMode
             {
                 //ミッション関係じゃないキャラならパラメータ変更
                 SetPedStatus(ped);
-                PreventToFlee(ped);
             }
             else
             {
@@ -284,7 +283,7 @@ namespace Inferno.ChaosMode
                     .ToArray();
 
             //100m以内の市民のうち、より近い人を選出
-            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(5).ToArray();
+            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(15).ToArray();
 
             if (nearPeds.Length == 0) return null;
             var randomindex = Random.Next(nearPeds.Length);
@@ -294,11 +293,67 @@ namespace Inferno.ChaosMode
         private void SetPedStatus(Ped ped)
         {
             if (!ped.IsSafeExist()) return;
-            //FIBミッションからのコピペ（詳細不明）
+
+            bool RandomBool()
+            {
+                return Random.Next(0, 100) > 50;
+            }
+            
+            // 車を使用するか
+            ped.SetCombatAttributes(1, RandomBool());
+            // ドライブバイを許可するか
+            ped.SetCombatAttributes(2, true);
+            // 車にとどまるか
+            ped.SetCombatAttributes(3, RandomBool());
+            
+            //非武装（近接武器）で武装した市民を攻撃できるか
+            ped.SetCombatAttributes(5, true);
+            // 逃げるのを優先するか
+            ped.SetCombatAttributes(6, false);
+            // 死体に飯能するか
             ped.SetCombatAttributes(9, false);
-            ped.SetCombatAttributes(1, false);
-            ped.SetCombatAttributes(3, true);
-            ped.SetCombatAttributes(29, true);
+            // 距離に応じて発射レートを変える
+            ped.SetCombatAttributes(24, true);
+            // 戦闘開始時のリアクションを無効化
+            ped.SetCombatAttributes(26, true);
+            // 射線が通って無くても攻撃するか
+            ped.SetCombatAttributes(30, true);
+            // 固定動作を無効化して強制的に動かす
+            ped.SetCombatAttributes(35, true);
+            // ピン留めを解除
+            ped.SetCombatAttributes(36, true);
+            // 防御態勢をとるか
+            ped.SetCombatAttributes(37, false);
+            // 弾丸に対してリアクションするか
+            ped.SetCombatAttributes(38, false);
+            // 車を奪うか
+            ped.SetCombatAttributes(31, true);
+            // 自分が武器を持って無くても他人を襲うか
+            ped.SetCombatAttributes(46, true);
+            // 突撃を許可するか
+            ped.SetCombatAttributes(50, true);
+            // 車で攻撃するか(?)
+            ped.SetCombatAttributes(52, RandomBool());
+            // 車両の武器を使用するか
+            ped.SetCombatAttributes(53, true);
+            // 最適な武器を選択するか
+            ped.SetCombatAttributes(54, RandomBool());
+            // 戦闘から逃走することを許さない
+            ped.SetCombatAttributes(58, true);
+            // スモークグレネードを投げる
+            ped.SetCombatAttributes(60, true);
+            // 歩道に乗り上げて運転する
+            ped.SetCombatAttributes(70, true);
+            // 車両に対してRPGを優先的に使う
+            ped.SetCombatAttributes(72, RandomBool());
+            
+            ped.SetFleeAttributes(0, 0);
+
+            
+            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
+            
+            
+            
 
             ped.MaxHealth = 2000;
             ped.Health = 2000;
@@ -364,18 +419,6 @@ namespace Inferno.ChaosMode
             }
         }
 
-        /// <summary>
-        /// 市民が逃げないようにパラメータ設定する
-        /// </summary>
-        /// <param name="ped"></param>
-        private void PreventToFlee(Ped ped)
-        {
-            ped.SetFleeAttributes(0, 0);
-            ped.SetCombatAttributes(46, true);
-            //非武装（近接武器）で武装した市民を攻撃できるか
-            ped.SetCombatAttributes(5, true);
-            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
-        }
 
         /// <summary>
         /// 市民に武器をもたせる
