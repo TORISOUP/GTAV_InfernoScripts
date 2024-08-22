@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.Event.ChasoMode;
+using Inferno.Utilities;
 
 namespace Inferno.ChaosMode
 {
@@ -174,8 +177,7 @@ namespace Inferno.ChaosMode
             foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
-                var id = StartCoroutine(ChaosPedAction(ped));
-                coroutineIds.Add(id);
+                ChaosPedActionAsync(ped, GetActivationCancellationToken()).Forget();
             }
         }
 
@@ -191,15 +193,13 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 市民一人ひとりについて回るコルーチン
         /// </summary>
-        /// <param name="ped"></param>
-        /// <returns></returns>
-        private IEnumerable<object> ChaosPedAction(Ped ped)
+        private async ValueTask ChaosPedActionAsync(Ped ped, CancellationToken ct)
         {
             //魚なら除外する
             var m = (uint)ped.Model.Hash;
-            if (fishHashes.Contains(m)) yield break;
+            if (fishHashes.Contains(m)) return;
 
-            if (!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist()) return;
             var pedId = ped.Handle;
 
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
@@ -209,14 +209,13 @@ namespace Inferno.ChaosMode
             if (!chaosChecker.IsPedChaosAvailable(ped))
             {
                 chaosedPedList.Remove(pedId);
-                yield break;
+                return;
             }
 
             SetPedStatus(ped);
 
             if (ped.IsRequiredForMission())
             {
-                
                 var playerGroup = Game.Player.GetPlayerGroup();
                 if (!ped.IsPedGroupMember(playerGroup))
                 {
@@ -236,9 +235,11 @@ namespace Inferno.ChaosMode
 
                 //武器を変更する
                 if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
+                {
                     equipedWeapon = GiveWeaponTpPed(ped);
+                }
 
-                yield return RandomWait();
+                await DelayRandomFrameAsync(10, 30, ct);
 
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
@@ -246,12 +247,15 @@ namespace Inferno.ChaosMode
                 PedRiot(ped, equipedWeapon);
 
                 //適当に待機
-                foreach (var s in WaitForSeconds(5 + (float)Random.NextDouble() * 3))
+                foreach (var _ in Enumerable.Range(0, Random.Next(5, 10)))
                 {
+                    //市民が攻撃をやめて逃げ始めたら再度セットする
                     if (ped.IsSafeExist() && ped.IsFleeing())
-                        //市民が攻撃をやめて逃げ始めたら再度セットする
+                    {
                         break;
-                    yield return s;
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(1), ct);
                 }
             } while (ped.IsSafeExist() && ped.IsAlive);
 
@@ -266,24 +270,45 @@ namespace Inferno.ChaosMode
         /// <returns></returns>
         private Ped GetTargetPed(Ped ped)
         {
-            if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist()) return null;
+            if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist())
+            {
+                return null;
+            }
 
             //プレイヤへの攻撃補正が設定されているならプレイヤを攻撃対象にする
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
                 Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
+            {
                 return PlayerPed;
+            }
+            
 
-            //100m以内の市民
+            //近くの市民
             var aroundPeds =
                 CachedPeds.Concat(new[] { PlayerPed })
                     .Where(
-                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 100))
+                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 200))
                     .ToArray();
 
-            //100m以内の市民のうち、より近い人を選出
-            var nearPeds = aroundPeds.OrderBy(x => (ped.Position - x.Position).Length()).Take(15).ToArray();
+            
+            var damagedBy = aroundPeds.FirstOrDefault(ped.HasBeenDamagedBy);
+            if (damagedBy != null && damagedBy.IsSafeExist() && damagedBy.IsAlive)
+            {
+                return damagedBy;
+            }
+            
+            //近くの市民のうち、より近い人を選出
+            var nearPeds = aroundPeds
+                .OrderBy(x => (ped.Position - x.Position).Length())
+                .Take(Random.Next(5, 15))
+                .ToArray();
 
-            if (nearPeds.Length == 0) return null;
+            if (nearPeds.Length == 0)
+            {
+                return null;
+            }
+
+
             var randomindex = Random.Next(nearPeds.Length);
             return nearPeds[randomindex];
         }
@@ -296,14 +321,13 @@ namespace Inferno.ChaosMode
             {
                 return Random.Next(0, 100) > 50;
             }
-            
+
             // 車を使用するか
             ped.SetCombatAttributes(1, RandomBool());
             // ドライブバイを許可するか
             ped.SetCombatAttributes(2, true);
             // 車にとどまるか
             ped.SetCombatAttributes(3, RandomBool());
-            
             //非武装（近接武器）で武装した市民を攻撃できるか
             ped.SetCombatAttributes(5, true);
             // 逃げるのを優先するか
@@ -324,6 +348,8 @@ namespace Inferno.ChaosMode
             ped.SetCombatAttributes(37, false);
             // 弾丸に対してリアクションするか
             ped.SetCombatAttributes(38, false);
+            // Allows ped to bust the player
+            ped.SetCombatAttributes(39, true);
             // 車を奪うか
             ped.SetCombatAttributes(31, true);
             // 自分が武器を持って無くても他人を襲うか
@@ -344,14 +370,11 @@ namespace Inferno.ChaosMode
             ped.SetCombatAttributes(70, true);
             // 車両に対してRPGを優先的に使う
             ped.SetCombatAttributes(72, RandomBool());
-            
+
             ped.SetFleeAttributes(0, 0);
 
-            
+
             Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
-            
-            
-            
 
             ped.MaxHealth = 2000;
             ped.Health = 2000;
@@ -360,7 +383,7 @@ namespace Inferno.ChaosMode
             //戦闘能力？
             ped.SetCombatAbility(1000);
             //戦闘範囲
-            ped.SetCombatRange(30);
+            ped.SetCombatRange(100);
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
 
