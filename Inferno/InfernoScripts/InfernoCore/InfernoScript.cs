@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +33,9 @@ namespace Inferno
 
         private readonly List<StepAwaiter> _stepAwaiters = new(8);
 
+        private readonly CompositeDisposable _compositeDisposable = new();
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -49,15 +54,18 @@ namespace Inferno
             Observable.Interval(TimeSpan.FromMilliseconds(10))
                 .Where(_ => InfernoCore.Instance != null)
                 .Take(1)
+                .TakeUntil(_disposeSubject)
                 .Subscribe(_ =>
                 {
                     InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
                     InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
-                });
+                })
+                .AddTo(_compositeDisposable);
 
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                     .Select(_ => Unit.Default)
+                    .TakeUntil(_disposeSubject)
                     .Publish()
                     .RefCount(); //Subscribeされたらイベントハンドラを登録する
 
@@ -72,42 +80,47 @@ namespace Inferno
 
             //スケジューラ実行
             OnTickAsObservable.Subscribe(_ =>
-            {
-                FrameCount++;
-                
-                try
                 {
-                    infernoScheduler?.Run();
-                }
-                catch
-                {
-                    // ignore
-                }
+                    FrameCount++;
 
-                try
-                {
-                    InfernoSynchronizationContext.Update();
-                }
-                catch
-                {
-                    // ignore
-                }
-
-                try
-                {
-                    foreach (var stepAwaiter in _stepAwaiters)
+                    try
                     {
-                        if (stepAwaiter is { IsCompleted: false })
+                        infernoScheduler?.Run();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        InfernoSynchronizationContext.Update();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        lock (_stepAwaiters)
                         {
-                            stepAwaiter.Step();
+                            foreach (var stepAwaiter in _stepAwaiters)
+                            {
+                                if (stepAwaiter is { IsActive: true })
+                                {
+                                    stepAwaiter.Step();
+                                }
+                            }
                         }
                     }
-                }
-                catch
-                {
-                    // ignore
-                }
-            });
+                    catch
+                    {
+                        // ignore
+                    }
+                })
+                .AddTo(_compositeDisposable);
+            ;
 
             //タイマのカウント
             OnThinnedTickAsObservable
@@ -118,22 +131,28 @@ namespace Inferno
 
                     //完了状態にあるタイマを全て削除
                     _counterList.RemoveAll(x => x.IsCompleted);
-                });
+                })
+                .AddTo(_compositeDisposable);
+            ;
 
             _coroutinePool = new CoroutinePool(5);
 
             //コルーチンを実行する
             CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
-                .Subscribe(_ => _coroutinePool.Run());
+                .Subscribe(_ => _coroutinePool.Run())
+                .AddTo(_compositeDisposable);
+            ;
 
 
             OnAbortAsync.Subscribe(_ =>
-            {
-                IsActive = false;
-                foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
+                {
+                    IsActive = false;
+                    foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
 
-                _autoReleaseEntities.Clear();
-            });
+                    _autoReleaseEntities.Clear();
+                })
+                .AddTo(_compositeDisposable);
+            ;
 
             // Setupは最初のTickタイミングまで遅らせる
             // OnTickAsObservableとは独立させて実行しないとイベント登録順で
@@ -154,7 +173,9 @@ namespace Inferno
                     {
                         LogWrite(e.ToString());
                     }
-                });
+                })
+                .AddTo(_compositeDisposable);
+            ;
         }
 
         protected virtual string ConfigFileName => null;
@@ -175,13 +196,21 @@ namespace Inferno
             get => _isActiveReactiveProperty.Value;
             set
             {
-                _isActiveReactiveProperty.Value = value;
                 if (!value)
                 {
-                    _activationCancellationTokenSource?.Cancel();
-                    _activationCancellationTokenSource?.Dispose();
-                    _activationCancellationTokenSource = null;
+                    try
+                    {
+                        _activationCancellationTokenSource?.Cancel();
+                        _activationCancellationTokenSource?.Dispose();
+                        _activationCancellationTokenSource = null;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
+
+                _isActiveReactiveProperty.Value = value;
             }
         }
 
@@ -206,28 +235,40 @@ namespace Inferno
 
         #region forTaks
 
-        protected async Task DelayFrameAsync(int frame = 1, CancellationToken ct = default)
+        protected async ValueTask DelayFrameAsync(int frame, CancellationToken ct = default)
         {
-            // 使用可能なStepAwaiterを探す
-            var stepAwaiter = _stepAwaiters.FirstOrDefault(x => x.IsCompleted);
-            // 存在しなければ新規作成
-            if (stepAwaiter == null)
+            StepAwaiter stepAwaiter;
+            lock (_stepAwaiters)
             {
-                stepAwaiter = new StepAwaiter();
-                _stepAwaiters.Add(stepAwaiter);
+                // 使用可能なStepAwaiterを探す
+                stepAwaiter = _stepAwaiters.FirstOrDefault(x => !x.IsActive);
+                // 存在しなければ新規作成
+                if (stepAwaiter == null)
+                {
+                    stepAwaiter = new StepAwaiter();
+                    _stepAwaiters.Add(stepAwaiter);
+                }
+
+                stepAwaiter.Reset(frame, ct);
             }
-            stepAwaiter.Reset(frame, ct);
-            await stepAwaiter;
+
+            try
+            {
+                await stepAwaiter;
+                ct.ThrowIfCancellationRequested();
+            }
+            finally
+            {
+                stepAwaiter.Release();
+            }
         }
 
-        protected async Task YieldAsync(CancellationToken ct = default)
+        protected ValueTask YieldAsync(CancellationToken ct = default)
         {
-            await OnTickAsObservable
-                .Take(1)
-                .ToTask(ct);
+            return DelayFrameAsync(1, ct);
         }
 
-        protected Task DelayRandomFrameAsync(int min, int max, CancellationToken ct)
+        protected ValueTask DelayRandomFrameAsync(int min, int max, CancellationToken ct)
         {
             var waitLoopCount = Random.Next(min, max);
             return DelayFrameAsync(waitLoopCount, ct);
@@ -343,6 +384,7 @@ namespace Inferno
                 .Select(_ => Unit.Default)
                 .Take(1)
                 .Repeat() //1回動作したらBufferをクリア
+                .TakeUntil(_disposeSubject)
                 .Publish()
                 .RefCount();
         }
@@ -470,5 +512,35 @@ namespace Inferno
         }
 
         #endregion forTimer
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    _compositeDisposable.Dispose();
+                    _disposeSubject.OnNext(Unit.Default);
+                    _disposeSubject.OnCompleted();
+                    _disposeSubject.Dispose();
+                    _activationCancellationTokenSource?.Cancel();
+                    _activationCancellationTokenSource?.Dispose();
+                    _activationCancellationTokenSource = null;
+                    lock (_stepAwaiters)
+                    {
+                        foreach (var stepAwaiter in _stepAwaiters)
+                        {
+                            stepAwaiter?.Dispose();
+                        }
+
+                        _stepAwaiters.Clear();
+                    }
+                }
+                catch
+                {
+                    //
+                }
+            }
+        }
     }
 }

@@ -430,9 +430,24 @@ namespace Inferno
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, entity, target, true);
         }
 
+        public static bool HasEntityBeenDamagedByAnyPed(this Entity entity)
+        {
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ANY_PED, entity);
+        }
+
+        public static bool ClearEntityLastDamageEntity(this Entity entity)
+        {
+            return Function.Call<bool>(Hash.CLEAR_ENTITY_LAST_DAMAGE_ENTITY, entity);
+        }
+
         public static Weapon GetCauseOfDeath(this Ped ped)
         {
             return (Weapon)Function.Call<int>(Hash.GET_PED_CAUSE_OF_DEATH, ped);
+        }
+
+        public static float GetFrameTime()
+        {
+            return Function.Call<float>(Hash.GET_FRAME_TIME);
         }
 
         /// <summary>

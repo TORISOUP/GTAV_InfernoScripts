@@ -132,7 +132,25 @@ namespace Inferno
 
         public void LogWrite(string message)
         {
-            _debugLogger.Log(message);
+            lock (_debugLogger)
+            {
+                _debugLogger.Log(message);
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    _debugLogger.Dispose();
+                }
+                catch
+                {
+                    
+                }
+            }
         }
     }
 }

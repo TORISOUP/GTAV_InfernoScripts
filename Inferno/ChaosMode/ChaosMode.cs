@@ -71,7 +71,8 @@ namespace Inferno.ChaosMode
 
             defaultWeaponProvider =
                 new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
-
+            
+            
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
@@ -79,6 +80,7 @@ namespace Inferno.ChaosMode
                     IsActive = !IsActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
+
                     if (IsActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType);
@@ -122,10 +124,7 @@ namespace Inferno.ChaosMode
                     else
                         DrawText("BaseBallMode:Off");
                 });
-
-            //interval設定
-            Interval = chaosModeSetting.Interval;
-
+            
             var oneSecondTich = CreateTickAsObservable(TimeSpan.FromSeconds(1));
 
             //市民をカオス化する
@@ -144,7 +143,7 @@ namespace Inferno.ChaosMode
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
                 });
-
+            
             oneSecondTich
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
@@ -195,6 +194,7 @@ namespace Inferno.ChaosMode
         /// </summary>
         private async ValueTask ChaosPedActionAsync(Ped ped, CancellationToken ct)
         {
+
             //魚なら除外する
             var m = (uint)ped.Model.Hash;
             if (fishHashes.Contains(m)) return;
@@ -223,7 +223,7 @@ namespace Inferno.ChaosMode
                     ped.RemovePedFromGroup();
                 }
             }
-
+            
             //以下ループ
             do
             {
@@ -238,25 +238,36 @@ namespace Inferno.ChaosMode
                 {
                     equipedWeapon = GiveWeaponTpPed(ped);
                 }
-
-                await DelayRandomFrameAsync(10, 30, ct);
+                
+                // ちょっと待つ
+                await DelayRandomFrameAsync(1, 10, ct);
 
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
                 //攻撃する
                 PedRiot(ped, equipedWeapon);
 
-                //適当に待機
-                foreach (var _ in Enumerable.Range(0, Random.Next(5, 10)))
+                // 行動時間
+                var waitTime = (float)Random.Next(5, 30);
+
+                while (!ct.IsCancellationRequested && waitTime > 0)
                 {
-                    //市民が攻撃をやめて逃げ始めたら再度セットする
-                    if (ped.IsSafeExist() && ped.IsFleeing())
+                    waitTime -= NativeFunctions.GetFrameTime();
+                    
+                    if (ped.IsSafeExist())
                     {
                         break;
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(1), ct);
+                    if (ped.HasEntityBeenDamagedByAnyPed())
+                    {
+                        // 誰かから攻撃をされた即中断して対象変更する
+                        break;
+                    }
+                    
+                    await YieldAsync(ct);
                 }
+
             } while (ped.IsSafeExist() && ped.IsAlive);
 
             chaosedPedList.Remove(pedId);
@@ -281,7 +292,7 @@ namespace Inferno.ChaosMode
             {
                 return PlayerPed;
             }
-            
+
 
             //近くの市民
             var aroundPeds =
@@ -290,25 +301,28 @@ namespace Inferno.ChaosMode
                         x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 200))
                     .ToArray();
 
-            
+
+            // 自分に攻撃してきた市民を選出
             var damagedBy = aroundPeds.FirstOrDefault(ped.HasBeenDamagedBy);
             if (damagedBy != null && damagedBy.IsSafeExist() && damagedBy.IsAlive)
             {
+                // 攻撃者フラグを除去
+                ped.ClearEntityLastDamageEntity();
                 return damagedBy;
             }
-            
+
             //近くの市民のうち、より近い人を選出
             var nearPeds = aroundPeds
                 .OrderBy(x => (ped.Position - x.Position).Length())
                 .Take(Random.Next(5, 15))
                 .ToArray();
+            
 
             if (nearPeds.Length == 0)
             {
                 return null;
             }
-
-
+            
             var randomindex = Random.Next(nearPeds.Length);
             return nearPeds[randomindex];
         }
@@ -417,11 +431,17 @@ namespace Inferno.ChaosMode
                     if (chaosModeSetting.IsStupidShooting)
                     {
                         if (equipWeapon.IsProjectileWeapon())
+                        {
                             ped.ThrowProjectile(target.Position);
+                        }
                         else if (equipWeapon.IsShootWeapon())
+                        {
                             ped.Task.ShootAt(target, 10000);
+                        }
                         else
+                        {
                             ped.Task.FightAgainst(target, 60000);
+                        }
                     }
                     else
                     {

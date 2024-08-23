@@ -18,7 +18,6 @@ namespace Inferno.ChaosMode
 
             //バリデーション処理
             Radius = dto.Radius.Clamp(1, 3000);
-            Interval = dto.Interval.Clamp(10, 60000);
             IsChangeMissionCharacterWeapon = dto.IsChangeMissionCharacterWeapon;
             IsAttackPlayerCorrectionEnabled = dto.IsAttackPlayerCorrectionEnabled;
             IsStupidShooting = dto.IsStupidShooting;

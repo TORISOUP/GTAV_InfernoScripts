@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using GTA.Math;
 
@@ -28,6 +29,15 @@ namespace Inferno.Utilities
         }
     }
 
+    public static class ObservableExtension
+    {
+        public static IDisposable AddTo(this IDisposable disposable, CompositeDisposable compositeDisposable)
+        {
+            compositeDisposable.Add(disposable);
+            return disposable;
+        }
+    }
+
     public static class TaskExtension
     {
         public static async void Forget(this Task task)
@@ -42,10 +52,11 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                ToastTextDrawing.Instance.DrawDebugText(e.ToString(), 300);
+                InfernoCore.Instance.LogWrite(e.ToString());
+                InfernoCore.Instance.LogWrite(e.StackTrace);
             }
         }
-        
+
         public static async void Forget(this ValueTask task)
         {
             try
@@ -58,7 +69,7 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                ToastTextDrawing.Instance.DrawDebugText(e.ToString(), 300);
+                InfernoCore.Instance.LogWrite($"{e}\n{e.StackTrace}");
             }
         }
     }

@@ -1,18 +1,24 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Inferno.Utilities;
 
 namespace Inferno
 {
-    public class DebugLogger
+    public class DebugLogger : IDisposable
     {
         private readonly Encoding _encoding;
         private readonly string _logPath;
+        private readonly StreamWriter _writer;
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         public DebugLogger(string logPath)
         {
             _logPath = logPath;
             _encoding = Encoding.GetEncoding("UTF-8");
+            _writer = new StreamWriter(_logPath, true, _encoding);
         }
 
         /// <summary>
@@ -21,15 +27,27 @@ namespace Inferno
         /// <param name="message"></param>
         private void WriteToText(string message)
         {
+            WriteToTextAsync(message).Forget();
+        }
+
+        private async ValueTask WriteToTextAsync(string message)
+        {
             try
             {
-                using (var w = new StreamWriter(_logPath, true, _encoding))
-                {
-                    w.WriteLineAsync(message);
-                }
+                await _semaphore.WaitAsync();
+                await _writer.WriteLineAsync(message).ConfigureAwait(false);
+                await _writer.FlushAsync();
             }
-            catch (Exception)
+            finally
             {
+                try
+                {
+                    _semaphore.Release(1);
+                }
+                catch
+                {
+                    //
+                }
             }
         }
 
@@ -37,6 +55,20 @@ namespace Inferno
         {
             var sendMessage = $"[{DateTime.Now}] {message}";
             WriteToText(sendMessage);
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                _writer.Close();
+                _writer.Dispose();
+                _semaphore?.Dispose();
+            }
+            catch
+            {
+                //
+            }
         }
     }
 }

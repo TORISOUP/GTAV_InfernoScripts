@@ -4,17 +4,24 @@ using System.Threading;
 
 namespace Inferno.Utilities
 {
-    public class StepAwaiter : INotifyCompletion , IDisposable
+    public class StepAwaiter : INotifyCompletion, IDisposable
     {
         private int _counter;
         private Action _continuation;
+        private readonly CancellationTokenSource _internalCancellationTokenSource = new();
         private CancellationToken _cancellationToken;
         private CancellationTokenRegistration _cancellationTokenRegistration;
-        
+        private bool _disposed;
+        private bool _isUsing;
+        public bool IsActive => _isUsing && !_disposed;
+
         public void Reset(int count, CancellationToken cancellationToken = default)
         {
+            _isUsing = true;
             _counter = count;
-            _cancellationToken = cancellationToken;
+            _cancellationToken = CancellationTokenSource
+                .CreateLinkedTokenSource(_internalCancellationTokenSource.Token, cancellationToken)
+                .Token;
 
             // 前回のCancellationTokenRegistrationを解除
             _cancellationTokenRegistration.Dispose();
@@ -45,7 +52,7 @@ namespace Inferno.Utilities
             }
         }
 
-        public bool IsCompleted => _counter == 0 || _cancellationToken.IsCancellationRequested;
+        public bool IsCompleted => _counter == 0 || _cancellationToken.IsCancellationRequested || _disposed;
 
         public void OnCompleted(Action continuation)
         {
@@ -54,16 +61,28 @@ namespace Inferno.Utilities
 
         public void GetResult()
         {
+            if (_disposed) throw new ObjectDisposedException(nameof(StepAwaiter));
             // キャンセルされている場合は例外を投げる
             _cancellationToken.ThrowIfCancellationRequested();
         }
 
         public void Dispose()
         {
+            _disposed = true;
+            _isUsing = false;
+            _internalCancellationTokenSource.Cancel();
+            _internalCancellationTokenSource.Dispose();
             // CancellationTokenの登録を解除
             _cancellationTokenRegistration.Dispose();
         }
-        
+
+        public void Release()
+        {
+            _isUsing = false;
+            _cancellationTokenRegistration.Dispose();
+            _continuation = null;
+        }
+
         public StepAwaiter GetAwaiter() => this;
     }
 }

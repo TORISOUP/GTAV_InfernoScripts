@@ -12,13 +12,15 @@ namespace Inferno
     internal class DrawingCore : Script
     {
         private static readonly Subject<Unit> OnTickSubject = new();
+        private IDisposable _disposable;
 
         public DrawingCore()
         {
             Instance = this;
 
             Interval = 0;
-            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+            _disposable = Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
@@ -27,5 +29,13 @@ namespace Inferno
         public static DrawingCore Instance { get; private set; }
 
         public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposable?.Dispose();
+            }
+        }
     }
 }
