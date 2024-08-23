@@ -27,7 +27,9 @@ namespace Inferno
         private InfernoSynchronizationContext _infernoSynchronizationContext;
         private CancellationTokenSource _activationCancellationTokenSource;
         private InfernoScheduler infernoScheduler;
-        protected Random Random = new();
+        protected readonly Random Random = new();
+
+        private readonly List<StepAwaiter> _stepAwaiters = new(8);
 
         /// <summary>
         /// コンストラクタ
@@ -36,6 +38,12 @@ namespace Inferno
         {
             // 毎フレーム実行
             Interval = 0;
+
+            // StepAwaiterの初期化
+            for (var i = 0; i < 4; i++)
+            {
+                _stepAwaiters.Add(new StepAwaiter());
+            }
 
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
@@ -66,8 +74,7 @@ namespace Inferno
             OnTickAsObservable.Subscribe(_ =>
             {
                 FrameCount++;
-
-
+                
                 try
                 {
                     infernoScheduler?.Run();
@@ -80,6 +87,21 @@ namespace Inferno
                 try
                 {
                     InfernoSynchronizationContext.Update();
+                }
+                catch
+                {
+                    // ignore
+                }
+
+                try
+                {
+                    foreach (var stepAwaiter in _stepAwaiters)
+                    {
+                        if (stepAwaiter is { IsCompleted: false })
+                        {
+                            stepAwaiter.Step();
+                        }
+                    }
                 }
                 catch
                 {
@@ -184,20 +206,27 @@ namespace Inferno
 
         #region forTaks
 
-        protected async Task DelayFrameAsync(int frame, CancellationToken ct = default)
+        protected async Task DelayFrameAsync(int frame = 1, CancellationToken ct = default)
         {
-            await OnTickAsObservable
-                .Take(frame)
-                .ToTask(ct);
+            // 使用可能なStepAwaiterを探す
+            var stepAwaiter = _stepAwaiters.FirstOrDefault(x => x.IsCompleted);
+            // 存在しなければ新規作成
+            if (stepAwaiter == null)
+            {
+                stepAwaiter = new StepAwaiter();
+                _stepAwaiters.Add(stepAwaiter);
+            }
+            stepAwaiter.Reset(frame, ct);
+            await stepAwaiter;
         }
-        
+
         protected async Task YieldAsync(CancellationToken ct = default)
         {
             await OnTickAsObservable
                 .Take(1)
                 .ToTask(ct);
         }
-        
+
         protected Task DelayRandomFrameAsync(int min, int max, CancellationToken ct)
         {
             var waitLoopCount = Random.Next(min, max);
