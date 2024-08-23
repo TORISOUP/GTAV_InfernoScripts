@@ -299,6 +299,12 @@ namespace Inferno
             InfernoCore.Instance.LogWrite(message + "\n");
             if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
         }
+        
+        public void LogWrite(object message, bool stackTrace = false)
+        {
+            InfernoCore.Instance.LogWrite(message + "\n");
+            if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+        }
 
         #endregion Debug
 
@@ -322,6 +328,8 @@ namespace Inferno
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
         public Vehicle[] CachedVehicles => InfernoCore.Instance.VehicleNearPlayer.Value;
+        
+        public Entity[] CachedEntity => InfernoCore.Instance.EntityNearPlayer.Value;
 
         #endregion Chace
 

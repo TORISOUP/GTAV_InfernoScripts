@@ -60,9 +60,6 @@ namespace Inferno.ChaosMode
 
         protected override void Setup()
         {
-            //敵対関係のグループを作成
-            chaosRelationShipId = World.AddRelationshipGroup("Inferno:ChaosPeds");
-
             var chaosSettingLoader = new ChaosModeSettingLoader();
             chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
@@ -71,8 +68,8 @@ namespace Inferno.ChaosMode
 
             defaultWeaponProvider =
                 new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
-            
-            
+
+
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
@@ -80,18 +77,13 @@ namespace Inferno.ChaosMode
                     IsActive = !IsActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
-
                     if (IsActive)
                     {
                         DrawText("ChaosMode:On/" + currentTreatType);
-                        World.SetRelationshipBetweenGroups(Relationship.Hate, chaosRelationShipId,
-                            PlayerPed.RelationshipGroup);
                     }
                     else
                     {
                         DrawText("ChaosMode:Off");
-                        World.SetRelationshipBetweenGroups(Relationship.Neutral, chaosRelationShipId,
-                            PlayerPed.RelationshipGroup);
                     }
                 });
 
@@ -124,7 +116,7 @@ namespace Inferno.ChaosMode
                     else
                         DrawText("BaseBallMode:Off");
                 });
-            
+
             var oneSecondTich = CreateTickAsObservable(TimeSpan.FromSeconds(1));
 
             //市民をカオス化する
@@ -143,7 +135,7 @@ namespace Inferno.ChaosMode
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
                 });
-            
+
             oneSecondTich
                 .Where(_ => IsActive)
                 .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
@@ -194,7 +186,6 @@ namespace Inferno.ChaosMode
         /// </summary>
         private async ValueTask ChaosPedActionAsync(Ped ped, CancellationToken ct)
         {
-
             //魚なら除外する
             var m = (uint)ped.Model.Hash;
             if (fishHashes.Contains(m)) return;
@@ -223,7 +214,10 @@ namespace Inferno.ChaosMode
                     ped.RemovePedFromGroup();
                 }
             }
-            
+
+            // 反撃対象
+            Ped counterattackTarget = null;
+
             //以下ループ
             do
             {
@@ -238,36 +232,63 @@ namespace Inferno.ChaosMode
                 {
                     equipedWeapon = GiveWeaponTpPed(ped);
                 }
-                
-                // ちょっと待つ
-                await DelayRandomFrameAsync(1, 10, ct);
+
+                if (ped.IsInAir)
+                {
+                    // 空挺市民を考慮して空中にいるならちょっと待つ
+                    await Task.Delay(TimeSpan.FromSeconds(3), ct);
+                }
+                else
+                {
+                    // ちょっと待つ
+                    await DelayRandomFrameAsync(1, 10, ct);
+                }
 
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
+                Entity target;
+                if (counterattackTarget.IsSafeExist())
+                {
+                    // 反撃対象が設定されているならその人を対象とする
+                    target = counterattackTarget;
+                }
+                else
+                {
+                    // 対象が居ないならランダムに決める
+                    target = GetTargetPed(ped);
+                }
+
                 //攻撃する
-                PedRiot(ped, equipedWeapon);
+                var canAttack = TryRiot(ped, target, equipedWeapon);
+
+                // 攻撃失敗したらやりなおし
+                if (!canAttack)
+                {
+                    counterattackTarget = null;
+                    continue;
+                }
 
                 // 行動時間
-                var waitTime = (float)Random.Next(5, 30);
+                // 攻撃対象が乗り物なら短めの行動時間
+                float waitTime = target is Ped ? Random.Next(5, 40) : Random.Next(5, 10);
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
                     waitTime -= NativeFunctions.GetFrameTime();
-                    
-                    if (ped.IsSafeExist())
+                    if (!ped.IsSafeExist())
                     {
                         break;
                     }
 
+                    // 攻撃されたら次の反撃対象にしておく
                     if (ped.HasEntityBeenDamagedByAnyPed())
                     {
-                        // 誰かから攻撃をされた即中断して対象変更する
-                        break;
+                        counterattackTarget = FindDamageToMePed(ped);
+                        ped.ClearEntityLastDamageEntity();
                     }
-                    
+
                     await YieldAsync(ct);
                 }
-
             } while (ped.IsSafeExist() && ped.IsAlive);
 
             chaosedPedList.Remove(pedId);
@@ -279,7 +300,7 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private Ped GetTargetPed(Ped ped)
+        private Entity GetTargetPed(Ped ped)
         {
             if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist())
             {
@@ -293,38 +314,27 @@ namespace Inferno.ChaosMode
                 return PlayerPed;
             }
 
-
-            //近くの市民
-            var aroundPeds =
-                CachedPeds.Concat(new[] { PlayerPed })
-                    .Where(
-                        x => x.IsSafeExist() && !x.IsSameEntity(ped) && x.IsAlive && ped.IsInRangeOf(x.Position, 200))
-                    .ToArray();
-
-
-            // 自分に攻撃してきた市民を選出
-            var damagedBy = aroundPeds.FirstOrDefault(ped.HasBeenDamagedBy);
-            if (damagedBy != null && damagedBy.IsSafeExist() && damagedBy.IsAlive)
-            {
-                // 攻撃者フラグを除去
-                ped.ClearEntityLastDamageEntity();
-                return damagedBy;
-            }
-
-            //近くの市民のうち、より近い人を選出
-            var nearPeds = aroundPeds
+            // 近くのEntityを取得
+            var nearPeds = CachedEntity
+                .Concat(new Entity[] { PlayerPed })
+                .Where(x => x is Ped || x is Vehicle || x.IsSafeExist() && x.IsAlive)
                 .OrderBy(x => (ped.Position - x.Position).Length())
                 .Take(Random.Next(5, 15))
                 .ToArray();
-            
 
             if (nearPeds.Length == 0)
             {
                 return null;
             }
-            
+
             var randomindex = Random.Next(nearPeds.Length);
             return nearPeds[randomindex];
+        }
+
+        // 自身に対して攻撃をしてきた相手を探す
+        private Ped FindDamageToMePed(Ped me)
+        {
+            return World.GetAllPeds().FirstOrDefault(x => x.IsSafeExist() && x.IsAlive && me.HasBeenDamagedByPed(x));
         }
 
         private void SetPedStatus(Ped ped)
@@ -388,8 +398,6 @@ namespace Inferno.ChaosMode
             ped.SetFleeAttributes(0, 0);
 
 
-            Function.Call(Hash.SET_PED_RELATIONSHIP_GROUP_HASH, ped, this.GetGTAObjectHashKey("cougar"));
-
             ped.MaxHealth = 2000;
             ped.Health = 2000;
             ped.SetPedShootRate(100);
@@ -400,9 +408,6 @@ namespace Inferno.ChaosMode
             ped.SetCombatRange(100);
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
-
-            //プレイヤと敵対状態にする
-            ped.RelationshipGroup = chaosRelationShipId;
         }
 
         /// <summary>
@@ -410,51 +415,88 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped">市民</param>
         /// <param name="equipWeapon">装備中の武器（最終的には直接取得できるようにしたい)</param>
-        private void PedRiot(Ped ped, Weapon equipWeapon)
+        private bool TryRiot(Ped ped, Entity target, Weapon equipWeapon)
         {
             try
             {
-                if (!ped.IsSafeExist()) return;
-                var target = GetTargetPed(ped);
-                if (!target.IsSafeExist()) return;
+                if (!ped.IsSafeExist()) return false;
+                if (!target.IsSafeExist()) return false;
                 ped.TaskSetBlockingOfNonTemporaryEvents(true);
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
                 ped.IsVisible = true;
-                if (ped.IsInVehicle())
+
+                bool canAttack = false;
+
+                if (target is Ped targetPed)
                 {
-                    ped.Task.FightAgainst(target, 60000);
-                }
-                else
-                {
-                    ped.Task.ClearAllImmediately();
-                    if (chaosModeSetting.IsStupidShooting)
+                    canAttack = true;
+
+                    if (ped.IsInVehicle())
                     {
-                        if (equipWeapon.IsProjectileWeapon())
+                        ped.Task.FightAgainst(targetPed, 60000);
+                    }
+                    else
+                    {
+                        ped.Task.ClearAllImmediately();
+
+                        // IsStupidShootingが有効なら一定確率でバカ射撃
+                        if (chaosModeSetting.IsStupidShooting && Random.Next(0, 100) < 70)
                         {
-                            ped.ThrowProjectile(target.Position);
-                        }
-                        else if (equipWeapon.IsShootWeapon())
-                        {
-                            ped.Task.ShootAt(target, 10000);
+                            if (equipWeapon.IsProjectileWeapon())
+                            {
+                                ped.ThrowProjectile(target.Position);
+                            }
+                            else if (equipWeapon.IsShootWeapon())
+                            {
+                                ped.Task.ShootAt(targetPed, 10000);
+                            }
+                            else
+                            {
+                                ped.Task.FightAgainst(targetPed, 60000);
+                            }
                         }
                         else
                         {
-                            ped.Task.FightAgainst(target, 60000);
+                            ped.Task.FightAgainst(targetPed, 60000);
+                        }
+                    }
+                }
+                else if (target is Vehicle vehicleTarget)
+                {
+                    if (ped.IsInVehicle())
+                    {
+                        if (equipWeapon.IsShootWeapon())
+                        {
+                            ped.Task.ShootAt(vehicleTarget.Position, 60000);
+                            canAttack = true;
                         }
                     }
                     else
                     {
-                        ped.Task.FightAgainst(target, 60000);
+                        ped.Task.ClearAllImmediately();
+
+                        if (equipWeapon.IsProjectileWeapon())
+                        {
+                            ped.ThrowProjectile(target.Position);
+                            canAttack = true;
+                        }
+                        else if (equipWeapon.IsShootWeapon())
+                        {
+                            ped.Task.ShootAt(vehicleTarget.Position, 10000);
+                            canAttack = true;
+                        }
                     }
                 }
 
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
+                return canAttack;
             }
             catch (Exception e)
             {
                 LogWrite(e.ToString());
                 LogWrite(e.StackTrace);
+                return false;
             }
         }
 

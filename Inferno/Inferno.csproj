@@ -229,7 +229,7 @@
         <Compile Include="Utilities\RequestDataPackage.cs"/>
         <Compile Include="Utilities\ScheduledItem.cs"/>
         <Compile Include="Utilities\SingleThreadSynchronizationContext.cs"/>
-        <Compile Include="Utilities\StepAwaiter.cs" />
+        <Compile Include="Utilities\StepAwaiter.cs"/>
         <Compile Include="Utilities\TCPManager.cs"/>
         <Compile Include="Utilities\ThrottleFirst.cs"/>
     </ItemGroup>

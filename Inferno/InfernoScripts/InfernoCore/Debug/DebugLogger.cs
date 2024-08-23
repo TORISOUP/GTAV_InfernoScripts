@@ -11,14 +11,12 @@ namespace Inferno
     {
         private readonly Encoding _encoding;
         private readonly string _logPath;
-        private readonly StreamWriter _writer;
         private readonly SemaphoreSlim _semaphore = new(1);
 
         public DebugLogger(string logPath)
         {
             _logPath = logPath;
             _encoding = Encoding.GetEncoding("UTF-8");
-            _writer = new StreamWriter(_logPath, true, _encoding);
         }
 
         /// <summary>
@@ -35,8 +33,9 @@ namespace Inferno
             try
             {
                 await _semaphore.WaitAsync();
-                await _writer.WriteLineAsync(message).ConfigureAwait(false);
-                await _writer.FlushAsync();
+                using var writer = new StreamWriter(_logPath, true, _encoding);
+                await writer.WriteLineAsync(message).ConfigureAwait(false);
+                await writer.FlushAsync();
             }
             finally
             {
@@ -61,8 +60,6 @@ namespace Inferno
         {
             try
             {
-                _writer.Close();
-                _writer.Dispose();
                 _semaphore?.Dispose();
             }
             catch

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -22,6 +23,9 @@ namespace Inferno
         private readonly ReactiveProperty<Ped[]> _nearPeds = new();
 
         private readonly ReactiveProperty<Vehicle[]> _nearVehicle = new();
+
+        private readonly ReactiveProperty<Entity[]> _nearEntity = new();
+
 
         private readonly ReactiveProperty<Ped> _playerPed = new();
 
@@ -74,6 +78,11 @@ namespace Inferno
         /// </summary>
         public IReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer => _nearVehicle;
 
+        /// <summary>
+        /// 周辺Entity
+        /// </summary>
+        public IReadOnlyReactiveProperty<Entity[]> EntityNearPlayer => _nearEntity;
+
 
         /// <summary>
         /// プレイヤ
@@ -120,8 +129,9 @@ namespace Inferno
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
                 _playerPed.Value = ped;
-                _nearPeds.Value = World.GetNearbyPeds(ped, 500) ?? Array.Empty<Ped>();
-                _nearVehicle.Value = World.GetNearbyVehicles(ped, 500) ?? Array.Empty<Vehicle>();
+                _nearEntity.Value = World.GetNearbyEntities(ped.Position, 500) ?? Array.Empty<Entity>();
+                _nearPeds.Value = _nearEntity.Value.OfType<Ped>().ToArray();
+                _nearVehicle.Value = _nearEntity.Value.OfType<Vehicle>().ToArray();
                 _playerVehicle.Value = ped?.CurrentVehicle;
             }
             catch (Exception e)
@@ -148,7 +158,6 @@ namespace Inferno
                 }
                 catch
                 {
-                    
                 }
             }
         }

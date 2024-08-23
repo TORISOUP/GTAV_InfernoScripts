@@ -145,7 +145,7 @@ namespace Inferno
                 {
                     ped.Task.ClearAll();
                     //周辺市民をターゲットにする
-                    
+
                     SetPlaneTask(plane, ped, target, speed);
                     ped.SetCombatAttributes(53, true);
 
