@@ -35,6 +35,8 @@ namespace Inferno
 
         private readonly CompositeDisposable _compositeDisposable = new();
         private readonly AsyncSubject<Unit> _disposeSubject = new();
+        
+        protected CompositeDisposable CompositeDisposable => _compositeDisposable;
 
         /// <summary>
         /// コンストラクタ
@@ -327,9 +329,14 @@ namespace Inferno
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
-        public Vehicle[] CachedVehicles => InfernoCore.Instance.VehicleNearPlayer.Value;
+        public Vehicle[] CachedVehicles => InfernoCore.Instance.VehiclesNearPlayer.Value;
+
+        public Entity[] CachedEntities => InfernoCore.Instance.EntitiesNearPlayer.Value;
         
-        public Entity[] CachedEntity => InfernoCore.Instance.EntityNearPlayer.Value;
+        /// <summary>
+        /// Not thread safe.
+        /// </summary>
+        protected IReadOnlyReactiveProperty<Entity[]> CachedMissionEntities => InfernoCore.Instance.MissionEntities;
 
         #endregion Chace
 

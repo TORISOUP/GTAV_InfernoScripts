@@ -20,7 +20,6 @@ namespace Inferno.ChaosMode
             Radius = dto.Radius.Clamp(1, 3000);
             IsChangeMissionCharacterWeapon = dto.IsChangeMissionCharacterWeapon;
             IsAttackPlayerCorrectionEnabled = dto.IsAttackPlayerCorrectionEnabled;
-            IsStupidShooting = dto.IsStupidShooting;
             AttackPlayerCorrectionProbabillity = dto.AttackPlayerCorrectionProbabillity.Clamp(0, 100);
             ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
             WeaponChangeProbabillity = dto.WeaponChangeProbabillity.Clamp(0, 100);
@@ -75,12 +74,7 @@ namespace Inferno.ChaosMode
         /// ドライブバイで使用する武器リスト
         /// </summary>
         public Weapon[] WeaponListForDriveBy { get; private set; }
-
-        /// <summary>
-        /// Falseにすると市民がカバーアクションを取りながら攻撃するようになる
-        /// </summary>
-        public bool IsStupidShooting { get; private set; }
-
+        
         /// <summary>
         /// 攻撃の命中精度(0-100%)
         /// </summary>

@@ -45,18 +45,20 @@ namespace Inferno.ChaosMode
 
         private int chaosRelationShipId;
 
-        private MissionCharacterTreatmentType currentTreatType =
+        private MissionCharacterTreatmentType _currentTreatType =
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
         /// <summary>
         /// WeaponProvider
         /// </summary>
-        private IWeaponProvider defaultWeaponProvider;
+        private IWeaponProvider _defaultWeaponProvider;
 
-        private MissionCharacterTreatmentType nextTreatType;
-        private SingleWeaponProvider singleWeaponProvider;
+        private MissionCharacterTreatmentType _nextTreatType;
+        private SingleWeaponProvider _singleWeaponProvider;
+        private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
 
-        private IWeaponProvider CurrentWeaponProvider => singleWeaponProvider ?? defaultWeaponProvider;
+        private CancellationTokenSource _localCts = new();
+        private CancellationTokenSource _linkedCts;
 
         protected override void Setup()
         {
@@ -66,7 +68,7 @@ namespace Inferno.ChaosMode
             chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
                 chaosModeSetting.IsChangeMissionCharacterWeapon);
 
-            defaultWeaponProvider =
+            _defaultWeaponProvider =
                 new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
 
 
@@ -77,52 +79,68 @@ namespace Inferno.ChaosMode
                     IsActive = !IsActive;
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
+
+                    _localCts?.Cancel();
+                    _localCts?.Dispose();
+                    _localCts = null;
+                    _linkedCts = null;
+
                     if (IsActive)
                     {
-                        DrawText("ChaosMode:On/" + currentTreatType);
+                        DrawText("ChaosMode:On/" + _currentTreatType);
                     }
                     else
                     {
                         DrawText("ChaosMode:Off");
+                        chaosChecker.AvoidAttackEntities = Array.Empty<Entity>();
                     }
-                });
+                })
+                .AddTo(CompositeDisposable);
 
-            nextTreatType = currentTreatType;
+
+            _nextTreatType = _currentTreatType;
 
             //F7でキャラカオスの切り替え（暫定
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
-                    nextTreatType = (MissionCharacterTreatmentType)(((int)nextTreatType + 1) % 3);
-                    DrawText("CharacterChaos:" + nextTreatType, 1.1f);
+                    _nextTreatType = (MissionCharacterTreatmentType)(((int)_nextTreatType + 1) % 3);
+                    DrawText("CharacterChaos:" + _nextTreatType, 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
                 .Subscribe(_ =>
                 {
-                    currentTreatType = nextTreatType;
-                    chaosChecker.MissionCharacterTreatment = nextTreatType;
-                    DrawText("CharacterChaos:" + currentTreatType + "[OK]");
+                    _currentTreatType = _nextTreatType;
+                    chaosChecker.MissionCharacterTreatment = _nextTreatType;
+                    DrawText("CharacterChaos:" + _currentTreatType + "[OK]");
                     chaosedPedList.Clear();
+                    _localCts?.Cancel();
+                    _localCts?.Dispose();
+                    _localCts = null;
+                    _linkedCts = null;
                     StopAllChaosCoroutine();
-                });
+                })
+                .AddTo(CompositeDisposable);
+
 
             CreateInputKeywordAsObservable("yakyu")
                 .Subscribe(_ =>
                 {
                     _isBaseball = !_isBaseball;
-                    if (_isBaseball)
-                        DrawText("BaseBallMode:On");
-                    else
-                        DrawText("BaseBallMode:Off");
-                });
+                    DrawText(_isBaseball ? "BaseBallMode:On" : "BaseBallMode:Off");
+                })
+                .AddTo(CompositeDisposable);
+
 
             var oneSecondTich = CreateTickAsObservable(TimeSpan.FromSeconds(1));
 
             //市民をカオス化する
             oneSecondTich
                 .Where(_ => IsActive && PlayerPed.IsSafeExist() && PlayerPed.IsAlive)
-                .Subscribe(_ => CitizenChaos());
+                .Subscribe(_ => CitizenChaos())
+                .AddTo(CompositeDisposable);
+
 
             //プレイヤが死んだらリセット
             oneSecondTich
@@ -134,11 +152,18 @@ namespace Inferno.ChaosMode
                 {
                     chaosedPedList.Clear();
                     StopAllChaosCoroutine();
-                });
+                    _localCts?.Cancel();
+                    _localCts?.Dispose();
+                    _localCts = null;
+                    _linkedCts = null;
+                })
+                .AddTo(CompositeDisposable);
+
 
             oneSecondTich
                 .Where(_ => IsActive)
-                .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false));
+                .Subscribe(_ => NativeFunctions.SetAllRandomPedsFlee(Game.Player, false))
+                .AddTo(CompositeDisposable);
 
             //イベントが来たら武器を変更する
             OnRecievedInfernoEvent
@@ -147,28 +172,45 @@ namespace Inferno.ChaosMode
                 {
                     if (e is ChangeToDefaultEvent)
                     {
-                        singleWeaponProvider = null;
+                        _singleWeaponProvider = null;
                     }
                     else if (e is ChangeWeaponEvent)
                     {
                         var s = (ChangeWeaponEvent)e;
-                        singleWeaponProvider = new SingleWeaponProvider(s.Weapon);
+                        _singleWeaponProvider = new SingleWeaponProvider(s.Weapon);
                     }
-                });
+                })
+                .AddTo(CompositeDisposable);
+
+            CachedMissionEntities
+                .Where(_ => IsActive)
+                .Subscribe(all =>
+                {
+                    chaosChecker.AvoidAttackEntities = all
+                        .Where(x => !chaosChecker.IsAttackableEntity(x))
+                        .ToArray();
+                })
+                .AddTo(CompositeDisposable);
         }
 
         private void CitizenChaos()
         {
             if (!PlayerPed.IsSafeExist()) return;
 
-            //まだ処理をしていない市民に対してコルーチンを回す
+            //まだ処理をしていない市民を対象とする
             var nearPeds =
                 CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
+
+            _localCts ??= new CancellationTokenSource();
+            _linkedCts ??=
+                CancellationTokenSource.CreateLinkedTokenSource(_localCts.Token, GetActivationCancellationToken());
+
+            var ct = _linkedCts.Token;
 
             foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
             {
                 chaosedPedList.Add(ped.Handle);
-                ChaosPedActionAsync(ped, GetActivationCancellationToken()).Forget();
+                ChaosPedActionAsync(ped, ct).Forget();
             }
         }
 
@@ -180,6 +222,7 @@ namespace Inferno.ChaosMode
             foreach (var id in coroutineIds) StopCoroutine(id);
             coroutineIds.Clear();
         }
+
 
         /// <summary>
         /// 市民一人ひとりについて回るコルーチン
@@ -199,6 +242,8 @@ namespace Inferno.ChaosMode
             //ここでカオス化して良いか検査する
             if (!chaosChecker.IsPedChaosAvailable(ped))
             {
+                // 不適格なら3秒間は何もせずに放置し、リストから削除
+                await Task.Delay(TimeSpan.FromSeconds(3), ct);
                 chaosedPedList.Remove(pedId);
                 return;
             }
@@ -247,7 +292,7 @@ namespace Inferno.ChaosMode
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
                 Entity target;
-                if (counterattackTarget.IsSafeExist())
+                if (counterattackTarget.IsSafeExist() && chaosChecker.IsAttackableEntity(counterattackTarget))
                 {
                     // 反撃対象が設定されているならその人を対象とする
                     target = counterattackTarget;
@@ -271,21 +316,45 @@ namespace Inferno.ChaosMode
                 // 行動時間
                 // 攻撃対象が乗り物なら短めの行動時間
                 float waitTime = target is Ped ? Random.Next(5, 40) : Random.Next(5, 10);
+                float checkWaitTime = 0;
+
+                CancellationTokenSource studpidCts = null;
+
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
                     waitTime -= NativeFunctions.GetFrameTime();
+                    checkWaitTime += NativeFunctions.GetFrameTime();
                     if (!ped.IsSafeExist())
                     {
                         break;
                     }
 
-                    // 攻撃されたら次の反撃対象にしておく
-                    if (ped.HasEntityBeenDamagedByAnyPed())
+                    if (!target.IsSafeExist() || !target.IsAlive)
                     {
-                        counterattackTarget = FindDamageToMePed(ped);
-                        ped.ClearEntityLastDamageEntity();
+                        break;
                     }
+
+
+                    if (checkWaitTime > 1)
+                    {
+                        checkWaitTime = 0;
+                        // 攻撃されたら次の反撃対象にしておく
+                        if (ped.HasEntityBeenDamagedByAnyPed())
+                        {
+                            counterattackTarget = FindDamageToMePed(ped);
+                            ped.ClearEntityLastDamageEntity();
+                        }
+
+                        if (chaosChecker.IsPedNearAvoidAttackEntities(ped))
+                        {
+                            // 攻撃しちゃいけない相手が近くにいるなら停止
+                            ped.Task.ClearAll();
+                            chaosedPedList.Remove(pedId);
+                            return;
+                        }
+                    }
+
 
                     await YieldAsync(ct);
                 }
@@ -315,11 +384,12 @@ namespace Inferno.ChaosMode
             }
 
             // 近くのEntityを取得
-            var nearPeds = CachedEntity
+            var nearPeds = CachedEntities
                 .Concat(new Entity[] { PlayerPed })
-                .Where(x => x is Ped || x is Vehicle || x.IsSafeExist() && x.IsAlive)
+                .Where(x => x is Ped || x is Vehicle || x.IsSafeExist() && x.IsAlive && x != ped)
+                .Where(x => chaosChecker.IsAttackableEntity(x))
                 .OrderBy(x => (ped.Position - x.Position).Length())
-                .Take(Random.Next(5, 15))
+                .Take(5)
                 .ToArray();
 
             if (nearPeds.Length == 0)
@@ -346,46 +416,48 @@ namespace Inferno.ChaosMode
                 return Random.Next(0, 100) > 50;
             }
 
+            // カバーするか
+            ped.SetCombatAttributes(0, RandomBool());
             // 車を使用するか
             ped.SetCombatAttributes(1, RandomBool());
             // ドライブバイを許可するか
             ped.SetCombatAttributes(2, true);
-            // 車にとどまるか
-            ped.SetCombatAttributes(3, RandomBool());
+            // 車から降りることができるか
+            ped.SetCombatAttributes(3, true);
             //非武装（近接武器）で武装した市民を攻撃できるか
             ped.SetCombatAttributes(5, true);
             // 逃げるのを優先するか
             ped.SetCombatAttributes(6, false);
-            // 死体に飯能するか
+            // 死体に反応するか
             ped.SetCombatAttributes(9, false);
+            // ブラインドファイアをするか
+            ped.SetCombatAttributes(12, RandomBool());
+            // 逃げる
+            ped.SetCombatAttributes(17,false);
             // 距離に応じて発射レートを変える
-            ped.SetCombatAttributes(24, true);
+            ped.SetCombatAttributes(24, RandomBool());
+            // ターゲットを切り替えるのを禁止するか
+            ped.SetCombatAttributes(25, false);
             // 戦闘開始時のリアクションを無効化
-            ped.SetCombatAttributes(26, true);
+            ped.SetCombatAttributes(26, false);
             // 射線が通って無くても攻撃するか
             ped.SetCombatAttributes(30, true);
-            // 固定動作を無効化して強制的に動かす
-            ped.SetCombatAttributes(35, true);
-            // ピン留めを解除
-            ped.SetCombatAttributes(36, true);
             // 防御態勢をとるか
             ped.SetCombatAttributes(37, false);
-            // 弾丸に対してリアクションするか
-            ped.SetCombatAttributes(38, false);
-            // Allows ped to bust the player
-            ped.SetCombatAttributes(39, true);
-            // 車を奪うか
-            ped.SetCombatAttributes(31, true);
+            // 弾丸に対してのリアクションを無効化するか
+            ped.SetCombatAttributes(38, true);
             // 自分が武器を持って無くても他人を襲うか
             ped.SetCombatAttributes(46, true);
             // 突撃を許可するか
-            ped.SetCombatAttributes(50, true);
+            ped.SetCombatAttributes(50, RandomBool());
             // 車で攻撃するか(?)
             ped.SetCombatAttributes(52, RandomBool());
             // 車両の武器を使用するか
             ped.SetCombatAttributes(53, true);
             // 最適な武器を選択するか
             ped.SetCombatAttributes(54, RandomBool());
+            // 視線が通らない場合の追跡を無効にする
+            ped.SetCombatAttributes(57, false);
             // 戦闘から逃走することを許さない
             ped.SetCombatAttributes(58, true);
             // スモークグレネードを投げる
@@ -397,13 +469,12 @@ namespace Inferno.ChaosMode
 
             ped.SetFleeAttributes(0, 0);
 
-
-            ped.MaxHealth = 2000;
-            ped.Health = 2000;
+            ped.MaxHealth = 5000;
+            ped.Health = 5000;
             ped.SetPedShootRate(100);
             ped.Accuracy = chaosModeSetting.ShootAccuracy;
             //戦闘能力？
-            ped.SetCombatAbility(1000);
+            ped.SetCombatAbility(100);
             //戦闘範囲
             ped.SetCombatRange(100);
             //攻撃を受けたら反撃する
@@ -413,8 +484,6 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 市民を暴徒化する
         /// </summary>
-        /// <param name="ped">市民</param>
-        /// <param name="equipWeapon">装備中の武器（最終的には直接取得できるようにしたい)</param>
         private bool TryRiot(Ped ped, Entity target, Weapon equipWeapon)
         {
             try
@@ -431,39 +500,12 @@ namespace Inferno.ChaosMode
                 if (target is Ped targetPed)
                 {
                     canAttack = true;
-
-                    if (ped.IsInVehicle())
-                    {
-                        ped.Task.FightAgainst(targetPed, 60000);
-                    }
-                    else
-                    {
-                        ped.Task.ClearAllImmediately();
-
-                        // IsStupidShootingが有効なら一定確率でバカ射撃
-                        if (chaosModeSetting.IsStupidShooting && Random.Next(0, 100) < 70)
-                        {
-                            if (equipWeapon.IsProjectileWeapon())
-                            {
-                                ped.ThrowProjectile(target.Position);
-                            }
-                            else if (equipWeapon.IsShootWeapon())
-                            {
-                                ped.Task.ShootAt(targetPed, 10000);
-                            }
-                            else
-                            {
-                                ped.Task.FightAgainst(targetPed, 60000);
-                            }
-                        }
-                        else
-                        {
-                            ped.Task.FightAgainst(targetPed, 60000);
-                        }
-                    }
+                    ped.Task.ClearAllImmediately();
+                    ped.Task.FightAgainst(targetPed, 60000);
                 }
                 else if (target is Vehicle vehicleTarget)
                 {
+                    ped.Task.ClearAllImmediately();
                     if (ped.IsInVehicle())
                     {
                         if (equipWeapon.IsShootWeapon())
@@ -474,8 +516,6 @@ namespace Inferno.ChaosMode
                     }
                     else
                     {
-                        ped.Task.ClearAllImmediately();
-
                         if (equipWeapon.IsProjectileWeapon())
                         {
                             ped.ThrowProjectile(target.Position);
@@ -517,18 +557,19 @@ namespace Inferno.ChaosMode
                 //車に乗っているなら車用の武器を渡す
                 var weapon = Weapon.UNARMED;
                 if (_isBaseball)
+                {
                     weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
+                }
                 else
+                {
                     weapon = ped.IsInVehicle()
                         ? CurrentWeaponProvider.GetRandomDriveByWeapon()
                         : CurrentWeaponProvider.GetRandomAllWeapons();
+                }
 
-                var weaponhash = (int)weapon;
-
+                ped.Weapons.Give((WeaponHash)weapon, 9999, true, true);
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
-                ped.Weapons.RemoveAll();
-                ped.GiveWeapon(weaponhash, 1000); //指定武器所持
-                ped.EquipWeapon(weaponhash); //武器装備
+
                 return weapon;
             }
             catch (Exception e)

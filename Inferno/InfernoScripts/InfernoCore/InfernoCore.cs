@@ -22,14 +22,17 @@ namespace Inferno
 
         private readonly ReactiveProperty<Ped[]> _nearPeds = new();
 
-        private readonly ReactiveProperty<Vehicle[]> _nearVehicle = new();
+        private readonly ReactiveProperty<Vehicle[]> _nearVehicles = new();
 
-        private readonly ReactiveProperty<Entity[]> _nearEntity = new();
+        private readonly ReactiveProperty<Entity[]> _nearEntities = new();
 
+        private readonly ReactiveProperty<Entity[]> _missionEntity = new();
 
         private readonly ReactiveProperty<Ped> _playerPed = new();
 
         private readonly ReactiveProperty<Vehicle> _playerVehicle = new();
+
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
 
         private DateTimeOffset _lastUpdate;
 
@@ -46,6 +49,7 @@ namespace Inferno
             Observable
                 .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
+                .TakeUntil(_disposeSubject)
                 .Multicast(OnTickSubject)
                 .Connect();
 
@@ -53,6 +57,7 @@ namespace Inferno
             Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
                     h => KeyDown -= h)
                 .Select(e => e.EventArgs)
+                .TakeUntil(_disposeSubject)
                 .Multicast(OnKeyDownSubject)
                 .Connect();
 
@@ -76,13 +81,17 @@ namespace Inferno
         /// <summary>
         /// 周辺車両
         /// </summary>
-        public IReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer => _nearVehicle;
+        public IReadOnlyReactiveProperty<Vehicle[]> VehiclesNearPlayer => _nearVehicles;
 
         /// <summary>
         /// 周辺Entity
         /// </summary>
-        public IReadOnlyReactiveProperty<Entity[]> EntityNearPlayer => _nearEntity;
+        public IReadOnlyReactiveProperty<Entity[]> EntitiesNearPlayer => _nearEntities;
 
+        /// <summary>
+        /// ミッションEntity
+        /// </summary>
+        public IReadOnlyReactiveProperty<Entity[]> MissionEntities => _missionEntity;
 
         /// <summary>
         /// プレイヤ
@@ -129,10 +138,23 @@ namespace Inferno
                 var ped = player?.Character;
                 if (!ped.IsSafeExist()) return;
                 _playerPed.Value = ped;
-                _nearEntity.Value = World.GetNearbyEntities(ped.Position, 500) ?? Array.Empty<Entity>();
-                _nearPeds.Value = _nearEntity.Value.OfType<Ped>().ToArray();
-                _nearVehicle.Value = _nearEntity.Value.OfType<Vehicle>().ToArray();
+                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500) ?? Array.Empty<Entity>();
+                _nearPeds.Value = _nearEntities.Value.OfType<Ped>().ToArray();
+                _nearVehicles.Value = _nearEntities.Value.OfType<Vehicle>().ToArray();
                 _playerVehicle.Value = ped?.CurrentVehicle;
+
+                if (_nearEntities.Value.Any(x => x.IsRequiredForMission()))
+                {
+                    _missionEntity.Value =
+                        _nearEntities.Value.Where(x => x.IsRequiredForMission() && x != ped).ToArray();
+                }
+                else
+                {
+                    if (_missionEntity.Value.Any())
+                    {
+                        _missionEntity.Value = Array.Empty<Entity>();
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -155,9 +177,19 @@ namespace Inferno
                 try
                 {
                     _debugLogger.Dispose();
+                    _nearPeds.Dispose();
+                    _nearVehicles.Dispose();
+                    _nearEntities.Dispose();
+                    _missionEntity.Dispose();
+                    _playerPed.Dispose();
+                    _playerVehicle.Dispose();
+                    _disposeSubject.OnNext(Unit.Default);
+                    _disposeSubject.OnCompleted();
+                    _disposeSubject.Dispose();
                 }
                 catch
                 {
+                    //
                 }
             }
         }

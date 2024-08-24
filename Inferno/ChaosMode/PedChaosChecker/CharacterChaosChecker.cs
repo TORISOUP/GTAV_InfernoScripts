@@ -23,6 +23,11 @@ namespace Inferno.ChaosMode
         public MissionCharacterTreatmentType MissionCharacterTreatment { get; set; }
 
         /// <summary>
+        /// 攻撃を避けるべき対象群
+        /// </summary>
+        public Entity[] AvoidAttackEntities { get; set; } = Array.Empty<Entity>();
+
+        /// <summary>
         /// カオス化対象であるか
         /// </summary>
         /// <param name="ped">市民</param>
@@ -30,7 +35,22 @@ namespace Inferno.ChaosMode
         public bool IsPedChaosAvailable(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() &&
-                   IsChaosableMissionCharacter(ped);
+                   IsRiotableMissionCharacter(ped) && !IsPedNearAvoidAttackEntities(ped);
+        }
+
+        public bool IsPedNearAvoidAttackEntities(Ped ped)
+        {
+            foreach (var avoidAttackEntity in AvoidAttackEntities)
+            {
+                if (!avoidAttackEntity.IsSafeExist()) continue;
+                // 対象者の近くにいる
+                if (avoidAttackEntity.Position.DistanceTo(ped.Position) < 3.0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -55,15 +75,15 @@ namespace Inferno.ChaosMode
         }
 
         /// <summary>
-        /// 対象の市民がミッションキャラだった時にカオス化してよいか判定する
+        /// カオスモードの対象として選出して良いEntityであるかどうか
         /// </summary>
-        /// <param name="ped">市民</param>
+        /// <param name="entity">市民</param>
         /// <returns>trueでカオス化</returns>
-        private bool IsChaosableMissionCharacter(Entity ped)
+        private bool IsRiotableMissionCharacter(Entity entity)
         {
-            if (!ped.IsSafeExist()) return false;
+            if (!entity.IsSafeExist()) return false;
             //ミッションキャラじゃないならtrue
-            if (!ped.IsRequiredForMission()) return true;
+            if (!entity.IsRequiredForMission()) return true;
 
             switch (MissionCharacterTreatment)
             {
@@ -71,13 +91,22 @@ namespace Inferno.ChaosMode
                     return true;
 
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
-                    return !IsUniqueCharacter((uint)ped.Model.Hash); //ユニークキャラじゃないならカオス化
+                    return !IsUniqueCharacter((uint)entity.Model.Hash); //ユニークキャラじゃないならカオス化
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
 
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// 攻撃を加えて良いEntityであるかどうか
+        /// </summary>
+        public bool IsAttackableEntity(Entity entity)
+        {
+            // カオス化して良い判定と条件は今のところ同じ
+            return IsRiotableMissionCharacter(entity);
         }
 
         private enum UniqueCharacters : uint

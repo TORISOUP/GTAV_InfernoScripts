@@ -12,7 +12,6 @@
         public int AttackPlayerCorrectionProbabillity { get; set; } = 100;
         public string[] WeaponList { get; set; } = { "" };
         public string[] WeaponListForDriveBy { get; set; } = { "" };
-        public bool IsStupidShooting { get; set; } = true;
         public int ShootAccuracy { get; set; } = 15;
         public int WeaponChangeProbabillity { get; set; } = 20;
     }
