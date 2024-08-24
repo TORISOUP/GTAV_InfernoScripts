@@ -249,6 +249,7 @@ namespace Inferno.ChaosMode
             }
 
             SetPedStatus(ped);
+            ped.Task.ClearAllImmediately();
 
             if (ped.IsRequiredForMission())
             {
@@ -275,7 +276,7 @@ namespace Inferno.ChaosMode
                 //武器を変更する
                 if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
                 {
-                    equipedWeapon = GiveWeaponTpPed(ped);
+                    GiveWeaponTpPed(ped);
                 }
 
                 if (ped.IsInAir)
@@ -291,54 +292,46 @@ namespace Inferno.ChaosMode
 
                 if (!ped.IsSafeExist() || ped.IsDead) break;
 
-                Entity target;
+
                 if (counterattackTarget.IsSafeExist() && chaosChecker.IsAttackableEntity(counterattackTarget))
                 {
-                    // 反撃対象が設定されているならその人を対象とする
-                    target = counterattackTarget;
-                }
-                else
-                {
-                    // 対象が居ないならランダムに決める
-                    target = GetTargetPed(ped);
+                    // 反撃対象が設定されているならその人を対象に追加する
+                    Function.Call(Hash.REGISTER_TARGET, ped, counterattackTarget);
                 }
 
+                var targets = GetTargetPeds(ped);
                 //攻撃する
-                var canAttack = TryRiot(ped, target, equipedWeapon);
+                TryRiot(ped, targets);
 
-                // 攻撃失敗したらやりなおし
-                if (!canAttack)
-                {
-                    counterattackTarget = null;
-                    continue;
-                }
 
                 // 行動時間
-                // 攻撃対象が乗り物なら短めの行動時間
-                float waitTime = target is Ped ? Random.Next(5, 40) : Random.Next(5, 10);
+                float waitTime = Random.Next(5, 40);
                 float checkWaitTime = 0;
-
-                CancellationTokenSource studpidCts = null;
-
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
                     waitTime -= NativeFunctions.GetFrameTime();
                     checkWaitTime += NativeFunctions.GetFrameTime();
-                    if (!ped.IsSafeExist())
+
+                    // 自分が死んでるなら中止
+                    if (!ped.IsSafeExist() || !ped.IsAlive)
                     {
                         break;
                     }
 
-                    if (!target.IsSafeExist() || !target.IsAlive)
-                    {
-                        break;
-                    }
-
-
+                    // 定期的にチェックする部分
                     if (checkWaitTime > 1)
                     {
                         checkWaitTime = 0;
+                        
+                        if(ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
+                        {
+                            // プレイヤから遠くにいるなら終了
+                            chaosedPedList.Remove(pedId);
+                            return;
+                        }
+                        
+                        
                         // 攻撃されたら次の反撃対象にしておく
                         if (ped.HasEntityBeenDamagedByAnyPed())
                         {
@@ -353,8 +346,13 @@ namespace Inferno.ChaosMode
                             chaosedPedList.Remove(pedId);
                             return;
                         }
-                    }
 
+                        if (targets.All(x=>!x.IsSafeExist() || !x.IsAlive))
+                        {
+                            //攻撃対象がいなくなったらやりなおし
+                            break;
+                        }
+                    }
 
                     await YieldAsync(ct);
                 }
@@ -369,36 +367,32 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private Entity GetTargetPed(Ped ped)
+        private Ped[] GetTargetPeds(Ped ped)
         {
             if (!ped.IsSafeExist() || !PlayerPed.IsSafeExist())
             {
-                return null;
-            }
-
-            //プレイヤへの攻撃補正が設定されているならプレイヤを攻撃対象にする
-            if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
-                Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
-            {
-                return PlayerPed;
+                return Array.Empty<Ped>();
             }
 
             // 近くのEntityを取得
-            var nearPeds = CachedEntities
-                .Concat(new Entity[] { PlayerPed })
-                .Where(x => x is Ped || x is Vehicle || x.IsSafeExist() && x.IsAlive && x != ped)
+            var nearPeds = CachedPeds
+                .Concat(new[] { PlayerPed })
+                .Where(x => x.IsSafeExist() && x.IsAlive && x != ped)
                 .Where(x => chaosChecker.IsAttackableEntity(x))
                 .OrderBy(x => (ped.Position - x.Position).Length())
-                .Take(5)
+                .Take(15)
                 .ToArray();
 
-            if (nearPeds.Length == 0)
+            //プレイヤへの攻撃補正が設定されているならプレイヤをリストに追加する
+            if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
+                Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
             {
-                return null;
+                return nearPeds.Concat(new[] { PlayerPed }).ToArray();
             }
-
-            var randomindex = Random.Next(nearPeds.Length);
-            return nearPeds[randomindex];
+            else
+            {
+                return nearPeds;
+            }
         }
 
         // 自身に対して攻撃をしてきた相手を探す
@@ -433,7 +427,7 @@ namespace Inferno.ChaosMode
             // ブラインドファイアをするか
             ped.SetCombatAttributes(12, RandomBool());
             // 逃げる
-            ped.SetCombatAttributes(17,false);
+            ped.SetCombatAttributes(17, false);
             // 距離に応じて発射レートを変える
             ped.SetCombatAttributes(24, RandomBool());
             // ターゲットを切り替えるのを禁止するか
@@ -484,59 +478,28 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 市民を暴徒化する
         /// </summary>
-        private bool TryRiot(Ped ped, Entity target, Weapon equipWeapon)
+        private void TryRiot(Ped ped, Ped[] targets)
         {
             try
             {
-                if (!ped.IsSafeExist()) return false;
-                if (!target.IsSafeExist()) return false;
+                if (!ped.IsSafeExist()) return;
                 ped.TaskSetBlockingOfNonTemporaryEvents(true);
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
                 ped.IsVisible = true;
 
-                bool canAttack = false;
-
-                if (target is Ped targetPed)
+                foreach (var target in targets.Where(x => x.IsSafeExist() && x.IsAlive))
                 {
-                    canAttack = true;
-                    ped.Task.ClearAllImmediately();
-                    ped.Task.FightAgainst(targetPed, 60000);
-                }
-                else if (target is Vehicle vehicleTarget)
-                {
-                    ped.Task.ClearAllImmediately();
-                    if (ped.IsInVehicle())
-                    {
-                        if (equipWeapon.IsShootWeapon())
-                        {
-                            ped.Task.ShootAt(vehicleTarget.Position, 60000);
-                            canAttack = true;
-                        }
-                    }
-                    else
-                    {
-                        if (equipWeapon.IsProjectileWeapon())
-                        {
-                            ped.ThrowProjectile(target.Position);
-                            canAttack = true;
-                        }
-                        else if (equipWeapon.IsShootWeapon())
-                        {
-                            ped.Task.ShootAt(vehicleTarget.Position, 10000);
-                            canAttack = true;
-                        }
-                    }
+                    ped.Task.FightAgainst(target, 60000);
+                    Function.Call(Hash.REGISTER_TARGET, ped, target);
                 }
 
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
-                return canAttack;
             }
             catch (Exception e)
             {
                 LogWrite(e.ToString());
                 LogWrite(e.StackTrace);
-                return false;
             }
         }
 

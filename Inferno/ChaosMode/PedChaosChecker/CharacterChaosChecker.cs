@@ -44,7 +44,7 @@ namespace Inferno.ChaosMode
             {
                 if (!avoidAttackEntity.IsSafeExist()) continue;
                 // 対象者の近くにいる
-                if (avoidAttackEntity.Position.DistanceTo(ped.Position) < 3.0f)
+                if (avoidAttackEntity.Position.DistanceTo(ped.Position) < 5.0f)
                 {
                     return true;
                 }
