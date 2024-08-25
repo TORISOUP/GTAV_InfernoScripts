@@ -46,7 +46,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                     var target = targetList.ElementAt(Random.Next(targetList.Count()));
 
-                    var startPoint = core.PlayerPed.GetBoneCoord(Bone.SKEL_Pelvis);
+                    var startPoint = core.PlayerPed.GetBonePosition(Bone.SkelPelvis);
 
                     var dir = (target.Position - startPoint).Normalized;
 

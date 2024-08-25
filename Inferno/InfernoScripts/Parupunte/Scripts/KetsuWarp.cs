@@ -22,8 +22,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             foreach (var w in WaitForSeconds(10))
             {
-                var blip = GTA.World.GetActiveBlips()
-                    .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                var blip = GTA.World.WaypointBlip;
 
                 if (blip != null)
                 {
@@ -43,7 +42,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             target.IsInvincible = true;
 
             target.ApplyForce(Vector3.WorldUp * 300.0f);
-            GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
+            GTA.World.AddExplosion(
+                target.Position,
+                GTA.ExplosionType.Grenade, 
+                0.5f, 
+                0.5f, 
+                core.PlayerPed, 
+                false);
 
             if (target is Ped)
             {
@@ -57,8 +62,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (target.IsSafeExist())
             {
-                var targetBlip = GTA.World.GetActiveBlips()
-                    .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                var targetBlip = GTA.World.WaypointBlip;
                 if (targetBlip == null || !targetBlip.Exists())
                 {
                     if (target.IsSafeExist())
@@ -118,7 +122,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 else
                 {
                     target.ApplyForce((dir + Vector3.WorldUp * 0.5f) * 250.0f);
-                    GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
+                    GTA.World.AddExplosion(
+                        target.Position,
+                        GTA.ExplosionType.Grenade, 
+                        0.5f, 
+                        0.5f, 
+                        core.PlayerPed, 
+                        false);
                 }
 
 

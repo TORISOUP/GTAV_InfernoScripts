@@ -39,7 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                       && x.IsAlive
                                       && x != playerVehicle))
                     {
-                        p.FreezePosition = true;
+                        p.FreezePosition(true);
                         freezedEntities.Add(p);
                     }
 
@@ -54,7 +54,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                       && x.IsAlive
                                       && x != playerVehicle))
                     {
-                        v.FreezePosition = true;
+                        v.FreezePosition(true);
                         freezedEntities.Add(v);
                     }
 
@@ -63,13 +63,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //プレイヤ車両は除外
             core.PlayerVehicle.Where(x => x.IsSafeExist())
-                .Subscribe(x => x.FreezePosition = false);
+                .Subscribe(x => x.FreezePosition(false));
 
             //終了時に全て解除
             OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
-                    foreach (var x in freezedEntities.Where(x => x.IsSafeExist())) x.FreezePosition = false;
+                    foreach (var x in freezedEntities.Where(x => x.IsSafeExist())) x.FreezePosition(false);
                 });
         }
     }

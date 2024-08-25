@@ -424,13 +424,13 @@ namespace Inferno.InfernoScripts.Parupunte
             switch (hash)
             {
                 case PedHash.Trevor:
-                    return Game.GetGXTEntry("BLIP_TREV");
+                    return NativeFunctions.GetGXTEntry("BLIP_TREV");
 
                 case PedHash.Michael:
-                    return Game.GetGXTEntry("BLIP_MICHAEL");
+                    return NativeFunctions.GetGXTEntry("BLIP_MICHAEL");
 
                 case PedHash.Franklin:
-                    return Game.GetGXTEntry("BLIP_FRANKLIN");
+                    return NativeFunctions.GetGXTEntry("BLIP_FRANKLIN");
 
                 default:
                     return hash.ToString();

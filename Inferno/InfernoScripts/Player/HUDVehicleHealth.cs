@@ -82,7 +82,7 @@ namespace Inferno
             var barSize = default(Size);
             var backGroundColor = Color.FromArgb(128, 0, 0, 0);
 
-            var t = Function.Call<float>(Hash._GET_SCREEN_ASPECT_RATIO, true);
+            var t = Function.Call<float>(Hash.GET_ASPECT_RATIO, true);
             width = (int)(width + width * (1.75f - t));
 
             if (health > maxHealth) maxHealth = health;

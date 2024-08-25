@@ -115,7 +115,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             core.DrawParupunteText("ボルガ博士！お許し下さい！", 3.0f);
 
             volga.Task.ClearAllImmediately();
-            volga.FreezePosition = false;
+            volga.FreezePosition(false);
             volga.Health = 30;
             volga.IsCollisionProof = false;
             volga.IsInvincible = false;

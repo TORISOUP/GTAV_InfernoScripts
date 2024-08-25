@@ -24,14 +24,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var radius = 100.0f;
             var player = core.PlayerPed;
-            var playerGroup = player.CurrentPedGroup;
+            var playerGroup = player.PedGroup;
             var peds = core.CachedPeds.Where(
                 x => x.IsSafeExist() && !x.IsSameEntity(core.PlayerPed) && !x.IsCutsceneOnlyPed() &&
                      x.IsInRangeOf(player.Position, radius));
 
             foreach (var ped in peds)
             {
-                if (PedGroup.Exists(playerGroup) && playerGroup.Contains(ped)) continue;
+                if (playerGroup.Exists() && playerGroup.Contains(ped)) continue;
 
                 var relationShip = ped.RelationshipGroup;
                 if (relationShip == core.GetGTAObjectHashKey("PLAYER")) continue; //ミッション上での仲間は除外する(誤判定が起きる場合があるので暫定)

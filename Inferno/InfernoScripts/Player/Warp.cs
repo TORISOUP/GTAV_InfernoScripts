@@ -12,8 +12,7 @@ namespace Inferno.InfernoScripts.Player
             CreateInputKeywordAsObservable("moveto")
                 .Subscribe(_ =>
                 {
-                    var blip = GTA.World.GetActiveBlips()
-                        .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                    var blip = GTA.World.WaypointBlip;
                     if (blip == null) return;
                     var targetHeight = GTA.World.GetGroundHeight(blip.Position);
                     //地面ピッタリだと地面に埋まるので少し上空を指定する

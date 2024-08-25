@@ -52,7 +52,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (!plane.IsSafeExist() || !ped.IsSafeExist()) yield break;
             plane.EngineHealth = 0;
-            plane.EngineRunning = false;
+            plane.IsEngineRunning = false;
 
             //飛行機が壊れたら大爆発させる
             foreach (var s in WaitForSeconds(10))

@@ -67,7 +67,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
 
             return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_flame",
-                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale,
+                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelPelvis, scale,
                 0, 0, 0);
         }
     }

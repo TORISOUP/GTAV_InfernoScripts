@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            var dayTime = GTA.World.CurrentDayTime;
+            var dayTime = GTA.World.CurrentTimeOfDay;
             Function.Call(Hash.SET_CLOCK_TIME, hour, dayTime.Minutes, dayTime.Seconds);
             ParupunteEnd();
         }

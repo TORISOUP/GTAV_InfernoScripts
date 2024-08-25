@@ -71,7 +71,7 @@ namespace Inferno.InfernoScripts.Player
 
             if (gripAvailableVeles == null || !gripAvailableVeles.IsTouching(PlayerPed)) return;
             _isGriped = true;
-            var playerRHandCoords = PlayerPed.GetBoneCoord(Bone.SKEL_R_Hand);
+            var playerRHandCoords = PlayerPed.GetBonePosition(Bone.SkelRightHand);
 
             var offsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
                 gripAvailableVeles,
@@ -99,8 +99,8 @@ namespace Inferno.InfernoScripts.Player
             Function.Call(Hash.ATTACH_ENTITY_TO_ENTITY_PHYSICALLY,
                 player,
                 vehicle,
-                player.GetBoneIndex(Bone.SKEL_R_Hand),
-                vehicle.GetBoneIndex("SKEL_ROOT"),
+                Bone.SkelRightHand,
+                Bone.SkelRoot,
                 ofsetPosition.X,
                 ofsetPosition.Y,
                 ofsetPosition.Z,

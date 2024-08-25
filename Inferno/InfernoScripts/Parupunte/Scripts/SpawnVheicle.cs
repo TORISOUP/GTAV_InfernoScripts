@@ -28,7 +28,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .FirstOrDefault();
 
             var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)vehicleHash);
-            _name = Game.GetGXTEntry(vehicleGxtEntry);
+            _name = NativeFunctions.GetGXTEntry(vehicleGxtEntry);
         }
 
         public override void OnSetNames()
@@ -52,7 +52,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AutoReleaseOnParupunteEnd(_veh);
             if (_veh.IsSafeExist())
             {
-                _veh.FreezePosition = false;
+                _veh.FreezePosition(false);
                 _veh.ApplyForce(Vector3.WorldUp * 5.0f);
                 _ped = _veh.CreateRandomPedAsDriver();
                 //市民は勝手に消える状態にしないと自分で運転しない

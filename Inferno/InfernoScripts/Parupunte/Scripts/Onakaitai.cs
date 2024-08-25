@@ -75,7 +75,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var scale = 3.0f;
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z,
+                (int)Bone.SkelPelvis, scale, 0,
                 0, 0);
         }
 
@@ -86,7 +87,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             if (!ped.IsSafeExist()) return;
             var pos = ped.Position;
-            GTA.World.AddOwnedExplosion(ped, pos, GTA.ExplosionType.Bullet, 0.0f, 0.0f);
+            NativeFunctions.AddOwnedExplosion(ped, pos, ExplosionType.BULLET, 0.0f, 0.0f);
         }
     }
 }

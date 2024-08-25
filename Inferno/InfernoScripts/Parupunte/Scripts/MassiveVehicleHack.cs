@@ -101,12 +101,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (target.IsOnAllWheels && !isBack) target.Speed *= 2.5f;
 
-            target.EngineRunning = true;
+            target.IsEngineRunning = true;
 
             while (target.IsSafeExist() && target.IsAlive)
             {
                 target.CanWheelsBreak = false;
-                target.HandbrakeOn = false;
+                target.IsHandbrakeForcedOn = false;
                 if (target.IsOnAllWheels) target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
                 yield return null;
             }

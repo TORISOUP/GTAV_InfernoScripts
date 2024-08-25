@@ -20,7 +20,7 @@ namespace Inferno
             //ミッションが始まった時
             OnThinnedTickAsObservable
                 .Where(_ => IsActive)
-                .Select(_ => Game.MissionFlag)
+                .Select(_ => Game.IsMissionActive)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealth());

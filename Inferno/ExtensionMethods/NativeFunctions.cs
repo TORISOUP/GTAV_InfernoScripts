@@ -668,5 +668,7 @@ namespace Inferno
         {
             return Function.Call<string>(Hash.GET_FILENAME_FOR_AUDIO_CONVERSATION, entry);
         }
+        
+ 
     }
 }
