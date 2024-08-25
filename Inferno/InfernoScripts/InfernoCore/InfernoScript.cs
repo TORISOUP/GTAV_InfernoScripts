@@ -35,7 +35,7 @@ namespace Inferno
 
         private readonly CompositeDisposable _compositeDisposable = new();
         private readonly AsyncSubject<Unit> _disposeSubject = new();
-        
+
         protected CompositeDisposable CompositeDisposable => _compositeDisposable;
 
         /// <summary>
@@ -148,9 +148,9 @@ namespace Inferno
 
             OnAbortAsync.Subscribe(_ =>
                 {
+                    Destroy();
                     IsActive = false;
                     foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
-
                     _autoReleaseEntities.Clear();
                 })
                 .AddTo(_compositeDisposable);
@@ -177,7 +177,6 @@ namespace Inferno
                     }
                 })
                 .AddTo(_compositeDisposable);
-            ;
         }
 
         protected virtual string ConfigFileName => null;
@@ -301,7 +300,7 @@ namespace Inferno
             InfernoCore.Instance.LogWrite(message + "\n");
             if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
         }
-        
+
         public void LogWrite(object message, bool stackTrace = false)
         {
             InfernoCore.Instance.LogWrite(message + "\n");
@@ -332,7 +331,7 @@ namespace Inferno
         public Vehicle[] CachedVehicles => InfernoCore.Instance.VehiclesNearPlayer.Value;
 
         public Entity[] CachedEntities => InfernoCore.Instance.EntitiesNearPlayer.Value;
-        
+
         /// <summary>
         /// Not thread safe.
         /// </summary>
@@ -528,33 +527,30 @@ namespace Inferno
 
         #endregion forTimer
 
-        protected override void Dispose(bool disposing)
+        protected virtual void Destroy()
         {
-            if (disposing)
+            try
             {
-                try
+                _compositeDisposable.Dispose();
+                _disposeSubject.OnNext(Unit.Default);
+                _disposeSubject.OnCompleted();
+                _disposeSubject.Dispose();
+                _activationCancellationTokenSource?.Cancel();
+                _activationCancellationTokenSource?.Dispose();
+                _activationCancellationTokenSource = null;
+                lock (_stepAwaiters)
                 {
-                    _compositeDisposable.Dispose();
-                    _disposeSubject.OnNext(Unit.Default);
-                    _disposeSubject.OnCompleted();
-                    _disposeSubject.Dispose();
-                    _activationCancellationTokenSource?.Cancel();
-                    _activationCancellationTokenSource?.Dispose();
-                    _activationCancellationTokenSource = null;
-                    lock (_stepAwaiters)
+                    foreach (var stepAwaiter in _stepAwaiters)
                     {
-                        foreach (var stepAwaiter in _stepAwaiters)
-                        {
-                            stepAwaiter?.Dispose();
-                        }
-
-                        _stepAwaiters.Clear();
+                        stepAwaiter?.Dispose();
                     }
+
+                    _stepAwaiters.Clear();
                 }
-                catch
-                {
-                    //
-                }
+            }
+            catch
+            {
+                //
             }
         }
     }

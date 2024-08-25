@@ -64,6 +64,8 @@ namespace Inferno
             //市民と車両の更新
             OnTickAsObservable
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
+            
+            Aborted += (_, _) => Destroy();
         }
 
         public static InfernoCore Instance { get; private set; }
@@ -170,27 +172,24 @@ namespace Inferno
             }
         }
 
-        protected override void Dispose(bool disposing)
+        private void Destroy()
         {
-            if (disposing)
+            try
             {
-                try
-                {
-                    _debugLogger.Dispose();
-                    _nearPeds.Dispose();
-                    _nearVehicles.Dispose();
-                    _nearEntities.Dispose();
-                    _missionEntity.Dispose();
-                    _playerPed.Dispose();
-                    _playerVehicle.Dispose();
-                    _disposeSubject.OnNext(Unit.Default);
-                    _disposeSubject.OnCompleted();
-                    _disposeSubject.Dispose();
-                }
-                catch
-                {
-                    //
-                }
+                _debugLogger.Dispose();
+                _nearPeds.Dispose();
+                _nearVehicles.Dispose();
+                _nearEntities.Dispose();
+                _missionEntity.Dispose();
+                _playerPed.Dispose();
+                _playerVehicle.Dispose();
+                _disposeSubject.OnNext(Unit.Default);
+                _disposeSubject.OnCompleted();
+                _disposeSubject.Dispose();
+            }
+            catch
+            {
+                //
             }
         }
     }

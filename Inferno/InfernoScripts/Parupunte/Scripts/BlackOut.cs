@@ -34,7 +34,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
-                    GTA.World.SetBlackout(false);
+                    SetArtificialLights(false);
                     soundPlayerStart = null;
                     soundPlayerEnd = null;
                     drawingDisposable?.Dispose();
@@ -52,7 +52,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                       && x.IsAlive
                                       && x != playerVehicle))
                     {
-                        v.EngineRunning = false;
+                        v.IsEngineRunning = false;
                         v.EnginePowerMultiplier = 0.0f;
                         v.EngineTorqueMultiplier = 0.0f;
                     }
@@ -70,12 +70,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var current = false;
             for (var i = 0; i < 10; i++)
             {
-                GTA.World.SetBlackout(current);
+                SetArtificialLights(current);
                 if (Random.Next(0, 2) % 2 == 0) current = !current;
                 yield return null;
             }
 
-            GTA.World.SetBlackout(true);
+            SetArtificialLights(true);
         }
 
         private IEnumerable<object> BlackOutEnd()
@@ -141,6 +141,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private void DrawLine(Vector3 from, Vector3 to, Color col)
         {
             Function.Call(Hash.DRAW_LINE, from.X, from.Y, from.Z, to.X, to.Y, to.Z, col.R, col.G, col.B, col.A);
+        }
+        
+        private static void SetArtificialLights(bool isOn)
+        {
+            Function.Call(Hash.SET_ARTIFICIAL_LIGHTS_STATE, isOn);
         }
     }
 }

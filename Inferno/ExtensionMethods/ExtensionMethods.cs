@@ -20,7 +20,7 @@ namespace Inferno
 
         public static bool IsSafeExist(this Entity entity)
         {
-            return entity != null && Entity.Exists(entity);
+            return entity != null && entity.Exists();
         }
 
         /// <summary>
@@ -81,6 +81,11 @@ namespace Inferno
         public static bool IsCutsceneOnlyPed(this Ped ped)
         {
             return Enum.IsDefined(typeof(CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
+        }
+
+        public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
+        {
+            return entity.Position.DistanceTo(position) < distance;
         }
 
         public static Vector3 ApplyVector(this Quaternion q, Vector3 v)

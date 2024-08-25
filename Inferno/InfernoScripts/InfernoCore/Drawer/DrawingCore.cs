@@ -24,18 +24,18 @@ namespace Inferno
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
+
+            Aborted += (_, _) => Dispose();
         }
 
         public static DrawingCore Instance { get; private set; }
 
         public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
 
-        protected override void Dispose(bool disposing)
+
+        private void Dispose()
         {
-            if (disposing)
-            {
-                _disposable?.Dispose();
-            }
+            _disposable?.Dispose();
         }
     }
 }

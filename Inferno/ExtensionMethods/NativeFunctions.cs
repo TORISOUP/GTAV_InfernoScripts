@@ -545,9 +545,9 @@ namespace Inferno
         public static void AddTextString(this Script script, string str)
         {
             //文字の種類?
-            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] { "STRING" });
+            Function.Call(Hash.BEGIN_TEXT_COMMAND_DISPLAY_TEXT, new InputArgument[] { "STRING" });
             //テキストとして表示する文字列
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] { str });
+            Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, new InputArgument[] { str });
         }
 
         /// <summary>
@@ -558,7 +558,7 @@ namespace Inferno
         /// <param name="y"></param>
         public static void DrawTextInSetPosition(this Script script, float x, float y)
         {
-            Function.Call(Hash._DRAW_TEXT, new InputArgument[]
+            Function.Call(Hash.END_TEXT_COMMAND_DISPLAY_TEXT, new InputArgument[]
             {
                 x,
                 y
@@ -567,7 +567,7 @@ namespace Inferno
 
         public static Vector2 GetScreenResolution()
         {
-            return new Vector2(UI.WIDTH, UI.HEIGHT);
+            return new Vector2(GTA.UI.Screen.Width, GTA.UI.Screen.Height);
         }
 
         /// <summary>
