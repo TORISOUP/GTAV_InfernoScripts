@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using GTA;
 using GTA.Math;
-using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno

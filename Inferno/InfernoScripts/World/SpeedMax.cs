@@ -95,7 +95,7 @@ namespace Inferno.InfernoScripts.World
             //ミッションが始まった時にしばらく動作を止める
             OnThinnedTickAsObservable
                 .Where(_ => IsActive)
-                .Select(_ => Game.MissionFlag)
+                .Select(_ => Game.IsMissionActive)
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Do(_ => suspednFlag = true)

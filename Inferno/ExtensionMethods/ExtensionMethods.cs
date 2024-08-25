@@ -89,10 +89,15 @@ namespace Inferno
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
         }
         
-        public static void FreezePosition(this Ped ped, bool freeze)
+        public static void FreezePosition(this Entity entity, bool freeze)
         {
-            Function.Call(Hash.FREEZE_ENTITY_POSITION, ped.Handle, freeze);
+            Function.Call(Hash.FREEZE_ENTITY_POSITION, entity.Handle, freeze);
             
+        }
+        
+        public static Bone GetBoneIndex(this Entity entity, string boneName)
+        {
+            return Function.Call<Bone>(Hash.GET_ENTITY_BONE_INDEX_BY_NAME, entity.Handle, boneName);
         }
 
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)

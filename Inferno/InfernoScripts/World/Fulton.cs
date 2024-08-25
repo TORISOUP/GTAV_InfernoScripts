@@ -232,7 +232,7 @@ namespace Inferno
             if (!p.IsSafeExist()) return;
 
             p.SetNotChaosPed(true);
-            PlayerPed.CurrentPedGroup.Add(p, false);
+            PlayerPed.PedGroup.Add(p, false);
             p.MaxHealth = 500;
             p.Health = p.MaxHealth;
 
@@ -257,7 +257,7 @@ namespace Inferno
         {
             var hash = motherbaseVeh.Dequeue();
             var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)hash);
-            DrawText(Game.GetGXTEntry(vehicleGxtEntry));
+            DrawText(NativeFunctions.GetGXTEntry(vehicleGxtEntry));
             StartCoroutine(SpawnVehicleCoroutine(new Model(hash), PlayerPed.Position.AroundRandom2D(20)));
         }
 
@@ -266,7 +266,7 @@ namespace Inferno
             var car = World.CreateVehicle(model, targetPosition + new Vector3(0, 0, 20));
             if (!car.IsSafeExist()) yield break;
             var upVector = new Vector3(0, 0, 1.0f);
-            car.FreezePosition = false;
+            car.FreezePosition(false);
             car.Velocity = new Vector3();
             World.AddExplosion(targetPosition, GTA.ExplosionType.Flare, 1.0f, 0.0f);
 

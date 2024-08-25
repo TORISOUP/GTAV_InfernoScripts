@@ -155,7 +155,7 @@ namespace Inferno.InfernoScripts
                 yield break;
             }
 
-            var rHandCoord = ped.GetBoneCoord(Bone.SKEL_R_Hand);
+            var rHandCoord = ped.GetBonePosition(Bone.SkelRightHand);
             var offsetPosition = Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_GIVEN_WORLD_COORDS,
                 veh,
                 rHandCoord.X,
@@ -190,8 +190,8 @@ namespace Inferno.InfernoScripts
             Function.Call(Hash.ATTACH_ENTITY_TO_ENTITY_PHYSICALLY,
                 ped,
                 vehicle,
-                ped.GetBoneIndex(Bone.SKEL_R_Hand),
-                vehicle.GetBoneIndex("SKEL_ROOT"),
+                Bone.SkelRightHand,
+                Bone.SkelRoot,
                 ofsetPosition.X,
                 ofsetPosition.Y,
                 ofsetPosition.Z,

@@ -663,5 +663,10 @@ namespace Inferno
             Function.Call(Hash.ADD_OWNED_EXPLOSION, ped.Handle, position.X, position.Y, position.Z, (int)type, radius,
                 true, false, cameraShake);
         }
+        
+        public static string GetGXTEntry(string entry)
+        {
+            return Function.Call<string>(Hash.GET_FILENAME_FOR_AUDIO_CONVERSATION, entry);
+        }
     }
 }
