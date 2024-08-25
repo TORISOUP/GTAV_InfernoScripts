@@ -112,10 +112,7 @@
         <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
         <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
-        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIContainer.cs" />
-        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIElement.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
-        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIText.cs" />
         <Compile Include="InfernoScripts\World\BombBat.cs" />
         <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
@@ -211,7 +208,7 @@
         <Compile Include="InfernoScripts\Player\PlayerGripVehicle.cs" />
         <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs" />
         <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerHelthAlert.cs" />
+        <Compile Include="InfernoScripts\Player\PlayerHealthAlert.cs" />
         <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
             <SubType>Code</SubType>
         </Compile>

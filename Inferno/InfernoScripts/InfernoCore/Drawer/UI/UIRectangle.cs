@@ -5,10 +5,11 @@
 
 using GTA.Native;
 using System.Drawing;
+using GTA.UI;
 
 namespace GTA
 {
-    public class UIRectangle : UIElement
+    public class UIRectangle : IElement
     {
         public UIRectangle() : this(new Point(), new Size((int)UI.Screen.Width, (int)UI.Screen.Height),
             Color.Transparent)
@@ -27,27 +28,38 @@ namespace GTA
             Color = color;
         }
 
-        public virtual bool Enabled { get; set; }
-        public virtual Point Position { get; set; }
-        public Size Size { get; set; }
-        public virtual Color Color { get; set; }
-
-        public virtual void Draw()
+        public void ScaledDraw(SizeF offset)
         {
-            Draw(new Size());
+            throw new System.NotImplementedException();
         }
 
-        public virtual void Draw(Size offset)
+        public virtual bool Enabled { get; set; }
+        public PointF Position { get; set; }
+        public bool Centered { get; set; }
+        public Size Size { get; set; }
+        public virtual Color Color { get; set; }
+  
+        public virtual void Draw()
+        {
+            Draw(SizeF.Empty);
+        }
+        
+        public void ScaledDraw()
+        {
+            Draw(SizeF.Empty);
+        }
+
+        public virtual void Draw(SizeF offset)
         {
             if (!Enabled)
             {
                 return;
             }
 
-            float w = (float)Size.Width / UI.Screen.Width;
-            float h = (float)Size.Height / UI.Screen.Height;
-            float x = (float)(Position.X + offset.Width) / UI.Screen.Width + w * 0.5f;
-            float y = (float)(Position.Y + offset.Height) / UI.Screen.Height + h * 0.5f;
+            float w = Size.Width / UI.Screen.Width;
+            float h = Size.Height / UI.Screen.Height;
+            float x = (Position.X + offset.Width) / UI.Screen.Width + w * 0.5f;
+            float y = (Position.Y + offset.Height) / UI.Screen.Height + h * 0.5f;
 
             Function.Call(Hash.DRAW_RECT, x, y, w, h, Color.R, Color.G, Color.B, Color.A);
         }

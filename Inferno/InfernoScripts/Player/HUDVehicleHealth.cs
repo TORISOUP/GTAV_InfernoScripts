@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Reactive.Linq;
 using GTA;
 using GTA.Native;
+using GTA.UI;
 
 namespace Inferno
 {
@@ -11,7 +12,7 @@ namespace Inferno
     /// </summary>
     internal class HUDVehicleHealth : InfernoScript
     {
-        private UIContainer _mContainer;
+        private ContainerElement _mContainer;
         private int _screenHeight;
         private int _screenWidth;
 
@@ -20,7 +21,7 @@ namespace Inferno
             var screenResolution = NativeFunctions.GetScreenResolution();
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
-            _mContainer = new UIContainer(new Point(0, 0), new Size(_screenWidth, _screenHeight));
+            _mContainer = new ContainerElement(new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             OnDrawingTickAsObservable
                 .Where(_ => this.GetPlayerVehicle().IsSafeExist() && PlayerPed.IsAlive)

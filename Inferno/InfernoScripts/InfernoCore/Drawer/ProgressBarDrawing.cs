@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using GTA;
+using GTA.UI;
 
 namespace Inferno
 {
@@ -12,7 +13,7 @@ namespace Inferno
     /// </summary>
     public class ProgressBarDrawing : InfernoScript
     {
-        private UIContainer _mContainer;
+        private ContainerElement _container;
 
         private readonly object lockObject = new();
 
@@ -24,14 +25,14 @@ namespace Inferno
         {
             Instance = this;
             //描画エリア
-            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            _container = new ContainerElement(new Point(0, 0), new Size(500, 20));
 
             //バー表示が設定されていたら描画
             OnDrawingTickAsObservable
                 .Where(_ => !Game.IsPaused && Game.Player.IsAlive && progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
                 .Subscribe(_ =>
                 {
-                    _mContainer.Items.Clear();
+                    _container.Items.Clear();
                     var datas = new ProgressBarData[0];
 
                     //ここは排他ロック必要
@@ -43,7 +44,7 @@ namespace Inferno
                     }
 
                     foreach (var progressBarData in datas) AddProgressBarToContainer(progressBarData);
-                    _mContainer.Draw();
+                    _container.Draw();
                 });
         }
 
@@ -99,9 +100,9 @@ namespace Inferno
                     break;
             }
 
-            _mContainer.Items.Add(new UIRectangle(new Point(pos.X - margin, pos.Y - margin),
+            _container.Items.Add(new UIRectangle(new Point(pos.X - margin, pos.Y - margin),
                 new Size(width + margin * 2, height + margin * 2), data.BackgorondColor));
-            _mContainer.Items.Add(new UIRectangle(barPosition, barSize, data.MainColor));
+            _container.Items.Add(new UIRectangle(barPosition, barSize, data.MainColor));
         }
     }
 }

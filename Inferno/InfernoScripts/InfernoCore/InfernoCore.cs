@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Forms;
 using GTA;
+using GTA.UI;
 using Inferno.InfernoScripts.Event;
 using Reactive.Bindings;
 
@@ -66,6 +68,8 @@ namespace Inferno
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
             
             Aborted += (_, _) => Destroy();
+
+            
         }
 
         public static InfernoCore Instance { get; private set; }

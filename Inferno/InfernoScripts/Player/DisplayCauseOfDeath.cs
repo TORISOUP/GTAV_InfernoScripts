@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Reactive.Linq;
 using GTA;
 using GTA.Math;
+using GTA.UI;
 
 namespace Inferno
 {
@@ -12,7 +13,7 @@ namespace Inferno
     internal class DisplayCauseOfDeath : InfernoScript
     {
         private readonly Vector2 _textPositionScale = new(0.5f, 0.75f);
-        private UIContainer _mContainer;
+        private ContainerElement _mContainer;
         private int _screenHeight;
         private int _screenWidth;
 
@@ -22,7 +23,7 @@ namespace Inferno
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
 
-            _mContainer = new UIContainer(
+            _mContainer = new ContainerElement(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             OnDrawingTickAsObservable
@@ -44,10 +45,10 @@ namespace Inferno
 
                     var damageName = damageWeapon.ToString();
                     if (PlayerPed.Killer == PlayerPed) damageName += "(SUICIDE)";
-                    var text = new UIText(damageName,
+                    var text = new TextElement(damageName,
                         new Point((int)(_screenWidth * _textPositionScale.X),
                             (int)(_screenHeight * _textPositionScale.Y)),
-                        1.0f, Color.White, 0, true, false, true);
+                        1.0f, Color.White, 0, Alignment.Center, false, true);
 
                     _mContainer.Items.Add(text);
                 });

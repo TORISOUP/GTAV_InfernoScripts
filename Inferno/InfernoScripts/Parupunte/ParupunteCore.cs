@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Utilities;
 using Reactive.Bindings.Extensions;
@@ -38,7 +39,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private Dictionary<string, Type> _isonoParupunteScripts;
 
-        private UIContainer _mainTextUiContainer;
+        private ContainerElement _mainTextUiContainer;
 
         private Dictionary<string, ParupunteConfigElement> _parupunteConfigs;
 
@@ -49,7 +50,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
         private int _screenHeight;
         private int _screenWidth;
-        private UIContainer _subTextUiContainer;
+        private ContainerElement _subTextUiContainer;
         private TimerUiTextManager timerText;
 
         private Dictionary<string, Type> IsonoParupunteScripts
@@ -153,9 +154,9 @@ namespace Inferno.InfernoScripts.Parupunte
             var screenResolution = NativeFunctions.GetScreenResolution();
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
-            _mainTextUiContainer = new UIContainer(
+            _mainTextUiContainer = new ContainerElement(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
-            _subTextUiContainer = new UIContainer(
+            _subTextUiContainer = new ContainerElement(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             //テキストが更新されたら詰め直す
@@ -401,20 +402,20 @@ namespace Inferno.InfernoScripts.Parupunte
             timerText.Set(CreateMainText(text), duration);
         }
 
-        private UIText CreateMainText(string text)
+        private TextElement CreateMainText(string text)
         {
-            return new UIText(text,
+            return new TextElement(text,
                 new Point((int)(_screenWidth * _mainTextPositionScale.X),
                     (int)(_screenHeight * _mainTextPositionScale.Y)),
-                0.8f, Color.White, 0, true, false, true);
+                0.8f, Color.White, 0, Alignment.Center, false, true);
         }
 
-        private UIText CreateSubText(string text)
+        private TextElement CreateSubText(string text)
         {
-            return new UIText(text,
+            return new TextElement(text,
                 new Point((int)(_screenWidth * _subTextPositionScale.X),
                     (int)(_screenHeight * _subTextPositionScale.Y)),
-                0.4f, Color.White, 0, false, false, true);
+                0.4f, Color.White, 0, Alignment.Left, false, true);
         }
 
 

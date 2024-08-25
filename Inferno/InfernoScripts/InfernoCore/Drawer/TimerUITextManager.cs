@@ -2,7 +2,7 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using GTA;
+using GTA.UI;
 
 namespace Inferno
 {
@@ -14,7 +14,7 @@ namespace Inferno
         private readonly InfernoScript parent;
         private ReduceCounter reduceCounter;
         private readonly Subject<Unit> setTextSubject = new();
-        private UIText uiText;
+        private TextElement textElement;
 
         public TimerUiTextManager(InfernoScript parent)
         {
@@ -26,12 +26,12 @@ namespace Inferno
         /// <summary>
         /// 描画テキスト
         /// </summary>
-        public UIText Text
+        public TextElement Text
         {
             get
             {
-                if (reduceCounter == null || uiText == null) return null;
-                return !reduceCounter.IsCompleted ? uiText : null;
+                if (reduceCounter == null || textElement == null) return null;
+                return !reduceCounter.IsCompleted ? textElement : null;
             }
         }
 
@@ -40,9 +40,9 @@ namespace Inferno
         /// </summary>
         public bool IsEnabled => reduceCounter != null && !reduceCounter.IsCompleted;
 
-        public void Set(UIText text, float expireSeconds)
+        public void Set(TextElement text, float expireSeconds)
         {
-            uiText = text;
+            textElement = text;
             reduceCounter = new ReduceCounter((int)(1000 * expireSeconds));
             parent.RegisterCounter(reduceCounter);
             setTextSubject.OnNext(Unit.Default);

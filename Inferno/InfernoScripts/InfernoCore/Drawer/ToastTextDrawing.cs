@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
 using GTA;
+using GTA.UI;
 
 namespace Inferno
 {
@@ -15,7 +16,7 @@ namespace Inferno
 
         //画面表示を消すまでの残りCoroutineループ回数
         private int _currentTickCounter;
-        private UIContainer _mContainer;
+        private ContainerElement _container;
 
         public static ToastTextDrawing Instance { get; private set; }
 
@@ -23,12 +24,12 @@ namespace Inferno
         {
             Instance = this;
             //描画エリア
-            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            _container = new ContainerElement(new Point(0, 0), new Size(500, 20));
 
             //テキストが設定されていれば一定時間だけ描画
             OnDrawingTickAsObservable
-                .Where(_ => _mContainer.Items.Count > 0)
-                .Subscribe(_ => _mContainer.Draw());
+                .Where(_ => _container.Items.Count > 0)
+                .Subscribe(_ => _container.Draw());
 
             OnAllOnCommandObservable
                 .Subscribe(_ => DrawText("Inferno:AllOn"));
@@ -49,13 +50,21 @@ namespace Inferno
 
         private IEnumerable<object> DrawTextEnumerator(string text, float time)
         {
-            _mContainer.Items.Clear();
+            _container.Items.Clear();
             _currentTickCounter = (int)(time * 10);
-            _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false, false, true));
+            _container.Items.Add(new TextElement(
+                text, 
+                new Point(0, 0), 
+                0.5f,
+                Color.White, 
+                0, 
+                Alignment.Left, 
+                false, 
+                true));
 
             while (--_currentTickCounter > 0) yield return _currentTickCounter;
 
-            _mContainer.Items.Clear();
+            _container.Items.Clear();
         }
     }
 }
