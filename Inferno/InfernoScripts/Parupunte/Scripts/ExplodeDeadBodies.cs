@@ -40,9 +40,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var ped in peds)
             {
-                var killer = ped.GetKiller();
+                var killer = ped.Killer;
                 if (killer.IsSafeExist() && killer is Ped) //殺害者がいたらそいつが起こした扱いの爆発を生成
-                    GTA.World.AddOwnedExplosion((Ped)killer, ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
+                   NativeFunctions.AddOwnedExplosion((Ped)killer, ped.Position, ExplosionType.ROCKET, 8.0f, 2.5f);
                 else
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
                 explodedPedHandles.Add(ped.Handle); //同一人物が2回以上爆発するのを防止するため

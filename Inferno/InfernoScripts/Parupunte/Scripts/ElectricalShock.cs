@@ -31,7 +31,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             while (IsActive)
             {
                 pos = core.PlayerPed.Position;
-                var bones = new[] { Bone.IK_Head, Bone.IK_L_Foot, Bone.IK_L_Hand, Bone.IK_R_Foot, Bone.IK_R_Hand };
+                var bones = new[]
+                {
+                    Bone.IKHead, 
+                    Bone.IKLeftFoot,
+                    Bone.IKLeftHand,
+                    Bone.IKRightFoot, 
+                    Bone.IKRightHand,
+                };
                 foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(pos, 30)))
                 {
                     var vec = (ped.Position - pos).Normalized;
@@ -47,7 +54,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                         NativeFunctions.ShootSingleBulletBetweenCoords(
                             pos + new Vector3(0, 0, random1) + vec,
-                            ped.GetBoneCoord(Bone.IK_Head), 1, WeaponHash.StunGun, null, 1.0f);
+                            ped.GetBonePosition(Bone.IKHead), 1, WeaponHash.StunGun, null, 1.0f);
                     }
                     else
                     {
@@ -55,7 +62,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var target = bones[Random.Next(0, bones.Length)];
                         NativeFunctions.ShootSingleBulletBetweenCoords(
                             pos + new Vector3(0, 0, random1) + vec,
-                            ped.GetBoneCoord(target), 1, WeaponHash.StunGun, null, 1.0f);
+                            ped.GetBonePosition(target), 1, WeaponHash.StunGun, null, 1.0f);
                     }
                 }
 

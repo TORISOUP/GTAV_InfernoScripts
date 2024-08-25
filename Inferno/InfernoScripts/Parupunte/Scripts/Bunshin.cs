@@ -51,7 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (isFriend)
             {
                 ped.SetNotChaosPed(true);
-                core.PlayerPed.CurrentPedGroup.Add(ped, false);
+                core.PlayerPed.PedGroup.Add(ped, false);
                 AutoReleaseOnGameEnd(ped);
                 peds.Add(ped);
             }

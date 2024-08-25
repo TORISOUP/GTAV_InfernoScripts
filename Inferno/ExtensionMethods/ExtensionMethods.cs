@@ -2,6 +2,7 @@
 using System.Linq;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno
@@ -81,6 +82,17 @@ namespace Inferno
         public static bool IsCutsceneOnlyPed(this Ped ped)
         {
             return Enum.IsDefined(typeof(CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
+        }
+        
+        public static Vector3 GetBonePosition(this Ped ped, Bone boneIndex)
+        {
+            return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
+        }
+        
+        public static void FreezePosition(this Ped ped, bool freeze)
+        {
+            Function.Call(Hash.FREEZE_ENTITY_POSITION, ped.Handle, freeze);
+            
         }
 
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)

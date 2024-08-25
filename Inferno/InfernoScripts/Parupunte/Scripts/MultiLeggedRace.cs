@@ -43,7 +43,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             allPedList =
                 core.CachedPeds.Where(x => x.IsSafeExist() && !x.IsRequiredForMission() && !x.IsCutsceneOnlyPed())
@@ -134,12 +134,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var rotation = new Vector3(0.0f, 0.0f, 0.0f);
             var scale = 2.0f;
 
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_electrical_box",
                 ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_L_Toe0, scale,
                 0, 0, 0);
 
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",
                 ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_R_Toe0, scale,
                 0, 0, 0);

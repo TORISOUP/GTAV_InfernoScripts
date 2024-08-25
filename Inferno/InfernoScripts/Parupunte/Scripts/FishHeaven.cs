@@ -128,7 +128,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var f = GTA.World.CreatePed(fishModel, target.Position + Vector3.WorldUp * 10);
             if (!f.IsSafeExist() || !target.IsSafeExist()) return null;
             f.MarkAsNoLongerNeeded();
-            f.AttachTo(target, 0, Vector3.WorldUp * 1.5f, target.ForwardVector);
+            f.AttachTo(target.Bones.Core, Vector3.WorldUp * 1.5f, target.ForwardVector);
             f.IsInvincible = true;
             f.Health = 100;
             createdFishList.Add(f);
@@ -149,7 +149,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             fish.Detach();
             fish.IsInvincible = false;
             fish.RequestCollision();
-            fish.FreezePosition = false;
+            fish.FreezePosition(false);
             CreateEffect(fish, "ent_sht_electrical_box");
 
             yield return null;
@@ -180,9 +180,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelPelvis, scale, 0,
                 0, 0);
         }
     }

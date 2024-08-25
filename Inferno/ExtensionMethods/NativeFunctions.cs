@@ -653,5 +653,15 @@ namespace Inferno
         {
             return Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS, entity, right, forward, up);
         }
+
+        public static void AddOwnedExplosion(Ped ped,
+            Vector3 position,
+            ExplosionType type,
+            float radius,
+            float cameraShake)
+        {
+            Function.Call(Hash.ADD_OWNED_EXPLOSION, ped.Handle, position.X, position.Y, position.Z, (int)type, radius,
+                true, false, cameraShake);
+        }
     }
 }
