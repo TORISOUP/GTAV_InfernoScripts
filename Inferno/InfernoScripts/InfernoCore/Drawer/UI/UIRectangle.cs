@@ -11,15 +11,7 @@ namespace GTA
 {
     public class UIRectangle : IElement
     {
-        public UIRectangle() : this(new Point(), new Size((int)UI.Screen.Width, (int)UI.Screen.Height),
-            Color.Transparent)
-        {
-        }
-
-        public UIRectangle(Point position, Size size) : this(position, size, Color.Transparent)
-        {
-        }
-
+        
         public UIRectangle(Point position, Size size, Color color)
         {
             Enabled = true;

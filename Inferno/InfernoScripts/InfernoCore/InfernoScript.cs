@@ -7,7 +7,6 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,6 +14,7 @@ using GTA;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.Coroutine;
 using Inferno.Utilities;
+using Inferno.Utilities.Awaiters;
 using Reactive.Bindings;
 
 namespace Inferno
@@ -32,6 +32,7 @@ namespace Inferno
         protected readonly Random Random = new();
 
         private readonly List<StepAwaiter> _stepAwaiters = new(8);
+        private readonly List<TimeAwaiter> _timeAwaiters = new(8);
 
         private readonly CompositeDisposable _compositeDisposable = new();
         private readonly AsyncSubject<Unit> _disposeSubject = new();
@@ -50,6 +51,12 @@ namespace Inferno
             for (var i = 0; i < 4; i++)
             {
                 _stepAwaiters.Add(new StepAwaiter());
+            }
+
+            // TimeAwaiterの初期化
+            for (var i = 0; i < 4; i++)
+            {
+                _timeAwaiters.Add(new TimeAwaiter());
             }
 
             //初期化をちょっと遅延させる
@@ -84,6 +91,7 @@ namespace Inferno
             OnTickAsObservable.Subscribe(_ =>
                 {
                     FrameCount++;
+                    var deltaTime = Game.LastFrameTime;
 
                     try
                     {
@@ -112,6 +120,24 @@ namespace Inferno
                                 if (stepAwaiter is { IsActive: true })
                                 {
                                     stepAwaiter.Step();
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        lock (_timeAwaiters)
+                        {
+                            foreach (var timeAwaiter in _timeAwaiters)
+                            {
+                                if (timeAwaiter is { IsActive: true })
+                                {
+                                    timeAwaiter.Step(deltaTime);
                                 }
                             }
                         }
@@ -234,7 +260,40 @@ namespace Inferno
             return dto.Validate() ? dto : new T();
         }
 
+        /// <summary>
+        /// 初期化処理はここに書く
+        /// </summary>
+        protected abstract void Setup();
+
         #region forTaks
+
+        protected async ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
+        {
+            TimeAwaiter timeAwaiter;
+            lock (_timeAwaiters)
+            {
+                // 使用可能なStepAwaiterを探す
+                timeAwaiter = _timeAwaiters.FirstOrDefault(x => !x.IsActive);
+                // 存在しなければ新規作成
+                if (timeAwaiter == null)
+                {
+                    timeAwaiter = new TimeAwaiter();
+                    _timeAwaiters.Add(timeAwaiter);
+                }
+
+                timeAwaiter.Reset(timeSpan, ct);
+            }
+
+            try
+            {
+                await timeAwaiter;
+                ct.ThrowIfCancellationRequested();
+            }
+            finally
+            {
+                timeAwaiter.Release();
+            }
+        }
 
         protected async ValueTask DelayFrameAsync(int frame, CancellationToken ct = default)
         {
@@ -283,11 +342,6 @@ namespace Inferno
         }
 
         #endregion
-
-        /// <summary>
-        /// 初期化処理はここに書く
-        /// </summary>
-        protected abstract void Setup();
 
         #region Debug
 
@@ -546,6 +600,16 @@ namespace Inferno
                     }
 
                     _stepAwaiters.Clear();
+                }
+                
+                lock (_timeAwaiters)
+                {
+                    foreach (var timeAwaiter in _timeAwaiters)
+                    {
+                        timeAwaiter?.Dispose();
+                    }
+
+                    _timeAwaiters.Clear();
                 }
             }
             catch

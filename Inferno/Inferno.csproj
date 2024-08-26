@@ -221,6 +221,8 @@
         <Compile Include="InfernoScripts\World\Meteo.cs" />
         <Compile Include="InfernoScripts\World\SpeedMax.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Utilities\Awaiters\TimeAwaiter.cs" />
+        <Compile Include="Utilities\Awaiters\StepAwaiter.cs" />
         <Compile Include="Utilities\InfernoConfig.cs" />
         <Compile Include="Utilities\InfernoConfigLoader.cs" />
         <Compile Include="Utilities\InfernoScheduler.cs" />
@@ -230,7 +232,6 @@
         <Compile Include="Utilities\RequestDataPackage.cs" />
         <Compile Include="Utilities\ScheduledItem.cs" />
         <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
-        <Compile Include="Utilities\StepAwaiter.cs" />
         <Compile Include="Utilities\TCPManager.cs" />
         <Compile Include="Utilities\ThrottleFirst.cs" />
     </ItemGroup>

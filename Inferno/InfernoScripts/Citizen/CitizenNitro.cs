@@ -73,7 +73,7 @@ namespace Inferno
         private async Task DelayCoroutine(Vehicle v)
         {
             var waitSeconds = Random.Next(0, 5);
-            await Task.Delay(TimeSpan.FromSeconds(waitSeconds));
+            await DelayAsync(TimeSpan.FromSeconds(waitSeconds));
             var driver = v.GetPedOnSeat(VehicleSeat.Driver);
             EscapeVehicle(driver);
             NitroVehicle(v);
@@ -124,18 +124,18 @@ namespace Inferno
             ped.Position += new Vector3(0, 0, 0.5f);
             ped.SetToRagdoll();
 
-            await Task.Delay(TimeSpan.FromSeconds(0.1f));
+            await DelayAsync(TimeSpan.FromSeconds(0.1f));
 
             ped.ApplyForce(new Vector3(0, 0, 40.0f));
             ped.IsInvincible = true;
 
-            await Task.Delay(TimeSpan.FromSeconds(1.5f));
+            await DelayAsync(TimeSpan.FromSeconds(1.5f));
 
             if (!ped.IsSafeExist()) return;
             ped.IsInvincible = false;
             ped.ParachuteTo(PlayerPed.Position);
 
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            await DelayAsync(TimeSpan.FromSeconds(15));
 
             if (!ped.IsSafeExist()) return;
             ped.SetNotChaosPed(false);

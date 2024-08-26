@@ -243,7 +243,7 @@ namespace Inferno.ChaosMode
             if (!chaosChecker.IsPedChaosAvailable(ped))
             {
                 // 不適格なら3秒間は何もせずに放置し、リストから削除
-                await Task.Delay(TimeSpan.FromSeconds(3), ct);
+                await DelayAsync(TimeSpan.FromSeconds(3), ct);
                 chaosedPedList.Remove(pedId);
                 return;
             }
@@ -282,7 +282,7 @@ namespace Inferno.ChaosMode
                 if (ped.IsInAir)
                 {
                     // 空挺市民を考慮して空中にいるならちょっと待つ
-                    await Task.Delay(TimeSpan.FromSeconds(3), ct);
+                    await DelayAsync(TimeSpan.FromSeconds(3), ct);
                 }
                 else
                 {

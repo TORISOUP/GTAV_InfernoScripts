@@ -79,7 +79,7 @@ namespace Inferno
             foreach (var i in Enumerable.Range(0, AirPlaneCount))
             {
                 PlaneManageLoopAsync(i, ct).Forget();
-                await Task.Delay(TimeSpan.FromSeconds(1), ct);
+                await DelayAsync(TimeSpan.FromSeconds(1), ct);
             }
         }
 
@@ -109,7 +109,7 @@ namespace Inferno
                 }
 
                 //5秒ごとにチェック
-                await Task.Delay(TimeSpan.FromSeconds(5), ct);
+                await DelayAsync(TimeSpan.FromSeconds(5), ct);
             }
         }
 
@@ -171,7 +171,7 @@ namespace Inferno
                         //たまに攻撃
                         targetArea[id] = target.Position;
                         await AttackAsync(plane, ped, target, ct);
-                        await Task.Delay(TimeSpan.FromSeconds(5), ct);
+                        await DelayAsync(TimeSpan.FromSeconds(5), ct);
                         targetArea[id] = null;
                         break;
                     }
@@ -237,7 +237,7 @@ namespace Inferno
             {
                 if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) return;
                 ShootAt(plane, driver, targetArea, speed);
-                await Task.Delay(TimeSpan.FromSeconds(0.8f), ct);
+                await DelayAsync(TimeSpan.FromSeconds(0.8f), ct);
             }
         }
 

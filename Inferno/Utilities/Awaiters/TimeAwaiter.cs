@@ -2,11 +2,11 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Inferno.Utilities
+namespace Inferno.Utilities.Awaiters
 {
-    public class StepAwaiter : INotifyCompletion, IDisposable
+    public sealed class TimeAwaiter : INotifyCompletion, IDisposable
     {
-        private int _counter;
+        private float _remainingSeconds;
         private Action _continuation;
         private readonly CancellationTokenSource _internalCancellationTokenSource = new();
         private CancellationToken _cancellationToken;
@@ -15,10 +15,10 @@ namespace Inferno.Utilities
         private bool _isUsing;
         public bool IsActive => _isUsing && !_disposed;
 
-        public void Reset(int count, CancellationToken cancellationToken = default)
+        public void Reset(TimeSpan timeSpan, CancellationToken cancellationToken = default)
         {
             _isUsing = true;
-            _counter = count;
+            _remainingSeconds = (float)timeSpan.TotalMilliseconds / 1000f;
             _cancellationToken = CancellationTokenSource
                 .CreateLinkedTokenSource(_internalCancellationTokenSource.Token, cancellationToken)
                 .Token;
@@ -32,19 +32,19 @@ namespace Inferno.Utilities
                 _cancellationTokenRegistration = _cancellationToken.Register(() =>
                 {
                     // キャンセルされたら継続動作を即時実行
-                    _counter = 0;
+                    _remainingSeconds = 0;
                     _continuation?.Invoke();
                 });
             }
         }
 
         // Step()を呼ぶたびにカウントを1つ進める
-        public void Step()
+        public void Step(float seconds)
         {
-            if (_counter > 0 && !_cancellationToken.IsCancellationRequested)
+            if (_remainingSeconds > 0 && !_cancellationToken.IsCancellationRequested)
             {
-                _counter--;
-                if (_counter == 0)
+                _remainingSeconds -= seconds;
+                if (_remainingSeconds <= 0)
                 {
                     // カウントがゼロになったら継続動作を実行
                     _continuation?.Invoke();
@@ -52,7 +52,7 @@ namespace Inferno.Utilities
             }
         }
 
-        public bool IsCompleted => _counter == 0 || _cancellationToken.IsCancellationRequested || _disposed;
+        public bool IsCompleted => _remainingSeconds <= 0 || _cancellationToken.IsCancellationRequested || _disposed;
 
         public void OnCompleted(Action continuation)
         {
@@ -83,6 +83,6 @@ namespace Inferno.Utilities
             _continuation = null;
         }
 
-        public StepAwaiter GetAwaiter() => this;
+        public TimeAwaiter GetAwaiter() => this;
     }
 }
