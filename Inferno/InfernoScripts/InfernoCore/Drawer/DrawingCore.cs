@@ -12,7 +12,7 @@ namespace Inferno
     internal class DrawingCore : Script
     {
         private static readonly Subject<Unit> OnTickSubject = new();
-        private IDisposable _disposable;
+        private readonly IDisposable _disposable;
 
         public DrawingCore()
         {
@@ -36,6 +36,8 @@ namespace Inferno
         private void Dispose()
         {
             _disposable?.Dispose();
+            OnTickSubject.OnCompleted();
+            OnTickSubject.Dispose();
         }
     }
 }

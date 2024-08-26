@@ -8,9 +8,9 @@ using Inferno.Utilities;
 
 namespace Inferno
 {
-    internal class Meteo : InfernoScript
+    internal sealed class Meteo : InfernoScript
     {
-        private readonly List<Vector3> meteoLightPositionList = new();
+        private readonly List<Vector3> _meteoLightPositionList = new();
 
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
 
@@ -29,11 +29,11 @@ namespace Inferno
 
             //落下地点マーカ描画
             OnDrawingTickAsObservable
-                .Where(_ => meteoLightPositionList.Count > 0)
+                .Where(_ => _meteoLightPositionList.Count > 0)
                 .Subscribe(_ =>
                 {
                     var insensity = 10;
-                    foreach (var point in meteoLightPositionList.ToArray())
+                    foreach (var point in _meteoLightPositionList.ToArray())
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
                 });
 
@@ -46,20 +46,11 @@ namespace Inferno
         {
             try
             {
-                var player = PlayerPed;
-                if (!player.IsSafeExist()) return;
+                var (result, targetPosition) = CreateTargetPosition();
 
-                var playerPosition = player.Position;
-                var range = Radius;
-                var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);
+                if (!result) return;
 
-                if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)
-                {
-                    addPosition.Normalize();
-                    addPosition *= Random.Next(10, 20);
-                }
-
-                var targetPosition = playerPosition + addPosition;
+                // 斜めに降らせるためにちょっとずれた位置の上空から落とす
                 var direction = new Vector3(1, 0, 2);
                 direction.Normalize();
                 var createPosition = targetPosition + direction * 100;
@@ -82,6 +73,44 @@ namespace Inferno
             }
         }
 
+        private (bool, Vector3) CreateTargetPosition()
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                var player = PlayerPed;
+                if (!player.IsSafeExist()) return (false, default);
+
+                var playerPosition = player.Position;
+                var range = Radius;
+
+                // ランダムな水平ベクトル
+                var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);
+
+                // プレイヤーの移動速度に応じて補正をする
+                if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)
+                {
+                    // プレイヤーがゆっくり移動しているなら落下範囲をより狭くする
+                    addPosition.Normalize();
+                    addPosition *= Random.Next(10, 20);
+                }
+
+                var targetPosition = playerPosition + addPosition;
+
+                var isNearMissionEntity =
+                    CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(targetPosition) < 15.0f);
+
+                // ミッションキャラクターの近くが選ばれた場合は再抽選
+                if (isNearMissionEntity)
+                {
+                    continue;
+                }
+
+                return (true, targetPosition);
+            }
+
+            return (false, default);
+        }
+
         /// <summary>
         /// ライトを生成して指定秒数後に無効化する
         /// </summary>
@@ -90,9 +119,9 @@ namespace Inferno
         /// <returns></returns>
         private IEnumerable<object> CreateMeteoLight(Vector3 position, float durationSecond)
         {
-            meteoLightPositionList.Add(position);
+            _meteoLightPositionList.Add(position);
             yield return WaitForSeconds(durationSecond);
-            meteoLightPositionList.Remove(position);
+            _meteoLightPositionList.Remove(position);
         }
 
         #region config
