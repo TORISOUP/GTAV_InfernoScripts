@@ -222,7 +222,11 @@ namespace Inferno.ChaosMode
         /// </summary>
         private void StopAllChaosCoroutine()
         {
-            foreach (var id in coroutineIds) StopCoroutine(id);
+            foreach (var id in coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+
             coroutineIds.Clear();
         }
 
@@ -353,7 +357,7 @@ namespace Inferno.ChaosMode
                     {
                         break;
                     }
-                    
+
 
                     // 定期的にチェックする部分
                     if (checkWaitTime > 1)

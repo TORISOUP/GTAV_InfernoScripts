@@ -3,27 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using Inferno.ChaosMode;
 
 namespace Inferno.InfernoScripts.World
 {
     internal class ChaosHeli : InfernoScript
     {
-        private readonly List<uint> coroutineIds = new();
-
-        private readonly HashSet<Ped> raperingPedList = new();
-
-        //ヘリのドライバー以外の座席
-        private readonly List<VehicleSeat> vehicleSeat = new()
-            { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
-
-        private Vehicle _heli;
-        private Ped _heliDriver;
-        private uint _observeHeliCoroutineId;
-        private uint _observePlayerCoroutineId;
-
-
-        private readonly WeaponHash[] _driveByWeapons = new[]
+        private readonly WeaponHash[] _driveByWeapons =
         {
             WeaponHash.Pistol,
             WeaponHash.APPistol,
@@ -45,6 +32,37 @@ namespace Inferno.InfernoScripts.World
             WeaponHash.PistolMk2,
             WeaponHash.SMGMk2
         };
+
+        private readonly VehicleHash[] Helis = new[]
+        {
+            VehicleHash.Akula,
+            VehicleHash.Buzzard,
+            VehicleHash.Buzzard2,
+            VehicleHash.Cargobob,
+            VehicleHash.Cargobob2,
+            VehicleHash.Cargobob3,
+            VehicleHash.Cargobob4,
+            VehicleHash.Conada,
+            VehicleHash.Frogger,
+            VehicleHash.Hunter,
+            VehicleHash.Maverick,
+            VehicleHash.Havok,
+            VehicleHash.Volatol
+        };
+
+        private readonly List<uint> coroutineIds = new();
+
+        private readonly HashSet<Ped> raperingPedList = new();
+
+        //ヘリのドライバー以外の座席
+        private readonly List<VehicleSeat> vehicleSeat = new()
+            { VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
+
+        private Vehicle _heli;
+        private Ped _heliDriver;
+        private uint _observeHeliCoroutineId;
+        private uint _observePlayerCoroutineId;
+        private bool _isNearPlayer = false;
 
         protected override void Setup()
         {
@@ -195,13 +213,29 @@ namespace Inferno.InfernoScripts.World
 
             if (_heli.IsInRangeOf(targetPosition, 30))
             {
-                //プレイヤに近い場合は何もしない
-                _heliDriver.Task.ClearAll();
+                //プレイヤに近い場合は攻撃する
+
+                // フラグが切り替わったときに実行
+                if (!_isNearPlayer)
+                {
+                    _heliDriver.Task.ClearAll();
+                    FightAgainstNearPeds(_heliDriver);
+                    // 車で攻撃するか
+                    _heliDriver.SetCombatAttributes(52, true);
+                    // 車両の武器を使用するか
+                    _heliDriver.SetCombatAttributes(53, true);
+                    
+                    _isNearPlayer = true;
+                }
             }
             else
             {
-                _heliDriver.Task.ClearAll();
-                _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
+                if (_isNearPlayer)
+                {
+                    _heliDriver.Task.ClearAll();
+                    _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
+                    _isNearPlayer = false;
+                }
             }
         }
 
@@ -285,7 +319,7 @@ namespace Inferno.InfernoScripts.World
                 var player = PlayerPed;
                 var playerPosition = player.Position;
                 var spawnHeliPosition = playerPosition + new Vector3(0, 0, 40);
-                var heli = GTA.World.CreateVehicle(VehicleHash.Maverick, spawnHeliPosition);
+                var heli = GTA.World.CreateVehicle(Helis[Random.Next(0, Helis.Length)], spawnHeliPosition);
                 if (!heli.IsSafeExist())
                 {
                     return;
@@ -297,11 +331,16 @@ namespace Inferno.InfernoScripts.World
                 heli.Health = 3000;
                 _heli = heli;
 
-                _heliDriver = _heli.CreateRandomPedAsDriver();
+                _heliDriver = GTA.World.CreatePed(new Model(PedHash.LamarDavis), _heli.Position + Vector3.WorldUp * 10);
                 if (_heliDriver.IsSafeExist() && _heliDriver.IsHuman)
                 {
+                    _heliDriver.SetIntoVehicle(_heli, VehicleSeat.Driver);
                     _heliDriver.SetProofs(true, true, true, true, true, true, true, true);
                     _heliDriver.SetNotChaosPed(true);
+                    // 車で攻撃するか
+                    _heliDriver.SetCombatAttributes(52, true);
+                    // 車両の武器を使用するか
+                    _heliDriver.SetCombatAttributes(53, true);
                 }
 
                 SpawnPassengersToEmptySeat();
@@ -358,7 +397,11 @@ namespace Inferno.InfernoScripts.World
         /// </summary>
         private void StopAllChaosHeliCoroutine()
         {
-            foreach (var id in coroutineIds) StopCoroutine(id);
+            foreach (var id in coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+
             coroutineIds.Clear();
         }
 
@@ -389,15 +432,24 @@ namespace Inferno.InfernoScripts.World
                 // 最適な武器を選択するか
                 p.SetCombatAttributes(54, true);
 
-                foreach (var target in CachedPeds.Where(x =>
-                             x.IsSafeExist() && x != p && x.IsAlive && x.IsInRangeOf(p.Position, 100)))
-                {
-                    p.Task.FightAgainst(target);
-                }
-
-                p.Task.FightAgainst(PlayerPed);
+                FightAgainstNearPeds(p);
                 p.Accuracy = 5;
             }
+        }
+
+        private void FightAgainstNearPeds(Ped p)
+        {
+            foreach (var target in CachedPeds.Where(x =>
+                         x.IsSafeExist() && x != p && x.IsAlive && x.IsInRangeOf(p.Position, 100)))
+            {
+                if(CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(target.Position) < 30.0f))
+                {
+                    continue;
+                }
+                p.Task.FightAgainst(target);
+            }
+
+            p.Task.FightAgainst(PlayerPed);
         }
     }
 }

@@ -116,8 +116,11 @@ namespace Inferno.ChaosMode
         /// </summary>
         public bool IsAttackableEntity(Entity entity)
         {
-            if (Game.Player.Character == entity) return true;
-            
+            if (Game.Player.Character == entity)
+            {
+                return true;
+            }
+
             // カオス化して良い判定と条件は今のところ同じ
             return IsRiotableMissionCharacter(entity);
         }
