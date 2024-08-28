@@ -39,7 +39,10 @@ namespace Inferno
         private void GetVehicleHealth()
         {
             var vheicle = this.GetPlayerVehicle();
-            if (!vheicle.IsSafeExist()) return;
+            if (!vheicle.IsSafeExist())
+            {
+                return;
+            }
 
             var bodyHealth = vheicle.BodyHealth;
             var engineHealth = vheicle.EngineHealth;
@@ -86,10 +89,17 @@ namespace Inferno
             var t = Function.Call<float>(Hash.GET_ASPECT_RATIO, true);
             width = (int)(width + width * (1.75f - t));
 
-            if (health > maxHealth) maxHealth = health;
+            if (health > maxHealth)
+            {
+                maxHealth = health;
+            }
 
             barLength = (int)(width * (health / maxHealth));
-            if (barLength < 0) barLength = 0;
+            if (barLength < 0)
+            {
+                barLength = 0;
+            }
+
             barPosition = new Point(pos.X, pos.Y);
             barSize = new Size(barLength, height);
 

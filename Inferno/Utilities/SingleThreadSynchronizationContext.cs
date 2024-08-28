@@ -22,7 +22,11 @@ namespace Inferno.Utilities
 
         public void RunOnCurrentThread()
         {
-            if (_mQueue.Count == 0) return;
+            if (_mQueue.Count == 0)
+            {
+                return;
+            }
+
             KeyValuePair<SendOrPostCallback, object> workItem;
             while (_mQueue.TryDequeue(out workItem))
                 workItem.Key(workItem.Value);

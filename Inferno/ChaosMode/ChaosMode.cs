@@ -237,7 +237,7 @@ namespace Inferno.ChaosMode
             var pedId = ped.Handle;
 
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
-            var equipedWeapon = GiveWeaponTpPed(ped);
+            GiveWeaponTpPed(ped);
 
             //ここでカオス化して良いか検査する
             if (!chaosChecker.IsPedChaosAvailable(ped))
@@ -248,8 +248,21 @@ namespace Inferno.ChaosMode
                 return;
             }
 
+
+            if (ped.IsInVehicle())
+            {
+                var vehicle = ped.CurrentVehicle;
+                var seat = ped.SeatIndex;
+                ped.Task.ClearAllImmediately();
+                ped.SetIntoVehicle(vehicle, seat);
+            }
+            else
+            {
+                ped.Task.ClearAllImmediately();
+            }
+
             SetPedStatus(ped);
-            ped.Task.ClearAllImmediately();
+
 
             if (ped.IsRequiredForMission())
             {
@@ -323,15 +336,15 @@ namespace Inferno.ChaosMode
                     if (checkWaitTime > 1)
                     {
                         checkWaitTime = 0;
-                        
-                        if(ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
+
+                        if (ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
                         {
                             // プレイヤから遠くにいるなら終了
                             chaosedPedList.Remove(pedId);
                             return;
                         }
-                        
-                        
+
+
                         // 攻撃されたら次の反撃対象にしておく
                         if (ped.HasEntityBeenDamagedByAnyPed())
                         {
@@ -347,7 +360,7 @@ namespace Inferno.ChaosMode
                             return;
                         }
 
-                        if (targets.All(x=>!x.IsSafeExist() || !x.IsAlive))
+                        if (targets.All(x => !x.IsSafeExist() || !x.IsAlive))
                         {
                             //攻撃対象がいなくなったらやりなおし
                             break;

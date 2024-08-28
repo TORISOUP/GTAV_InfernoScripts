@@ -39,12 +39,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             player.SetToRagdoll(3000);
             player.IsCollisionProof = true;
 
-            if (player.IsInVehicle()) player.CurrentVehicle.IsCollisionProof = true;
+            if (player.IsInVehicle())
+            {
+                player.CurrentVehicle.IsCollisionProof = true;
+            }
 
             foreach (var s in WaitForSeconds(10))
             {
                 //一定以上打ち上がったらおわり
-                if (player.Position.Z > targetPositionInAri.Z) break;
+                if (player.Position.Z > targetPositionInAri.Z)
+                {
+                    break;
+                }
 
                 foreach (var entity in entities.Where(x => x.IsSafeExist()))
                 {
@@ -60,16 +66,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
+                {
                     player.CurrentVehicle.ApplyForce(Vector3.WorldUp * vehicleForcePower);
+                }
                 else
+                {
                     player.ApplyForce(Vector3.WorldUp * pedForcePower);
+                }
+
                 yield return null;
             }
 
             //着地するまで
             while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir) yield return null;
             player.IsCollisionProof = false;
-            if (player.IsInVehicle()) player.CurrentVehicle.IsCollisionProof = false;
+            if (player.IsInVehicle())
+            {
+                player.CurrentVehicle.IsCollisionProof = false;
+            }
+
             ParupunteEnd();
         }
     }

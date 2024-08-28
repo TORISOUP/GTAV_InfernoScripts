@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GTA;
-using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {

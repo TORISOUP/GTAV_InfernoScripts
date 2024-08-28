@@ -53,9 +53,13 @@ namespace Inferno.InfernoScripts.World
                     {
                         vehicleHashSet.Add(v.Handle);
                         if (currentSpeedType == SpeedType.Original)
+                        {
                             StartCoroutine(OriginalSpeedMaxCoroutine(v));
+                        }
                         else
+                        {
                             StartCoroutine(VehicleSpeedMaxCorutine(v));
+                        }
                     }
                 });
             var nextType = currentSpeedType;
@@ -111,8 +115,16 @@ namespace Inferno.InfernoScripts.World
             var maxSpeed = Random.Next(100, 300);
             while (IsActive && v.IsSafeExist())
             {
-                if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
-                if (PlayerVehicle.Value == v) yield break;
+                if (!v.IsInRangeOf(PlayerPed.Position, 1000))
+                {
+                    yield break;
+                }
+
+                if (PlayerVehicle.Value == v)
+                {
+                    yield break;
+                }
+
                 v.Speed = maxSpeed;
                 yield return null;
             }
@@ -126,11 +138,23 @@ namespace Inferno.InfernoScripts.World
             //たまに後ろに飛ぶ
             var dir = v.Handle % 10 == 0 ? -1 : 1;
             var maxSpeed = GetVehicleSpeed() * dir;
-            if (Math.Abs(maxSpeed) > 20) v.Speed = 100 * dir;
+            if (Math.Abs(maxSpeed) > 20)
+            {
+                v.Speed = 100 * dir;
+            }
+
             while (IsActive && v.IsSafeExist())
             {
-                if (!v.IsInRangeOf(PlayerPed.Position, 1000)) yield break;
-                if (PlayerVehicle.Value == v) yield break;
+                if (!v.IsInRangeOf(PlayerPed.Position, 1000))
+                {
+                    yield break;
+                }
+
+                if (PlayerVehicle.Value == v)
+                {
+                    yield break;
+                }
+
                 v.ApplyForce(maxSpeed * v.ForwardVector);
                 yield return null;
             }

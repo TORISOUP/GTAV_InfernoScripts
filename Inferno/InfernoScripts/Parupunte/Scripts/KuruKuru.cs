@@ -51,7 +51,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         var rate = 1.0f - ReduceCounter.Rate;
                         foreach (var veh in targets)
                         {
-                            if (!veh.IsSafeExist()) continue;
+                            if (!veh.IsSafeExist())
+                            {
+                                continue;
+                            }
+
                             veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;
                             if (rate > 0.5f)
                             {

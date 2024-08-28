@@ -64,7 +64,11 @@ namespace Inferno
             foreach (var client in tcpClients)
             {
                 //接続が切れていないか再確認
-                if (!client.Connected) continue;
+                if (!client.Connected)
+                {
+                    continue;
+                }
+
                 var ns = client.GetStream();
                 var message_byte = encoding.GetBytes(message);
                 try
@@ -77,7 +81,10 @@ namespace Inferno
                 catch (Exception e)
                 {
                     Debug.Print(e.Message);
-                    if (!client.Connected) client.Close();
+                    if (!client.Connected)
+                    {
+                        client.Close();
+                    }
                 }
             }
         }

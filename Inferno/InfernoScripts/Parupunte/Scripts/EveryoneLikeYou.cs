@@ -56,13 +56,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!ReduceCounter.IsCompleted)
             {
-                if (!entity.IsSafeExist()) yield break;
+                if (!entity.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 var playerPos = core.PlayerPed.Position;
 
                 if (entity is Ped)
                 {
                     var p = entity as Ped;
-                    if (p.IsDead) yield break;
+                    if (p.IsDead)
+                    {
+                        yield break;
+                    }
+
                     p.SetToRagdoll();
                 }
 

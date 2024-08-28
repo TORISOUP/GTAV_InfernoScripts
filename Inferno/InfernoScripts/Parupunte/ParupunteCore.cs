@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
-using GTA.Native;
 using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Utilities;
@@ -57,7 +56,11 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             get
             {
-                if (_isonoParupunteScripts != null) return _isonoParupunteScripts;
+                if (_isonoParupunteScripts != null)
+                {
+                    return _isonoParupunteScripts;
+                }
+
                 _isonoParupunteScripts =
                     _parupunteScritpts
                         .Select(x => new { type = x, isono = x.GetCustomAttribute<ParupunteIsono>() })
@@ -119,9 +122,13 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ =>
                 {
                     if (IsActive)
+                    {
                         ParupunteStop();
+                    }
                     else
+                    {
                         ParupunteStart(ChooseParupounteScript());
+                    }
                 });
 
             //パルプンテが停止したタイミングで開放
@@ -144,7 +151,10 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(c =>
                 {
                     var r = IsonoMethod(c.Command);
-                    if (r) nextIsonoTime = Time.Add(TimeSpan.FromSeconds(4));
+                    if (r)
+                    {
+                        nextIsonoTime = Time.Add(TimeSpan.FromSeconds(4));
+                    }
                 });
 
             #endregion EventHook
@@ -207,7 +217,10 @@ namespace Inferno.InfernoScripts.Parupunte
             foreach (var kv in defaultConfig)
             {
                 var value = kv.Value;
-                if (loadConfig.ContainsKey(kv.Key)) value = loadConfig[kv.Key];
+                if (loadConfig.ContainsKey(kv.Key))
+                {
+                    value = loadConfig[kv.Key];
+                }
 
                 mergedConfig[kv.Key] = value;
             }
@@ -230,7 +243,10 @@ namespace Inferno.InfernoScripts.Parupunte
                 //       return true;
             }
 
-            if (IsActive) return false;
+            if (IsActive)
+            {
+                return false;
+            }
 
             if (c.Contains("ぱるぷんて"))
             {
@@ -239,7 +255,11 @@ namespace Inferno.InfernoScripts.Parupunte
             }
 
             var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Contains(x));
-            if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result)) return false;
+            if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result))
+            {
+                return false;
+            }
+
             ParupunteStart(IsonoParupunteScripts[result]);
             return true;
         }
@@ -250,7 +270,10 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStart(Type script)
         {
-            if (IsActive) return;
+            if (IsActive)
+            {
+                return;
+            }
 
             IsActive = true;
 
@@ -285,7 +308,9 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             if (_debugParuputeScripts.Any())
                 //デバッグ指定のやつがあるならそっち優先で取り出す
+            {
                 return _debugParuputeScripts[Random.Next(0, _debugParuputeScripts.Length)];
+            }
 
             return _parupunteScritpts[Random.Next(0, _parupunteScritpts.Length)];
         }
@@ -298,7 +323,10 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             yield return null;
 
-            if (!IsActive) yield break;
+            if (!IsActive)
+            {
+                yield break;
+            }
 
             if (script == null)
             {
@@ -485,7 +513,11 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public void AutoReleaseOnParupunteEnd(Entity entity)
         {
-            if (entity.IsSafeExist()) _autoReleaseEntitiesList.Add(entity);
+            if (entity.IsSafeExist())
+            {
+                _autoReleaseEntitiesList.Add(entity);
+            }
+
             //中断時にも対応させる
             base.AutoReleaseOnGameEnd(entity);
         }

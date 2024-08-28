@@ -160,7 +160,10 @@ namespace Inferno.InfernoScripts.Parupunte
 
         public void OnFinishedCore()
         {
-            if (IsFinished) return;
+            if (IsFinished)
+            {
+                return;
+            }
 
             IsFinished = true;
             ReduceCounter?.Finish();
@@ -174,7 +177,10 @@ namespace Inferno.InfernoScripts.Parupunte
             coroutineIds.Clear();
 
             var endMessage = EndMessage();
-            if (!string.IsNullOrEmpty(endMessage)) core.DrawParupunteText(endMessage, EndMessageDisplayTime);
+            if (!string.IsNullOrEmpty(endMessage))
+            {
+                core.DrawParupunteText(endMessage, EndMessageDisplayTime);
+            }
         }
 
         /// <summary>

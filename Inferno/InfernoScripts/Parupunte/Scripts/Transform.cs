@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using GTA;
-using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {

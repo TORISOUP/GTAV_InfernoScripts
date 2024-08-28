@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTA;
-using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -115,7 +114,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <returns>装備した武器</returns>
         private void GiveWeaponTpPed(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             //車に乗っているなら車用の武器を渡す
             var weapon = Enum.GetValues(typeof(WeaponHash))

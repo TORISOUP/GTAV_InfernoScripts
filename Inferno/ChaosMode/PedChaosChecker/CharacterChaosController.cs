@@ -15,8 +15,10 @@ namespace Inferno.ChaosMode
         public static void SetNotChaosPed(this Ped ped, bool toggle)
         {
             if (ped.IsSafeExist())
+            {
                 //所持金が555だとカオス化しないキャラクタという意味にする
                 ped.SetPedMoney(toggle ? 555 : 0);
+            }
         }
 
         /// <summary>
@@ -26,7 +28,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化"したくない"市民</returns>
         public static bool IsNotChaosPed(this Ped ped)
         {
-            return ped.GetPedMoney() == 555;
+            return ped.Money == 555;
         }
     }
 }

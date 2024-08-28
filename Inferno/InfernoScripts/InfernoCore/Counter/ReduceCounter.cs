@@ -37,11 +37,17 @@ namespace Inferno
 
         public void Update(int countValue)
         {
-            if (IsCompleted) return;
+            if (IsCompleted)
+            {
+                return;
+            }
 
             Current = Current > countValue ? Current - countValue : 0;
 
-            if (Current != 0) return;
+            if (Current != 0)
+            {
+                return;
+            }
 
             IsCompleted = true;
             _onFinishedSubject.OnNext(Unit.Default);

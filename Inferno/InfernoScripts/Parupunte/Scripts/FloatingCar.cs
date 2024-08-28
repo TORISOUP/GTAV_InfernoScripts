@@ -38,7 +38,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
             {
                 var v = player.CurrentVehicle;
-                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v)) v.ApplyForce(Vector3.WorldUp * 1.2f);
+                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
+                {
+                    v.ApplyForce(Vector3.WorldUp * 1.2f);
+                }
             }
         }
     }

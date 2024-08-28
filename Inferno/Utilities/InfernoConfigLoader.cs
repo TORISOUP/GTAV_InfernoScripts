@@ -18,7 +18,11 @@ namespace Inferno.Utilities
         {
             get
             {
-                if (_debugLogger != null) return _debugLogger;
+                if (_debugLogger != null)
+                {
+                    return _debugLogger;
+                }
+
                 _debugLogger = new DebugLogger(@"Inferno.log");
                 return _debugLogger;
             }
@@ -88,7 +92,10 @@ namespace Inferno.Utilities
         {
             var directoryPath = Path.GetDirectoryName(filePath);
             //存在しないならディレクトリを作る
-            if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
 
             //デフォルト設定を吐き出す
             var dto = CreateDefault();

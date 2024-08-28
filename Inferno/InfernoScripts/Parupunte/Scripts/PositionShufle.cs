@@ -48,7 +48,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var peds = ChoisePeds(core.CachedPeds);
                 if (peds.Item1 != peds.Item2)
                     //ポジションの入れ替えは高速コルーチンで実行
+                {
                     _quickCoroutineSystem.AddCoroutine(SwapPedPosition(peds.Item1, peds.Item2));
+                }
+
                 yield return WaitForSeconds(1.5f);
             }
         }
@@ -85,7 +88,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             #region P2を退避
 
-            if (!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
+            if (!p1.IsSafeExist() || !p2.IsSafeExist())
+            {
+                yield break;
+            }
 
             if (isP2InVehicle)
             {
@@ -99,7 +105,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             #endregion P2を退避
 
-            if (!p1.IsSafeExist() || !p2.IsSafeExist()) yield break;
+            if (!p1.IsSafeExist() || !p2.IsSafeExist())
+            {
+                yield break;
+            }
 
             // p1 -> p2
 
@@ -107,7 +116,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (isP2InVehicle)
             {
-                if (!v2.IsSafeExist()) yield break;
+                if (!v2.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 p1.Task.WarpIntoVehicle(v2, v2seat);
             }
             else
@@ -124,7 +137,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (isP1InVehicle)
             {
-                if (!v1.IsSafeExist()) yield break;
+                if (!v1.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 p2.Task.WarpIntoVehicle(v1, v1seat);
             }
             else
@@ -137,14 +154,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private VehicleSeat GetPedSeat(Ped ped, Vehicle veh)
         {
-            if (!veh.IsSafeExist()) return VehicleSeat.None;
+            if (!veh.IsSafeExist())
+            {
+                return VehicleSeat.None;
+            }
+
             var seatList = new[]
                 { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
 
             foreach (var s in seatList)
             {
                 var p = veh.GetPedOnSeat(s);
-                if (p == ped) return s;
+                if (p == ped)
+                {
+                    return s;
+                }
             }
 
             return VehicleSeat.None;

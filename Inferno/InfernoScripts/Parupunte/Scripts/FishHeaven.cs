@@ -23,7 +23,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
 
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
@@ -61,9 +63,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private IEnumerable<object> CitizenVehicleCoroutine(Vehicle veh)
         {
             yield return null;
-            if (!veh.IsSafeExist()) yield break;
+            if (!veh.IsSafeExist())
+            {
+                yield break;
+            }
+
             var f = SpawnFish(veh);
-            if (!f.IsSafeExist()) yield break;
+            if (!f.IsSafeExist())
+            {
+                yield break;
+            }
 
             //しばらくたったら発射する
             foreach (var s in WaitForSeconds(Random.Next(1, 10)))
@@ -78,7 +87,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return null;
             }
 
-            if (veh.IsSafeExist()) StartCoroutine(ShootFish(veh, f));
+            if (veh.IsSafeExist())
+            {
+                StartCoroutine(ShootFish(veh, f));
+            }
         }
 
         /// <summary>
@@ -100,7 +112,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             //車に乗ったら魚生成
             var p = SpawnFish(playerVehicle);
-            if (!p.IsSafeExist()) yield break;
+            if (!p.IsSafeExist())
+            {
+                yield break;
+            }
 
             //キー入力待機
             while (!core.IsGamePadPressed(GameKey.VehicleHorn))
@@ -112,7 +127,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     yield break;
                 }
 
-                if (!IsActive) yield break;
+                if (!IsActive)
+                {
+                    yield break;
+                }
+
                 yield return null;
             }
 
@@ -126,7 +145,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Ped SpawnFish(Vehicle target)
         {
             var f = GTA.World.CreatePed(fishModel, target.Position + Vector3.WorldUp * 10);
-            if (!f.IsSafeExist() || !target.IsSafeExist()) return null;
+            if (!f.IsSafeExist() || !target.IsSafeExist())
+            {
+                return null;
+            }
+
             f.MarkAsNoLongerNeeded();
             f.AttachTo(target.Bones.Core, Vector3.WorldUp * 1.5f, target.ForwardVector);
             f.IsInvincible = true;
@@ -142,7 +165,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             if (!fish.IsSafeExist())
             {
-                if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
+                if (veh.IsSafeExist())
+                {
+                    vehicles.Remove(veh.Handle);
+                }
+
                 yield break;
             }
 
@@ -154,29 +181,52 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             yield return null;
 
-            if (fish.IsSafeExist()) fish.Velocity = fish.ForwardVector * (100 + veh.Speed);
+            if (fish.IsSafeExist())
+            {
+                fish.Velocity = fish.ForwardVector * (100 + veh.Speed);
+            }
 
             //速度が一定以下になったら爆発
             foreach (var x in WaitForSeconds(10))
             {
                 if (!fish.IsSafeExist())
                 {
-                    if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
+                    if (veh.IsSafeExist())
+                    {
+                        vehicles.Remove(veh.Handle);
+                    }
+
                     yield break;
                 }
 
-                if (fish.Velocity.Length() < 6) break;
+                if (fish.Velocity.Length() < 6)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
-            if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
-            if (!fish.IsSafeExist()) yield break;
+            if (veh.IsSafeExist())
+            {
+                vehicles.Remove(veh.Handle);
+            }
+
+            if (!fish.IsSafeExist())
+            {
+                yield break;
+            }
+
             GTA.World.AddExplosion(fish.Position, GTA.ExplosionType.Grenade, 1.0f, 1.0f);
         }
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;

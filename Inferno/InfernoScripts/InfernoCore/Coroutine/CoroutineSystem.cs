@@ -58,7 +58,9 @@ namespace Inferno
             {
                 if (_coroutines.Keys.Contains(id))
                     //このタイミングでは消さない
+                {
                     _stopCoroutineList.Add(id);
+                }
             }
         }
 
@@ -104,7 +106,10 @@ namespace Inferno
                 foreach (var coroutine in _coroutines)
                     try
                     {
-                        if (!coroutine.Value.MoveNext()) endIdList.Add(coroutine.Key);
+                        if (!coroutine.Value.MoveNext())
+                        {
+                            endIdList.Add(coroutine.Key);
+                        }
                     }
                     catch (Exception e)
                     {

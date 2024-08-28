@@ -38,7 +38,11 @@ namespace Inferno.InfernoScripts.World
                 {
                     foreach (var ped in CachedPeds)
                     {
-                        if (!ped.IsSafeExist()) continue;
+                        if (!ped.IsSafeExist())
+                        {
+                            continue;
+                        }
+
                         BomBatAction(ped);
                     }
 
@@ -81,7 +85,11 @@ namespace Inferno.InfernoScripts.World
             }
             else if (ped.HasBeenDamagedBy(Weapon.HAMMER))
             {
-                if (!ped.IsInRangeOf(PlayerPed.Position, 10)) return;
+                if (!ped.IsInRangeOf(PlayerPed.Position, 10))
+                {
+                    return;
+                }
+
                 Shock(ped);
                 Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
             }

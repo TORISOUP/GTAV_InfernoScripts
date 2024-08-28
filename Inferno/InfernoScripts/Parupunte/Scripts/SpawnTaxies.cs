@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GTA;
-using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -41,7 +40,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     taxi.MarkAsNoLongerNeeded();
                     var ped = taxi.CreateRandomPedAsDriver();
-                    if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+                    if (ped.IsSafeExist())
+                    {
+                        ped.MarkAsNoLongerNeeded();
+                    }
                 }
 
                 yield return null;

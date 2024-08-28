@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
-using GTA;
 using GTA.UI;
 
 namespace Inferno
@@ -12,11 +11,11 @@ namespace Inferno
     /// </summary>
     public class ToastTextDrawing : InfernoScript
     {
+        private ContainerElement _container;
         private int _coroutineId = -1;
 
         //画面表示を消すまでの残りCoroutineループ回数
         private int _currentTickCounter;
-        private ContainerElement _container;
 
         public static ToastTextDrawing Instance { get; private set; }
 
@@ -44,7 +43,10 @@ namespace Inferno
         {
             if (_coroutineId >= 0)
                 //既に実行中のがあれば止める
+            {
                 StopCoroutine((uint)_coroutineId);
+            }
+
             _coroutineId = (int)StartCoroutine(DrawTextEnumerator(text, time));
         }
 
@@ -53,13 +55,13 @@ namespace Inferno
             _container.Items.Clear();
             _currentTickCounter = (int)(time * 10);
             _container.Items.Add(new TextElement(
-                text, 
-                new Point(0, 0), 
+                text,
+                new Point(0, 0),
                 0.5f,
-                Color.White, 
-                0, 
-                Alignment.Left, 
-                false, 
+                Color.White,
+                0,
+                Alignment.Left,
+                false,
                 true));
 
             while (--_currentTickCounter > 0) yield return _currentTickCounter;

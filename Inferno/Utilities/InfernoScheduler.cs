@@ -49,10 +49,16 @@ namespace Inferno.Utilities
                 while (_queue.Count > 0)
                 {
                     var next = _queue.Peek();
-                    if (next.DueTime > Now) break;
+                    if (next.DueTime > Now)
+                    {
+                        break;
+                    }
 
                     _queue.Dequeue();
-                    if (!next.IsCanceled) next.Invoke();
+                    if (!next.IsCanceled)
+                    {
+                        next.Invoke();
+                    }
                 }
             }
         }
@@ -90,7 +96,10 @@ namespace Inferno.Utilities
 
             public void Invoke()
             {
-                if (!IsCanceled) _action(_scheduler, State);
+                if (!IsCanceled)
+                {
+                    _action(_scheduler, State);
+                }
             }
         }
     }

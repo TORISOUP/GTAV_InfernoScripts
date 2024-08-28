@@ -58,7 +58,9 @@ namespace Inferno
 
                 foreach (var veh in nitroAvailableVeles)
                     if (Random.Next(0, 100) <= Probability)
+                    {
                         DelayCoroutine(veh);
+                    }
             }
             catch (Exception e)
             {
@@ -85,13 +87,18 @@ namespace Inferno
         /// <param name="vehicle"></param>
         private void NitroVehicle(Vehicle vehicle)
         {
-            if (!vehicle.IsSafeExist()) return;
+            if (!vehicle.IsSafeExist())
+            {
+                return;
+            }
 
             var velocitiesSpeed = _velocities[Random.Next(0, _velocities.Length)];
 
             if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 15)
+            {
                 vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, Random.Next(20, 60) / 100.0f) *
                                      vehicle.Quaternion;
+            }
 
             vehicle.Speed += velocitiesSpeed;
 
@@ -112,7 +119,10 @@ namespace Inferno
         //車に乗ってたら緊急脱出する
         private void EscapeVehicle(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             DelayParachute(ped);
         }
@@ -131,13 +141,21 @@ namespace Inferno
 
             await DelayAsync(TimeSpan.FromSeconds(1.5f));
 
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             ped.IsInvincible = false;
             ped.ParachuteTo(PlayerPed.Position);
 
             await DelayAsync(TimeSpan.FromSeconds(15));
 
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             ped.SetNotChaosPed(false);
         }
 

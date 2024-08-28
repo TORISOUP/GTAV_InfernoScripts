@@ -30,9 +30,16 @@ namespace Inferno
         private void EscapeVehicle()
         {
             var player = PlayerPed;
-            if (!player.IsInVehicle()) return;
+            if (!player.IsInVehicle())
+            {
+                return;
+            }
+
             var playerVec = player.CurrentVehicle;
-            if (!playerVec.IsSafeExist()) return;
+            if (!playerVec.IsSafeExist())
+            {
+                return;
+            }
 
             Game.Player.CanControlRagdoll = true;
             player.CanRagdoll = true;

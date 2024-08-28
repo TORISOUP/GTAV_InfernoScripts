@@ -42,7 +42,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
+
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             while (!ReduceCounter.IsCompleted)

@@ -30,7 +30,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     foreach (var p in peds)
                         if (p.IsSafeExist())
+                        {
                             p.MarkAsNoLongerNeeded();
+                        }
                 });
         }
 
@@ -46,7 +48,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private void CreatePed(bool isFriend)
         {
             var ped = GTA.World.CreatePed(core.PlayerPed.Model, core.PlayerPed.Position.Around(Random.Next(5, 10)));
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             if (isFriend)
             {

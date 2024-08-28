@@ -41,16 +41,27 @@ namespace Inferno
         private void NitroVehicle()
         {
             var driver = PlayerPed;
-            if (!driver.IsSafeExist()) return;
+            if (!driver.IsSafeExist())
+            {
+                return;
+            }
+
             var vehicle = this.GetPlayerVehicle();
-            if (!vehicle.IsSafeExist()) return;
+            if (!vehicle.IsSafeExist())
+            {
+                return;
+            }
 
             float rotation;
             if (this.IsGamePadPressed(GameKey.VehicleAccelerateKey))
+            {
                 rotation = this.IsGamePadPressed(GameKey.VehicleForwardTiltKey) ? 0.5f : 0.0f;
+            }
             else
                 //車体回転時用にスティック入力を-127～127で取得して-0.5～0.5の値になるように調整
+            {
                 rotation = this.GetStickValue().Y / 250.0f;
+            }
 
 
             vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, rotation) * vehicle.Quaternion;
@@ -60,9 +71,13 @@ namespace Inferno
                 ? JumpAccelerationSpeed
                 : StraightAccelerationSpeed;
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
+            {
                 vehicle.Speed -= addSpeed;
+            }
             else
+            {
                 vehicle.Speed += addSpeed;
+            }
 
             NitroAction(driver, vehicle);
         }
@@ -130,7 +145,11 @@ namespace Inferno
 
             public override bool Validate()
             {
-                if (CoolDownSeconds <= 0) return false;
+                if (CoolDownSeconds <= 0)
+                {
+                    return false;
+                }
+
                 return true;
             }
         }

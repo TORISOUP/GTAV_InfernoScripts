@@ -29,7 +29,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var vehicle in vehicles) EnhanceVehicleDurability(vehicle);
 
-            if (player.IsInVehicle()) EnhanceVehicleDurability(player.CurrentVehicle);
+            if (player.IsInVehicle())
+            {
+                EnhanceVehicleDurability(player.CurrentVehicle);
+            }
         }
 
         private void EnhanceVehicleDurability(Vehicle vehicle)

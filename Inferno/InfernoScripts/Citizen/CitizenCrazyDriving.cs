@@ -33,7 +33,10 @@ namespace Inferno
         private void RunAway()
         {
             affectPeds.RemoveWhere(x => !x.IsSafeExist());
-            if (!PlayerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist())
+            {
+                return;
+            }
 
             var playerVehicle = PlayerPed.CurrentVehicle;
 

@@ -601,7 +601,7 @@ namespace Inferno
 
                     _stepAwaiters.Clear();
                 }
-                
+
                 lock (_timeAwaiters)
                 {
                     foreach (var timeAwaiter in _timeAwaiters)

@@ -44,7 +44,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Ped CreateFriend()
         {
             var ped = GTA.World.CreateRandomPed(core.PlayerPed.Position.Around(3));
-            if (!ped.IsSafeExist()) return null;
+            if (!ped.IsSafeExist())
+            {
+                return null;
+            }
+
             ped.SetNotChaosPed(true);
             core.PlayerPed.PedGroup.Add(ped, false);
             ped.MaxHealth = 500;

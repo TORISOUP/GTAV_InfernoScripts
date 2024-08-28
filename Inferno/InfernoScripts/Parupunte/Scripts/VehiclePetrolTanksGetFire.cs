@@ -28,7 +28,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var vehicle in vehicles) vehicle.PetrolTankHealth = -1;
 
-            if (player.IsInVehicle()) player.CurrentVehicle.PetrolTankHealth = -1;
+            if (player.IsInVehicle())
+            {
+                player.CurrentVehicle.PetrolTankHealth = -1;
+            }
         }
     }
 }

@@ -31,7 +31,10 @@ namespace Inferno
         /// <returns></returns>
         public static bool IsPlayerVehicle(this Vehicle vehicle)
         {
-            if (!vehicle.IsSafeExist()) return false;
+            if (!vehicle.IsSafeExist())
+            {
+                return false;
+            }
 
             return vehicle == Game.Player.Character.CurrentVehicle;
         }
@@ -41,7 +44,11 @@ namespace Inferno
         /// </summary>
         public static bool IsSameEntity(this Entity x, Entity y)
         {
-            if (!x.IsSafeExist() || !y.IsSafeExist()) return false;
+            if (!x.IsSafeExist() || !y.IsSafeExist())
+            {
+                return false;
+            }
+
             return x.Handle == y.Handle;
         }
 
@@ -83,18 +90,17 @@ namespace Inferno
         {
             return Enum.IsDefined(typeof(CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
         }
-        
+
         public static Vector3 GetBonePosition(this Ped ped, Bone boneIndex)
         {
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
         }
-        
+
         public static void FreezePosition(this Entity entity, bool freeze)
         {
             Function.Call(Hash.FREEZE_ENTITY_POSITION, entity.Handle, freeze);
-            
         }
-        
+
         public static Bone GetBoneIndex(this Entity entity, string boneName)
         {
             return Function.Call<Bone>(Hash.GET_ENTITY_BONE_INDEX_BY_NAME, entity.Handle, boneName);

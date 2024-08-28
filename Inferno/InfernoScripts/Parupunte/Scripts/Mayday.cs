@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
-using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
@@ -34,7 +33,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //飛行機生成
             var model = new Model(VehicleHash.Jet);
             var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, 0, 100));
-            if (!plane.IsSafeExist()) yield break;
+            if (!plane.IsSafeExist())
+            {
+                yield break;
+            }
+
             plane.Speed = 0;
             plane.MarkAsNoLongerNeeded();
 
@@ -46,23 +49,39 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             foreach (var s in WaitForSeconds(8))
             {
                 var length = (core.PlayerPed.Position - plane.Position).Length();
-                if (length < 400.0f) break;
+                if (length < 400.0f)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
-            if (!plane.IsSafeExist() || !ped.IsSafeExist()) yield break;
+            if (!plane.IsSafeExist() || !ped.IsSafeExist())
+            {
+                yield break;
+            }
+
             plane.EngineHealth = 0;
             plane.IsEngineRunning = false;
 
             //飛行機が壊れたら大爆発させる
             foreach (var s in WaitForSeconds(10))
             {
-                if (!plane.IsSafeExist()) break;
+                if (!plane.IsSafeExist())
+                {
+                    break;
+                }
+
                 if (!plane.IsAlive)
                 {
                     foreach (var i in Enumerable.Range(0, 10))
                     {
-                        if (!plane.IsSafeExist()) break;
+                        if (!plane.IsSafeExist())
+                        {
+                            break;
+                        }
+
                         var point = plane.Position.Around(10.0f);
                         GTA.World.AddExplosion(point, GTA.ExplosionType.Rocket, 20.0f, 1.5f);
                         yield return WaitForSeconds(0.2f);
@@ -81,7 +100,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private async Task DeletePlaneAfter(Vehicle plane, CancellationToken token = default)
         {
             await Task.Delay(TimeSpan.FromSeconds(10), token);
-            if (plane.IsSafeExist()) plane.Delete();
+            if (plane.IsSafeExist())
+            {
+                plane.Delete();
+            }
         }
     }
 }

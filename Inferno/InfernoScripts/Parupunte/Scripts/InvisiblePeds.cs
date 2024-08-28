@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -31,10 +30,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var ped in peds)
             {
-                if (playerGroup.Exists() && playerGroup.Contains(ped)) continue;
+                if (playerGroup.Exists() && playerGroup.Contains(ped))
+                {
+                    continue;
+                }
 
                 var relationShip = ped.RelationshipGroup;
-                if (relationShip == core.GetGTAObjectHashKey("PLAYER")) continue; //ミッション上での仲間は除外する(誤判定が起きる場合があるので暫定)
+                if (relationShip == core.GetGTAObjectHashKey("PLAYER"))
+                {
+                    continue; //ミッション上での仲間は除外する(誤判定が起きる場合があるので暫定)
+                }
 
                 ped.IsVisible = false;
             }

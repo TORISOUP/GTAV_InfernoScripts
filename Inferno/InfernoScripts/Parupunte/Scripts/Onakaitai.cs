@@ -41,9 +41,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
 
-            if (AffectAllPed) targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
+            if (AffectAllPed)
+            {
+                targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
+            }
+
             targetPeds.Add(core.PlayerPed);
 
             //コルーチン起動
@@ -69,7 +75,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
@@ -85,7 +95,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// </summary>
         private void Ignition(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var pos = ped.Position;
             NativeFunctions.AddOwnedExplosion(ped, pos, ExplosionType.BULLET, 0.0f, 0.0f);
         }

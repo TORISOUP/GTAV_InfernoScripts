@@ -12,8 +12,8 @@ namespace Inferno
     internal class TimerUiTextManager
     {
         private readonly InfernoScript parent;
-        private ReduceCounter reduceCounter;
         private readonly Subject<Unit> setTextSubject = new();
+        private ReduceCounter reduceCounter;
         private TextElement textElement;
 
         public TimerUiTextManager(InfernoScript parent)
@@ -30,7 +30,11 @@ namespace Inferno
         {
             get
             {
-                if (reduceCounter == null || textElement == null) return null;
+                if (reduceCounter == null || textElement == null)
+                {
+                    return null;
+                }
+
                 return !reduceCounter.IsCompleted ? textElement : null;
             }
         }

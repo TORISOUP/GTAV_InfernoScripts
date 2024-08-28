@@ -27,7 +27,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
+
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             foreach (var ped in core.CachedPeds.Where(x =>
@@ -75,7 +78,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!ReduceCounter.IsCompleted)
             {
-                if (!ped.IsSafeExist()) yield break;
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 if (ped.IsDead)
                 {
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
@@ -83,8 +90,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 if (random.Next(100) < 10)
+                {
                     ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) *
                                      ped.Quaternion;
+                }
 
                 SetAnimRate(ped, 5.0f);
                 Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,

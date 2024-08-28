@@ -19,6 +19,18 @@ namespace Inferno
             _encoding = Encoding.GetEncoding("UTF-8");
         }
 
+        public void Dispose()
+        {
+            try
+            {
+                _semaphore?.Dispose();
+            }
+            catch
+            {
+                //
+            }
+        }
+
         /// <summary>
         /// テキストに書き出す
         /// </summary>
@@ -54,18 +66,6 @@ namespace Inferno
         {
             var sendMessage = $"[{DateTime.Now}] {message}";
             WriteToText(sendMessage);
-        }
-
-        public void Dispose()
-        {
-            try
-            {
-                _semaphore?.Dispose();
-            }
-            catch
-            {
-                //
-            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using GTA;
 using GTA.Math;
 
@@ -44,10 +43,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             target.ApplyForce(Vector3.WorldUp * 300.0f);
             GTA.World.AddExplosion(
                 target.Position,
-                GTA.ExplosionType.Grenade, 
-                0.5f, 
-                0.5f, 
-                core.PlayerPed, 
+                GTA.ExplosionType.Grenade,
+                0.5f,
+                0.5f,
+                core.PlayerPed,
                 false);
 
             if (target is Ped)
@@ -81,6 +80,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 if (target is Ped)
+                {
                     if (!((Ped)target).IsInParachuteFreeFall)
                     {
                         target.IsInvincible = false;
@@ -88,6 +88,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         core.DrawParupunteText("おわり", 3);
                         yield break;
                     }
+                }
 
                 var goal = targetBlip.Position;
                 var current = target.Position;
@@ -124,10 +125,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     target.ApplyForce((dir + Vector3.WorldUp * 0.5f) * 250.0f);
                     GTA.World.AddExplosion(
                         target.Position,
-                        GTA.ExplosionType.Grenade, 
-                        0.5f, 
-                        0.5f, 
-                        core.PlayerPed, 
+                        GTA.ExplosionType.Grenade,
+                        0.5f,
+                        0.5f,
+                        core.PlayerPed,
                         false);
                 }
 
@@ -135,7 +136,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield return WaitForSeconds(0.5f);
             }
 
-            if (target.IsSafeExist()) target.IsInvincible = false;
+            if (target.IsSafeExist())
+            {
+                target.IsInvincible = false;
+            }
 
             ParupunteEnd();
         }

@@ -49,7 +49,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     if (pedList.Count < 30 && !pedList.Contains(targetPed))
                     {
                         pedList.Add(targetPed);
-                        if (targetPed.IsInVehicle()) targetPed.Task.ClearAllImmediately();
+                        if (targetPed.IsInVehicle())
+                        {
+                            targetPed.Task.ClearAllImmediately();
+                        }
+
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
                     }

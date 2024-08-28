@@ -27,9 +27,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnStart()
         {
             if (wantedLevel >= wantedLevelThreshold)
+            {
                 Game.Player.WantedLevel = 0;
+            }
             else
+            {
                 IncreasePlayerWantedLevel();
+            }
+
             ParupunteEnd();
         }
 
@@ -39,9 +44,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var MaxWantedLevel = Game.MaxWantedLevel;
 
             if (MaxWantedLevel < playerChar.WantedLevel + 4)
+            {
                 playerChar.WantedLevel = MaxWantedLevel;
+            }
             else
+            {
                 playerChar.WantedLevel = playerChar.WantedLevel + 4;
+            }
         }
     }
 }

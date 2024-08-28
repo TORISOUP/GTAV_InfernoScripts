@@ -48,7 +48,10 @@ namespace Inferno
             {
                 var (result, targetPosition) = CreateTargetPosition();
 
-                if (!result) return;
+                if (!result)
+                {
+                    return;
+                }
 
                 // 斜めに降らせるためにちょっとずれた位置の上空から落とす
                 var direction = new Vector3(1, 0, 2);
@@ -78,7 +81,10 @@ namespace Inferno
             for (var i = 0; i < 3; i++)
             {
                 var player = PlayerPed;
-                if (!player.IsSafeExist()) return (false, default);
+                if (!player.IsSafeExist())
+                {
+                    return (false, default);
+                }
 
                 var playerPosition = player.Position;
                 var range = Radius;
@@ -145,9 +151,21 @@ namespace Inferno
 
             public override bool Validate()
             {
-                if (Radius <= 0) return false;
-                if (DurationMillSeconds <= 0) return false;
-                if (Probability <= 0 || Probability > 100) return false;
+                if (Radius <= 0)
+                {
+                    return false;
+                }
+
+                if (DurationMillSeconds <= 0)
+                {
+                    return false;
+                }
+
+                if (Probability <= 0 || Probability > 100)
+                {
+                    return false;
+                }
+
                 return true;
             }
         }

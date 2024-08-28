@@ -33,11 +33,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 pos = core.PlayerPed.Position;
                 var bones = new[]
                 {
-                    Bone.IKHead, 
+                    Bone.IKHead,
                     Bone.IKLeftFoot,
                     Bone.IKLeftHand,
-                    Bone.IKRightFoot, 
-                    Bone.IKRightHand,
+                    Bone.IKRightFoot,
+                    Bone.IKRightHand
                 };
                 foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(pos, 30)))
                 {

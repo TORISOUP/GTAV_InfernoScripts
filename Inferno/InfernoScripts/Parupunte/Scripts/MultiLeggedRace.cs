@@ -26,7 +26,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             OnUpdateAsObservable
                 .Subscribe(_ =>
                 {
-                    if (core.PlayerPed.IsDead) ParupunteEnd();
+                    if (core.PlayerPed.IsDead)
+                    {
+                        ParupunteEnd();
+                    }
                 });
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
@@ -42,7 +45,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
+
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             allPedList =
@@ -98,7 +104,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var isReturedCount = 10;
             while (!ReduceCounter.IsCompleted)
             {
-                if (!ped.IsSafeExist()) yield break;
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 if (ped.IsDead)
                 {
                     explosionList.Add(ped);
@@ -111,7 +121,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)Math.PI) * ped.Quaternion;
                 }
 
-                if (isReturedCount > 0) isReturedCount--;
+                if (isReturedCount > 0)
+                {
+                    isReturedCount--;
+                }
 
                 SetAnimRate(ped, speed);
                 Function.Call(Hash.SET_OBJECT_PHYSICS_PARAMS, ped, 200000000.0, 1, 1000, 1, 0, 0, 0, 0, 0,

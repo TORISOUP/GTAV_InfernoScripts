@@ -41,12 +41,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         var t1 = tuple.Item1;
                         var t2 = tuple.Item2;
-                        if (!t1.IsSafeExist() || !t2.IsSafeExist()) continue;
+                        if (!t1.IsSafeExist() || !t2.IsSafeExist())
+                        {
+                            continue;
+                        }
+
                         DrawLine(t1.Position, t2.Position, Color.White);
                     }
                 });
 
-            if (core.PlayerPed.IsInVehicle()) hacksList.Add(core.PlayerPed.CurrentVehicle);
+            if (core.PlayerPed.IsInVehicle())
+            {
+                hacksList.Add(core.PlayerPed.CurrentVehicle);
+            }
+
             StartCoroutine(HackCoroutine(core.PlayerPed));
             StartCoroutine(HackCoroutine(core.PlayerPed));
             StartCoroutine(HackCoroutine(core.PlayerPed));
@@ -54,10 +62,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private IEnumerable<object> HackCoroutine(Entity root)
         {
-            if (!root.IsSafeExist()) yield break;
+            if (!root.IsSafeExist())
+            {
+                yield break;
+            }
 
             //プレイヤから離れすぎてたら対象外
-            if (!root.IsInRangeOf(core.PlayerPed.Position, 40)) yield break;
+            if (!root.IsInRangeOf(core.PlayerPed.Position, 40))
+            {
+                yield break;
+            }
 
             //ターゲットを探す
             var targetsList = core.CachedVehicles
@@ -78,7 +92,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     p.Position.DistanceTo(rootPos) > c.Position.DistanceTo(rootPos) ? c : p);
             }
 
-            if (target == null) yield break;
+            if (target == null)
+            {
+                yield break;
+            }
 
             hacksList.Add(target);
 
@@ -99,7 +116,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var isBack = Random.Next(0, 100) < 30;
 
-            if (target.IsOnAllWheels && !isBack) target.Speed *= 2.5f;
+            if (target.IsOnAllWheels && !isBack)
+            {
+                target.Speed *= 2.5f;
+            }
 
             target.IsEngineRunning = true;
 
@@ -107,7 +127,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 target.CanWheelsBreak = false;
                 target.IsHandbrakeForcedOn = false;
-                if (target.IsOnAllWheels) target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
+                if (target.IsOnAllWheels)
+                {
+                    target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
+                }
+
                 yield return null;
             }
         }

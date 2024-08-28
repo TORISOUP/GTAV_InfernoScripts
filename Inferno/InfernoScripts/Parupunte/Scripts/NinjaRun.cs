@@ -33,7 +33,10 @@ namespace Inferno
             var ptfxName = "core";
 
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
+
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             //メイン処理
@@ -118,7 +121,8 @@ namespace Inferno
 
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",
-                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelRightToe0, scale,
+                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelRightToe0,
+                scale,
                 0, 0, 0);
         }
     }

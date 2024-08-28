@@ -47,7 +47,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 ped.Health = ped.MaxHealth;
 
-                if (ped.Armor < 100) ped.Armor = 100;
+                if (ped.Armor < 100)
+                {
+                    ped.Armor = 100;
+                }
             }
 
             player.Health = player.MaxHealth;

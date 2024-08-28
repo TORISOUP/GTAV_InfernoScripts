@@ -139,18 +139,25 @@ namespace Inferno.InfernoScripts
                 }
 
                 //触ったら終わり
-                if (ped.IsTouching(veh)) break;
+                if (ped.IsTouching(veh))
+                {
+                    break;
+                }
 
                 //車に向かって引っ張る
                 var dir = (veh.Position + Vector3.WorldUp * 2.0f - ped.Position).Normalized;
-                ped.ApplyForce(dir * 3.0f, Vector3.Zero, ForceType.MaxForceRot2);
+                ped.ApplyForce(dir * 3.0f, Vector3.Zero);
                 yield return null;
             }
 
             //オブジェクトが消失した、または車に触っていなかったら終了
             if (!IsEnableStatus(ped, veh) || !ped.IsTouching(veh))
             {
-                if (ped.IsSafeExist()) SetPedProof(ped, false);
+                if (ped.IsSafeExist())
+                {
+                    SetPedProof(ped, false);
+                }
+
                 processingPedIdSet.Remove(ped.Handle);
                 yield break;
             }
@@ -172,7 +179,11 @@ namespace Inferno.InfernoScripts
                 yield return null;
             }
 
-            if (ped.IsSafeExist()) ReleaseVehicle(ped);
+            if (ped.IsSafeExist())
+            {
+                ReleaseVehicle(ped);
+            }
+
             processingPedIdSet.Remove(handleId);
         }
 

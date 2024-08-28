@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Drawing;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Forms;
 using GTA;
-using GTA.UI;
 using Inferno.InfernoScripts.Event;
 using Reactive.Bindings;
 
@@ -22,19 +20,19 @@ namespace Inferno
         private static readonly Subject<IEventMessage> EventMessageSubject = new();
         private readonly DebugLogger _debugLogger;
 
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
+
+        private readonly ReactiveProperty<Entity[]> _missionEntity = new();
+
+        private readonly ReactiveProperty<Entity[]> _nearEntities = new();
+
         private readonly ReactiveProperty<Ped[]> _nearPeds = new();
 
         private readonly ReactiveProperty<Vehicle[]> _nearVehicles = new();
 
-        private readonly ReactiveProperty<Entity[]> _nearEntities = new();
-
-        private readonly ReactiveProperty<Entity[]> _missionEntity = new();
-
         private readonly ReactiveProperty<Ped> _playerPed = new();
 
         private readonly ReactiveProperty<Vehicle> _playerVehicle = new();
-
-        private readonly AsyncSubject<Unit> _disposeSubject = new();
 
         private DateTimeOffset _lastUpdate;
 
@@ -66,10 +64,8 @@ namespace Inferno
             //市民と車両の更新
             OnTickAsObservable
                 .Subscribe(_ => UpdatePedsAndVehiclesList());
-            
-            Aborted += (_, _) => Destroy();
 
-            
+            Aborted += (_, _) => Destroy();
         }
 
         public static InfernoCore Instance { get; private set; }
@@ -135,14 +131,22 @@ namespace Inferno
         private void UpdatePedsAndVehiclesList()
         {
             // 1秒おきにキャッシュ更新
-            if (DateTimeOffset.Now - _lastUpdate < TimeSpan.FromMilliseconds(1000)) return;
+            if (DateTimeOffset.Now - _lastUpdate < TimeSpan.FromMilliseconds(1000))
+            {
+                return;
+            }
+
             _lastUpdate = DateTimeOffset.Now;
 
             try
             {
                 var player = Game.Player;
                 var ped = player?.Character;
-                if (!ped.IsSafeExist()) return;
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+
                 _playerPed.Value = ped;
                 _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500) ?? Array.Empty<Entity>();
                 _nearPeds.Value = _nearEntities.Value.OfType<Ped>().ToArray();

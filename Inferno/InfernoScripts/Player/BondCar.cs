@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using GTA;
-using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Player
@@ -47,11 +46,19 @@ namespace Inferno.InfernoScripts.Player
         {
             foreach (var c in WaitForSeconds(sec))
             {
-                if (v.IsSafeExist()) v.IsInvincible = true;
+                if (v.IsSafeExist())
+                {
+                    v.IsInvincible = true;
+                }
+
                 yield return null;
             }
 
-            if (!v.IsSafeExist()) yield break;
+            if (!v.IsSafeExist())
+            {
+                yield break;
+            }
+
             v.IsInvincible = false;
         }
 

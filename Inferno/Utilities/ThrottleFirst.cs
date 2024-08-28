@@ -21,7 +21,11 @@ namespace Inferno.Utilities
                     {
                         lock (gate)
                         {
-                            if (!open) return;
+                            if (!open)
+                            {
+                                return;
+                            }
+
                             observer.OnNext(x);
                             open = false;
                         }

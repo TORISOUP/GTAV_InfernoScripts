@@ -19,7 +19,10 @@ namespace Inferno
         public override bool Validate()
         {
             //AirPlaneの数は1～30の範囲である
-            if (AirPlaneCount <= 0 || AirPlaneCount > 30) return false;
+            if (AirPlaneCount <= 0 || AirPlaneCount > 30)
+            {
+                return false;
+            }
 
             return true;
         }
@@ -118,13 +121,21 @@ namespace Inferno
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成
             var plane = World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
-            if (!plane.IsSafeExist()) return null;
+            if (!plane.IsSafeExist())
+            {
+                return null;
+            }
+
             AutoReleaseOnGameEnd(plane);
             plane.Speed = 500;
             plane.PetrolTankHealth = 10;
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
-            if (!ped.IsSafeExist()) return null;
+            if (!ped.IsSafeExist())
+            {
+                return null;
+            }
+
             AutoReleaseOnGameEnd(ped);
             ped.SetNotChaosPed(true);
 
@@ -164,7 +175,10 @@ namespace Inferno
                     }
 
                     //ターゲットが死亡していたらターゲット変更
-                    if (!target.IsSafeExist() || target.IsDead || !IsActive) break;
+                    if (!target.IsSafeExist() || target.IsDead || !IsActive)
+                    {
+                        break;
+                    }
 
                     if (target.IsInRangeOf(plane.Position, attackRadius) && Random.Next(0, 100) < 5)
                     {
@@ -188,7 +202,10 @@ namespace Inferno
                 plane.MarkAsNoLongerNeeded();
             }
 
-            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
+            }
         }
 
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target, float planeSpeed)
@@ -235,7 +252,11 @@ namespace Inferno
             var speed = target == PlayerPed || target == PlayerVehicle.Value ? 150 : 500;
             while (num-- > 0)
             {
-                if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist()) return;
+                if (!plane.IsSafeExist() || !driver.IsSafeExist() || !target.IsSafeExist())
+                {
+                    return;
+                }
+
                 ShootAt(plane, driver, targetArea, speed);
                 await DelayAsync(TimeSpan.FromSeconds(0.8f), ct);
             }

@@ -29,7 +29,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var vehicle in vehicles) vehicle.Repair();
 
-            if (player.IsInVehicle()) player.CurrentVehicle.Repair();
+            if (player.IsInVehicle())
+            {
+                player.CurrentVehicle.Repair();
+            }
         }
     }
 }

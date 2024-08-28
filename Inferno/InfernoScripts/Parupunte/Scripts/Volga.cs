@@ -30,13 +30,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var model = new Model(VehicleHash.Velum2);
             var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
-            if (!plane.IsSafeExist()) return null;
+            if (!plane.IsSafeExist())
+            {
+                return null;
+            }
+
             plane.PetrolTankHealth = 100;
             plane.Speed = 50;
 
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
-            if (!ped.IsSafeExist()) return null;
+            if (!ped.IsSafeExist())
+            {
+                return null;
+            }
+
             ped.SetNotChaosPed(true);
 
             return new Tuple<Vehicle, Ped>(plane, ped);
@@ -78,7 +86,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var length = delta.Length();
 
                 //プレイヤとの平面上の距離が80m以内になったら投棄
-                if (length < 80) break;
+                if (length < 80)
+                {
+                    break;
+                }
 
                 yield return null;
             }
@@ -93,7 +104,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 StartCoroutine(VolgaCoroutine(plane.Position + new Vector3(0, 0, -2), plane.Velocity));
             }
 
-            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
+            }
         }
 
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
@@ -131,7 +145,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 //着地するまで
-                if (!volga.IsInAir) break;
+                if (!volga.IsInAir)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
@@ -158,8 +176,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             foreach (var p in peds)
             {
-                if (!p.IsSafeExist()) continue;
-                if (p.IsCutsceneOnlyPed()) continue;
+                if (!p.IsSafeExist())
+                {
+                    continue;
+                }
+
+                if (p.IsCutsceneOnlyPed())
+                {
+                    continue;
+                }
 
                 var dir = p.Position - centerPos;
                 var lenght = dir.Length();
@@ -168,21 +193,41 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 p.SetToRagdoll(100);
 
                 float power = 50;
-                if (lenght <= 30) power = 200;
-                if (30 < lenght && lenght <= 70) power = 100;
+                if (lenght <= 30)
+                {
+                    power = 200;
+                }
+
+                if (30 < lenght && lenght <= 70)
+                {
+                    power = 100;
+                }
+
                 p.ApplyForce(dir * power);
             }
 
             foreach (var w in vehicles)
             {
-                if (!w.IsSafeExist()) continue;
+                if (!w.IsSafeExist())
+                {
+                    continue;
+                }
+
                 var dir = w.Position - centerPos;
                 var lenght = dir.Length();
                 dir.Normalize();
 
                 float power = 30;
-                if (lenght <= 30) power = 70;
-                if (30 < lenght && lenght <= 70) power = 50;
+                if (lenght <= 30)
+                {
+                    power = 70;
+                }
+
+                if (30 < lenght && lenght <= 70)
+                {
+                    power = 50;
+                }
+
                 w.ApplyForce(dir * power, Vector3.RandomXYZ() * 10.0f);
             }
         }

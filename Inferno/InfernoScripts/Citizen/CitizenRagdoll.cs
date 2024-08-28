@@ -31,7 +31,11 @@ namespace Inferno
 
             foreach (var ped in peds)
             {
-                if (!ped.IsSafeExist()) continue;
+                if (!ped.IsSafeExist())
+                {
+                    continue;
+                }
+
                 ped.SetToRagdoll(100);
                 ped.ApplyForce(new Vector3(0, 0, 2));
                 yield return null;

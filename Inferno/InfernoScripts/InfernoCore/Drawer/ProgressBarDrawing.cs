@@ -13,11 +13,10 @@ namespace Inferno
     /// </summary>
     public class ProgressBarDrawing : InfernoScript
     {
-        private ContainerElement _container;
-
         private readonly object lockObject = new();
 
         private readonly List<ProgressBarData> progressBarDataList = new();
+        private ContainerElement _container;
 
         public static ProgressBarDrawing Instance { get; private set; }
 

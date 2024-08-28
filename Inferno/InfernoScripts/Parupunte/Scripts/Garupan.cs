@@ -43,7 +43,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             SubName = "ガルパンは、いいぞ";
             EndMessage = () =>
             {
-                if (core.PlayerPed.IsAlive) return "おしまい";
+                if (core.PlayerPed.IsAlive)
+                {
+                    return "おしまい";
+                }
 
                 EndMessageDisplayTime = 4.0f;
                 return "フラッグ車走行不能！大洗女子学園の勝利！";
@@ -93,7 +96,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 //遠目につくる
                 var vp = SpawnTank(Random.Next(100, 200));
-                if (vp == null) continue;
+                if (vp == null)
+                {
+                    continue;
+                }
+
                 var ped = vp.Item2;
                 ped.Task.FightAgainst(core.PlayerPed);
                 var tank = vp.Item1;
@@ -117,11 +124,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var model = new Model(VehicleHash.Rhino);
             //戦車生成
             var tank = GTA.World.CreateVehicle(model, position);
-            if (!tank.IsSafeExist()) return null;
+            if (!tank.IsSafeExist())
+            {
+                return null;
+            }
 
             //乗員召喚
             var ped = tank.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Tonya));
-            if (!ped.IsSafeExist()) return null;
+            if (!ped.IsSafeExist())
+            {
+                return null;
+            }
+
             ped.SetNotChaosPed(true);
 
             //自動開放
@@ -155,7 +169,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //遠目につくる
             var ppos = core.PlayerPed.Position;
             var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
-            if (vp == null) ParupunteEnd();
+            if (vp == null)
+            {
+                ParupunteEnd();
+            }
+
             var ped = vp.Item2;
             var tank = vp.Item1;
             tank.EnginePowerMultiplier = 20.0f;
@@ -168,14 +186,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Subscribe(_ => tank.PetrolTankHealth = -1);
 
             yield return WaitForSeconds(3);
-            if (!tank.IsSafeExist()) yield break;
+            if (!tank.IsSafeExist())
+            {
+                yield break;
+            }
+
             //演出用
             Function.Call(Hash.ADD_EXPLOSION, tank.Position.X, tank.Position.Y, tank.Position.Z, -1, 0.0f, true, false,
                 0.1f);
             tank.Speed = isForward ? 100 : -100;
 
             yield return WaitForSeconds(2);
-            if (ped.IsSafeExist()) ped.Task.FightAgainst(core.PlayerPed);
+            if (ped.IsSafeExist())
+            {
+                ped.Task.FightAgainst(core.PlayerPed);
+            }
         }
 
         #endregion

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Reactive.Linq;
-using GTA;
 using GTA.Math;
 using GTA.UI;
 
@@ -37,14 +36,24 @@ namespace Inferno
                 .Subscribe(isAlive =>
                 {
                     _mContainer.Items.Clear();
-                    if (isAlive) return;
+                    if (isAlive)
+                    {
+                        return;
+                    }
 
                     //死んでいたら死因を出す
                     var damageWeapon = PlayerPed.GetCauseOfDeath();
-                    if (damageWeapon == 0) return;
+                    if (damageWeapon == 0)
+                    {
+                        return;
+                    }
 
                     var damageName = damageWeapon.ToString();
-                    if (PlayerPed.Killer == PlayerPed) damageName += "(SUICIDE)";
+                    if (PlayerPed.Killer == PlayerPed)
+                    {
+                        damageName += "(SUICIDE)";
+                    }
+
                     var text = new TextElement(damageName,
                         new Point((int)(_screenWidth * _textPositionScale.X),
                             (int)(_screenHeight * _textPositionScale.Y)),

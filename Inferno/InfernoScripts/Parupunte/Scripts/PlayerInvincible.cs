@@ -27,7 +27,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             while (!ReduceCounter.IsCompleted)
             {
-                if (!core.PlayerPed.IsInvincible) core.PlayerPed.IsInvincible = true;
+                if (!core.PlayerPed.IsInvincible)
+                {
+                    core.PlayerPed.IsInvincible = true;
+                }
+
                 yield return WaitForSeconds(1);
             }
         }

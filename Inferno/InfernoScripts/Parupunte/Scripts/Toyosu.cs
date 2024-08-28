@@ -46,7 +46,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             yield return core.CreateRadomWait();
             while (!ReduceCounter.IsCompleted && v.IsSafeExist())
             {
-                if (!v.IsSafeExist() || !v.IsAlive) yield break;
+                if (!v.IsSafeExist() || !v.IsAlive)
+                {
+                    yield break;
+                }
+
                 if (!v.IsInRangeOf(core.PlayerPed.Position, 30.0f))
                 {
                     yield return null;

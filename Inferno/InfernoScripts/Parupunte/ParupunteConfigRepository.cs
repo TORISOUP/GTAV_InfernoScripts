@@ -21,7 +21,11 @@ namespace Inferno.InfernoScripts
         {
             get
             {
-                if (_debugLogger != null) return _debugLogger;
+                if (_debugLogger != null)
+                {
+                    return _debugLogger;
+                }
+
                 _debugLogger = new DebugLogger(@"Inferno.log");
                 return _debugLogger;
             }
@@ -32,7 +36,10 @@ namespace Inferno.InfernoScripts
         /// </summary>
         public Dictionary<string, ParupunteConfigElement> LoadSettingFile()
         {
-            if (!File.Exists(_filePath)) return new Dictionary<string, ParupunteConfigElement>();
+            if (!File.Exists(_filePath))
+            {
+                return new Dictionary<string, ParupunteConfigElement>();
+            }
 
             var readString = "";
             try
@@ -67,7 +74,10 @@ namespace Inferno.InfernoScripts
         {
             var directoryPath = Path.GetDirectoryName(_filePath);
             //存在しないならディレクトリを作る
-            if (!Directory.Exists(directoryPath)) Directory.CreateDirectory(directoryPath);
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
 
             var dto = configs.ToDictionary(x => x.Key, x => x.Value.ToDto());
 

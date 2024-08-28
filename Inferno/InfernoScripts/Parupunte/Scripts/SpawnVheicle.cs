@@ -43,7 +43,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnFinished()
         {
-            if (_veh.IsSafeExist()) _veh.MarkAsNoLongerNeeded();
+            if (_veh.IsSafeExist())
+            {
+                _veh.MarkAsNoLongerNeeded();
+            }
         }
 
         private IEnumerable<object> SpawnVehicle()
@@ -56,13 +59,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 _veh.ApplyForce(Vector3.WorldUp * 5.0f);
                 _ped = _veh.CreateRandomPedAsDriver();
                 //市民は勝手に消える状態にしないと自分で運転しない
-                if (_ped.IsSafeExist()) _ped.MarkAsNoLongerNeeded();
+                if (_ped.IsSafeExist())
+                {
+                    _ped.MarkAsNoLongerNeeded();
+                }
 
                 //車がすぐに消えないように数秒待つ
                 for (var i = 0; i < 20; i++)
                 {
                     //車が画面に映ったらすぐに勝手に消える可能性はかなり低いので待機を終了する
-                    if (!_veh.IsSafeExist() || _veh.IsOnScreen) break;
+                    if (!_veh.IsSafeExist() || _veh.IsOnScreen)
+                    {
+                        break;
+                    }
 
                     yield return null;
                 }

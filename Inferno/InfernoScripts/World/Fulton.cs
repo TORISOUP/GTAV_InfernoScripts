@@ -47,7 +47,10 @@ namespace Inferno
                     IsActive = !IsActive;
                     DrawText("Fulton:" + IsActive);
 
-                    if (IsActive) PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    if (IsActive)
+                    {
+                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    }
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -71,7 +74,11 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ =>
                 {
-                    if (IsActive) PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    if (IsActive)
+                    {
+                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                    }
+
                     fulutonedEntityList.Clear();
                 });
             SetUpSound();
@@ -84,18 +91,30 @@ namespace Inferno
         {
             var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
             var setupWav = filePaths.FirstOrDefault(x => x.Contains("vehicle.wav"));
-            if (setupWav != null) soundPlayerVehicleSetup = new SoundPlayer(setupWav);
+            if (setupWav != null)
+            {
+                soundPlayerVehicleSetup = new SoundPlayer(setupWav);
+            }
 
             setupWav = filePaths.FirstOrDefault(x => x.Contains("ped.wav"));
-            if (setupWav != null) soundPlayerPedSetup = new SoundPlayer(setupWav);
+            if (setupWav != null)
+            {
+                soundPlayerPedSetup = new SoundPlayer(setupWav);
+            }
 
             var moveWav = filePaths.FirstOrDefault(x => x.Contains("move.wav"));
-            if (moveWav != null) soundPlayerMove = new SoundPlayer(moveWav);
+            if (moveWav != null)
+            {
+                soundPlayerMove = new SoundPlayer(moveWav);
+            }
         }
 
         private string[] LoadWavFiles(string targetPath)
         {
-            if (!Directory.Exists(targetPath)) return new string[0];
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
@@ -118,17 +137,24 @@ namespace Inferno
                     fulutonedEntityList.Add(entity.Handle);
                     StartCoroutine(FulutonCoroutine(entity));
                     if (entity is Vehicle)
+                    {
                         soundPlayerVehicleSetup?.Play();
+                    }
                     else
                         //pedの時は遅延させてならす
+                    {
                         Observable.Timer(TimeSpan.FromSeconds(0.3f))
                             .Subscribe(_ => soundPlayerPedSetup?.Play());
+                    }
                 }
         }
 
         private void LeaveAllPedsFromVehicle(Vehicle vec)
         {
-            if (!vec.IsSafeExist()) return;
+            if (!vec.IsSafeExist())
+            {
+                return;
+            }
 
             foreach (
                 var seat in
@@ -172,16 +198,30 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(3))
             {
-                if (!entity.IsSafeExist() || entity.IsDead) yield break;
-                if (entity is Ped) ((Ped)entity).SetToRagdoll();
+                if (!entity.IsSafeExist() || entity.IsDead)
+                {
+                    yield break;
+                }
+
+                if (entity is Ped)
+                {
+                    ((Ped)entity).SetToRagdoll();
+                }
+
                 entity.ApplyForce(upForce * 1.07f);
 
                 yield return s;
             }
 
-            if (!entity.IsSafeExist() || entity.IsRequiredForMission()) yield break;
+            if (!entity.IsSafeExist() || entity.IsRequiredForMission())
+            {
+                yield break;
+            }
 
-            if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle) yield break;
+            if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
+            {
+                yield break;
+            }
 
             //弾みをつける
             yield return WaitForSeconds(0.25f);
@@ -192,13 +232,18 @@ namespace Inferno
                 if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position) > 100)
                 {
                     if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
+                    {
                         yield break;
+                    }
 
                     if (isPed)
                     {
                         motherBasePeds.Enqueue((PedHash)hash);
                         Game.Player.Money -= 100;
-                        if (entity.IsSafeExist()) entity.Delete();
+                        if (entity.IsSafeExist())
+                        {
+                            entity.Delete();
+                        }
                     }
                     else
                     {
@@ -210,9 +255,16 @@ namespace Inferno
                     yield break;
                 }
 
-                if (entity.IsDead) yield break;
+                if (entity.IsDead)
+                {
+                    yield break;
+                }
+
                 var force = upForce * 1.0f / Game.FPS * 500.0f;
-                if (entity is Ped) force = upForce * 1.0f / Game.FPS * 800.0f;
+                if (entity is Ped)
+                {
+                    force = upForce * 1.0f / Game.FPS * 800.0f;
+                }
 
                 entity.ApplyForce(force);
 
@@ -229,7 +281,10 @@ namespace Inferno
             var hash = motherBasePeds.Dequeue();
 
             var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
-            if (!p.IsSafeExist()) return;
+            if (!p.IsSafeExist())
+            {
+                return;
+            }
 
             p.SetNotChaosPed(true);
             PlayerPed.PedGroup.Add(p, false);
@@ -250,7 +305,10 @@ namespace Inferno
         {
             while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position, 100))
                 yield return WaitForSeconds(1);
-            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
+            }
         }
 
         private void SpawnVehicle()
@@ -264,7 +322,11 @@ namespace Inferno
         private IEnumerable<object> SpawnVehicleCoroutine(Model model, Vector3 targetPosition)
         {
             var car = World.CreateVehicle(model, targetPosition + new Vector3(0, 0, 20));
-            if (!car.IsSafeExist()) yield break;
+            if (!car.IsSafeExist())
+            {
+                yield break;
+            }
+
             var upVector = new Vector3(0, 0, 1.0f);
             car.FreezePosition(false);
             car.Velocity = new Vector3();
@@ -272,13 +334,25 @@ namespace Inferno
 
             foreach (var s in WaitForSeconds(10))
             {
-                if (!car.IsSafeExist()) yield break;
+                if (!car.IsSafeExist())
+                {
+                    yield break;
+                }
+
                 car.ApplyForce(upVector);
-                if (!car.IsInAir) break;
+                if (!car.IsInAir)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
-            if (!car.IsSafeExist()) yield break;
+            if (!car.IsSafeExist())
+            {
+                yield break;
+            }
+
             car.MarkAsNoLongerNeeded();
         }
 

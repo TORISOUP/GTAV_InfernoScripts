@@ -69,7 +69,11 @@ namespace Inferno.InfernoScripts.Player
                 .OrderBy(x => x.Position.DistanceTo(PlayerPed.Position))
                 .FirstOrDefault();
 
-            if (gripAvailableVeles == null || !gripAvailableVeles.IsTouching(PlayerPed)) return;
+            if (gripAvailableVeles == null || !gripAvailableVeles.IsTouching(PlayerPed))
+            {
+                return;
+            }
+
             _isGriped = true;
             var playerRHandCoords = PlayerPed.GetBonePosition(Bone.SkelRightHand);
 

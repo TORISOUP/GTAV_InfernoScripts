@@ -4,7 +4,6 @@ using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
 using GTA;
-using GTA.Native;
 
 namespace Inferno
 {
@@ -17,7 +16,10 @@ namespace Inferno
         {
             filePaths = LoadWavFilePaths(@"scripts/SpecialAbilityBgm");
 
-            if (filePaths.Length <= 0) return;
+            if (filePaths.Length <= 0)
+            {
+                return;
+            }
 
             soundPlayer = new SoundPlayer { SoundLocation = filePaths[Random.Next(filePaths.Length)] };
 
@@ -55,7 +57,10 @@ namespace Inferno
         /// </summary>
         private string[] LoadWavFilePaths(string targetPath)
         {
-            if (!Directory.Exists(targetPath)) return new string[0];
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }

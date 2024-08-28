@@ -28,7 +28,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 var car = ped.CurrentVehicle;
                 if (car.IsSafeExist() && car.PetrolTankHealth > 0 && !car.IsRequiredForMission())
+                {
                     car.PetrolTankHealth = -700;
+                }
+
                 EscapeVehicle(ped);
             }
 
@@ -54,11 +57,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             ped.IsInvincible = true;
             yield return WaitForSeconds(1.5f);
-            if (!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist())
+            {
+                yield break;
+            }
+
             ped.IsInvincible = false;
             ped.ParachuteTo(core.PlayerPed.Position);
             yield return WaitForSeconds(10);
-            if (!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist())
+            {
+                yield break;
+            }
+
             ped.SetNotChaosPed(false);
         }
 

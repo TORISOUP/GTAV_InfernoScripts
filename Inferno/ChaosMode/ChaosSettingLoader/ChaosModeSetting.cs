@@ -14,7 +14,10 @@ namespace Inferno.ChaosMode
         /// <param name="dto">DTOから生成する</param>
         public ChaosModeSetting(ChaosModeSettingDTO dto)
         {
-            if (dto == null) dto = new ChaosModeSettingDTO();
+            if (dto == null)
+            {
+                dto = new ChaosModeSettingDTO();
+            }
 
             //バリデーション処理
             Radius = dto.Radius.Clamp(1, 3000);
@@ -42,7 +45,7 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 市民をカオス化する間隔
         /// </summary>
-        public int Interval { get; private set; }
+        public int Interval { get; }
 
         /// <summary>
         /// ミッションキャラクタの武器を上書きするか（DefaultMissionCharacterTreatment設定は無視して上書きされる）
@@ -74,7 +77,7 @@ namespace Inferno.ChaosMode
         /// ドライブバイで使用する武器リスト
         /// </summary>
         public Weapon[] WeaponListForDriveBy { get; private set; }
-        
+
         /// <summary>
         /// 攻撃の命中精度(0-100%)
         /// </summary>
@@ -93,7 +96,11 @@ namespace Inferno.ChaosMode
         protected Weapon[] EnableWeaponListFilter(string[] weaponList)
         {
             var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
-            if (weaponList == null || weaponList.Length == 0) return new Weapon[0];
+            if (weaponList == null || weaponList.Length == 0)
+            {
+                return new Weapon[0];
+            }
+
             var enableWeapons = allWeapons.Where(x => weaponList.Contains(x.ToString())).ToArray();
             return enableWeapons.Length > 0 ? enableWeapons : allWeapons;
         }

@@ -18,7 +18,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var ptfxName = "core";
             if (!Function.Call<bool>(Hash.HAS_NAMED_PTFX_ASSET_LOADED, ptfxName))
+            {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
+            }
 
             StartCoroutine(FartCoroutine());
         }
@@ -37,7 +39,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             GasExplosion();
             CreateEffect(core.PlayerPed, "ent_sht_steam");
 
-            if (core.PlayerPed.IsInVehicle()) core.PlayerPed.CurrentVehicle.Speed = 300;
+            if (core.PlayerPed.IsInVehicle())
+            {
+                core.PlayerPed.CurrentVehicle.Speed = 300;
+            }
 
             core.PlayerPed.SetToRagdoll(10);
             core.PlayerPed.ApplyForce(Vector3.WorldUp * 10.0f);
@@ -74,7 +79,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;

@@ -20,9 +20,13 @@ namespace Inferno
                     IsActive = !IsActive;
                     DrawText("Isono:" + IsActive);
                     if (IsActive)
+                    {
                         IsonoTcpClient.Connect();
+                    }
                     else
+                    {
                         IsonoTcpClient.Disconnect();
+                    }
                 });
 
             IsonoTcpClient.OnRecievedMessageAsObservable

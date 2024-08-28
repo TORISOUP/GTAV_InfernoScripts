@@ -41,7 +41,10 @@ namespace Inferno
 
         private void RobberVehicle()
         {
-            if (!PlayerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist())
+            {
+                return;
+            }
 
             var playerVehicle = this.GetPlayerVehicle();
 
@@ -57,7 +60,10 @@ namespace Inferno
                 try
                 {
                     //確率で強盗する
-                    if (Random.Next(0, 100) > probability) continue;
+                    if (Random.Next(0, 100) > probability)
+                    {
+                        continue;
+                    }
 
                     //市民周辺の車が対象
                     var targetVehicle =
@@ -67,8 +73,16 @@ namespace Inferno
                                 x != targetPed.CurrentVehicle);
 
                     //30%の確率でプレイヤの車を盗むように変更
-                    if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30) targetVehicle = playerVehicle;
-                    if (!targetVehicle.IsSafeExist()) continue;
+                    if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
+                    {
+                        targetVehicle = playerVehicle;
+                    }
+
+                    if (!targetVehicle.IsSafeExist())
+                    {
+                        continue;
+                    }
+
                     StartCoroutine(RobberVehicleCoroutine(targetPed, targetVehicle));
                 }
                 catch (Exception e)
@@ -80,7 +94,11 @@ namespace Inferno
         private IEnumerable<object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
         {
             yield return RandomWait();
-            if (!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist())
+            {
+                yield break;
+            }
+
             //カオス化しない
             ped.SetNotChaosPed(true);
 
@@ -100,18 +118,29 @@ namespace Inferno
             }
 
             ped.Task.ClearAllImmediately();
-            ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
+            ped.Task.EnterVehicle(targetVehicle);
 
             foreach (var t in Enumerable.Range(0, 5))
             {
                 //20秒間車に乗れたか監視する
-                if (!ped.IsSafeExist()) yield break;
-                if (ped.IsInVehicle()) break;
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
+                if (ped.IsInVehicle())
+                {
+                    break;
+                }
+
                 ped.Task.ClearAllImmediately();
                 yield return WaitForSeconds(5);
             }
 
-            if (!ped.IsSafeExist()) yield break;
+            if (!ped.IsSafeExist())
+            {
+                yield break;
+            }
 
             //カオス化許可
             ped.SetNotChaosPed(false);

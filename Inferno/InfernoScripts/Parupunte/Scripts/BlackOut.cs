@@ -71,7 +71,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             for (var i = 0; i < 10; i++)
             {
                 SetArtificialLights(current);
-                if (Random.Next(0, 2) % 2 == 0) current = !current;
+                if (Random.Next(0, 2) % 2 == 0)
+                {
+                    current = !current;
+                }
+
                 yield return null;
             }
 
@@ -125,15 +129,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
             var setupWav = filePaths.FirstOrDefault(x => x.Contains("blackout_start.wav"));
-            if (setupWav != null) soundPlayerStart = new SoundPlayer(setupWav);
+            if (setupWav != null)
+            {
+                soundPlayerStart = new SoundPlayer(setupWav);
+            }
 
             setupWav = filePaths.FirstOrDefault(x => x.Contains("blackout_end.wav"));
-            if (setupWav != null) soundPlayerEnd = new SoundPlayer(setupWav);
+            if (setupWav != null)
+            {
+                soundPlayerEnd = new SoundPlayer(setupWav);
+            }
         }
 
         private string[] LoadWavFiles(string targetPath)
         {
-            if (!Directory.Exists(targetPath)) return new string[0];
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
@@ -142,7 +155,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             Function.Call(Hash.DRAW_LINE, from.X, from.Y, from.Z, to.X, to.Y, to.Z, col.R, col.G, col.B, col.A);
         }
-        
+
         private static void SetArtificialLights(bool isOn)
         {
             Function.Call(Hash.SET_ARTIFICIAL_LIGHTS_STATE, isOn);

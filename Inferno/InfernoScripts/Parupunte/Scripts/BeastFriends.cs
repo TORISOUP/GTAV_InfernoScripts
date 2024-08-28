@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using GTA;
-using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -110,7 +109,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         }[i];
                         var animal = veh.CreatePedOnSeat(seat, m);
 
-                        if (!animal.IsSafeExist()) continue;
+                        if (!animal.IsSafeExist())
+                        {
+                            continue;
+                        }
 
                         animal.MarkAsNoLongerNeeded();
                         animal.MaxHealth = 10000;
@@ -143,7 +145,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         var animal = SpawnPed(ped, i);
 
-                        if (!animal.IsSafeExist()) continue;
+                        if (!animal.IsSafeExist())
+                        {
+                            continue;
+                        }
 
                         animal.MarkAsNoLongerNeeded();
                         animal.MaxHealth = 10000;
@@ -174,7 +179,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 return GTA.World.CreatePed(m, spawnPosition);
             }
 
-            if (index >= 3) return null;
+            if (index >= 3)
+            {
+                return null;
+            }
+
             var seat = new[] { VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[index];
             var v = targetPed.CurrentVehicle;
             _setEntities.Add(v.Handle);

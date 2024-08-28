@@ -33,10 +33,15 @@ namespace Inferno.Utilities
         private void Percolate(int index)
         {
             if (index >= Count || index < 0)
+            {
                 return;
+            }
+
             var parent = (index - 1) / 2;
             if (parent < 0 || parent == index)
+            {
                 return;
+            }
 
             if (IsHigherPriority(index, parent))
             {
@@ -55,16 +60,24 @@ namespace Inferno.Utilities
         private void Heapify(int index)
         {
             if (index >= Count || index < 0)
+            {
                 return;
+            }
 
             var left = 2 * index + 1;
             var right = 2 * index + 2;
             var first = index;
 
             if (left < Count && IsHigherPriority(left, first))
+            {
                 first = left;
+            }
+
             if (right < Count && IsHigherPriority(right, first))
+            {
                 first = right;
+            }
+
             if (first != index)
             {
                 var temp = _items[index];
@@ -77,7 +90,9 @@ namespace Inferno.Utilities
         public T Peek()
         {
             if (Count == 0)
+            {
                 throw new InvalidOperationException("HEAP is Empty");
+            }
 
             return _items[0].Value;
         }
@@ -137,7 +152,10 @@ namespace Inferno.Utilities
             {
                 var c = Value.CompareTo(other.Value);
                 if (c == 0)
+                {
                     c = Id.CompareTo(other.Id);
+                }
+
                 return c;
             }
         }

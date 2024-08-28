@@ -60,7 +60,11 @@ namespace Inferno.Isono
         {
             try
             {
-                if (!IsConnected) return;
+                if (!IsConnected)
+                {
+                    return;
+                }
+
                 var bytes = tcpClient.GetStream().EndRead(ar);
 
                 if (bytes == 0)
@@ -76,7 +80,10 @@ namespace Inferno.Isono
                     var recievedMessage = Encoding.UTF8.GetString(buffer, 0, bytes);
                     var recievedObject = RequestDataPackage.FromJson(recievedMessage);
                     //イベント通知
-                    if (recievedObject != null) _onRecievedMessageSubject.OnNext(recievedObject.text);
+                    if (recievedObject != null)
+                    {
+                        _onRecievedMessageSubject.OnNext(recievedObject.text);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -86,7 +93,9 @@ namespace Inferno.Isono
                 finally
                 {
                     if (IsConnected)
+                    {
                         tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, CallBackBeginReceive, null);
+                    }
                 }
             }
             catch (Exception e)
