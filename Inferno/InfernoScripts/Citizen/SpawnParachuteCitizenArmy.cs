@@ -37,7 +37,11 @@ namespace Inferno
 
         private void CreateParachutePed()
         {
-            if (!PlayerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist())
+            {
+                return;
+            }
+
             var playerPosition = PlayerPed.Position;
 
             var velocity = PlayerPed.Velocity;
@@ -46,7 +50,10 @@ namespace Inferno
                 NativeFunctions.CreateRandomPed(
                     playerPosition + 3 * velocity + new Vector3(0, 0, 50).AroundRandom2D(50));
 
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             ped.MarkAsNoLongerNeeded();
             ped.Task.ClearAllImmediately();
@@ -76,11 +83,21 @@ namespace Inferno
                 yield return WaitForSeconds(1);
 
                 //市民が消えていたり死んでたら監視終了
-                if (!ped.IsSafeExist()) yield break;
-                if (ped.IsDead) yield break;
+                if (!ped.IsSafeExist())
+                {
+                    yield break;
+                }
+
+                if (ped.IsDead)
+                {
+                    yield break;
+                }
 
                 //着地していたら監視終了
-                if (!ped.IsInAir) break;
+                if (!ped.IsInAir)
+                {
+                    break;
+                }
             }
 
             if (ped.IsSafeExist())

@@ -103,7 +103,7 @@ namespace Inferno
                 var targetPosition = playerPosition + addPosition;
 
                 var isNearMissionEntity =
-                    CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(targetPosition) < 15.0f);
+                    CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(targetPosition) < 30.0f);
 
                 // ミッションキャラクターの近くが選ばれた場合は再抽選
                 if (isNearMissionEntity)

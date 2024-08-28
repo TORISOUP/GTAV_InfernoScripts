@@ -24,20 +24,16 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
-
-        private InfernoSynchronizationContext _infernoSynchronizationContext;
-        private CancellationTokenSource _activationCancellationTokenSource;
-        private InfernoScheduler infernoScheduler;
-        protected readonly Random Random = new();
 
         private readonly List<StepAwaiter> _stepAwaiters = new(8);
         private readonly List<TimeAwaiter> _timeAwaiters = new(8);
+        protected readonly Random Random = new();
+        private CancellationTokenSource _activationCancellationTokenSource;
 
-        private readonly CompositeDisposable _compositeDisposable = new();
-        private readonly AsyncSubject<Unit> _disposeSubject = new();
-
-        protected CompositeDisposable CompositeDisposable => _compositeDisposable;
+        private InfernoSynchronizationContext _infernoSynchronizationContext;
+        private InfernoScheduler infernoScheduler;
 
         /// <summary>
         /// コンストラクタ
@@ -48,16 +44,10 @@ namespace Inferno
             Interval = 0;
 
             // StepAwaiterの初期化
-            for (var i = 0; i < 4; i++)
-            {
-                _stepAwaiters.Add(new StepAwaiter());
-            }
+            for (var i = 0; i < 4; i++) _stepAwaiters.Add(new StepAwaiter());
 
             // TimeAwaiterの初期化
-            for (var i = 0; i < 4; i++)
-            {
-                _timeAwaiters.Add(new TimeAwaiter());
-            }
+            for (var i = 0; i < 4; i++) _timeAwaiters.Add(new TimeAwaiter());
 
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
@@ -69,7 +59,7 @@ namespace Inferno
                     InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
                     InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
                 })
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
 
             OnTickAsObservable =
                 Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
@@ -116,12 +106,10 @@ namespace Inferno
                         lock (_stepAwaiters)
                         {
                             foreach (var stepAwaiter in _stepAwaiters)
-                            {
                                 if (stepAwaiter is { IsActive: true })
                                 {
                                     stepAwaiter.Step();
                                 }
-                            }
                         }
                     }
                     catch
@@ -134,12 +122,10 @@ namespace Inferno
                         lock (_timeAwaiters)
                         {
                             foreach (var timeAwaiter in _timeAwaiters)
-                            {
                                 if (timeAwaiter is { IsActive: true })
                                 {
                                     timeAwaiter.Step(deltaTime);
                                 }
-                            }
                         }
                     }
                     catch
@@ -147,7 +133,7 @@ namespace Inferno
                         // ignore
                     }
                 })
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
             ;
 
             //タイマのカウント
@@ -160,7 +146,7 @@ namespace Inferno
                     //完了状態にあるタイマを全て削除
                     _counterList.RemoveAll(x => x.IsCompleted);
                 })
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
             ;
 
             _coroutinePool = new CoroutinePool(5);
@@ -168,7 +154,7 @@ namespace Inferno
             //コルーチンを実行する
             CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
                 .Subscribe(_ => _coroutinePool.Run())
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
             ;
 
 
@@ -179,7 +165,7 @@ namespace Inferno
                     foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
                     _autoReleaseEntities.Clear();
                 })
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
             ;
 
             // Setupは最初のTickタイミングまで遅らせる
@@ -202,8 +188,10 @@ namespace Inferno
                         LogWrite(e.ToString());
                     }
                 })
-                .AddTo(_compositeDisposable);
+                .AddTo(CompositeDisposable);
         }
+
+        protected CompositeDisposable CompositeDisposable { get; } = new();
 
         protected virtual string ConfigFileName => null;
 
@@ -252,7 +240,10 @@ namespace Inferno
         /// </summary>
         protected T LoadConfig<T>() where T : InfernoConfig, new()
         {
-            if (string.IsNullOrEmpty(ConfigFileName)) throw new Exception("設定ファイル名が設定されていません");
+            if (string.IsNullOrEmpty(ConfigFileName))
+            {
+                throw new Exception("設定ファイル名が設定されていません");
+            }
 
             var loader = new InfernoConfigLoader<T>();
             var dto = loader.LoadSettingFile(ConfigFileName);
@@ -264,6 +255,37 @@ namespace Inferno
         /// 初期化処理はここに書く
         /// </summary>
         protected abstract void Setup();
+
+        protected virtual void Destroy()
+        {
+            try
+            {
+                CompositeDisposable.Dispose();
+                _disposeSubject.OnNext(Unit.Default);
+                _disposeSubject.OnCompleted();
+                _disposeSubject.Dispose();
+                _activationCancellationTokenSource?.Cancel();
+                _activationCancellationTokenSource?.Dispose();
+                _activationCancellationTokenSource = null;
+                lock (_stepAwaiters)
+                {
+                    foreach (var stepAwaiter in _stepAwaiters) stepAwaiter?.Dispose();
+
+                    _stepAwaiters.Clear();
+                }
+
+                lock (_timeAwaiters)
+                {
+                    foreach (var timeAwaiter in _timeAwaiters) timeAwaiter?.Dispose();
+
+                    _timeAwaiters.Clear();
+                }
+            }
+            catch
+            {
+                //
+            }
+        }
 
         #region forTaks
 
@@ -336,7 +358,11 @@ namespace Inferno
 
         protected CancellationToken GetActivationCancellationToken()
         {
-            if (!IsActive) throw new Exception("Script is not active.");
+            if (!IsActive)
+            {
+                throw new Exception("Script is not active.");
+            }
+
             _activationCancellationTokenSource ??= new CancellationTokenSource();
             return _activationCancellationTokenSource.Token;
         }
@@ -352,13 +378,19 @@ namespace Inferno
         public void LogWrite(string message, bool stackTrace = false)
         {
             InfernoCore.Instance.LogWrite(message + "\n");
-            if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            if (stackTrace)
+            {
+                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            }
         }
 
         public void LogWrite(object message, bool stackTrace = false)
         {
             InfernoCore.Instance.LogWrite(message + "\n");
-            if (stackTrace) InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            if (stackTrace)
+            {
+                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            }
         }
 
         #endregion Debug
@@ -416,7 +448,11 @@ namespace Inferno
         {
             get
             {
-                if (_onKeyDownAsObservable != null) return _onKeyDownAsObservable;
+                if (_onKeyDownAsObservable != null)
+                {
+                    return _onKeyDownAsObservable;
+                }
+
                 _onKeyDownAsObservable =
                     Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
                             h => KeyDown -= h)
@@ -442,7 +478,10 @@ namespace Inferno
         /// <returns></returns>
         protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword)) throw new Exception("Keyword is empty.");
+            if (string.IsNullOrEmpty(keyword))
+            {
+                throw new Exception("Keyword is empty.");
+            }
 
             return OnKeyDownAsObservable
                 .Select(e => e.KeyCode.ToString())
@@ -580,42 +619,5 @@ namespace Inferno
         }
 
         #endregion forTimer
-
-        protected virtual void Destroy()
-        {
-            try
-            {
-                _compositeDisposable.Dispose();
-                _disposeSubject.OnNext(Unit.Default);
-                _disposeSubject.OnCompleted();
-                _disposeSubject.Dispose();
-                _activationCancellationTokenSource?.Cancel();
-                _activationCancellationTokenSource?.Dispose();
-                _activationCancellationTokenSource = null;
-                lock (_stepAwaiters)
-                {
-                    foreach (var stepAwaiter in _stepAwaiters)
-                    {
-                        stepAwaiter?.Dispose();
-                    }
-
-                    _stepAwaiters.Clear();
-                }
-
-                lock (_timeAwaiters)
-                {
-                    foreach (var timeAwaiter in _timeAwaiters)
-                    {
-                        timeAwaiter?.Dispose();
-                    }
-
-                    _timeAwaiters.Clear();
-                }
-            }
-            catch
-            {
-                //
-            }
-        }
     }
 }

@@ -232,8 +232,19 @@ namespace Inferno
 
             var targets = targetPeds.Concat(targetVehicles.Cast<Entity>()).ToArray();
 
+
+            var target = targets.Length > 5 ? targets[Random.Next(targets.Length)] : null;
+
             //ターゲットが周りにいない場合は誰も攻撃しない
-            return targets.Length > 5 ? targets[Random.Next(targets.Length)] : null;
+            if (target == null) return null;
+
+            if (CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(target.Position) < 30.0f))
+            {
+                // ミッションキャラクタ付近が選択された場合は除外
+                return null;
+            }
+
+            return target;
         }
 
         //戦闘機が動作可能な状態であるか

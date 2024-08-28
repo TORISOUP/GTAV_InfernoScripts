@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
@@ -20,6 +21,30 @@ namespace Inferno.InfernoScripts.World
         private Ped _heliDriver;
         private uint _observeHeliCoroutineId;
         private uint _observePlayerCoroutineId;
+
+
+        private readonly WeaponHash[] _driveByWeapons = new[]
+        {
+            WeaponHash.Pistol,
+            WeaponHash.APPistol,
+            WeaponHash.CombatPistol,
+            WeaponHash.HeavyPistol,
+            WeaponHash.Pistol50,
+            WeaponHash.FlareGun,
+            WeaponHash.Revolver,
+            WeaponHash.MicroSMG,
+            WeaponHash.MachinePistol,
+            WeaponHash.CompactRifle,
+            WeaponHash.SawnOffShotgun,
+            WeaponHash.DoubleBarrelShotgun,
+            WeaponHash.StunGun,
+            WeaponHash.Minigun,
+            WeaponHash.AssaultShotgun,
+            WeaponHash.CompactGrenadeLauncher,
+            WeaponHash.CompactEMPLauncher,
+            WeaponHash.PistolMk2,
+            WeaponHash.SMGMk2
+        };
 
         protected override void Setup()
         {
@@ -236,11 +261,13 @@ namespace Inferno.InfernoScripts.World
         private void SpawnPassengersToEmptySeat()
         {
             foreach (var seat in vehicleSeat)
+            {
                 //ヘリが存在し座席に誰もいなかったら市民再生成
                 if (_heli.IsSafeExist() && _heli.IsSeatFree(seat))
                 {
                     CreatePassenger(seat);
                 }
+            }
         }
 
         /// <summary>
@@ -296,6 +323,7 @@ namespace Inferno.InfernoScripts.World
         {
             //ヘリの解放前に座席に座っている市民を解放する
             foreach (var seat in vehicleSeat)
+            {
                 if (_heli.IsSafeExist())
                 {
                     //座席にいる市民取得
@@ -305,6 +333,7 @@ namespace Inferno.InfernoScripts.World
                         ped.MarkAsNoLongerNeeded();
                     }
                 }
+            }
 
             //ドライバー開放
             if (_heliDriver.IsSafeExist())
@@ -348,6 +377,26 @@ namespace Inferno.InfernoScripts.World
             if (p.IsSafeExist())
             {
                 AutoReleaseOnGameEnd(p);
+
+                p.SetNotChaosPed(true);
+                // ドライブバイを許可するか
+                p.SetCombatAttributes(2, true);
+                // 車から降りることができるか
+                p.SetCombatAttributes(3, true);
+
+                p.Task.ClearAll();
+                p.Weapons.Give(_driveByWeapons[Random.Next(0, _driveByWeapons.Length)], 999, false, true);
+                // 最適な武器を選択するか
+                p.SetCombatAttributes(54, true);
+
+                foreach (var target in CachedPeds.Where(x =>
+                             x.IsSafeExist() && x != p && x.IsAlive && x.IsInRangeOf(p.Position, 100)))
+                {
+                    p.Task.FightAgainst(target);
+                }
+
+                p.Task.FightAgainst(PlayerPed);
+                p.Accuracy = 5;
             }
         }
     }

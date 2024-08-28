@@ -35,16 +35,6 @@ namespace Inferno.ChaosMode
 
         private readonly string Keyword = "chaos";
 
-        private bool _isBaseball;
-        private CharacterChaosChecker chaosChecker;
-
-        /// <summary>
-        /// 設定
-        /// </summary>
-        private ChaosModeSetting chaosModeSetting;
-
-        private int chaosRelationShipId;
-
         private MissionCharacterTreatmentType _currentTreatType =
             MissionCharacterTreatmentType.ExcludeUniqueCharacter;
 
@@ -53,12 +43,22 @@ namespace Inferno.ChaosMode
         /// </summary>
         private IWeaponProvider _defaultWeaponProvider;
 
-        private MissionCharacterTreatmentType _nextTreatType;
-        private SingleWeaponProvider _singleWeaponProvider;
-        private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
+        private bool _isBaseball;
+        private CancellationTokenSource _linkedCts;
 
         private CancellationTokenSource _localCts = new();
-        private CancellationTokenSource _linkedCts;
+
+        private MissionCharacterTreatmentType _nextTreatType;
+        private SingleWeaponProvider _singleWeaponProvider;
+        private CharacterChaosChecker chaosChecker;
+
+        /// <summary>
+        /// 設定
+        /// </summary>
+        private ChaosModeSetting chaosModeSetting;
+
+        private int chaosRelationShipId;
+        private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
 
         protected override void Setup()
         {
@@ -195,7 +195,10 @@ namespace Inferno.ChaosMode
 
         private void CitizenChaos()
         {
-            if (!PlayerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist())
+            {
+                return;
+            }
 
             //まだ処理をしていない市民を対象とする
             var nearPeds =
@@ -231,9 +234,16 @@ namespace Inferno.ChaosMode
         {
             //魚なら除外する
             var m = (uint)ped.Model.Hash;
-            if (fishHashes.Contains(m)) return;
+            if (fishHashes.Contains(m))
+            {
+                return;
+            }
 
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var pedId = ped.Handle;
 
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
@@ -280,11 +290,20 @@ namespace Inferno.ChaosMode
             //以下ループ
             do
             {
-                if (!ped.IsSafeExist() || ped.IsDead || !PlayerPed.IsSafeExist()) break;
+                if (!ped.IsSafeExist() || ped.IsDead || !PlayerPed.IsSafeExist())
+                {
+                    break;
+                }
 
-                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10)) break;
+                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10))
+                {
+                    break;
+                }
 
-                if (!chaosChecker.IsPedChaosAvailable(ped)) break;
+                if (!chaosChecker.IsPedChaosAvailable(ped))
+                {
+                    break;
+                }
 
                 //武器を変更する
                 if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
@@ -303,7 +322,10 @@ namespace Inferno.ChaosMode
                     await DelayRandomFrameAsync(1, 10, ct);
                 }
 
-                if (!ped.IsSafeExist() || ped.IsDead) break;
+                if (!ped.IsSafeExist() || ped.IsDead)
+                {
+                    break;
+                }
 
 
                 if (counterattackTarget.IsSafeExist() && chaosChecker.IsAttackableEntity(counterattackTarget))
@@ -331,11 +353,13 @@ namespace Inferno.ChaosMode
                     {
                         break;
                     }
+                    
 
                     // 定期的にチェックする部分
                     if (checkWaitTime > 1)
                     {
                         checkWaitTime = 0;
+                        ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
 
                         if (ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
                         {
@@ -393,7 +417,7 @@ namespace Inferno.ChaosMode
                 .Where(x => x.IsSafeExist() && x.IsAlive && x != ped)
                 .Where(x => chaosChecker.IsAttackableEntity(x))
                 .OrderBy(x => (ped.Position - x.Position).Length())
-                .Take(15)
+                .Take(5)
                 .ToArray();
 
             //プレイヤへの攻撃補正が設定されているならプレイヤをリストに追加する
@@ -402,10 +426,8 @@ namespace Inferno.ChaosMode
             {
                 return nearPeds.Concat(new[] { PlayerPed }).ToArray();
             }
-            else
-            {
-                return nearPeds;
-            }
+
+            return nearPeds;
         }
 
         // 自身に対して攻撃をしてきた相手を探す
@@ -416,7 +438,10 @@ namespace Inferno.ChaosMode
 
         private void SetPedStatus(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             bool RandomBool()
             {
@@ -446,7 +471,7 @@ namespace Inferno.ChaosMode
             // ターゲットを切り替えるのを禁止するか
             ped.SetCombatAttributes(25, false);
             // 戦闘開始時のリアクションを無効化
-            ped.SetCombatAttributes(26, false);
+            ped.SetCombatAttributes(26, true);
             // 射線が通って無くても攻撃するか
             ped.SetCombatAttributes(30, true);
             // 防御態勢をとるか
@@ -495,8 +520,12 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                if (!ped.IsSafeExist()) return;
-                ped.TaskSetBlockingOfNonTemporaryEvents(true);
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+
+                ped.TaskSetBlockingOfNonTemporaryEvents(false);
                 ped.SetPedKeepTask(true);
                 ped.AlwaysKeepTask = true;
                 ped.IsVisible = true;
@@ -526,9 +555,16 @@ namespace Inferno.ChaosMode
         {
             try
             {
-                if (!ped.IsSafeExist()) return Weapon.UNARMED;
+                if (!ped.IsSafeExist())
+                {
+                    return Weapon.UNARMED;
+                }
+
                 //市民の武器を変更して良いか調べる
-                if (!chaosChecker.IsPedChangebalWeapon(ped)) return Weapon.UNARMED;
+                if (!chaosChecker.IsPedChangebalWeapon(ped))
+                {
+                    return Weapon.UNARMED;
+                }
 
                 //車に乗っているなら車用の武器を渡す
                 var weapon = Weapon.UNARMED;

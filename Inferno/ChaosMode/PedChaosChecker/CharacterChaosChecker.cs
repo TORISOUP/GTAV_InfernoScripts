@@ -42,7 +42,11 @@ namespace Inferno.ChaosMode
         {
             foreach (var avoidAttackEntity in AvoidAttackEntities)
             {
-                if (!avoidAttackEntity.IsSafeExist()) continue;
+                if (!avoidAttackEntity.IsSafeExist())
+                {
+                    continue;
+                }
+
                 // 対象者の近くにいる
                 if (avoidAttackEntity.Position.DistanceTo(ped.Position) < 5.0f)
                 {
@@ -81,9 +85,16 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化</returns>
         private bool IsRiotableMissionCharacter(Entity entity)
         {
-            if (!entity.IsSafeExist()) return false;
+            if (!entity.IsSafeExist())
+            {
+                return false;
+            }
+
             //ミッションキャラじゃないならtrue
-            if (!entity.IsRequiredForMission()) return true;
+            if (!entity.IsRequiredForMission())
+            {
+                return true;
+            }
 
             switch (MissionCharacterTreatment)
             {
@@ -105,6 +116,8 @@ namespace Inferno.ChaosMode
         /// </summary>
         public bool IsAttackableEntity(Entity entity)
         {
+            if (Game.Player.Character == entity) return true;
+            
             // カオス化して良い判定と条件は今のところ同じ
             return IsRiotableMissionCharacter(entity);
         }
