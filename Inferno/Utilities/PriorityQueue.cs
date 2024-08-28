@@ -134,11 +134,13 @@ namespace Inferno.Utilities
         public bool Remove(T item)
         {
             for (var i = 0; i < Count; ++i)
+            {
                 if (EqualityComparer<T>.Default.Equals(_items[i].Value, item))
                 {
                     RemoveAt(i);
                     return true;
                 }
+            }
 
             return false;
         }

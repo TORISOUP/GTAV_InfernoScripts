@@ -42,7 +42,11 @@ namespace Inferno
                         datas = progressBarDataList.ToArray();
                     }
 
-                    foreach (var progressBarData in datas) AddProgressBarToContainer(progressBarData);
+                    foreach (var progressBarData in datas)
+                    {
+                        AddProgressBarToContainer(progressBarData);
+                    }
+
                     _container.Draw();
                 });
         }

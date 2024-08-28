@@ -56,7 +56,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                          x => x.IsSafeExist()
                               && x.IsInRangeOf(playerPos, 100)
                               && x.IsAlive))
+            {
                 v.ApplyForce(Vector3.WorldUp * 5f, Vector3.RandomXYZ());
+            }
 
             #endregion
         }

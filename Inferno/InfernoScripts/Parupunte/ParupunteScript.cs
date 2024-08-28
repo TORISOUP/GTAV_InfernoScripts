@@ -173,7 +173,11 @@ namespace Inferno.InfernoScripts.Parupunte
             onFinishedSubject?.OnNext(Unit.Default);
             onFinishedSubject?.OnCompleted();
 
-            foreach (var id in coroutineIds) StopCoroutine(id);
+            foreach (var id in coroutineIds)
+            {
+                StopCoroutine(id);
+            }
+
             coroutineIds.Clear();
 
             var endMessage = EndMessage();

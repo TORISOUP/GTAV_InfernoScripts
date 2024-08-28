@@ -64,7 +64,10 @@ namespace Inferno
                 false,
                 true));
 
-            while (--_currentTickCounter > 0) yield return _currentTickCounter;
+            while (--_currentTickCounter > 0)
+            {
+                yield return _currentTickCounter;
+            }
 
             _container.Items.Clear();
         }

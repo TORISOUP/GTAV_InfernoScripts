@@ -15,7 +15,10 @@ namespace Inferno.InfernoScripts.InfernoCore.Coroutine
         {
             _poolSize = poolSize;
             _coroutines = new CoroutineSystem[poolSize];
-            for (var i = 0; i < _poolSize; i++) _coroutines[i] = new CoroutineSystem();
+            for (var i = 0; i < _poolSize; i++)
+            {
+                _coroutines[i] = new CoroutineSystem();
+            }
         }
 
         /// <summary>
@@ -50,12 +53,17 @@ namespace Inferno.InfernoScripts.InfernoCore.Coroutine
         {
             foreach (var c in _coroutines)
                 //どこに登録されたかわからないので全部叩く
+            {
                 c.RemoveCoroutine(coroutinId);
+            }
         }
 
         public void RemoveAllCoroutine()
         {
-            foreach (var c in _coroutines) c.RemoveAllCoroutine();
+            foreach (var c in _coroutines)
+            {
+                c.RemoveAllCoroutine();
+            }
         }
     }
 }

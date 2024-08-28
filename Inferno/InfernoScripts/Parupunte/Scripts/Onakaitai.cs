@@ -53,12 +53,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             targetPeds.Add(core.PlayerPed);
 
             //コルーチン起動
-            foreach (var ped in targetPeds) StartCoroutine(OilCoroutine(ped));
+            foreach (var ped in targetPeds)
+            {
+                StartCoroutine(OilCoroutine(ped));
+            }
 
             //終わったら着火する
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive)) Ignition(ped);
+                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
+                {
+                    Ignition(ped);
+                }
 
                 ParupunteEnd();
             });

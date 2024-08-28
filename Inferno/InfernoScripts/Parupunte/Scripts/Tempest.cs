@@ -49,11 +49,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                                                && x.IsInRangeOf(playerPos, 20)
                                                                && !entityList.Contains(x)
                      ))
+            {
                 if (!entityList.Contains(veh))
                 {
                     entityList.Add(veh);
                     StartCoroutine(TemepenstCoroutine(veh));
                 }
+            }
         }
 
         private IEnumerable<object> TemepenstCoroutine(Entity entity)

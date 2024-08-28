@@ -29,7 +29,9 @@ namespace Inferno.Utilities
 
             KeyValuePair<SendOrPostCallback, object> workItem;
             while (_mQueue.TryDequeue(out workItem))
+            {
                 workItem.Key(workItem.Value);
+            }
         }
 
         public void Complete()

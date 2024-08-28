@@ -19,7 +19,10 @@ namespace Inferno
 
         public void Update()
         {
-            while (_continuations.TryDequeue(out var i)) i.d(i.state);
+            while (_continuations.TryDequeue(out var i))
+            {
+                i.d(i.state);
+            }
         }
     }
 

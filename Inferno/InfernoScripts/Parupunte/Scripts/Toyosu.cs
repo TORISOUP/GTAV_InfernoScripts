@@ -34,11 +34,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 );
 
             foreach (var v in targets)
+            {
                 if (!vehicleList.Contains(v))
                 {
                     vehicleList.Add(v);
                     StartCoroutine(VehiclePyonPyon(v));
                 }
+            }
         }
 
         private IEnumerable<object> VehiclePyonPyon(Vehicle v)

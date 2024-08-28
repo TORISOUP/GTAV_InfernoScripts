@@ -22,7 +22,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
-            foreach (var i in Enumerable.Range(0, 4)) pedList.Add(CreateFriend());
+            foreach (var i in Enumerable.Range(0, 4))
+            {
+                pedList.Add(CreateFriend());
+            }
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ => { ParupunteEnd(); });
 

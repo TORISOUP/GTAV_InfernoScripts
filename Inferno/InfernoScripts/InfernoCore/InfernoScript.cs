@@ -44,10 +44,16 @@ namespace Inferno
             Interval = 0;
 
             // StepAwaiterの初期化
-            for (var i = 0; i < 4; i++) _stepAwaiters.Add(new StepAwaiter());
+            for (var i = 0; i < 4; i++)
+            {
+                _stepAwaiters.Add(new StepAwaiter());
+            }
 
             // TimeAwaiterの初期化
-            for (var i = 0; i < 4; i++) _timeAwaiters.Add(new TimeAwaiter());
+            for (var i = 0; i < 4; i++)
+            {
+                _timeAwaiters.Add(new TimeAwaiter());
+            }
 
             //初期化をちょっと遅延させる
             Observable.Interval(TimeSpan.FromMilliseconds(10))
@@ -106,10 +112,12 @@ namespace Inferno
                         lock (_stepAwaiters)
                         {
                             foreach (var stepAwaiter in _stepAwaiters)
+                            {
                                 if (stepAwaiter is { IsActive: true })
                                 {
                                     stepAwaiter.Step();
                                 }
+                            }
                         }
                     }
                     catch
@@ -122,10 +130,12 @@ namespace Inferno
                         lock (_timeAwaiters)
                         {
                             foreach (var timeAwaiter in _timeAwaiters)
+                            {
                                 if (timeAwaiter is { IsActive: true })
                                 {
                                     timeAwaiter.Step(deltaTime);
                                 }
+                            }
                         }
                     }
                     catch
@@ -141,7 +151,10 @@ namespace Inferno
                 .Where(_ => _counterList.Any())
                 .Subscribe(_ =>
                 {
-                    foreach (var c in _counterList) c.Update(100);
+                    foreach (var c in _counterList)
+                    {
+                        c.Update(100);
+                    }
 
                     //完了状態にあるタイマを全て削除
                     _counterList.RemoveAll(x => x.IsCompleted);
@@ -162,7 +175,11 @@ namespace Inferno
                 {
                     Destroy();
                     IsActive = false;
-                    foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist())) e.MarkAsNoLongerNeeded();
+                    foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
+                    {
+                        e.MarkAsNoLongerNeeded();
+                    }
+
                     _autoReleaseEntities.Clear();
                 })
                 .AddTo(CompositeDisposable);
@@ -269,14 +286,20 @@ namespace Inferno
                 _activationCancellationTokenSource = null;
                 lock (_stepAwaiters)
                 {
-                    foreach (var stepAwaiter in _stepAwaiters) stepAwaiter?.Dispose();
+                    foreach (var stepAwaiter in _stepAwaiters)
+                    {
+                        stepAwaiter?.Dispose();
+                    }
 
                     _stepAwaiters.Clear();
                 }
 
                 lock (_timeAwaiters)
                 {
-                    foreach (var timeAwaiter in _timeAwaiters) timeAwaiter?.Dispose();
+                    foreach (var timeAwaiter in _timeAwaiters)
+                    {
+                        timeAwaiter?.Dispose();
+                    }
 
                     _timeAwaiters.Clear();
                 }
@@ -578,7 +601,10 @@ namespace Inferno
         protected IEnumerable RandomWait()
         {
             var waitLoopCount = Random.Next(0, 10);
-            for (var i = 0; i < waitLoopCount; i++) yield return i;
+            for (var i = 0; i < waitLoopCount; i++)
+            {
+                yield return i;
+            }
         }
 
         #endregion forCoroutine

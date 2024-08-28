@@ -33,7 +33,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             && x != player.CurrentVehicle
                             && !x.IsPersistent
                 );
-            foreach (var vehicle in targets) vehicle.ApplyForce(Vector3.WorldUp);
+            foreach (var vehicle in targets)
+            {
+                vehicle.ApplyForce(Vector3.WorldUp);
+            }
 
             if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
             {

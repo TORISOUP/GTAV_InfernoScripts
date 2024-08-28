@@ -45,11 +45,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                                                && x.IsInRangeOf(playerPos, 30)
                                                                && !entityList.Contains(x)
                      ))
+            {
                 if (!entityList.Contains(veh))
                 {
                     entityList.Add(veh);
                     StartCoroutine(MoveCoroutine(veh));
                 }
+            }
         }
 
         private IEnumerable<object> MoveCoroutine(Entity entity)

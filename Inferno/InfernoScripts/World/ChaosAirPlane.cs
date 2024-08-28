@@ -72,7 +72,10 @@ namespace Inferno
                         .Where(x => x != null)
                         .Select(x => x.Value);
 
-                    foreach (var point in array) NativeFunctions.CreateLight(point, 255, 30, 30, 10.0f, insensity);
+                    foreach (var point in array)
+                    {
+                        NativeFunctions.CreateLight(point, 255, 30, 30, 10.0f, insensity);
+                    }
                 });
         }
 
@@ -236,7 +239,10 @@ namespace Inferno
             var target = targets.Length > 5 ? targets[Random.Next(targets.Length)] : null;
 
             //ターゲットが周りにいない場合は誰も攻撃しない
-            if (target == null) return null;
+            if (target == null)
+            {
+                return null;
+            }
 
             if (CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(target.Position) < 30.0f))
             {

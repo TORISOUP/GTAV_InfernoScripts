@@ -32,7 +32,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                 && x.IsInRangeOf(player.Position, 80.0f)
                                 && x != player.CurrentVehicle
                     );
-                foreach (var veh in targets) veh.Speed = 200;
+                foreach (var veh in targets)
+                {
+                    veh.Speed = 200;
+                }
+
                 ParupunteEnd();
             });
 

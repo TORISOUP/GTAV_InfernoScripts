@@ -75,11 +75,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Subscribe(_ =>
                 {
                     foreach (var t in resources)
+                    {
                         if (t.IsSafeExist())
                         {
                             t.MarkAsNoLongerNeeded();
                             t.Health = -1;
                         }
+                    }
                 });
         }
 

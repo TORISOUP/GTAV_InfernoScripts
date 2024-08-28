@@ -29,10 +29,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Subscribe(_ =>
                 {
                     foreach (var p in peds)
+                    {
                         if (p.IsSafeExist())
                         {
                             p.MarkAsNoLongerNeeded();
                         }
+                    }
                 });
         }
 

@@ -69,7 +69,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
-                    foreach (var x in freezedEntities.Where(x => x.IsSafeExist())) x.FreezePosition(false);
+                    foreach (var x in freezedEntities.Where(x => x.IsSafeExist()))
+                    {
+                        x.FreezePosition(false);
+                    }
                 });
         }
     }

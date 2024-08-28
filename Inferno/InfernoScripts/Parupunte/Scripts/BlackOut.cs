@@ -110,7 +110,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .Subscribe(_ =>
                 {
                     var p = core.PlayerPed.Position;
-                    foreach (var t in targets) DrawLine(p, t, Color.White);
+                    foreach (var t in targets)
+                    {
+                        DrawLine(p, t, Color.White);
+                    }
                 });
 
             for (var i = 0; i < 10; i++)

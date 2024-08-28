@@ -78,7 +78,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //着地するまで
-            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir) yield return null;
+            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
+            {
+                yield return null;
+            }
+
             player.IsCollisionProof = false;
             if (player.IsInVehicle())
             {

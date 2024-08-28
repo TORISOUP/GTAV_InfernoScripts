@@ -42,10 +42,12 @@ namespace Inferno
                     && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist());
 
             foreach (var vehicle in targetVehicles)
+            {
                 if (Random.Next(0, 100) <= Probability)
                 {
                     vehicle.PetrolTankHealth = -1;
                 }
+            }
         }
 
         private class CitizenVehicleBombConfig : InfernoConfig

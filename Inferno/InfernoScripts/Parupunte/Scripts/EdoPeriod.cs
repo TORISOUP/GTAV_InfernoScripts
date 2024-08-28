@@ -45,11 +45,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
                 foreach (var ped in pedList)
+                {
                     if (ped.IsSafeExist())
                     {
                         SetAnimRate(ped, 1);
                         Function.Call(Hash.TASK_FORCE_MOTION_STATE, ped, 0xFFF7E7A4, 0);
                     }
+                }
 
                 ParupunteEnd();
             });

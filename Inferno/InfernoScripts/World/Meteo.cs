@@ -34,7 +34,9 @@ namespace Inferno
                 {
                     var insensity = 10;
                     foreach (var point in _meteoLightPositionList.ToArray())
+                    {
                         NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
+                    }
                 });
 
             CreateTickAsObservable(TimeSpan.FromMilliseconds(DurationMillSeconds))

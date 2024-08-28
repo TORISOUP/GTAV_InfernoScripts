@@ -17,7 +17,10 @@ namespace Inferno.InfernoScripts.InfernoCore.Coroutine
         {
             var dt = Time + Scheduler.Normalize(timeSpan);
 
-            while ((dt - Time).Ticks > 0) yield return null;
+            while ((dt - Time).Ticks > 0)
+            {
+                yield return null;
+            }
         }
     }
 }

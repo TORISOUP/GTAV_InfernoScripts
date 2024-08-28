@@ -57,10 +57,12 @@ namespace Inferno
                                 x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
 
                 foreach (var veh in nitroAvailableVeles)
+                {
                     if (Random.Next(0, 100) <= Probability)
                     {
                         DelayCoroutine(veh);
                     }
+                }
             }
             catch (Exception e)
             {

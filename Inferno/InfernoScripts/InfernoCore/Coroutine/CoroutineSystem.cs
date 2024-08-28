@@ -100,10 +100,15 @@ namespace Inferno
 
 
                 //開始前に削除登録されたものを消す
-                foreach (var stopId in _stopCoroutineList) _coroutines.Remove(stopId);
+                foreach (var stopId in _stopCoroutineList)
+                {
+                    _coroutines.Remove(stopId);
+                }
+
                 _stopCoroutineList.Clear();
 
                 foreach (var coroutine in _coroutines)
+                {
                     try
                     {
                         if (!coroutine.Value.MoveNext())
@@ -115,8 +120,13 @@ namespace Inferno
                     {
                         endIdList.Add(coroutine.Key);
                     }
+                }
 
-                foreach (var id in endIdList) _coroutines.Remove(id);
+                foreach (var id in endIdList)
+                {
+                    _coroutines.Remove(id);
+                }
+
                 endIdList.Clear();
             }
         }

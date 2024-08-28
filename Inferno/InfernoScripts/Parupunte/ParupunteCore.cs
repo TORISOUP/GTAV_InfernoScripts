@@ -137,7 +137,9 @@ namespace Inferno.InfernoScripts.Parupunte
                 .Subscribe(_ =>
                 {
                     foreach (var entity in _autoReleaseEntitiesList.Where(entity => entity.IsSafeExist()))
+                    {
                         entity.MarkAsNoLongerNeeded();
+                    }
 
                     _autoReleaseEntitiesList.Clear();
                 });

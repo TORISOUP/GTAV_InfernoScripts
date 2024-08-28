@@ -27,7 +27,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var vehicles = core.CachedVehicles.Where
                 (x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius));
 
-            foreach (var vehicle in vehicles) vehicle.Repair();
+            foreach (var vehicle in vehicles)
+            {
+                vehicle.Repair();
+            }
 
             if (player.IsInVehicle())
             {

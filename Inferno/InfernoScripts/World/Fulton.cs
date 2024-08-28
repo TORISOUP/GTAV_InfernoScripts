@@ -130,6 +130,7 @@ namespace Inferno
                                   && !fulutonedEntityList.Contains(x.Handle)
                                   && x.IsAlive
                          ))
+            {
                 if (entity.HasBeenDamagedByPed(PlayerPed) && (
                         entity.HasBeenDamagedBy(Weapon.UNARMED) || entity.HasBeenDamagedBy(Weapon.STUNGUN)
                     ))
@@ -147,6 +148,7 @@ namespace Inferno
                             .Subscribe(_ => soundPlayerPedSetup?.Play());
                     }
                 }
+            }
         }
 
         private void LeaveAllPedsFromVehicle(Vehicle vec)
@@ -304,7 +306,10 @@ namespace Inferno
         private IEnumerable<object> FriendCoroutine(Ped ped)
         {
             while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position, 100))
+            {
                 yield return WaitForSeconds(1);
+            }
+
             if (ped.IsSafeExist())
             {
                 ped.MarkAsNoLongerNeeded();

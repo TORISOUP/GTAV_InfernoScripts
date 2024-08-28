@@ -50,6 +50,7 @@ namespace Inferno
                 .Where(x => x.IsSafeExist() && !affectPeds.Contains(x));
 
             foreach (var driver in drivers)
+            {
                 try
                 {
                     driver.DrivingSpeed = 100.0f;
@@ -62,6 +63,7 @@ namespace Inferno
                 {
                     LogWrite(e.ToString());
                 }
+            }
         }
     }
 }

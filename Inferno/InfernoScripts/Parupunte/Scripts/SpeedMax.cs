@@ -29,7 +29,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             foreach (var vec in core.CachedVehicles.Where(
                          x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius)
                      ))
+            {
                 vec.Speed = vec.Handle % 10 == 0 ? -200 : 200;
+            }
         }
     }
 }

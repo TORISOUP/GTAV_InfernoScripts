@@ -57,6 +57,7 @@ namespace Inferno
                                                    && !x.IsNotChaosPed());
 
             foreach (var targetPed in targetPeds)
+            {
                 try
                 {
                     //確率で強盗する
@@ -89,6 +90,7 @@ namespace Inferno
                 {
                     LogWrite(e.ToString());
                 }
+            }
         }
 
         private IEnumerable<object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)

@@ -37,7 +37,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         protected override void OnFinished()
         {
-            foreach (var x in createdFishList.Where(x => x.IsSafeExist())) x.Detach();
+            foreach (var x in createdFishList.Where(x => x.IsSafeExist()))
+            {
+                x.Detach();
+            }
         }
 
         protected override void OnUpdate()
@@ -101,7 +104,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             while (IsActive)
             {
                 //プレイヤが車に乗ったか監視
-                while (!core.GetPlayerVehicle().IsSafeExist()) yield return null;
+                while (!core.GetPlayerVehicle().IsSafeExist())
+                {
+                    yield return null;
+                }
+
                 //発射したら1秒まってもう一度まつ
                 yield return PlayerVehicleCoroutine(core.GetPlayerVehicle());
                 yield return WaitForSeconds(1);

@@ -129,7 +129,9 @@ namespace Inferno.InfernoScripts.World
                          x => x.IsSafeExist()
                               && x.IsInRangeOf(damagedPed.Position, 10)
                               && x.IsAlive))
+            {
                 v.ApplyForce(Vector3.WorldUp * 5f, Vector3.RandomXYZ());
+            }
 
             #endregion
         }

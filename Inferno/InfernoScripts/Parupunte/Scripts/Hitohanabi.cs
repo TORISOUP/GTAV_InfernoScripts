@@ -46,6 +46,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                  && x.IsInRangeOf(core.PlayerPed.Position, 50))
                     )
                     //まだの人をリストにくわえる
+                {
                     if (pedList.Count < 30 && !pedList.Contains(targetPed))
                     {
                         pedList.Add(targetPed);
@@ -57,6 +58,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
                     }
+                }
 
                 foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
                 {
