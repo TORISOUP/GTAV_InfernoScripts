@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using Inferno.Utilities;
@@ -14,7 +16,6 @@ namespace Inferno
     {
         private EmergencyEscapeConf conf;
         private float EscapePower => conf?.EscapePower ?? 60.0f;
-        private float OpenParachutoSeconds => conf?.OpenParachutoSeconds ?? 1.5f;
         protected override string ConfigFileName { get; } = "EmergencyEscape.conf";
 
         protected override void Setup()
@@ -41,24 +42,36 @@ namespace Inferno
                 return;
             }
 
-            Game.Player.CanControlRagdoll = true;
-            player.CanRagdoll = true;
-
-            player.ClearTasksImmediately();
-            player.Position += new Vector3(0, 0, 0.5f);
-            player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, EscapePower) + playerVec.Velocity,
-                InfernoUtilities.CreateRandomVector() * 10.0f);
-
-            StartCoroutine(DelayParachute());
+            DelayParachuteAsync(PlayerPed, playerVec, DestroyCancellationToken).Forget();
         }
 
-        private IEnumerable<object> DelayParachute()
+        private async ValueTask DelayParachuteAsync(Ped player, Vehicle vec, CancellationToken ct)
         {
-            PlayerPed.IsInvincible = true;
-            yield return WaitForSeconds(OpenParachutoSeconds);
-            PlayerPed.IsInvincible = false;
-            PlayerPed.ParachuteTo(PlayerPed.Position);
+            try
+            {
+                Game.Player.CanControlRagdoll = true;
+                player.CanRagdoll = true;
+
+                player.ClearTasksImmediately();
+                player.Position += new Vector3(0, 0, 0.5f);
+                var shootPos = player.Position;
+                player.SetToRagdoll();
+                player.ApplyForce(new Vector3(0, 0, EscapePower) + vec.Velocity,
+                    InfernoUtilities.CreateRandomVector() * 10.0f);
+
+                player.IsInvincible = true;
+                await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
+
+                // 発射位置より高い位置にいる場合はパラシュートを開く
+                if (player.Position.Z > shootPos.Z)
+                {
+                    player.ParachuteTo(player.Position);
+                }
+            }
+            finally
+            {
+                PlayerPed.IsInvincible = false;
+            }
         }
 
         #region config
@@ -66,7 +79,6 @@ namespace Inferno
         private class EmergencyEscapeConf : InfernoConfig
         {
             public float EscapePower { get; } = 60.0f;
-            public float OpenParachutoSeconds { get; } = 1.5f;
 
             public override bool Validate()
             {

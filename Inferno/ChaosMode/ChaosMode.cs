@@ -174,10 +174,9 @@ namespace Inferno.ChaosMode
                     {
                         _singleWeaponProvider = null;
                     }
-                    else if (e is ChangeWeaponEvent)
+                    else if (e is ChangeWeaponEvent changeWeaponEvent)
                     {
-                        var s = (ChangeWeaponEvent)e;
-                        _singleWeaponProvider = new SingleWeaponProvider(s.Weapon);
+                        _singleWeaponProvider = new SingleWeaponProvider(changeWeaponEvent.Weapon);
                     }
                 })
                 .AddTo(CompositeDisposable);
@@ -206,7 +205,7 @@ namespace Inferno.ChaosMode
 
             _localCts ??= new CancellationTokenSource();
             _linkedCts ??=
-                CancellationTokenSource.CreateLinkedTokenSource(_localCts.Token, GetActivationCancellationToken());
+                CancellationTokenSource.CreateLinkedTokenSource(_localCts.Token, ActivationCancellationToken);
 
             var ct = _linkedCts.Token;
 

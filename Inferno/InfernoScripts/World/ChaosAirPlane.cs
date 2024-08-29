@@ -59,7 +59,7 @@ namespace Inferno
 
             IsActiveAsObservable
                 .Where(x => x)
-                .Subscribe(_ => StartChaosPlanesAsync(GetActivationCancellationToken()).Forget());
+                .Subscribe(_ => StartChaosPlanesAsync(ActivationCancellationToken).Forget());
 
             //ターゲット描画
             OnDrawingTickAsObservable

@@ -31,6 +31,8 @@ namespace Inferno
         private readonly List<TimeAwaiter> _timeAwaiters = new(8);
         protected readonly Random Random = new();
         private CancellationTokenSource _activationCancellationTokenSource;
+        private readonly CancellationTokenSource _destroyCancellationTokenSource = new();
+        private CancellationTokenSource _linkedCancellationTokenSource;
 
         private InfernoSynchronizationContext _infernoSynchronizationContext;
         private InfernoScheduler infernoScheduler;
@@ -232,6 +234,9 @@ namespace Inferno
                 {
                     try
                     {
+                        _linkedCancellationTokenSource?.Cancel();
+                        _linkedCancellationTokenSource?.Dispose();
+                        _linkedCancellationTokenSource = null;
                         _activationCancellationTokenSource?.Cancel();
                         _activationCancellationTokenSource?.Dispose();
                         _activationCancellationTokenSource = null;
@@ -281,6 +286,8 @@ namespace Inferno
                 _disposeSubject.OnNext(Unit.Default);
                 _disposeSubject.OnCompleted();
                 _disposeSubject.Dispose();
+                _destroyCancellationTokenSource.Cancel();
+                _destroyCancellationTokenSource.Dispose();
                 _activationCancellationTokenSource?.Cancel();
                 _activationCancellationTokenSource?.Dispose();
                 _activationCancellationTokenSource = null;
@@ -379,16 +386,32 @@ namespace Inferno
             return DelayFrameAsync(waitLoopCount, ct);
         }
 
-        protected CancellationToken GetActivationCancellationToken()
-        {
-            if (!IsActive)
-            {
-                throw new Exception("Script is not active.");
-            }
 
-            _activationCancellationTokenSource ??= new CancellationTokenSource();
-            return _activationCancellationTokenSource.Token;
+        protected CancellationToken ActivationCancellationToken
+        {
+            get
+            {
+                if (!IsActive)
+                {
+                    throw new Exception("Script is not active.");
+                }
+
+                if (_linkedCancellationTokenSource != null)
+                {
+                    return _linkedCancellationTokenSource.Token;
+                }
+
+                _activationCancellationTokenSource ??= new CancellationTokenSource();
+
+                var at = _activationCancellationTokenSource.Token;
+                _linkedCancellationTokenSource =
+                    CancellationTokenSource.CreateLinkedTokenSource(at, _destroyCancellationTokenSource.Token);
+
+                return _linkedCancellationTokenSource.Token;
+            }
         }
+
+        protected CancellationToken DestroyCancellationToken => _destroyCancellationTokenSource.Token;
 
         #endregion
 
