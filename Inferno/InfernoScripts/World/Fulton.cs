@@ -4,12 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
+using Inferno.InfernoScripts.InfernoCore.Coroutine;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -50,10 +54,12 @@ namespace Inferno
                     if (IsActive)
                     {
                         PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+
+                        FulutonUpdateLoopAsync(ActivationCancellationToken).Forget();
                     }
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)
@@ -62,10 +68,6 @@ namespace Inferno
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F10 && motherBasePeds.Count > 0)
                 .Subscribe(_ => SpawnCitizen());
-
-            CreateTickAsObservable(TimeSpan.FromSeconds(0.25))
-                .Where(_ => IsActive && !Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))
-                .Subscribe(_ => FulutonUpdate());
 
             //プレイヤが死んだらリストクリア
             OnThinnedTickAsObservable
@@ -113,7 +115,7 @@ namespace Inferno
         {
             if (!Directory.Exists(targetPath))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
@@ -121,33 +123,46 @@ namespace Inferno
 
         #region 回収
 
-        private void FulutonUpdate()
+        private async ValueTask FulutonUpdateLoopAsync(CancellationToken ct)
         {
-            foreach (var entity in CachedPeds.Concat(CachedVehicles.Cast<Entity>())
-                         .Where(
-                             x => x.IsSafeExist()
-                                  && x.IsInRangeOf(PlayerPed.Position, 15.0f)
-                                  && !fulutonedEntityList.Contains(x.Handle)
-                                  && x.IsAlive
-                         ))
+            while (!ct.IsCancellationRequested)
             {
-                if (entity.HasBeenDamagedByPed(PlayerPed) && (
-                        entity.HasBeenDamagedBy(Weapon.UNARMED) || entity.HasBeenDamagedBy(Weapon.STUNGUN)
-                    ))
+                if (Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE))
                 {
-                    fulutonedEntityList.Add(entity.Handle);
-                    StartCoroutine(FulutonCoroutine(entity));
-                    if (entity is Vehicle)
+                    // ここの待機はフレーム数を気にしなくていいのでTask.DelayでOK
+                    await Task.Delay(TimeSpan.FromSeconds(1), ct);
+                    continue;
+                }
+
+                foreach (var entity in CachedEntities
+                             .Where(
+                                 x => x.IsSafeExist()
+                                      && x.IsInRangeOf(PlayerPed.Position, 15.0f)
+                                      && !fulutonedEntityList.Contains(x.Handle)
+                                      && x.IsAlive
+                             ))
+                {
+                    if (entity.HasBeenDamagedByPed(PlayerPed) && (
+                            entity.HasBeenDamagedBy(Weapon.UNARMED) || entity.HasBeenDamagedBy(Weapon.STUNGUN)
+                        ))
                     {
-                        soundPlayerVehicleSetup?.Play();
-                    }
-                    else
-                        //pedの時は遅延させてならす
-                    {
-                        Observable.Timer(TimeSpan.FromSeconds(0.3f))
-                            .Subscribe(_ => soundPlayerPedSetup?.Play());
+                        fulutonedEntityList.Add(entity.Handle);
+                        FulutonAsync(entity, ct).Forget();
+                        if (entity is Vehicle)
+                        {
+                            soundPlayerVehicleSetup?.Play();
+                        }
+                        else
+                            //pedの時は遅延させてならす
+                        {
+                            Observable.Timer(TimeSpan.FromSeconds(0.3f))
+                                .Subscribe(_ => soundPlayerPedSetup?.Play())
+                                .AddTo(CompositeDisposable);
+                        }
                     }
                 }
+
+                await DelaySecondsAsync(0.25f, ct);
             }
         }
 
@@ -172,7 +187,7 @@ namespace Inferno
             }
         }
 
-        private IEnumerable<object> FulutonCoroutine(Entity entity)
+        private async ValueTask FulutonAsync(Entity entity, CancellationToken ct)
         {
             //Entityが消え去った後に処理したいので先に情報を保存しておく
             var hash = -1;
@@ -195,47 +210,47 @@ namespace Inferno
             }
 
             hash = entity.Model.Hash;
-
-            entity.ApplyForce(upForce * 2.0f);
-
-            foreach (var s in WaitForSeconds(3))
+            
+            var time = 0f;
+            while (time < 3.0f)
             {
+                time += DeltaTime;
                 if (!entity.IsSafeExist() || entity.IsDead)
                 {
-                    yield break;
+                    return;
                 }
 
-                if (entity is Ped)
-                {
-                    ((Ped)entity).SetToRagdoll();
-                }
+                entity.ApplyForce(upForce * 0.3f);
 
-                entity.ApplyForce(upForce * 1.07f);
-
-                yield return s;
+                await YieldAsync(ct);
             }
+
 
             if (!entity.IsSafeExist() || entity.IsRequiredForMission())
             {
-                yield break;
+                return;
             }
 
             if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
             {
-                yield break;
+                return;
             }
 
             //弾みをつける
-            yield return WaitForSeconds(0.25f);
+            await DelaySecondsAsync(0.25f, ct);
             soundPlayerMove?.Play();
 
-            foreach (var s in WaitForSeconds(15))
+            time = 0f;
+            while (time < 15.0f)
             {
+                time += DeltaTime;
+
+
                 if (!entity.IsSafeExist() || entity.Position.DistanceTo(PlayerPed.Position) > 100)
                 {
                     if (PlayerPed.CurrentVehicle.IsSafeExist() && PlayerPed.CurrentVehicle.Handle == entity.Handle)
                     {
-                        yield break;
+                        return;
                     }
 
                     if (isPed)
@@ -253,13 +268,13 @@ namespace Inferno
                         Game.Player.Money -= 1000;
                     }
 
-                    DrawText("回収完了");
-                    yield break;
+                    DrawText($"回収済: {motherBasePeds.Count}人/{motherbaseVeh.Count}台");
+                    return;
                 }
 
                 if (entity.IsDead)
                 {
-                    yield break;
+                    return;
                 }
 
                 var force = upForce * 1.0f / Game.FPS * 500.0f;
@@ -270,7 +285,7 @@ namespace Inferno
 
                 entity.ApplyForce(force);
 
-                yield return s;
+                await YieldAsync(ct);
             }
         }
 
@@ -281,6 +296,7 @@ namespace Inferno
         private void SpawnCitizen()
         {
             var hash = motherBasePeds.Dequeue();
+            DrawText($"残り: {motherBasePeds.Count}人/{motherbaseVeh.Count}台");
 
             var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist())
@@ -297,22 +313,27 @@ namespace Inferno
             p.SetDropWeaponWhenDead(false); //武器を落とさない
             p.GiveWeapon(weaponhash, 1000); //指定武器所持
             p.EquipWeapon(weaponhash); //武器装備
-            StartCoroutine(FriendCoroutine(p));
+            FriendAsync(p, ActivationCancellationToken).Forget();
         }
 
         /// <summary>
         /// 生成した味方を監視するコルーチン
         /// </summary>
-        private IEnumerable<object> FriendCoroutine(Ped ped)
+        private async ValueTask FriendAsync(Ped ped, CancellationToken ct)
         {
-            while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position, 100))
+            try
             {
-                yield return WaitForSeconds(1);
+                while (ped.IsSafeExist() && ped.IsAlive && ped.IsInRangeOf(PlayerPed.Position, 100))
+                {
+                    await DelaySecondsAsync(1, ct);
+                }
             }
-
-            if (ped.IsSafeExist())
+            finally
             {
-                ped.MarkAsNoLongerNeeded();
+                if (ped.IsSafeExist())
+                {
+                    ped.MarkAsNoLongerNeeded();
+                }
             }
         }
 

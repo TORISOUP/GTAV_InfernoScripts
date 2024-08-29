@@ -89,7 +89,8 @@ namespace Inferno
             OnTickAsObservable.Subscribe(_ =>
                 {
                     FrameCount++;
-                    var deltaTime = Game.LastFrameTime;
+                    DeltaTime = Game.LastFrameTime;
+                    ElapsedTime += DeltaTime;
 
                     try
                     {
@@ -135,7 +136,7 @@ namespace Inferno
                             {
                                 if (timeAwaiter is { IsActive: true })
                                 {
-                                    timeAwaiter.Step(deltaTime);
+                                    timeAwaiter.Step(DeltaTime);
                                 }
                             }
                         }
@@ -215,6 +216,9 @@ namespace Inferno
         protected virtual string ConfigFileName => null;
 
         protected ulong FrameCount { get; private set; }
+        protected float ElapsedTime { get; private set; }
+        
+        protected float DeltaTime { get; private set; }
 
         private InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
