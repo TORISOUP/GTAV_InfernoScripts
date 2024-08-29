@@ -217,7 +217,7 @@ namespace Inferno
 
         protected ulong FrameCount { get; private set; }
         protected float ElapsedTime { get; private set; }
-        
+
         protected float DeltaTime { get; private set; }
 
         private InfernoSynchronizationContext InfernoSynchronizationContext
@@ -395,9 +395,9 @@ namespace Inferno
             return DelayFrameAsync(waitLoopCount, ct);
         }
 
-        protected ValueTask DelayRandomSecondsAsync(int min, int max, CancellationToken ct)
+        protected ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
         {
-            var waitSeconds = Random.Next(min, max);
+            var waitSeconds = Random.NextDouble() * (max - min) + min;
             return DelayAsync(TimeSpan.FromSeconds(waitSeconds), ct);
         }
 

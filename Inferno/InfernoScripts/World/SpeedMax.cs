@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.World
 {
@@ -36,6 +39,13 @@ namespace Inferno.InfernoScripts.World
                     vehicleHashSet.Clear();
                 });
 
+            OnAllOnCommandObservable.Subscribe(_ =>
+            {
+                currentSpeedType = SpeedType.Random;
+                excludeMissionVehicle = true;
+                IsActive = true;
+            });
+
             //ミッション開始直後に一瞬動作を止めるフラグ
             var suspednFlag = false;
 
@@ -52,13 +62,23 @@ namespace Inferno.InfernoScripts.World
                                  ))
                     {
                         vehicleHashSet.Add(v.Handle);
+
+                        if (currentSpeedType == SpeedType.Random)
+                        {
+                            if(Random.Next(0,100) < 90)
+                            {
+                                // ランダムの場合はたまにしか発動しない
+                                return;
+                            }
+                        }
+                        
                         if (currentSpeedType == SpeedType.Original)
                         {
-                            StartCoroutine(OriginalSpeedMaxCoroutine(v));
+                            OriginalSpeedMaxAsync(v, ActivationCancellationToken).Forget();
                         }
                         else
                         {
-                            StartCoroutine(VehicleSpeedMaxCorutine(v));
+                            VehicleSpeedMaxAsync(v, ActivationCancellationToken).Forget();
                         }
                     }
                 });
@@ -110,53 +130,54 @@ namespace Inferno.InfernoScripts.World
         /// <summary>
         /// オリジナルに近い挙動
         /// </summary>
-        private IEnumerable<object> OriginalSpeedMaxCoroutine(Vehicle v)
+        private async ValueTask OriginalSpeedMaxAsync(Vehicle v, CancellationToken ct)
         {
             var maxSpeed = Random.Next(100, 300);
-            while (IsActive && v.IsSafeExist())
+            try
             {
-                if (!v.IsInRangeOf(PlayerPed.Position, 1000))
+                while (IsActive && v.IsSafeExist() && !ct.IsCancellationRequested)
                 {
-                    yield break;
-                }
+                    if (v.IsInRangeOf(PlayerPed.Position, 800) && PlayerPed.CurrentVehicle != v)
+                    {
+                        v.Speed = maxSpeed;
+                    }
 
-                if (PlayerVehicle.Value == v)
-                {
-                    yield break;
+                    await DelaySecondsAsync(1, ct);
                 }
-
-                v.Speed = maxSpeed;
-                yield return null;
+            }
+            finally
+            {
+                vehicleHashSet.Remove(v.Handle);
             }
         }
 
         /// <summary>
         /// カスタム版
         /// </summary>
-        private IEnumerable<object> VehicleSpeedMaxCorutine(Vehicle v)
+        private async ValueTask VehicleSpeedMaxAsync(Vehicle v, CancellationToken ct)
         {
-            //たまに後ろに飛ぶ
-            var dir = v.Handle % 10 == 0 ? -1 : 1;
-            var maxSpeed = GetVehicleSpeed() * dir;
-            if (Math.Abs(maxSpeed) > 20)
+            try
             {
-                v.Speed = 100 * dir;
+                //たまに後ろに飛ぶ
+                var dir = v.Handle % 10 == 0 ? -1 : 1;
+                var maxSpeed = GetVehicleSpeed() * dir;
+
+
+                while (v.IsSafeExist() && !ct.IsCancellationRequested)
+                {
+                    if (v.IsInRangeOf(PlayerPed.Position, 800) && PlayerPed.CurrentVehicle != v)
+                    {
+                        v.ApplyForce(maxSpeed * v.ForwardVector);
+                        await DelayRandomSecondsAsync(0.2f, 1f, ct);
+                        continue;
+                    }
+
+                    await DelaySecondsAsync(2f, ct);
+                }
             }
-
-            while (IsActive && v.IsSafeExist())
+            finally
             {
-                if (!v.IsInRangeOf(PlayerPed.Position, 1000))
-                {
-                    yield break;
-                }
-
-                if (PlayerVehicle.Value == v)
-                {
-                    yield break;
-                }
-
-                v.ApplyForce(maxSpeed * v.ForwardVector);
-                yield return null;
+                vehicleHashSet.Remove(v.Handle);
             }
         }
 
@@ -170,13 +191,13 @@ namespace Inferno.InfernoScripts.World
             switch (currentSpeedType)
             {
                 case SpeedType.Low:
-                    return Random.Next(5, 10);
+                    return Random.Next(50, 100);
                 case SpeedType.Middle:
-                    return Random.Next(10, 15);
+                    return Random.Next(80, 150);
                 case SpeedType.High:
-                    return Random.Next(20, 30);
+                    return Random.Next(100, 500);
                 case SpeedType.Random:
-                    return Random.Next(5, 30);
+                    return Random.Next(100, 500);
                 default:
                     return 0;
             }
