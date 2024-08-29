@@ -95,6 +95,11 @@ namespace Inferno
         {
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
         }
+        
+        public static Vector3 GetBonePosition(this Ped ped, PedBone boneIndex)
+        {
+            return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
+        }
 
         public static void FreezePosition(this Entity entity, bool freeze)
         {

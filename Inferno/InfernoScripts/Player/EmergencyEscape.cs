@@ -70,7 +70,10 @@ namespace Inferno
             }
             finally
             {
-                PlayerPed.IsInvincible = false;
+                if (PlayerPed.IsSafeExist())
+                {
+                    PlayerPed.IsInvincible = false;
+                }
             }
         }
 

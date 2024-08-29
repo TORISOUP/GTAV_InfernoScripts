@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
@@ -60,7 +61,7 @@ namespace Inferno
                 {
                     if (Random.Next(0, 100) <= Probability)
                     {
-                        DelayCoroutine(veh);
+                        DelayCoroutine(veh, ActivationCancellationToken).Forget();
                     }
                 }
             }
@@ -74,10 +75,10 @@ namespace Inferno
         /// <summary>
         /// ニトロの発動を遅延させる
         /// </summary>
-        private async Task DelayCoroutine(Vehicle v)
+        private async ValueTask DelayCoroutine(Vehicle v, CancellationToken ct)
         {
             var waitSeconds = Random.Next(0, 5);
-            await DelayAsync(TimeSpan.FromSeconds(waitSeconds));
+            await DelayAsync(TimeSpan.FromSeconds(waitSeconds), ct);
             var driver = v.GetPedOnSeat(VehicleSeat.Driver);
             EscapeVehicle(driver);
             NitroVehicle(v);
@@ -126,32 +127,40 @@ namespace Inferno
                 return;
             }
 
-            DelayParachute(ped);
+            DelayParachute(ped, ActivationCancellationToken).Forget();
         }
 
-        private async Task DelayParachute(Ped ped)
+        private async ValueTask DelayParachute(Ped ped, CancellationToken ct)
         {
             ped.SetNotChaosPed(true);
             ped.ClearTasksImmediately();
             ped.Position += new Vector3(0, 0, 0.5f);
             ped.SetToRagdoll();
 
-            await DelayAsync(TimeSpan.FromSeconds(0.1f));
+            await DelayAsync(TimeSpan.FromSeconds(0.1f), ct);
 
             ped.ApplyForce(new Vector3(0, 0, 40.0f));
             ped.IsInvincible = true;
 
-            await DelayAsync(TimeSpan.FromSeconds(1.5f));
-
-            if (!ped.IsSafeExist())
+            try
             {
-                return;
+                await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                if (ped.IsSafeExist())
+                {
+                    ped.IsInvincible = false;
+                }
             }
 
-            ped.IsInvincible = false;
             ped.ParachuteTo(PlayerPed.Position);
 
-            await DelayAsync(TimeSpan.FromSeconds(15));
+            await DelayAsync(TimeSpan.FromSeconds(15), ct);
 
             if (!ped.IsSafeExist())
             {

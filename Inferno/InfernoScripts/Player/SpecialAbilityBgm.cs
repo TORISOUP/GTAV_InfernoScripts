@@ -59,7 +59,7 @@ namespace Inferno
         {
             if (!Directory.Exists(targetPath))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();

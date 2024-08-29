@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
@@ -15,91 +17,110 @@ namespace Inferno.InfernoScripts.World
     internal class BombBat : InfernoScript
     {
         private readonly string Keyword = "batman";
-        private readonly List<Ped> pPed = new();
+        private readonly List<Ped> _startedPeds = new();
 
         protected override void Setup()
         {
-            pPed.Add(PlayerPed);
-
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
+                    _startedPeds.Clear();
                     IsActive = !IsActive;
                     DrawText("BombBat:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => { IsActive = true; });
 
-            //interval間隔で実行
-            OnThinnedTickAsObservable
+            CreateTickAsObservable(TimeSpan.FromSeconds(1))
                 .Where(_ => IsActive)
                 .Subscribe(p =>
                 {
-                    foreach (var ped in CachedPeds)
+                    foreach (var ped in CachedPeds.Where(x =>
+                                 x.IsSafeExist() && x.IsAlive && !_startedPeds.Contains(x) &&
+                                 x.IsInRangeOf(PlayerPed.Position, 100)))
                     {
-                        if (!ped.IsSafeExist())
-                        {
-                            continue;
-                        }
-
-                        BomBatAction(ped);
+                        _startedPeds.Add(ped);
+                        ObservePedDamageAsync(ped, ActivationCancellationToken).Forget();
                     }
 
-                    BomBatAction(PlayerPed);
+                    if (PlayerPed.IsSafeExist() && PlayerPed.IsAlive && !_startedPeds.Contains(PlayerPed))
+                    {
+                        _startedPeds.Add(PlayerPed);
+                        ObservePedDamageAsync(PlayerPed, ActivationCancellationToken).Forget();
+                    }
                 });
         }
 
-        private void BomBatAction(Ped ped)
+        private async ValueTask ObservePedDamageAsync(Ped ped, CancellationToken ct)
         {
-            if (ped.HasBeenDamagedBy(Weapon.BAT))
+            try
             {
-                GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade, 40.0f,
-                    0.5f);
-
-
-                var randomVector = InfernoUtilities.CreateRandomVector();
-                ped.ApplyForce(randomVector * Random.Next(10, 20));
-                ped.Kill();
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
-            }
-            else if (ped.HasBeenDamagedBy(Weapon.KNIFE))
-            {
-                GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Molotov1, 0.1f, 0.0f);
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
-            }
-            else if (ped.HasBeenDamagedBy(Weapon.GOLFCLUB))
-            {
-                var randomVector = InfernoUtilities.CreateRandomVector();
-                ped.SetToRagdoll(100);
-                ped.Velocity = randomVector * 1000;
-                ped.ApplyForce(randomVector * Random.Next(2000, 4000));
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
-            }
-            else if (ped.HasBeenDamagedBy(Weapon.UNARMED) /*&& !ped.HasBeenDamagedByPed(PlayerPed)*/)
-            {
-                NativeFunctions.ShootSingleBulletBetweenCoords(
-                    ped.Position + new Vector3(0, 0, 1),
-                    ped.GetBonePosition(Bone.IKHead), 1, WeaponHash.StunGun, null, 1.0f);
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
-            }
-            else if (ped.HasBeenDamagedBy(Weapon.HAMMER))
-            {
-                if (!ped.IsInRangeOf(PlayerPed.Position, 10))
+                // 分散
+                await DelayRandomFrameAsync(1, 30, ct);
+                while (ped.IsSafeExist() && ped.IsAlive && !ct.IsCancellationRequested)
                 {
-                    return;
-                }
+                    if (ped.HasBeenDamagedBy(Weapon.BAT))
+                    {
+                        GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade, 40.0f,
+                            0.5f);
 
-                Shock(ped);
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
+                        var randomVector = InfernoUtilities.CreateRandomVector();
+                        ped.ApplyForce(randomVector * Random.Next(10, 20));
+                        ped.Kill();
+                        ped.ClearLastWeaponDamage();
+                        return;
+                    }
+                    else if (ped.HasBeenDamagedBy(Weapon.KNIFE) || ped.HasBeenDamagedBy(Weapon.Battleaxe))
+                    {
+                        GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Molotov1, 0.1f, 0.0f);
+                        ped.ClearLastWeaponDamage();
+                    }
+                    else if (ped.HasBeenDamagedBy(Weapon.GOLFCLUB))
+                    {
+                        var randomVector = InfernoUtilities.CreateRandomVector();
+                        ped.SetToRagdoll(100);
+                        ped.Velocity = randomVector * 1000;
+                        ped.ApplyForce(randomVector * Random.Next(2000, 4000));
+                        ped.ClearLastWeaponDamage();
+                    }
+                    else if (ped.HasBeenDamagedBy(Weapon.UNARMED) /*&& !ped.HasBeenDamagedByPed(PlayerPed)*/)
+                    {
+                        var damanagedBone = ped.Bones.LastDamaged;
+
+                        NativeFunctions.ShootSingleBulletBetweenCoords(
+                            start: ped.GetBonePosition(damanagedBone),
+                            end: ped.Position,
+                            damage: 1,
+                            weapon: WeaponHash.StunGun, null, 1.0f);
+                        Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
+                    }
+                    else if (ped.HasBeenDamagedBy(Weapon.HAMMER))
+                    {
+                        if (!ped.IsInRangeOf(PlayerPed.Position, 10))
+                        {
+                            await YieldAsync(ct);
+                            continue;
+                        }
+
+                        Shock(ped);
+                        ped.ClearLastWeaponDamage();
+                    }
+                    else if (ped.HasBeenDamagedBy(Weapon.Poolcue))
+                    {
+                        var blowVector = -ped.ForwardVector;
+                        ped.SetToRagdoll(1);
+                        ped.Velocity = blowVector * 10;
+                        ped.ApplyForce(blowVector * Random.Next(20, 40));
+                        ped.ClearLastWeaponDamage();
+                    }
+
+                    await YieldAsync(ct);
+                }
             }
-            else if (ped.HasBeenDamagedBy(Weapon.Poolcue))
+            finally
             {
-                var blowVector = -ped.ForwardVector;
-                ped.SetToRagdoll(1);
-                ped.Velocity = blowVector * 10;
-                ped.ApplyForce(blowVector * Random.Next(20, 40));
-                Function.Call(Hash.CLEAR_PED_LAST_WEAPON_DAMAGE, ped);
+                _startedPeds.Remove(ped);
             }
         }
 

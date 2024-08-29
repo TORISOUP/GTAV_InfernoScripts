@@ -11,7 +11,7 @@ namespace Inferno
     /// </summary>
     internal class CitizenCrazyDriving : InfernoScript
     {
-        private readonly HashSet<Entity> affectPeds = new();
+        private readonly HashSet<Entity> _affectPeds = new();
         private readonly float PlayerAroundDistance = 300f;
 
         protected override void Setup()
@@ -32,7 +32,7 @@ namespace Inferno
 
         private void RunAway()
         {
-            affectPeds.RemoveWhere(x => !x.IsSafeExist());
+            _affectPeds.RemoveWhere(x => !x.IsSafeExist());
             if (!PlayerPed.IsSafeExist())
             {
                 return;
@@ -47,7 +47,7 @@ namespace Inferno
                                                     && (x.Position - PlayerPed.Position).Length() <=
                                                     PlayerAroundDistance)
                 .Select(x => x.GetPedOnSeat(VehicleSeat.Driver))
-                .Where(x => x.IsSafeExist() && !affectPeds.Contains(x));
+                .Where(x => x.IsSafeExist() && !_affectPeds.Contains(x));
 
             foreach (var driver in drivers)
             {
@@ -57,7 +57,7 @@ namespace Inferno
                     driver.MaxDrivingSpeed = 100.0f;
                     driver.DrivingStyle = DrivingStyle.AvoidTrafficExtremely;
                     driver.Task.VehicleChase(PlayerPed);
-                    affectPeds.Add(driver);
+                    _affectPeds.Add(driver);
                 }
                 catch (Exception e)
                 {

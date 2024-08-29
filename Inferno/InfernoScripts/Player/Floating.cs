@@ -11,7 +11,7 @@ namespace Inferno.InfernoScripts.Player
         {
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(_ => this.IsGamePadPressed(GameKey.Sprint) && this.IsGamePadPressed(GameKey.Jump))
-                .Subscribe(_ => { PlayerPed.ApplyForce(Vector3.WorldUp * 1.1f); });
+                .Subscribe(_ => { PlayerPed.ApplyForce(Vector3.WorldUp * 1.3f); });
         }
     }
 }

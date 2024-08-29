@@ -71,7 +71,7 @@ namespace Inferno.InfernoScripts.Parupunte
         public float EndMessageDisplayTime = 2.0f;
 
         private bool IsFinished;
-        private Subject<Unit> onFinishedSubject;
+        private AsyncSubject<Unit> onFinishedSubject;
 
         private Subject<Unit> onUpdateSubject;
 
@@ -115,10 +115,10 @@ namespace Inferno.InfernoScripts.Parupunte
         public bool IsActive { get; private set; } = true;
 
         protected IObservable<Unit> OnUpdateAsObservable
-            => onUpdateSubject ?? (onUpdateSubject = new Subject<Unit>());
+            => onUpdateSubject ??= new Subject<Unit>();
 
         protected IObservable<Unit> OnFinishedAsObservable
-            => onFinishedSubject ?? (onFinishedSubject = new Subject<Unit>());
+            => onFinishedSubject ??= new AsyncSubject<Unit>();
 
         /// <summary>
         /// OnSetUpのあとに呼ばれる

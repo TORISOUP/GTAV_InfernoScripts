@@ -319,6 +319,11 @@ namespace Inferno
 
         #region forTaks
 
+        protected async ValueTask DelaySecondsAsync(float seconds, CancellationToken ct = default)
+        {
+            await DelayAsync(TimeSpan.FromSeconds(seconds), ct);
+        }
+
         protected async ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
         {
             TimeAwaiter timeAwaiter;
@@ -384,6 +389,12 @@ namespace Inferno
         {
             var waitLoopCount = Random.Next(min, max);
             return DelayFrameAsync(waitLoopCount, ct);
+        }
+
+        protected ValueTask DelayRandomSecondsAsync(int min, int max, CancellationToken ct)
+        {
+            var waitSeconds = Random.Next(min, max);
+            return DelayAsync(TimeSpan.FromSeconds(waitSeconds), ct);
         }
 
 

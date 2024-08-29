@@ -11,7 +11,7 @@ namespace Inferno
     public class ReduceCounter : ICounter, IProgressBar
     {
         private readonly int _max;
-        private readonly Subject<Unit> _onFinishedSubject;
+        private readonly AsyncSubject<Unit> _onFinishedSubject;
 
         /// <summary>
         /// カウント回数を指定する
@@ -21,7 +21,7 @@ namespace Inferno
         {
             _max = count;
             Current = _max;
-            _onFinishedSubject = new Subject<Unit>();
+            _onFinishedSubject = new AsyncSubject<Unit>();
             IsCompleted = false;
         }
 

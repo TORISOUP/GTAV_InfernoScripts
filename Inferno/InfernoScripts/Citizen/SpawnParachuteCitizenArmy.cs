@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using Inferno.ChaosMode;
@@ -65,7 +67,7 @@ namespace Inferno
             ped.ParachuteTo(targetPosition);
 
             //着地までカオス化させない
-            StartCoroutine(PedOnGroundedCheck(ped));
+            PedOnGroundedCheckAsync(ped, ActivationCancellationToken).Forget();
         }
 
         /// <summary>
@@ -73,38 +75,43 @@ namespace Inferno
         /// </summary>
         /// <param name="ped"></param>
         /// <returns></returns>
-        private IEnumerable<object> PedOnGroundedCheck(Ped ped)
+        private async ValueTask PedOnGroundedCheckAsync(Ped ped, CancellationToken ct)
         {
             //市民無敵化
             ped.IsInvincible = true;
             ped.SetNotChaosPed(true);
-            for (var i = 0; i < 10; i++)
+            try
             {
-                yield return WaitForSeconds(1);
-
-                //市民が消えていたり死んでたら監視終了
-                if (!ped.IsSafeExist())
+                for (var i = 0; i < 10; i++)
                 {
-                    yield break;
-                }
+                    await DelaySecondsAsync(1, ct);
 
-                if (ped.IsDead)
-                {
-                    yield break;
-                }
+                    //市民が消えていたり死んでたら監視終了
+                    if (!ped.IsSafeExist())
+                    {
+                        return;
+                    }
 
-                //着地していたら監視終了
-                if (!ped.IsInAir)
-                {
-                    break;
+                    if (ped.IsDead)
+                    {
+                        return;
+                    }
+
+                    //着地していたら監視終了
+                    if (!ped.IsInAir)
+                    {
+                        break;
+                    }
                 }
             }
-
-            if (ped.IsSafeExist())
+            finally
             {
-                ped.SetNotChaosPed(false);
-                ped.IsInvincible = false;
-                ped.MarkAsNoLongerNeeded();
+                if (ped.IsSafeExist())
+                {
+                    ped.SetNotChaosPed(false);
+                    ped.IsInvincible = false;
+                    ped.MarkAsNoLongerNeeded();
+                }
             }
         }
 
