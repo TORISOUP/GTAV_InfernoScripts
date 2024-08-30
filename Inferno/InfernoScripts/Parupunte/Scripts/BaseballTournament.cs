@@ -19,10 +19,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-
-            OnFinishedAsObservable.Subscribe(_ => { Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault); });
-
+            
             Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.BAT));
+        }
+
+        protected override void OnFinished()
+        {
+            Inferno.InfernoCore.Publish(ChasoModeEvent.SetToDefault);
         }
     }
 }

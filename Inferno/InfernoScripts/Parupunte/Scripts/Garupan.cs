@@ -23,7 +23,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            base.OnSetUp();
             planType = (PlanType)Random.Next(0, Enum.GetValues(typeof(PlanType)).Length);
 
             switch (planType)

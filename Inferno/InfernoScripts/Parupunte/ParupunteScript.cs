@@ -83,7 +83,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         protected ReduceCounter ReduceCounter;
 
-        protected CancellationToken ScriptCancellationToken => _scriptCts.Token;
+        protected CancellationToken ActiveCancellationToken => _scriptCts.Token;
 
         protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
         {
@@ -165,8 +165,10 @@ namespace Inferno.InfernoScripts.Parupunte
                 return;
             }
 
+            IsActive = false;
             IsFinished = true;
             ReduceCounter?.Finish();
+            ReduceCounter?.Dispose();
             _scriptCts.Cancel();
             _scriptCts.Dispose();
             onUpdateSubject?.OnCompleted();
@@ -254,6 +256,16 @@ namespace Inferno.InfernoScripts.Parupunte
         protected ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
         {
             return core.DelayRandomSecondsAsync(min, max, ct);
+        }
+
+        protected ValueTask DelaySecondsAsync(float seconds, CancellationToken ct)
+        {
+            return core.DelaySecondsAsync(seconds, ct);
+        }
+
+        protected ValueTask Delay100MsAsync(CancellationToken ct)
+        {
+            return core.DelaySecondsAsync(0.1f, ct);
         }
 
         /// <summary>

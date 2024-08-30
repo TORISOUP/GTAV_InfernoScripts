@@ -8,7 +8,7 @@ namespace Inferno
     /// <summary>
     /// 減算カウンタ
     /// </summary>
-    public class ReduceCounter : ICounter, IProgressBar
+    public class ReduceCounter : ICounter, IProgressBar, IDisposable
     {
         private readonly int _max;
         private readonly AsyncSubject<Unit> _onFinishedSubject;
@@ -58,6 +58,11 @@ namespace Inferno
         {
             IsCompleted = true;
             _onFinishedSubject.OnCompleted();
+        }
+
+        public void Dispose()
+        {
+            _onFinishedSubject?.Dispose();
         }
     }
 }

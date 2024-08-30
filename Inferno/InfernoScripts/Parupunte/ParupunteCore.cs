@@ -332,61 +332,41 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <returns></returns>
         private async ValueTask ParupunteCoreLoopAsync(ParupunteScript script, CancellationToken ct)
         {
-            await YieldAsync(ct);
-
-            if (!IsActive)
-            {
-                return;
-            }
-
-            if (script == null)
-            {
-                IsActive = false;
-                return;
-            }
-
             try
             {
-                script.OnSetUp();
-                script.OnSetNames();
-            }
-            catch (Exception e)
-            {
-                LogWrite(e.ToString());
-                script.OnFinishedCore();
-                IsActive = false;
-                return;
-            }
+                await YieldAsync(ct);
 
-            //名前を出してスタート
-            ParupunteDrawAsync(GetPlayerName() + "はパルプンテを唱えた!", script.Name, ct).Forget();
-            await DelaySecondsAsync(2, ct);
+                if (!IsActive)
+                {
+                    return;
+                }
 
-            try
-            {
-                script.OnStart();
-            }
-            catch (Exception e)
-            {
-                LogWrite(e.ToString());
-                script.OnFinishedCore();
-                IsActive = false;
-                _subTextUiContainer.Items.Clear();
-                return;
-            }
+                if (script == null)
+                {
+                    IsActive = false;
+                    return;
+                }
 
-            //サブタイトルを出す
-            var subTitle = string.IsNullOrEmpty(script.SubName) ? script.Name : script.SubName;
-            _subTextUiContainer.Items.Clear();
-            _subTextUiContainer.Items.Add(CreateSubText(subTitle));
-
-
-            while (script.IsActive && IsActive)
-            {
                 try
                 {
-                    //スクリプトのUpdateを実行
-                    script.OnUpdateCore();
+                    script.OnSetUp();
+                    script.OnSetNames();
+                }
+                catch (Exception e)
+                {
+                    LogWrite(e.ToString());
+                    script.OnFinishedCore();
+                    IsActive = false;
+                    return;
+                }
+
+                //名前を出してスタート
+                ParupunteDrawAsync(GetPlayerName() + "はパルプンテを唱えた!", script.Name, ct).Forget();
+                await DelaySecondsAsync(2, ct);
+
+                try
+                {
+                    script.OnStart();
                 }
                 catch (Exception e)
                 {
@@ -397,21 +377,48 @@ namespace Inferno.InfernoScripts.Parupunte
                     return;
                 }
 
-                await DelaySecondsAsync(0.1f, ct);
-            }
+                //サブタイトルを出す
+                var subTitle = string.IsNullOrEmpty(script.SubName) ? script.Name : script.SubName;
+                _subTextUiContainer.Items.Clear();
+                _subTextUiContainer.Items.Add(CreateSubText(subTitle));
 
-            try
-            {
-                script.OnFinishedCore();
-            }
-            catch (Exception e)
-            {
-                LogWrite(e.ToString());
+                while (script.IsActive && IsActive)
+                {
+                    try
+                    {
+                        //スクリプトのUpdateを実行
+                        script.OnUpdateCore();
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.ToString());
+                        script.OnFinishedCore();
+                        IsActive = false;
+                        _subTextUiContainer.Items.Clear();
+                        return;
+                    }
+
+                    // 1フレーム待機
+                    await YieldAsync(ct);
+                }
+
+                try
+                {
+                    script.OnFinishedCore();
+                }
+                catch (Exception e)
+                {
+                    LogWrite(e.ToString());
+                }
+                finally
+                {
+                    IsActive = false;
+                    _subTextUiContainer.Items.Clear();
+                }
             }
             finally
             {
-                IsActive = false;
-                _subTextUiContainer.Items.Clear();
+                script?.OnFinishedCore();
             }
         }
 
@@ -538,13 +545,13 @@ namespace Inferno.InfernoScripts.Parupunte
             base.AutoReleaseOnGameEnd(entity);
         }
 
-        protected async ValueTask DelaySecondsAsync(float seconds, CancellationToken ct = default)
-        {
-            await DelayAsync(TimeSpan.FromSeconds(seconds), ct);
-        }
-
         #region forTask
 
+        public new ValueTask DelaySecondsAsync(float seconds, CancellationToken ct = default)
+        {
+            return DelayAsync(TimeSpan.FromSeconds(seconds), ct);
+        }
+        
         public new ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
         {
             return base.DelayAsync(timeSpan, ct);

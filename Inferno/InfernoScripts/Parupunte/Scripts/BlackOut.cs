@@ -5,14 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ctOS 停電", "ctOS 復旧")]
     [ParupunteIsono("ていでん")]
+    [ParupunteDebug(true)]
     internal class BlackOut : ParupunteScript
     {
         private IDisposable drawingDisposable;
@@ -28,45 +32,51 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ => { StartCoroutine(BlackOutEnd()); });
-
-            StartCoroutine(BlackOutStart());
-            OnFinishedAsObservable
-                .Subscribe(_ =>
-                {
-                    SetArtificialLights(false);
-                    soundPlayerStart = null;
-                    soundPlayerEnd = null;
-                    drawingDisposable?.Dispose();
-                });
-
-            //周辺車両をエンストさせる
-            OnUpdateAsObservable
-                .Subscribe(_ =>
-                {
-                    var playerPos = core.PlayerPed.Position;
-                    var playerVehicle = core.GetPlayerVehicle();
-                    foreach (var v in core.CachedVehicles.Where(
-                                 x => x.IsSafeExist()
-                                      && x.IsInRangeOf(playerPos, 1000)
-                                      && x.IsAlive
-                                      && x != playerVehicle))
-                    {
-                        v.IsEngineRunning = false;
-                        v.EnginePowerMultiplier = 0.0f;
-                        v.EngineTorqueMultiplier = 0.0f;
-                    }
-                });
+            ReduceCounter.OnFinishedAsync
+                .Subscribe(_ => BlackOutEndAsync(ActiveCancellationToken).Forget());
+            
+            BlackOutStartAsync(ActiveCancellationToken).Forget();
         }
 
-
-        private IEnumerable<object> BlackOutStart()
+        protected override void OnUpdate()
         {
-            StartCoroutine(DrawBlackOutLine());
+            //周辺車両をエンストさせる
+            if (!core.PlayerPed.IsSafeExist()) return;
+
+            var playerPos = core.PlayerPed.Position;
+            var playerVehicle = core.GetPlayerVehicle();
+            foreach (var v in core.CachedVehicles.Where(
+                         x => x.IsSafeExist()
+                              && x.IsInRangeOf(playerPos, 1000)
+                              && x.IsAlive
+                              && x != playerVehicle))
+            {
+                if (!v.IsEngineRunning)
+                {
+                    continue;
+                }
+
+                v.IsEngineRunning = false;
+                v.EnginePowerMultiplier = 0.0f;
+                v.EngineTorqueMultiplier = 0.0f;
+            }
+        }
+
+        protected override void OnFinished()
+        {
+            SetArtificialLights(false);
+            soundPlayerStart = null;
+            soundPlayerEnd = null;
+            drawingDisposable?.Dispose();
+        }
+
+        private async ValueTask BlackOutStartAsync(CancellationToken ct)
+        {
+            DrawBlackOutLineAsync(ct).Forget();
 
             //効果音に合わせてチカチカさせる
             soundPlayerStart?.Play();
-            yield return WaitForSeconds(1.5f);
+            await DelaySecondsAsync(1.5f, ct);
             var current = false;
             for (var i = 0; i < 10; i++)
             {
@@ -76,16 +86,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     current = !current;
                 }
 
-                yield return null;
+                await Delay100MsAsync(ct);
             }
 
             SetArtificialLights(true);
         }
 
-        private IEnumerable<object> BlackOutEnd()
+        private async ValueTask BlackOutEndAsync(CancellationToken ct)
         {
             soundPlayerEnd?.Play();
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             ParupunteEnd();
         }
 
@@ -101,7 +111,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .ToArray();
         }
 
-        private IEnumerable<object> DrawBlackOutLine()
+        private async ValueTask DrawBlackOutLineAsync(CancellationToken ct)
         {
             var targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
 
@@ -118,7 +128,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             for (var i = 0; i < 10; i++)
             {
-                yield return WaitForSeconds(0.35f);
+                await DelaySecondsAsync(0.35f, ct);
                 targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
             }
 

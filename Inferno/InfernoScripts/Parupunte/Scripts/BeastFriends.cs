@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -83,13 +86,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            StartCoroutine(SpawnCoroutineToPed());
-            StartCoroutine(SpawnCoroutineToVehicle());
+            SpawnToPedAsync(ActiveCancellationToken).Forget();
+            SpawnToVehicleAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> SpawnCoroutineToVehicle()
+        private async ValueTask SpawnToVehicleAsync(CancellationToken ct)
         {
-            while (true)
+            while (!ct.IsCancellationRequested)
             {
                 var centerPos = core.PlayerPed.Position;
 
@@ -122,16 +125,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         _setEntities.Add(veh.Handle);
                     }
 
-                    yield return null;
+                    await Delay100MsAsync(ct);
                 }
 
-                yield return WaitForSeconds(0.2f);
+                await DelaySecondsAsync(0.2f, ct);
             }
         }
 
-        private IEnumerable<object> SpawnCoroutineToPed()
+        private async ValueTask SpawnToPedAsync(CancellationToken ct)
         {
-            while (IsActive)
+            while (!ct.IsCancellationRequested)
             {
                 var playerPos = core.PlayerPed.Position;
 
@@ -158,10 +161,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         _setEntities.Add(ped.Handle);
                     }
 
-                    yield return null;
+                    await Delay100MsAsync(ct);
                 }
 
-                yield return WaitForSeconds(0.25f);
+                await DelaySecondsAsync(0.25f, ct);
             }
         }
 
