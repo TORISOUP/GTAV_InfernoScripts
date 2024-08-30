@@ -21,7 +21,7 @@ namespace Inferno.InfernoScripts.Player
                     && this.IsGamePadPressed(GameKey.VehicleAttack)
                     && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
                 )
-                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScriptScheduler)
+                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScheduler)
                 .Subscribe(_ =>
                 {
                     var v = PlayerVehicle.Value;

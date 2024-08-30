@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -39,7 +42,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
                 ped.Task.ClearAllImmediately();
-                StartCoroutine(DashCoroutine(ped));
+                DashLoopAsync(ped, ActiveCancellationToken).Forget();
             }
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
@@ -67,7 +70,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
                 ped.Task.ClearAllImmediately();
-                StartCoroutine(DashCoroutine(ped));
+                DashLoopAsync(ped, ActiveCancellationToken).Forget();
             }
         }
 
@@ -76,19 +79,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.SET_ANIM_RATE, ped, (double)rate, 0.0, 0.0);
         }
 
-        private IEnumerable<object> DashCoroutine(Ped ped)
+        private async ValueTask DashLoopAsync(Ped ped, CancellationToken ct)
         {
-            while (!ReduceCounter.IsCompleted)
+            while (!ct.IsCancellationRequested)
             {
                 if (!ped.IsSafeExist())
                 {
-                    yield break;
+                    return;
                 }
 
                 if (ped.IsDead)
                 {
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
-                    yield break;
+                    return;
                 }
 
                 if (random.Next(100) < 10)
@@ -108,7 +111,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     0, 0, 0);
                 StartFire(ped);
 
-                yield return null;
+                await DelayFrameAsync(3, ct);
             }
         }
 

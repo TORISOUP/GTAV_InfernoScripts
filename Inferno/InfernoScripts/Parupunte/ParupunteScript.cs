@@ -172,9 +172,11 @@ namespace Inferno.InfernoScripts.Parupunte
             _scriptCts.Cancel();
             _scriptCts.Dispose();
             onUpdateSubject?.OnCompleted();
+            onUpdateSubject?.Dispose();
             OnFinished();
             onFinishedSubject?.OnNext(Unit.Default);
             onFinishedSubject?.OnCompleted();
+            onFinishedSubject?.Dispose();
 
             foreach (var id in coroutineIds)
             {

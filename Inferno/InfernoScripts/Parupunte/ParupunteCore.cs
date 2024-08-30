@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Threading;
@@ -15,7 +14,6 @@ using GTA.Math;
 using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.Utilities;
-using Reactive.Bindings.Extensions;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -74,7 +72,7 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         private TimeSpan Time => _stopWatch.Elapsed;
-
+        
         protected override void Setup()
         {
             Interval = 0;
@@ -122,7 +120,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             OnKeyDownAsObservable
                 .Where(x => x.KeyCode == Keys.NumPad0)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f), InfernoScriptScheduler)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f), base.InfernoScheduler)
                 .Subscribe(_ =>
                 {
                     if (IsActive)

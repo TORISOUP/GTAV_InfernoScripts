@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA.Math;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -26,13 +28,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 .DistinctUntilChanged()
                 .Where(x => x)
                 .Skip(1)
-                .Subscribe(_ => { StartCoroutine(JumpCoroutine()); });
+                .ThrottleFirst(TimeSpan.FromSeconds(1), core.InfernoScheduler)
+                .Subscribe(_ => JumpAsync(ActiveCancellationToken).Forget());
         }
 
-        private IEnumerable<object> JumpCoroutine()
+        private async ValueTask JumpAsync(CancellationToken ct)
         {
-            //ワンテンポ遅らせたかったけど微妙だった
-            yield return WaitForSeconds(0.1f);
+            await Delay100MsAsync(ct);
             var playerPos = core.PlayerPed.Position;
             GTA.World.AddExplosion(playerPos + Vector3.WorldUp * 10, GTA.ExplosionType.Grenade, 0.01f, 0.5f);
 

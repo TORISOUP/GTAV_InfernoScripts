@@ -77,7 +77,7 @@ namespace Inferno
                     .RefCount(); //Subscribeされたらイベントハンドラを登録する
 
             OnThinnedTickAsObservable =
-                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
+                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScheduler)
                     .Publish()
                     .RefCount();
 
@@ -223,7 +223,7 @@ namespace Inferno
         private InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
-        protected IScheduler InfernoScriptScheduler
+        public IScheduler InfernoScheduler
             => infernoScheduler ??= new InfernoScheduler();
 
         /// <summary>
@@ -530,7 +530,7 @@ namespace Inferno
         /// InfernoEvent
         /// </summary>
         protected IObservable<IEventMessage> OnRecievedInfernoEvent
-            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
+            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScheduler);
 
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
@@ -562,7 +562,7 @@ namespace Inferno
         /// <returns></returns>
         protected IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
         {
-            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Publish().RefCount();
+            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScheduler).Publish().RefCount();
         }
 
         #endregion forEvents

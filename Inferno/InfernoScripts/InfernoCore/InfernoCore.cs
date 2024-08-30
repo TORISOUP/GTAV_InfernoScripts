@@ -148,7 +148,7 @@ namespace Inferno
                 }
 
                 _playerPed.Value = ped;
-                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500) ?? Array.Empty<Entity>();
+                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500).Where(x=>x != ped).ToArray();
                 _nearPeds.Value = _nearEntities.Value.OfType<Ped>().ToArray();
                 _nearVehicles.Value = _nearEntities.Value.OfType<Vehicle>().ToArray();
                 _playerVehicle.Value = ped?.CurrentVehicle;
