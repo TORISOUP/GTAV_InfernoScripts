@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte
@@ -72,15 +74,16 @@ namespace Inferno.InfernoScripts.Parupunte
 
         private bool IsFinished;
         private AsyncSubject<Unit> onFinishedSubject;
-
         private Subject<Unit> onUpdateSubject;
-
+        protected readonly CancellationTokenSource _scriptCts = new();
         protected Random Random;
 
         /// <summary>
         /// 汎用カウンタ（終了時にCompletedになる）
         /// </summary>
         protected ReduceCounter ReduceCounter;
+
+        protected CancellationToken ScriptCancellationToken => _scriptCts.Token;
 
         protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
         {
@@ -89,7 +92,6 @@ namespace Inferno.InfernoScripts.Parupunte
             core.LogWrite(ToString());
             IsFinished = false;
             Random = new Random();
-
             Config = element;
         }
 
@@ -136,7 +138,6 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public virtual void OnSetUp()
         {
-            ;
         }
 
         /// <summary>
@@ -151,11 +152,10 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         /// <summary>
-        /// 100msごとに実行される
+        /// 毎フレーム実行される
         /// </summary>
         protected virtual void OnUpdate()
         {
-            ;
         }
 
         public void OnFinishedCore()
@@ -167,7 +167,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             IsFinished = true;
             ReduceCounter?.Finish();
-
+            _scriptCts.Cancel();
+            _scriptCts.Dispose();
             onUpdateSubject?.OnCompleted();
             OnFinished();
             onFinishedSubject?.OnNext(Unit.Default);
@@ -228,6 +229,31 @@ namespace Inferno.InfernoScripts.Parupunte
         protected IEnumerable WaitForSeconds(float seconds)
         {
             return core.CreateWaitForSeconds(seconds);
+        }
+
+        protected ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
+        {
+            return core.DelayAsync(timeSpan, ct);
+        }
+
+        protected ValueTask DelayFrameAsync(int frame, CancellationToken ct = default)
+        {
+            return core.DelayFrameAsync(frame, ct);
+        }
+
+        protected ValueTask YieldAsync(CancellationToken ct = default)
+        {
+            return core.YieldAsync(ct);
+        }
+
+        protected ValueTask DelayRandomFrameAsync(int min, int max, CancellationToken ct)
+        {
+            return core.DelayRandomFrameAsync(min, max, ct);
+        }
+
+        protected ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
+        {
+            return core.DelayRandomSecondsAsync(min, max, ct);
         }
 
         /// <summary>
