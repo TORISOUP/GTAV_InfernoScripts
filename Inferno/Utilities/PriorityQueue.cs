@@ -45,9 +45,7 @@ namespace Inferno.Utilities
 
             if (IsHigherPriority(index, parent))
             {
-                var temp = _items[index];
-                _items[index] = _items[parent];
-                _items[parent] = temp;
+                (_items[index], _items[parent]) = (_items[parent], _items[index]);
                 Percolate(parent);
             }
         }
@@ -80,9 +78,7 @@ namespace Inferno.Utilities
 
             if (first != index)
             {
-                var temp = _items[index];
-                _items[index] = _items[first];
-                _items[first] = temp;
+                (_items[index], _items[first]) = (_items[first], _items[index]);
                 Heapify(first);
             }
         }

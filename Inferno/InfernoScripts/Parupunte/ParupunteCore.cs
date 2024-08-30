@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
@@ -27,6 +29,7 @@ namespace Inferno.InfernoScripts.Parupunte
         private readonly Vector2 _mainTextPositionScale = new(0.5f, 0.8f);
         private readonly Stopwatch _stopWatch = Stopwatch.StartNew();
         private readonly Vector2 _subTextPositionScale = new(0.0f, 0.0f);
+        private readonly object _gate = new object();
 
         /// <summary>
         /// デバッグ用
@@ -74,6 +77,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected override void Setup()
         {
+            Interval = 0;
             IsActive = false;
             timerText = new TimerUiTextManager(this);
 
@@ -110,7 +114,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             CreateInputKeywordAsObservable("rnt")
                 .Where(_ => !IsActive)
-                .Subscribe(_ => ParupunteStart(ChooseParupounteScript()));
+                .Subscribe(_ => { ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken); });
 
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
@@ -127,7 +131,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     }
                     else
                     {
-                        ParupunteStart(ChooseParupounteScript());
+                        ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken);
                     }
                 });
 
@@ -252,17 +256,17 @@ namespace Inferno.InfernoScripts.Parupunte
 
             if (c.Contains("ぱるぷんて"))
             {
-                ParupunteStart(ChooseParupounteScript());
+                ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken);
                 return true;
             }
 
-            var result = IsonoParupunteScripts.Keys.FirstOrDefault(x => command.Contains(x));
+            var result = IsonoParupunteScripts.Keys.FirstOrDefault(command.Contains);
             if (string.IsNullOrEmpty(result) || !IsonoParupunteScripts.ContainsKey(result))
             {
                 return false;
             }
 
-            ParupunteStart(IsonoParupunteScripts[result]);
+            ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken);
             return true;
         }
 
@@ -270,28 +274,33 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテの実行を開始する
         /// </summary>
-        private void ParupunteStart(Type script)
+        private void ParupunteStart(Type script, CancellationToken ct)
         {
-            if (IsActive)
+            lock (_gate)
             {
-                return;
+                if (IsActive)
+                {
+                    return;
+                }
+
+                IsActive = true;
             }
 
-            IsActive = true;
-
-            var conf = _parupunteConfigs.ContainsKey(script.Name)
-                ? _parupunteConfigs[script.Name]
+            var conf = _parupunteConfigs.TryGetValue(script.Name, out var config)
+                ? config
                 : ParupunteConfigElement.Default;
 
-            //ThreadPool上で初期化（プチフリ回避）
-            Observable.Start(() => Activator.CreateInstance(script, this, conf) as ParupunteScript,
-                    Scheduler.ThreadPool)
-                .OnErrorRetry((Exception ex) => { LogWrite(ex.ToString()); }, 3, TimeSpan.FromMilliseconds(300))
-                .Subscribe(x => StartCoroutine(ParupunteCoreCoroutine(x)), ex =>
-                {
-                    //       LogWrite(ex.ToString());
-                    IsActive = false;
-                });
+            try
+            {
+                // スクリプトのインスタンスを生成
+                // スレッドプール上で呼び出すことで、メインスレッドをブロックしない
+                var s = Activator.CreateInstance(script, this, conf) as ParupunteScript;
+                ParupunteCoreLoopAsync(s, ct).Forget();
+            }
+            catch (Exception _)
+            {
+                IsActive = false;
+            }
         }
 
         /// <summary>
@@ -321,19 +330,19 @@ namespace Inferno.InfernoScripts.Parupunte
         /// パルプンテのメインコルーチン
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<object> ParupunteCoreCoroutine(ParupunteScript script)
+        private async ValueTask ParupunteCoreLoopAsync(ParupunteScript script, CancellationToken ct)
         {
-            yield return null;
+            await YieldAsync(ct);
 
             if (!IsActive)
             {
-                yield break;
+                return;
             }
 
             if (script == null)
             {
                 IsActive = false;
-                yield break;
+                return;
             }
 
             try
@@ -346,12 +355,12 @@ namespace Inferno.InfernoScripts.Parupunte
                 LogWrite(e.ToString());
                 script.OnFinishedCore();
                 IsActive = false;
-                yield break;
+                return;
             }
 
             //名前を出してスタート
-            StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!", script.Name));
-            yield return WaitForSeconds(2);
+            ParupunteDrawAsync(GetPlayerName() + "はパルプンテを唱えた!", script.Name, ct).Forget();
+            await DelaySecondsAsync(2, ct);
 
             try
             {
@@ -363,7 +372,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 script.OnFinishedCore();
                 IsActive = false;
                 _subTextUiContainer.Items.Clear();
-                yield break;
+                return;
             }
 
             //サブタイトルを出す
@@ -385,10 +394,10 @@ namespace Inferno.InfernoScripts.Parupunte
                     script.OnFinishedCore();
                     IsActive = false;
                     _subTextUiContainer.Items.Clear();
-                    yield break;
+                    return;
                 }
 
-                yield return null; //100ms待機
+                await DelaySecondsAsync(0.1f, ct);
             }
 
             try
@@ -409,19 +418,19 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// 画面に名前とかを出す
         /// </summary>
-        private IEnumerable<object> ParupunteDrawCoroutine(string callString, string scriptname)
+        private async ValueTask ParupunteDrawAsync(string callString, string scriptname, CancellationToken ct)
         {
             //○はパルプンテを唱えた！の部分
             timerText.Set(CreateMainText(callString), 2.0f);
 
             //2秒画面に出す
-            yield return WaitForSeconds(2);
+            await DelaySecondsAsync(2, ct);
 
             //効果名
             timerText.Set(CreateMainText(scriptname), 3.0f);
 
             //3秒画面に出す
-            yield return WaitForSeconds(3);
+            await DelaySecondsAsync(3, ct);
         }
 
         /// <summary>
@@ -528,5 +537,39 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             base.AutoReleaseOnGameEnd(entity);
         }
+
+        protected async ValueTask DelaySecondsAsync(float seconds, CancellationToken ct = default)
+        {
+            await DelayAsync(TimeSpan.FromSeconds(seconds), ct);
+        }
+
+        #region forTask
+
+        public new ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
+        {
+            return base.DelayAsync(timeSpan, ct);
+        }
+
+        public new ValueTask DelayFrameAsync(int frame, CancellationToken ct = default)
+        {
+            return base.DelayFrameAsync(frame, ct);
+        }
+
+        public new ValueTask YieldAsync(CancellationToken ct = default)
+        {
+            return base.YieldAsync(ct);
+        }
+
+        public new ValueTask DelayRandomFrameAsync(int min, int max, CancellationToken ct)
+        {
+            return base.DelayRandomFrameAsync(min, max, ct);
+        }
+
+        public new ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
+        {
+            return base.DelayRandomSecondsAsync(min, max, ct);
+        }
+
+        #endregion
     }
 }
