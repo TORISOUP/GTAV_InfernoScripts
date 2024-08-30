@@ -41,7 +41,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (core.PlayerPed.IsInVehicle())
             {
-                core.PlayerPed.CurrentVehicle.Speed = 300;
+                core.PlayerPed.CurrentVehicle.SetForwardSpeed(300);
             }
 
             core.PlayerPed.SetToRagdoll(10);

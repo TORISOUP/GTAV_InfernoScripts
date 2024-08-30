@@ -195,7 +195,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //演出用
             Function.Call(Hash.ADD_EXPLOSION, tank.Position.X, tank.Position.Y, tank.Position.Z, -1, 0.0f, true, false,
                 0.1f);
-            tank.Speed = isForward ? 100 : -100;
+            tank.SetForwardSpeed(isForward ? 100 : -100);
 
             yield return WaitForSeconds(2);
             if (ped.IsSafeExist())

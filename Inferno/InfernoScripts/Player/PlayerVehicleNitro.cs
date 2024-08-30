@@ -72,11 +72,11 @@ namespace Inferno
                 : StraightAccelerationSpeed;
             if (this.IsGamePadPressed(GameKey.VehicleHorn))
             {
-                vehicle.Speed -= addSpeed;
+                vehicle.SetForwardSpeed(vehicle.Speed - addSpeed);
             }
             else
             {
-                vehicle.Speed += addSpeed;
+                vehicle.SetForwardSpeed(vehicle.Speed + addSpeed);
             }
 
             NitroAction(driver, vehicle);

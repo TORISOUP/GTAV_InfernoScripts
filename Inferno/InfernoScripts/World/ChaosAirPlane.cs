@@ -130,7 +130,7 @@ namespace Inferno
             }
 
             AutoReleaseOnGameEnd(plane);
-            plane.Speed = 500;
+            plane.SetForwardSpeed(500);
             plane.PetrolTankHealth = 10;
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));

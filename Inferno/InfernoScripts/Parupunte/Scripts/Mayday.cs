@@ -38,7 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 yield break;
             }
 
-            plane.Speed = 0;
+            plane.SetForwardSpeed(0);
             plane.MarkAsNoLongerNeeded();
 
             //ラマー生成

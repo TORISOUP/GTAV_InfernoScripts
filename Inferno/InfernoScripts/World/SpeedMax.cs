@@ -65,13 +65,13 @@ namespace Inferno.InfernoScripts.World
 
                         if (currentSpeedType == SpeedType.Random)
                         {
-                            if(Random.Next(0,100) < 90)
+                            if (Random.Next(0, 100) < 90)
                             {
                                 // ランダムの場合はたまにしか発動しない
                                 return;
                             }
                         }
-                        
+
                         if (currentSpeedType == SpeedType.Original)
                         {
                             OriginalSpeedMaxAsync(v, ActivationCancellationToken).Forget();
@@ -139,7 +139,7 @@ namespace Inferno.InfernoScripts.World
                 {
                     if (v.IsInRangeOf(PlayerPed.Position, 800) && PlayerPed.CurrentVehicle != v)
                     {
-                        v.Speed = maxSpeed;
+                        v.SetForwardSpeed(maxSpeed);
                     }
 
                     await DelaySecondsAsync(1, ct);

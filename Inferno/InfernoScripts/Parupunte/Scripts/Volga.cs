@@ -36,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             plane.PetrolTankHealth = 100;
-            plane.Speed = 50;
+            plane.SetForwardSpeed(500);
 
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));

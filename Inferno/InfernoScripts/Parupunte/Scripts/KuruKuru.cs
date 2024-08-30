@@ -34,7 +34,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     );
                 foreach (var veh in targets)
                 {
-                    veh.Speed = 200;
+                    veh.SetForwardSpeed(200);
                 }
 
                 ParupunteEnd();
@@ -64,7 +64,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                             if (rate > 0.5f)
                             {
                                 veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
-                                veh.Speed = 40.0f * 2.0f * (rate - 0.5f);
+                                veh.SetForwardSpeed(40.0f * 2.0f * (rate - 0.5f));
                             }
                         }
                     });

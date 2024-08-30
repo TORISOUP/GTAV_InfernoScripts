@@ -17,7 +17,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbabillity\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbabillity\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
+                    "{\"AttackPlayerCorrectionProbability\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbability\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -41,7 +41,7 @@ namespace InfernoTest
             //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -88,7 +88,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbabillity\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbabillity\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"AttackPlayerCorrectionProbability\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
 
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(300, result.Radius);

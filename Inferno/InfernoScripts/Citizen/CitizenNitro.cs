@@ -103,7 +103,7 @@ namespace Inferno
                                      vehicle.Quaternion;
             }
 
-            vehicle.Speed += velocitiesSpeed;
+            vehicle.SetForwardSpeed(vehicle.Speed + velocitiesSpeed);
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {

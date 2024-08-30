@@ -274,7 +274,6 @@ namespace Inferno.ChaosMode
                 ped.Task.ClearAllImmediately();
             }
 
-            SetPedStatus(ped);
 
 
             if (ped.IsRequiredForMission())
@@ -308,6 +307,8 @@ namespace Inferno.ChaosMode
                     break;
                 }
 
+                SetPedStatus(ped);
+                
                 //武器を変更する
                 if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
                 {
@@ -340,8 +341,7 @@ namespace Inferno.ChaosMode
                 var targets = GetTargetPeds(ped);
                 //攻撃する
                 TryRiot(ped, targets);
-
-
+                
                 // 行動時間
                 float waitTime = Random.Next(5, 40);
                 float checkWaitTime = 0;
@@ -361,9 +361,8 @@ namespace Inferno.ChaosMode
                     {
                         // 除外キャラに指定されたら停止
                         chaosedPedList.Remove(pedId);
-                        return;  
+                        return;
                     }
-                    
 
                     // 定期的にチェックする部分
                     if (checkWaitTime > 1)
@@ -377,7 +376,12 @@ namespace Inferno.ChaosMode
                             chaosedPedList.Remove(pedId);
                             return;
                         }
-                        
+
+                        if (ped.IsFleeing)
+                        {
+                            break;
+                        }
+
 
                         // 攻撃されたら次の反撃対象にしておく
                         if (ped.HasEntityBeenDamagedByAnyPed())
@@ -479,7 +483,7 @@ namespace Inferno.ChaosMode
             // 距離に応じて発射レートを変える
             ped.SetCombatAttributes(24, RandomBool());
             // ターゲットを切り替えるのを禁止するか
-            ped.SetCombatAttributes(25, false);
+            ped.SetCombatAttributes(25, RandomBool());
             // 戦闘開始時のリアクションを無効化
             ped.SetCombatAttributes(26, true);
             // 射線が通って無くても攻撃するか
@@ -521,6 +525,10 @@ namespace Inferno.ChaosMode
             ped.SetCombatRange(100);
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
+            ped.FiringPattern = GTA.FiringPattern.FullAuto;
+
+            // バカ射撃
+            Function.Call(Hash.SET_PED_PATH_AVOID_FIRE, ped, Random.Next(0, 99) < chaosModeSetting.StupidPedRate);
         }
 
         /// <summary>

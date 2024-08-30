@@ -95,7 +95,7 @@ namespace Inferno
         {
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
         }
-        
+
         public static Vector3 GetBonePosition(this Ped ped, PedBone boneIndex)
         {
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
@@ -114,6 +114,19 @@ namespace Inferno
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
         {
             return entity.Position.DistanceTo(position) < distance;
+        }
+
+        public static void SetForwardSpeed(this Vehicle v, float value)
+        {
+            if (v.Model.IsTrain)
+            {
+                Function.Call(Hash.SET_TRAIN_SPEED, v.Handle, value);
+                Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, v.Handle, value);
+            }
+            else
+            {
+                Function.Call(Hash.SET_VEHICLE_FORWARD_SPEED, v.Handle, value);
+            }
         }
 
         public static Vector3 ApplyVector(this Quaternion q, Vector3 v)
