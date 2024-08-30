@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -19,7 +22,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnCoroutine());
+            SpawnAsync(ActiveCancellationToken).Forget();
 
             ReduceCounter = new ReduceCounter(20000);
             AddProgressBar(ReduceCounter);
@@ -38,12 +41,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 });
         }
 
-        private IEnumerable<object> SpawnCoroutine()
+        private async ValueTask SpawnAsync(CancellationToken ct)
         {
             foreach (var i in Enumerable.Range(0, 12))
             {
                 CreatePed(i < 6);
-                yield return null;
+                await Delay100MsAsync(ct);
             }
         }
 

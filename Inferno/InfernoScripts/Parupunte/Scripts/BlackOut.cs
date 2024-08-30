@@ -16,7 +16,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ctOS 停電", "ctOS 復旧")]
     [ParupunteIsono("ていでん")]
-    [ParupunteDebug(true)]
     internal class BlackOut : ParupunteScript
     {
         private IDisposable drawingDisposable;

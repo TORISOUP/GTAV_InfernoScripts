@@ -357,6 +357,13 @@ namespace Inferno.ChaosMode
                         break;
                     }
 
+                    if (ped.IsNotChaosPed())
+                    {
+                        // 除外キャラに指定されたら停止
+                        chaosedPedList.Remove(pedId);
+                        return;  
+                    }
+                    
 
                     // 定期的にチェックする部分
                     if (checkWaitTime > 1)
@@ -370,7 +377,7 @@ namespace Inferno.ChaosMode
                             chaosedPedList.Remove(pedId);
                             return;
                         }
-
+                        
 
                         // 攻撃されたら次の反撃対象にしておく
                         if (ped.HasEntityBeenDamagedByAnyPed())

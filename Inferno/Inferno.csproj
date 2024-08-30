@@ -141,7 +141,7 @@
         <Compile Include="InfernoScripts\Parupunte\Scripts\BlackOut.cs"/>
         <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWantedLevel.cs"/>
         <Compile Include="InfernoScripts\Parupunte\Scripts\ChangeWeather.cs"/>
-        <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmagencyEscape.cs"/>
+        <Compile Include="InfernoScripts\Parupunte\Scripts\CitizenEmergencyEscape.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\EdoPeriod.cs"/>
         <Compile Include="InfernoScripts\Parupunte\Scripts\DachoClub.cs"/>
         <Compile Include="InfernoScripts\Parupunte\Scripts\ElectricalShock.cs"/>
