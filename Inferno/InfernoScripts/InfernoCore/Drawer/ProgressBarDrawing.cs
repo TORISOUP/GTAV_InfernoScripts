@@ -13,9 +13,9 @@ namespace Inferno
     /// </summary>
     public class ProgressBarDrawing : InfernoScript
     {
-        private readonly object lockObject = new();
+        private readonly object _lockObject = new();
 
-        private readonly List<ProgressBarData> progressBarDataList = new();
+        private readonly List<ProgressBarData> _progressBarDataList = new();
         private ContainerElement _container;
 
         public static ProgressBarDrawing Instance { get; private set; }
@@ -28,18 +28,18 @@ namespace Inferno
 
             //バー表示が設定されていたら描画
             OnDrawingTickAsObservable
-                .Where(_ => !Game.IsPaused && Game.Player.IsAlive && progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
+                .Where(_ => _progressBarDataList != null && !Game.IsPaused && Game.Player.IsAlive && _progressBarDataList.Any()) //Readだし排他ロックいらないかなという判断
                 .Subscribe(_ =>
                 {
                     _container.Items.Clear();
-                    var datas = new ProgressBarData[0];
+                    ProgressBarData[] datas;
 
                     //ここは排他ロック必要
-                    lock (lockObject)
+                    lock (_lockObject)
                     {
                         //完了しているものは除外する
-                        progressBarDataList.RemoveAll(x => x.ProgressBarStatus.IsCompleted);
-                        datas = progressBarDataList.ToArray();
+                        _progressBarDataList.RemoveAll(x => x.ProgressBarStatus.IsCompleted);
+                        datas = _progressBarDataList.ToArray();
                     }
 
                     foreach (var progressBarData in datas)
@@ -56,9 +56,9 @@ namespace Inferno
         /// </summary>
         public new void RegisterProgressBar(ProgressBarData data)
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
-                progressBarDataList.Add(data);
+                _progressBarDataList.Add(data);
             }
         }
 

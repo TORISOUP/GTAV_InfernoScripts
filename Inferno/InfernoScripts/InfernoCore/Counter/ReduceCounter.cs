@@ -43,7 +43,7 @@ namespace Inferno
             }
 
             Current = Current > countValue ? Current - countValue : 0;
-
+            
             if (Current != 0)
             {
                 return;

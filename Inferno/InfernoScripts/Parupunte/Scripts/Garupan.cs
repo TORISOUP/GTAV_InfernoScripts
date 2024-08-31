@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -15,7 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private readonly List<Entity> resources = new();
         private string _name;
         private PlanType planType;
-
 
         public Garupan(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -39,7 +41,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public override void OnSetNames()
         {
             Name = _name;
-            SubName = "ガルパンは、いいぞ";
+            SubName = "ガ◯パンは、いいぞ";
             EndMessage = () =>
             {
                 if (core.PlayerPed.IsAlive)
@@ -48,7 +50,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
 
                 EndMessageDisplayTime = 4.0f;
-                return "フラッグ車走行不能！大洗女子学園の勝利！";
+                return "フラッグ車走行不能！";
             };
         }
 
@@ -78,7 +80,19 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         if (t.IsSafeExist())
                         {
                             t.MarkAsNoLongerNeeded();
-                            t.Health = -1;
+                            if (t is Ped p)
+                            {
+                                p.Kill();
+                            }
+                            else if (t is Vehicle v)
+                            {
+                                v.Explode();
+                                var b = v.AttachedBlip;
+                                if (b != null)
+                                {
+                                    b.Delete();
+                                }
+                            }
                         }
                     }
                 });
@@ -93,18 +107,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             //戦車を遠目にたくさん配置して、遭遇したら攻撃してくる
-            foreach (var i in Enumerable.Range(0, 12))
+            foreach (var _ in Enumerable.Range(0, 12))
             {
                 //遠目につくる
-                var vp = SpawnTank(Random.Next(100, 200));
-                if (vp == null)
+                var (tank, ped) = SpawnTank(Random.Next(300, 500));
+                if (!tank.IsSafeExist() || !ped.IsSafeExist())
                 {
                     continue;
                 }
 
-                var ped = vp.Item2;
                 ped.Task.FightAgainst(core.PlayerPed);
-                var tank = vp.Item1;
+                // 車で攻撃するか
+                ped.SetCombatAttributes(52, true);
+                // 車両の武器を使用するか
+                ped.SetCombatAttributes(53, true);
                 resources.Add(tank);
                 resources.Add(ped);
                 tank.EnginePowerMultiplier = 20.0f;
@@ -115,26 +131,30 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         #endregion
 
-        private Tuple<Vehicle, Ped> SpawnTank(float range)
+        private (Vehicle, Ped) SpawnTank(float range)
         {
-            return SpawnTank(core.PlayerPed.Position.Around(range));
+            var pos = GTA.World.GetNextPositionOnStreet(core.PlayerPed.Position.Around(range));
+            return SpawnTank(pos);
         }
 
-        private Tuple<Vehicle, Ped> SpawnTank(Vector3 position)
+        private (Vehicle, Ped) SpawnTank(Vector3 position)
         {
             var model = new Model(VehicleHash.Rhino);
             //戦車生成
             var tank = GTA.World.CreateVehicle(model, position);
             if (!tank.IsSafeExist())
             {
-                return null;
+                return (null, null);
             }
+
+            var b = tank.AddBlip();
+            b.Color = BlipColor.Pink;
 
             //乗員召喚
             var ped = tank.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.Tonya));
             if (!ped.IsSafeExist())
             {
-                return null;
+                return (null, null);
             }
 
             ped.SetNotChaosPed(true);
@@ -143,7 +163,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AutoReleaseOnGameEnd(tank);
             AutoReleaseOnGameEnd(ped);
 
-            return new Tuple<Vehicle, Ped>(tank, ped);
+            return new(tank, ped);
         }
 
         private enum PlanType
@@ -160,36 +180,31 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(6 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            StartCoroutine(KottsunTankCoroutine(true));
-            StartCoroutine(KottsunTankCoroutine(false));
+            KottsunTankAsync(true, ActiveCancellationToken).Forget();
+            KottsunTankAsync(false, ActiveCancellationToken).Forget();
         }
 
         //戦車を生成して数秒後に突進させる
-        private IEnumerable<object> KottsunTankCoroutine(bool isForward)
+        private async ValueTask KottsunTankAsync(bool isForward, CancellationToken ct)
         {
             //遠目につくる
             var ppos = core.PlayerPed.Position;
-            var vp = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
-            if (vp == null)
+            var (tank, ped) = SpawnTank(ppos + new Vector3(0, isForward ? -30 : 30, 0));
+            if (ped == null || tank == null)
             {
                 ParupunteEnd();
             }
 
-            var ped = vp.Item2;
-            var tank = vp.Item1;
             tank.EnginePowerMultiplier = 20.0f;
             tank.EngineTorqueMultiplier = 20.0f;
             tank.MaxSpeed = 300;
             resources.Add(tank);
             resources.Add(ped);
-            OnFinishedAsObservable
-                .Where(_ => tank.IsSafeExist() && tank.IsAlive)
-                .Subscribe(_ => tank.PetrolTankHealth = -1);
 
-            yield return WaitForSeconds(3);
+            await DelaySecondsAsync(3, ct);
             if (!tank.IsSafeExist())
             {
-                yield break;
+                return;
             }
 
             //演出用
@@ -197,9 +212,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 0.1f);
             tank.SetForwardSpeed(isForward ? 100 : -100);
 
-            yield return WaitForSeconds(2);
+            await DelaySecondsAsync(2, ct);
             if (ped.IsSafeExist())
             {
+                // 車で攻撃するか
+                ped.SetCombatAttributes(52, true);
+                // 車両の武器を使用するか
+                ped.SetCombatAttributes(53, true);
                 ped.Task.FightAgainst(core.PlayerPed);
             }
         }

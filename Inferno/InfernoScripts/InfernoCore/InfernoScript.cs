@@ -173,9 +173,7 @@ namespace Inferno
             CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
                 .Subscribe(_ => _coroutinePool.Run())
                 .AddTo(CompositeDisposable);
-            ;
-
-
+    
             OnAbortAsync.Subscribe(_ =>
                 {
                     Destroy();

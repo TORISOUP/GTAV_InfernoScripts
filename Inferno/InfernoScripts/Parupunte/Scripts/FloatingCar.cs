@@ -11,7 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ふわふわ", "おわり")]
     [ParupunteIsono("ふわふわ")]
-    [ParupunteDebug(true)]
     internal class FloatingCar : ParupunteScript
     {
         private readonly List<Vehicle> _targetList = new();
