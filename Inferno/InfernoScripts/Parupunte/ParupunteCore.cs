@@ -52,6 +52,7 @@ namespace Inferno.InfernoScripts.Parupunte
         private int _screenWidth;
         private ContainerElement _subTextUiContainer;
         private TimerUiTextManager timerText;
+        private ParupunteScript _currentScript;
 
         private Dictionary<string, Type> IsonoParupunteScripts
         {
@@ -72,7 +73,7 @@ namespace Inferno.InfernoScripts.Parupunte
         }
 
         private TimeSpan Time => _stopWatch.Elapsed;
-        
+
         protected override void Setup()
         {
             Interval = 0;
@@ -160,6 +161,12 @@ namespace Inferno.InfernoScripts.Parupunte
                         nextIsonoTime = Time.Add(TimeSpan.FromSeconds(4));
                     }
                 });
+
+            OnAbortAsync.Subscribe(_ =>
+            {
+                _currentScript?.OnFinishedCore();
+                _currentScript = null;
+            });
 
             #endregion EventHook
 
@@ -292,8 +299,8 @@ namespace Inferno.InfernoScripts.Parupunte
             {
                 // スクリプトのインスタンスを生成
                 // スレッドプール上で呼び出すことで、メインスレッドをブロックしない
-                var s = Activator.CreateInstance(script, this, conf) as ParupunteScript;
-                ParupunteCoreLoopAsync(s, ct).Forget();
+                _currentScript = Activator.CreateInstance(script, this, conf) as ParupunteScript;
+                ParupunteCoreLoopAsync(_currentScript, ct).Forget();
             }
             catch (Exception _)
             {
@@ -417,6 +424,7 @@ namespace Inferno.InfernoScripts.Parupunte
             finally
             {
                 script?.OnFinishedCore();
+                _currentScript = null;
             }
         }
 
@@ -549,7 +557,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             return DelayAsync(TimeSpan.FromSeconds(seconds), ct);
         }
-        
+
         public new ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
         {
             return base.DelayAsync(timeSpan, ct);

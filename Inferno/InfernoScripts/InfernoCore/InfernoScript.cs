@@ -217,10 +217,10 @@ namespace Inferno
 
         protected virtual string ConfigFileName => null;
 
-        protected ulong FrameCount { get; private set; }
-        protected float ElapsedTime { get; private set; }
+        public ulong FrameCount { get; private set; }
+        public float ElapsedTime { get; private set; }
 
-        protected float DeltaTime { get; private set; }
+        public float DeltaTime { get; private set; }
 
         private InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
