@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Native;
 
@@ -28,11 +30,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             explodedPedHandles = new HashSet<int>();
         }
 
-        protected override void OnUpdate()
+        protected override async ValueTask OnUpdateAsync(CancellationToken ct)
         {
             explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x)); //後の誤判定防止のため;
 
-            var player = core.PlayerPed;
             var peds = core.CachedPeds.Where(x => x.IsSafeExist()
                                                   && !x.IsSameEntity(core.PlayerPed)
                                                   && x.IsDead
@@ -52,6 +53,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 explodedPedHandles.Add(ped.Handle); //同一人物が2回以上爆発するのを防止するため
             }
+
+            await Delay100MsAsync(ct);
         }
     }
 }

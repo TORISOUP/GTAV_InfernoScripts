@@ -9,6 +9,7 @@ namespace Inferno.InfernoScripts.Player
     public class AutoHealPlayerHealth : InfernoScript
     {
         private bool _canHealPlayerHealth = false;
+        private readonly int _alertHelthValue = 25;
 
         protected override void Setup()
         {
@@ -34,9 +35,9 @@ namespace Inferno.InfernoScripts.Player
             {
                 if (PlayerPed.IsSafeExist() && _canHealPlayerHealth)
                 {
-                    if (PlayerPed.Health < PlayerPed.MaxHealth)
+                    if (PlayerPed.Health < PlayerPed.MaxHealth && PlayerPed.Health >= _alertHelthValue)
                     {
-                        var next = Math.Min(PlayerPed.Health + 3, PlayerPed.MaxHealth);
+                        var next = Math.Min(PlayerPed.Health + 2, PlayerPed.MaxHealth);
                         PlayerPed.Health = next;
                     }
                     else if (PlayerPed.Armor < 100)

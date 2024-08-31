@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("おなら")]
+    [ParupunteDebug(true)]
     internal class Fart : ParupunteScript
     {
         public Fart(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -22,18 +26,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
             }
 
-            StartCoroutine(FartCoroutine());
+            FartAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> FartCoroutine()
+        private async ValueTask FartAsync(CancellationToken ct)
         {
             core.DrawParupunteText("3", 1.0f);
 
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             core.DrawParupunteText("2", 1.0f);
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             core.DrawParupunteText("1", 1.0f);
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
 
             core.DrawParupunteText("発射！", 3.0f);
             GasExplosion();

@@ -6,6 +6,7 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -116,6 +117,9 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public bool IsActive { get; private set; } = true;
 
+        private bool _isUpdateAsyncActive = false;
+        private object _gateUpdateAsync = new();
+
         protected IObservable<Unit> OnUpdateAsObservable
             => onUpdateSubject ??= new Subject<Unit>();
 
@@ -149,13 +153,45 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
+            Internal_UpdateAsync(ActiveCancellationToken).Forget();
         }
+
 
         /// <summary>
         /// 毎フレーム実行される
         /// </summary>
         protected virtual void OnUpdate()
         {
+        }
+
+        /// <summary>
+        /// 毎フレーム実行されるが、await中は呼び出されない
+        /// </summary>
+        protected virtual ValueTask OnUpdateAsync(CancellationToken ct)
+        {
+            return default;
+        }
+
+        private async ValueTask Internal_UpdateAsync(CancellationToken ct)
+        {
+            lock (_gateUpdateAsync)
+            {
+                if (_isUpdateAsyncActive)
+                {
+                    return;
+                }
+
+                _isUpdateAsyncActive = true;
+            }
+
+            try
+            {
+                await OnUpdateAsync(ct);
+            }
+            finally
+            {
+                _isUpdateAsyncActive = false;
+            }
         }
 
         public void OnFinishedCore()

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -23,7 +26,7 @@ namespace Inferno
                 .Select(_ => Game.IsMissionActive)
                 .DistinctUntilChanged()
                 .Where(x => x)
-                .Subscribe(_ => SupplyArmorAndHealth());
+                .Subscribe(_ => SupplyArmorAndHealthAsync(DestroyCancellationToken).Forget());
 
             //プレイヤが復活した時
             OnThinnedTickAsObservable
@@ -32,19 +35,26 @@ namespace Inferno
                 .DistinctUntilChanged()
                 .Skip(1) //ONにした直後の判定結果は無視
                 .Where(x => x)
-                .Subscribe(_ => SupplyArmorAndHealth());
+                .Subscribe(_ => SupplyArmorAndHealthAsync(DestroyCancellationToken).Forget());
         }
 
         /// <summary>
         /// 体力とアーマー回復
         /// </summary>
-        private void SupplyArmorAndHealth()
+        private async ValueTask SupplyArmorAndHealthAsync(CancellationToken ct)
         {
             var player = PlayerPed;
             var maxHealth = player.MaxHealth;
             var maxArmor = Game.Player.GetPlayerMaxArmor();
             player.Health = maxHealth;
             player.Armor = maxArmor;
+
+            while (!ct.IsCancellationRequested && !Game.Player.IsSpecialAbilityEnabled)
+            {
+                await YieldAsync(ct);
+            }
+
+            Game.Player.RefillSpecialAbility();
         }
     }
 }

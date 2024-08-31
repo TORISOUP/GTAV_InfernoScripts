@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -22,15 +24,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            StartCoroutine(ElectricalCoroutine());
+            ElectricalAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> ElectricalCoroutine()
+        private async ValueTask ElectricalAsync(CancellationToken ct)
         {
-            var pos = core.PlayerPed.Position;
-            while (IsActive)
+            if (!core.PlayerPed.IsSafeExist())
             {
-                pos = core.PlayerPed.Position;
+                ParupunteEnd();
+                return;
+            }
+
+            while (IsActive && !ct.IsCancellationRequested)
+            {
+                var pos = core.PlayerPed.Position;
                 var bones = new[]
                 {
                     Bone.IKHead,
@@ -66,7 +73,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 }
 
-                yield return WaitForSeconds(0.7f);
+                await DelaySecondsAsync(0.7f, ct);
             }
         }
     }
