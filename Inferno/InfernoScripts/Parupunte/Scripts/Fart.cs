@@ -10,7 +10,6 @@ using Inferno.Utilities;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("おなら")]
-    [ParupunteDebug(true)]
     internal class Fart : ParupunteScript
     {
         public Fart(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -32,7 +31,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private async ValueTask FartAsync(CancellationToken ct)
         {
             core.DrawParupunteText("3", 1.0f);
-
             await DelaySecondsAsync(1, ct);
             core.DrawParupunteText("2", 1.0f);
             await DelaySecondsAsync(1, ct);

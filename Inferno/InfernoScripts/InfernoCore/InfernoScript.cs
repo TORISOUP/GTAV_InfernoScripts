@@ -85,12 +85,31 @@ namespace Inferno
 
             OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
 
-            //スケジューラ実行
+            //スケジューラなどの定期実行系
             OnTickAsObservable.Subscribe(_ =>
                 {
                     FrameCount++;
                     DeltaTime = Game.LastFrameTime;
                     ElapsedTime += DeltaTime;
+
+                    try
+                    {
+                        if (_counterList.Any())
+                        {
+                            foreach (var c in _counterList)
+                            {
+                                c.Update((int)(DeltaTime * 1000));
+                            }
+
+                            //完了状態にあるタイマを全て削除
+                            _counterList.RemoveAll(x => x.IsCompleted);
+                        }
+                    }
+                    catch
+                    {
+                        //
+                    }
+
 
                     try
                     {
@@ -147,23 +166,6 @@ namespace Inferno
                     }
                 })
                 .AddTo(CompositeDisposable);
-            ;
-
-            //タイマのカウント
-            OnThinnedTickAsObservable
-                .Where(_ => _counterList.Any())
-                .Subscribe(_ =>
-                {
-                    foreach (var c in _counterList)
-                    {
-                        c.Update(100);
-                    }
-
-                    //完了状態にあるタイマを全て削除
-                    _counterList.RemoveAll(x => x.IsCompleted);
-                })
-                .AddTo(CompositeDisposable);
-            ;
 
             _coroutinePool = new CoroutinePool(5);
 
