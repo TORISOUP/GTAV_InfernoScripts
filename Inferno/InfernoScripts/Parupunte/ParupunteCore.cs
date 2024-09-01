@@ -149,8 +149,9 @@ namespace Inferno.InfernoScripts.Parupunte
 
             var nextIsonoTime = Time;
 
-            OnRecievedInfernoEvent
+            OnReceivedInfernoEvent
                 .OfType<IsonoMessage>()
+                .ObserveOn(InfernoScheduler)
                 .Where(_ => (nextIsonoTime - Time).Ticks <= 0)
                 .Retry()
                 .Subscribe(c =>
@@ -271,7 +272,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 return false;
             }
 
-            ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken);
+            ParupunteStart(IsonoParupunteScripts[result], DestroyCancellationToken);
             return true;
         }
 

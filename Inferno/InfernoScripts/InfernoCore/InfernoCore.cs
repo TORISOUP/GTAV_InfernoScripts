@@ -73,7 +73,7 @@ namespace Inferno
         /// <summary>
         /// 発行されたイベントメッセージ
         /// </summary>
-        public static IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
+        public static IObservable<IEventMessage> OnReceivedEventMessage => EventMessageSubject;
 
         /// <summary>
         /// 周辺市民

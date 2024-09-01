@@ -529,8 +529,8 @@ namespace Inferno
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected IObservable<IEventMessage> OnRecievedInfernoEvent
-            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScheduler);
+        protected IObservable<IEventMessage> OnReceivedInfernoEvent
+            => InfernoCore.OnReceivedEventMessage.ObserveOn(InfernoScheduler);
 
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する

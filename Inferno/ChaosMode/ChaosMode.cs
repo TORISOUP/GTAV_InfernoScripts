@@ -166,7 +166,8 @@ namespace Inferno.ChaosMode
                 .AddTo(CompositeDisposable);
 
             //イベントが来たら武器を変更する
-            OnRecievedInfernoEvent
+            OnReceivedInfernoEvent
+                .ObserveOn(InfernoScheduler)
                 .OfType<ChasoModeEvent>()
                 .Subscribe(e =>
                 {

@@ -11,6 +11,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("ひとはなび")]
     internal class Hitohanabi : ParupunteScript
     {
+        private Vector3 _targetPosition;
+        private HashSet<Ped> _pedList;
+
         public Hitohanabi(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
@@ -23,18 +26,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             ReduceCounter = new ReduceCounter(5000);
             AddProgressBar(ReduceCounter);
-            //コルーチン起動
-            StartCoroutine(HitohanabiCoroutine());
+            _targetPosition = core.PlayerPed.Position.Around(30) + new Vector3(0, 0, 15);
+            _pedList = new HashSet<Ped>();
         }
 
-        private IEnumerable<object> HitohanabiCoroutine()
+        protected override void OnUpdate()
         {
-            //プレイや周辺の15m上空を設定
-            var targetPosition = core.PlayerPed.Position.Around(20) + new Vector3(0, 0, 15);
-            var pedList = new HashSet<Ped>();
-
             //タイマが終わるまでカウントし続ける
-            while (!ReduceCounter.IsCompleted)
+            if (!ReduceCounter.IsCompleted)
             {
                 foreach (
                         var targetPed in
@@ -43,13 +42,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                                  && x.IsAlive
                                  && x.IsHuman
                                  && !x.IsCutsceneOnlyPed()
-                                 && x.IsInRangeOf(core.PlayerPed.Position, 50))
+                                 && x.IsInRangeOf(core.PlayerPed.Position, 100))
                     )
                     //まだの人をリストにくわえる
                 {
-                    if (pedList.Count < 30 && !pedList.Contains(targetPed))
+                    if (_pedList.Add(targetPed))
                     {
-                        pedList.Add(targetPed);
                         if (targetPed.IsInVehicle())
                         {
                             targetPed.Task.ClearAllImmediately();
@@ -57,34 +55,38 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
+                        targetPed.FreezePosition(false);
                     }
                 }
 
-                foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
+                foreach (var targetPed in _pedList.Where(x => x.IsSafeExist()))
                 {
                     //すいこむ
-                    var direction = targetPosition - targetPed.Position;
-                    targetPed.FreezePosition(false);
-                    targetPed.SetToRagdoll();
+                    var direction = _targetPosition - targetPed.Position;
                     var lenght = direction.Length();
-                    if (lenght > 5)
-                    {
-                        direction.Normalize();
-                        targetPed.ApplyForce(direction * lenght.Clamp(0, 5) * 4);
-                    }
+                    direction.Normalize();
+                    targetPed.ApplyForce(direction * lenght.Clamp(0, 1.5f));
                 }
 
-                yield return null;
+                return;
             }
 
+            var expolodeCount = 0;
+
             //バクハツシサン
-            foreach (var targetPed in pedList.Where(x => x.IsSafeExist()))
+            foreach (var targetPed in _pedList.Where(x => x.IsSafeExist())
+                         .OrderBy(x => x.Position.DistanceToSquared(_targetPosition)))
             {
                 targetPed.Kill();
                 targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 10);
+                if (expolodeCount++ < 5)
+                {
+                    GTA.World.AddExplosion(targetPed.Position, GTA.ExplosionType.FireWork, 2.0f, 1.0f);
+                }
             }
 
-            GTA.World.AddExplosion(targetPosition, GTA.ExplosionType.Rocket, 2.0f, 1.0f);
+            GTA.World.AddExplosion(_targetPosition, GTA.ExplosionType.Tanker, 2.0f, 1.0f);
+
 
             //終了
             ParupunteEnd();

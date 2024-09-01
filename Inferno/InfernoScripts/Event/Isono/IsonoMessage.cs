@@ -1,6 +1,6 @@
 ﻿namespace Inferno.InfernoScripts.Event.Isono
 {
-    internal struct IsonoMessage : IEventMessage
+    public struct IsonoMessage : IEventMessage
     {
         public string Command { get; private set; }
 
