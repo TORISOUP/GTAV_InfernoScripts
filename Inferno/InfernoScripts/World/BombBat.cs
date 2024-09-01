@@ -61,7 +61,6 @@ namespace Inferno.InfernoScripts.World
                 while (ped.IsSafeExist() && ped.IsAlive && !ct.IsCancellationRequested &&
                        PlayerPed.IsSafeExist() && ped.IsInRangeOf(PlayerPed.Position, 35))
                 {
-
                     if (ped.HasBeenDamagedByAnyMeleeWeapon())
                     {
                         if (ped.HasBeenDamagedBy(Weapon.BAT))
@@ -76,7 +75,8 @@ namespace Inferno.InfernoScripts.World
                             ped.ClearLastWeaponDamage();
                             return;
                         }
-                        else if (ped.HasBeenDamagedBy(Weapon.KNIFE) || ped.HasBeenDamagedBy(Weapon.Battleaxe))
+                        else if (ped.HasBeenDamagedBy(Weapon.KNIFE) || ped.HasBeenDamagedBy(Weapon.Battleaxe) ||
+                                 ped.HasBeenDamagedBy(Weapon.Dagger) || ped.HasBeenDamagedBy(Weapon.Hatchet))
                         {
                             GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Molotov1, 0.1f, 0.0f);
                         }
@@ -106,23 +106,22 @@ namespace Inferno.InfernoScripts.World
                         }
                         else
                         {
-                            var damanagedBone = ped.Bones.LastDamaged;
+                            var damanagedBone = ped.Bones.LastDamaged.Position;
 
                             NativeFunctions.ShootSingleBulletBetweenCoords(
-                                start: ped.GetBonePosition(damanagedBone),
+                                start: damanagedBone,
                                 end: ped.Position,
                                 damage: 1,
                                 weapon: WeaponHash.StunGun, null, 1.0f);
                         }
-                        
-                        
+
+
                         // 少し待ってからフラグをクリアする
                         await DelaySecondsAsync(1, ct);
                         if (ped.IsSafeExist())
                         {
                             ped.ClearLastWeaponDamage();
                         }
-
                     }
 
                     await DelayFrameAsync(3, ct);

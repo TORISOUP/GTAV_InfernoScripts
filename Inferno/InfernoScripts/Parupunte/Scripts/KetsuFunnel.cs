@@ -11,7 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ケツファンネル", "弾切れ")]
     [ParupunteIsono("けつふぁんねる")]
-    [ParupunteDebug(true)]
     internal class KetsuFunnel : ParupunteScript
     {
         public KetsuFunnel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -39,7 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     var playerPos = core.PlayerPed.Position;
 
-                    var ketsuDir = -core.PlayerPed.ForwardVectorN();
+                    var ketsuDir = -core.PlayerPed.ForwardVector;
 
                     var targetList = core
                         .CachedEntities
