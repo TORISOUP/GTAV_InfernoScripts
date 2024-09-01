@@ -148,7 +148,9 @@ namespace Inferno
                 }
 
                 _playerPed.Value = ped;
-                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500).Where(x=>x != ped).ToArray();
+                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500)?.Where(x => x != ped).ToArray() ??
+                                      Array.Empty<Entity>();
+
                 _nearPeds.Value = _nearEntities.Value.OfType<Ped>().ToArray();
                 _nearVehicles.Value = _nearEntities.Value.OfType<Vehicle>().ToArray();
                 _playerVehicle.Value = ped?.CurrentVehicle;
@@ -160,7 +162,7 @@ namespace Inferno
                 }
                 else
                 {
-                    if (_missionEntity.Value.Any())
+                    if (_missionEntity.Value == null || _missionEntity.Value.Length > 0)
                     {
                         _missionEntity.Value = Array.Empty<Entity>();
                     }
@@ -168,7 +170,7 @@ namespace Inferno
             }
             catch (Exception e)
             {
-                LogWrite(e.Message + "\n" + e.StackTrace);
+                LogWrite(e.ToString());
             }
         }
 

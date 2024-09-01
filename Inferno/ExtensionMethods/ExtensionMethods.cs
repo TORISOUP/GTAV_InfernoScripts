@@ -111,6 +111,11 @@ namespace Inferno
             return Function.Call<Bone>(Hash.GET_ENTITY_BONE_INDEX_BY_NAME, entity.Handle, boneName);
         }
 
+        public static Vector3 ForwardVectorN(this Entity entity)
+        {
+            return Function.Call<Vector3>(Hash.GET_ENTITY_FORWARD_VECTOR, entity);
+        }
+        
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
         {
             return entity.Position.DistanceTo(position) < distance;

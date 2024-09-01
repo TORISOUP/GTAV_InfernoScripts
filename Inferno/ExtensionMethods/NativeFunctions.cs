@@ -478,7 +478,7 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int)weapon, 0);
         }
-        
+
         public static bool HasBeenDamagedByPed(this Entity entity, Ped target)
         {
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, entity, target, true);
@@ -701,6 +701,16 @@ namespace Inferno
                 owner?.Handle ?? 0,
                 1, 0, speed
             );
+        }
+
+        public static void ShootSingleBulletBetweenCoords(Vector3 start,
+            Vector3 end,
+            int damage,
+            Weapon weapon,
+            Ped owner,
+            float speed)
+        {
+            World.ShootBullet(start, end, owner, new WeaponAsset((int)weapon), damage, speed);
         }
 
         public static Vector3 GetOffsetFromEntityInWorldCoords(this Entity entity, float right, float forward, float up)

@@ -41,7 +41,7 @@ namespace Inferno
 
             CreateTickAsObservable(TimeSpan.FromMilliseconds(DurationMillSeconds))
                 .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
-                .Subscribe(_ => ShootMeteo());
+                .Subscribe(_ => { ShootMeteo(); });
         }
 
         private void ShootMeteo()
@@ -61,7 +61,9 @@ namespace Inferno
                 var createPosition = targetPosition + direction * 100;
 
                 //たまに花火
-                var weapon = Random.Next(0, 100) < 3 ? WeaponHash.Firework : WeaponHash.RPG;
+                var weapon = Random.Next(0, 100) < 3
+                    ? new WeaponAsset(WeaponHash.Firework)
+                    : new WeaponAsset(WeaponHash.RPG);
 
                 //ライト描画
                 StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
@@ -69,8 +71,7 @@ namespace Inferno
                 //そこら辺の市民のせいにする
                 var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
 
-                NativeFunctions.ShootSingleBulletBetweenCoords(
-                    createPosition, targetPosition, 100, weapon, ped, 200);
+                World.ShootBullet(createPosition, targetPosition, ped, weapon, 200);
             }
             catch (Exception ex)
             {
