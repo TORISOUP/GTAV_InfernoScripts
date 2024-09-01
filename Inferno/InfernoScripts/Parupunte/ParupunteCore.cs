@@ -248,7 +248,6 @@ namespace Inferno.InfernoScripts.Parupunte
         private bool IsonoMethod(string command)
         {
             var c = command;
-
             if (c.Contains("とまれ"))
             {
                 //       ParupunteStop();
