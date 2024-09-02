@@ -37,7 +37,7 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ => SupplyArmorAndHealthAsync(DestroyCancellationToken).Forget());
         }
-
+        
         /// <summary>
         /// 体力とアーマー回復
         /// </summary>

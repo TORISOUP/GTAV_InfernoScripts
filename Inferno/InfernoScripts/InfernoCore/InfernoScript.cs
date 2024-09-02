@@ -140,6 +140,14 @@ namespace Inferno
                                     stepAwaiter.Step();
                                 }
                             }
+
+                            foreach (var stepAwaiter in _stepAwaiters)
+                            {
+                                if (stepAwaiter is { IsActive: true })
+                                {
+                                    stepAwaiter.Check();
+                                }
+                            }
                         }
                     }
                     catch
@@ -158,6 +166,14 @@ namespace Inferno
                                     timeAwaiter.Step(DeltaTime);
                                 }
                             }
+
+                            foreach (var timeAwaiter in _timeAwaiters)
+                            {
+                                if (timeAwaiter is { IsActive: true })
+                                {
+                                    timeAwaiter.Check();
+                                }
+                            }
                         }
                     }
                     catch
@@ -173,7 +189,7 @@ namespace Inferno
             CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
                 .Subscribe(_ => _coroutinePool.Run())
                 .AddTo(CompositeDisposable);
-    
+
             OnAbortAsync.Subscribe(_ =>
                 {
                     Destroy();

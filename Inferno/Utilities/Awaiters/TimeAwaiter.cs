@@ -61,11 +61,15 @@ namespace Inferno.Utilities.Awaiters
             if (_remainingSeconds > 0 && !_cancellationToken.IsCancellationRequested)
             {
                 _remainingSeconds -= seconds;
-                if (_remainingSeconds <= 0)
-                {
-                    // カウントがゼロになったら継続動作を実行
-                    _continuation?.Invoke();
-                }
+            }
+        }
+
+        public void Check()
+        {
+            if (_remainingSeconds <= 0)
+            {
+                // カウントがゼロになったら継続動作を実行
+                _continuation?.Invoke();
             }
         }
 
