@@ -576,17 +576,17 @@ namespace Inferno.ChaosMode
             {
                 if (!ped.IsSafeExist())
                 {
-                    return Weapon.UNARMED;
+                    return Weapon.Unarmed;
                 }
 
                 //市民の武器を変更して良いか調べる
                 if (!chaosChecker.IsPedChangebalWeapon(ped))
                 {
-                    return Weapon.UNARMED;
+                    return Weapon.Unarmed;
                 }
 
                 //車に乗っているなら車用の武器を渡す
-                var weapon = Weapon.UNARMED;
+                var weapon = Weapon.Unarmed;
                 if (_isBaseball)
                 {
                     weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
@@ -608,7 +608,7 @@ namespace Inferno.ChaosMode
                 LogWrite("AttachPedWeaponError!" + e.Message);
             }
 
-            return Weapon.UNARMED;
+            return Weapon.Unarmed;
         }
     }
 }

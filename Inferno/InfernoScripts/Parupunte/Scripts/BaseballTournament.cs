@@ -20,7 +20,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             
-            Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.BAT));
+            Inferno.InfernoCore.Publish(new ChangeWeaponEvent(Weapon.Bat));
         }
 
         protected override void OnFinished()

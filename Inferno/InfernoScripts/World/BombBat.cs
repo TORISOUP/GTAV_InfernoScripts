@@ -63,7 +63,7 @@ namespace Inferno.InfernoScripts.World
                 {
                     if (ped.HasBeenDamagedByAnyMeleeWeapon())
                     {
-                        if (ped.HasBeenDamagedBy(Weapon.BAT))
+                        if (ped.HasBeenDamagedBy(Weapon.Bat))
                         {
                             GTA.World.AddExplosion(ped.Position + Vector3.WorldUp * 0.5f, GTA.ExplosionType.Grenade,
                                 40.0f,
@@ -75,19 +75,19 @@ namespace Inferno.InfernoScripts.World
                             ped.ClearLastWeaponDamage();
                             return;
                         }
-                        else if (ped.HasBeenDamagedBy(Weapon.KNIFE) || ped.HasBeenDamagedBy(Weapon.Battleaxe) ||
+                        else if (ped.HasBeenDamagedBy(Weapon.Knife) || ped.HasBeenDamagedBy(Weapon.Battleaxe) ||
                                  ped.HasBeenDamagedBy(Weapon.Dagger) || ped.HasBeenDamagedBy(Weapon.Hatchet))
                         {
                             GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Molotov1, 0.1f, 0.0f);
                         }
-                        else if (ped.HasBeenDamagedBy(Weapon.GOLFCLUB))
+                        else if (ped.HasBeenDamagedBy(Weapon.GolfClub))
                         {
                             var randomVector = InfernoUtilities.CreateRandomVector();
                             ped.SetToRagdoll(100);
                             ped.Velocity = randomVector * 1000;
                             ped.ApplyForce(randomVector * Random.Next(2000, 4000));
                         }
-                        else if (ped.HasBeenDamagedBy(Weapon.HAMMER))
+                        else if (ped.HasBeenDamagedBy(Weapon.Hammer))
                         {
                             if (!ped.IsInRangeOf(PlayerPed.Position, 10))
                             {

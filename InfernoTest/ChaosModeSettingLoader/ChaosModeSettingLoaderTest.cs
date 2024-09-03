@@ -17,7 +17,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbability\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbability\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"BAT\"],\"WeaponListForDriveBy\":[\"MICROSMG\"]}");
+                    "{\"AttackPlayerCorrectionProbability\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbability\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"Bat\"],\"WeaponListForDriveBy\":[\"MicroSMG\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -31,8 +31,8 @@ namespace InfernoTest
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
-            CollectionAssert.AreEqual(new[] { Weapon.MICROSMG }, result.WeaponListForDriveBy);
+            CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
+            CollectionAssert.AreEqual(new[] { Weapon.MicroSMG }, result.WeaponListForDriveBy);
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace InfernoTest
             //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"Bat\"]}");
 
             var result = testLoader.LoadSettingFile("");
 
@@ -60,7 +60,7 @@ namespace InfernoTest
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
             Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new[] { Weapon.BAT, Weapon.RPG }, result.WeaponList);
+            CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
         }
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace InfernoTest
         {
             var testLoader =
                 new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbability\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"BAT\"]}");
+                    "{\"AttackPlayerCorrectionProbability\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"Bat\"]}");
 
             var result = testLoader.LoadSettingFile("");
             Assert.AreEqual(300, result.Radius);

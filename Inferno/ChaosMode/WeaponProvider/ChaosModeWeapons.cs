@@ -15,71 +15,93 @@ namespace Inferno.ChaosMode.WeaponProvider
             //射撃系の武器
             ShootWeapons = new[]
             {
-                Weapon.ADVANCEDRIFLE,
-                Weapon.AIRSTRIKE_ROCKET,
-                Weapon.APPISTOL,
-                Weapon.ASSAULTRIFLE,
-                Weapon.ASSAULTSHOTGUN,
-                Weapon.ASSAULTSMG,
-                Weapon.BULLPUPSHOTGUN,
-                Weapon.BULLPURIFLE,
-                Weapon.CARBINERIFLE,
-                Weapon.COMBATMG,
-                Weapon.COMBATPISTOL,
-                Weapon.COUGAR,
-                Weapon.EXHAUSTION,
-                Weapon.GRENADELAUNCHER,
-                Weapon.GRENADELAUNCHER_SMOKE,
-                Weapon.HEAVYSNIPER,
-                Weapon.HEAVYPISTOL,
-                Weapon.HEAVYSHOTGUN,
-                Weapon.FIREEXTINGUISHER,
-                Weapon.FIREWORK,
+                Weapon.AdvancedRifle,
+                Weapon.APPistol,
+                Weapon.AssaultRifle,
+                Weapon.AssaultShotgun,
+                Weapon.AssaultSMG,
+                Weapon.BullpupShotgun,
+                Weapon.BullpupRifle,
+                Weapon.CarbineRifle,
+                Weapon.CombatMG,
+                Weapon.CombatPistol,
+                Weapon.Exhaustion,
+                Weapon.GrenadeLauncher,
+                Weapon.GrenadeLauncherSmoke,
+                Weapon.HeavySniper,
+                Weapon.HeavyPistol,
+                Weapon.HeavyShotgun,
+                Weapon.FireExtinguisher,
+                Weapon.Firework,
                 Weapon.MG,
-                Weapon.MICROSMG,
-                Weapon.MINIGUN,
-                Weapon.MUSCKET,
-                Weapon.MARKSMANRIFLE,
-                Weapon.PISTOL,
-                Weapon.PISTOL50,
-                Weapon.PUMPSHOTGUN,
+                Weapon.MicroSMG,
+                Weapon.MiniGun,
+                Weapon.Musket,
+                Weapon.MarksmanRifle,
+                Weapon.Pistol,
+                Weapon.Pistol50,
+                Weapon.PumpShotgun,
                 Weapon.RPG,
-                Weapon.SAWNOFFSHOTGUN,
+                Weapon.SawedOffShotgun,
                 Weapon.SMG,
-                Weapon.SNIPERRIFLE,
-                Weapon.STINGER,
-                Weapon.STUNGUN,
-                Weapon.PETROLCAN,
-                Weapon.RAILGUN,
-                Weapon.FLAREGUN,
-                Weapon.MARKSMANPISTOL,
-                Weapon.MACHINEPISTOL,
-                Weapon.GUSENBERG,
-                Weapon.REVOLVER,
-                Weapon.COMPACTRIFLE,
-                Weapon.DOUBLEBARRELSHOTGUN,
-                Weapon.MINISMG,
-                Weapon.AUTOSHOTGUN,
-                Weapon.COMPACTLAUNCHER,
+                Weapon.SniperRifle,
+                Weapon.StunGun,
+                Weapon.PetrolCan,
+                Weapon.RailGun,
+                Weapon.FlareGun,
+                Weapon.MarksmanPistol,
+                Weapon.MachinePistol,
+                Weapon.Gusenberg,
+                Weapon.Revolver,
+                Weapon.CompactRifle,
+                Weapon.DoubleBarrelShotgun,
+                Weapon.MiniSMG,
+                Weapon.AutoShotgun,
+                Weapon.CompactLauncher,
                 Weapon.PistolMk2,
                 Weapon.SMGMk2,
                 Weapon.CombatMGMk2,
                 Weapon.AssaultRifleMk2,
                 Weapon.CarbineRifleMk2,
-                Weapon.HeavySniperMk2
+                Weapon.HeavySniperMk2,
+                Weapon.HomingLauncher,
+                Weapon.Widowmaker,
+                Weapon.Raycarbine,
+                Weapon.Raypistol,
+            };
+
+            // 爆発物系
+            ExplosiveWeapons = new[]
+            {
+                Weapon.GrenadeLauncher,
+                Weapon.RPG,
+                Weapon.HomingLauncher,
+                Weapon.Firework,
+                Weapon.RailGun,
+                Weapon.CompactLauncher,
+                Weapon.Widowmaker,
+                Weapon.Grenade,
+                Weapon.Molotov,
+                Weapon.StickyBomb,
+                Weapon.ProximityMine,
+                Weapon.PipeBomb,
+                Weapon.BZGas,
+                Weapon.FLARE,
+                Weapon.SmokeGrenade,
+                Weapon.PetrolCan,
             };
 
             //近距離系
             ClosedWeapons = new[]
             {
                 Weapon.BARBED_WIRE,
-                Weapon.BAT,
-                Weapon.CROWBAR,
+                Weapon.Bat,
+                Weapon.Crowbar,
                 Weapon.DROWNING,
-                Weapon.HAMMER,
-                Weapon.GOLFCLUB,
-                Weapon.KNIFE,
-                Weapon.NIGHTSTICK,
+                Weapon.Hammer,
+                Weapon.GolfClub,
+                Weapon.Knife,
+                Weapon.NightStick,
                 Weapon.Bottle,
                 Weapon.Dagger,
                 Weapon.Hatchet,
@@ -95,42 +117,47 @@ namespace Inferno.ChaosMode.WeaponProvider
             //投げる系
             ProjectileWeapons = new[]
             {
-                Weapon.BALL,
-                Weapon.BZGAS,
-                Weapon.GRENADE,
-                Weapon.MOLOTOV,
-                Weapon.STICKYBOMB,
+                Weapon.Ball,
+                Weapon.BZGas,
+                Weapon.Grenade,
+                Weapon.Molotov,
+                Weapon.StickyBomb,
                 Weapon.FLARE,
-                Weapon.SMOKEGRENADE,
-                Weapon.PROXIMITYMINE,
-                Weapon.PIPEBOMB
+                Weapon.SmokeGrenade,
+                Weapon.ProximityMine,
+                Weapon.PipeBomb
             };
 
             //ドライブバイ
             DriveByWeapons = new[]
             {
-                Weapon.PISTOL,
-                Weapon.APPISTOL,
-                Weapon.COMBATPISTOL,
-                Weapon.HEAVYPISTOL,
-                Weapon.PISTOL50,
-                Weapon.FLAREGUN,
-                Weapon.REVOLVER,
-                Weapon.MICROSMG,
-                Weapon.MACHINEPISTOL,
-                Weapon.COMPACTRIFLE,
-                Weapon.SAWNOFFSHOTGUN,
-                Weapon.DOUBLEBARRELSHOTGUN,
-                Weapon.STUNGUN,
-                Weapon.MINISMG,
-                Weapon.AUTOSHOTGUN,
-                Weapon.COMPACTLAUNCHER,
+                Weapon.Pistol,
+                Weapon.APPistol,
+                Weapon.CombatPistol,
+                Weapon.HeavyPistol,
+                Weapon.Pistol50,
+                Weapon.FlareGun,
+                Weapon.Revolver,
+                Weapon.MicroSMG,
+                Weapon.MachinePistol,
+                Weapon.CompactRifle,
+                Weapon.SawedOffShotgun,
+                Weapon.DoubleBarrelShotgun,
+                Weapon.StunGun,
+                Weapon.MiniSMG,
+                Weapon.AutoShotgun,
+                Weapon.CompactLauncher,
                 Weapon.PistolMk2,
                 Weapon.SMGMk2
             };
 
-            AllWeapons = ShootWeapons.Concat(ClosedWeapons).Concat(ProjectileWeapons).ToArray();
-            ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).ToArray();
+            AllWeapons = ShootWeapons.Concat(ExplosiveWeapons)
+                .Concat(ClosedWeapons)
+                .Concat(ProjectileWeapons)
+                .Distinct()
+                .ToArray();
+            
+            ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).Distinct().ToArray();
         }
 
         public static Weapon[] ShootWeapons { get; }
@@ -139,6 +166,8 @@ namespace Inferno.ChaosMode.WeaponProvider
         public static Weapon[] ExcludeClosedWeapons { get; }
         public static Weapon[] DriveByWeapons { get; }
         public static Weapon[] AllWeapons { get; }
+
+        public static Weapon[] ExplosiveWeapons { get; }
 
         public static Weapon GetRandomWeapon()
         {

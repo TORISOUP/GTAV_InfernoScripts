@@ -37,13 +37,13 @@ namespace Inferno.ChaosMode.WeaponProvider
         public Weapon GetRandomCloseWeapons()
         {
             return CustomClosedWeapons.Length == 0
-                ? Weapon.UNARMED
+                ? Weapon.Unarmed
                 : CustomClosedWeapons[_random.Next(0, CustomClosedWeapons.Length)];
         }
 
         public Weapon GetRandomAllWeapons()
         {
-            return AllWeapons.Length == 0 ? Weapon.UNARMED : AllWeapons[_random.Next(0, AllWeapons.Length)];
+            return AllWeapons.Length == 0 ? Weapon.Unarmed : AllWeapons[_random.Next(0, AllWeapons.Length)];
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Inferno.ChaosMode.WeaponProvider
         {
             return CustomExcludeClosedWeapons.Length > 0
                 ? CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)]
-                : Weapon.UNARMED;
+                : Weapon.Unarmed;
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Inferno.ChaosMode.WeaponProvider
         {
             return CustomDriveByWeapons.Length > 0
                 ? CustomDriveByWeapons[_random.Next(0, CustomDriveByWeapons.Length)]
-                : Weapon.UNARMED;
+                : Weapon.Unarmed;
         }
     }
 }

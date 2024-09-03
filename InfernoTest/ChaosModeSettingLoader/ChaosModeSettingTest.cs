@@ -62,8 +62,8 @@ namespace InfernoTest
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
             var testData = new[]
             {
-                Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), Weapon.ASSAULTSMG.ToString(),
-                Weapon.STUNGUN.ToString()
+                Weapon.Unarmed.ToString(), Weapon.Pistol.ToString(), Weapon.AssaultSMG.ToString(),
+                Weapon.StunGun.ToString()
             };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
@@ -77,14 +77,14 @@ namespace InfernoTest
         public void 不正な武器の文字列を含む配列からWeaponの配列が生成できる()
         {
             var testSetting = new TestSetting(new ChaosModeSettingDTO());
-            var testData = new[] { Weapon.UNARMED.ToString(), Weapon.PISTOL.ToString(), "STANGUN" };
+            var testData = new[] { Weapon.Unarmed.ToString(), Weapon.Pistol.ToString(), "STANGUN" };
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は2
             Assert.AreEqual(2, resutl.Length);
             //UNARMEDとPISTOLのみのはず
-            Assert.IsTrue(resutl.Contains(Weapon.UNARMED));
-            Assert.IsTrue(resutl.Contains(Weapon.PISTOL));
+            Assert.IsTrue(resutl.Contains(Weapon.Unarmed));
+            Assert.IsTrue(resutl.Contains(Weapon.Pistol));
         }
 
         [TestMethod]

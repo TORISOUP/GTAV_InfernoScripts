@@ -53,7 +53,7 @@ namespace Inferno
 
                     if (IsActive)
                     {
-                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                        PlayerPed.GiveWeapon((int)Weapon.StunGun, 1);
 
                         FulutonUpdateLoopAsync(ActivationCancellationToken).Forget();
                     }
@@ -78,7 +78,7 @@ namespace Inferno
                 {
                     if (IsActive)
                     {
-                        PlayerPed.GiveWeapon((int)Weapon.STUNGUN, 1);
+                        PlayerPed.GiveWeapon((int)Weapon.StunGun, 1);
                     }
 
                     fulutonedEntityList.Clear();
@@ -143,7 +143,7 @@ namespace Inferno
                              ))
                 {
                     if (entity.HasBeenDamagedByPed(PlayerPed) && (
-                            entity.HasBeenDamagedBy(Weapon.UNARMED) || entity.HasBeenDamagedBy(Weapon.STUNGUN)
+                            entity.HasBeenDamagedBy(Weapon.Unarmed) || entity.HasBeenDamagedBy(Weapon.StunGun)
                         ))
                     {
                         fulutonedEntityList.Add(entity.Handle);
