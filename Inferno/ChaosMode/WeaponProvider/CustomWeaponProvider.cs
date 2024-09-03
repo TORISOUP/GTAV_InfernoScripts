@@ -13,6 +13,7 @@ namespace Inferno.ChaosMode.WeaponProvider
         protected Weapon[] CustomExcludeClosedWeapons;
         protected Weapon[] CustomProjectileWeapons;
         protected Weapon[] CustomShootWeapons;
+        protected Weapon[] CustomExplosiveWeapons;
 
         /// <summary>
         /// 指定した武器リストからランダムに武器を提供する
@@ -29,9 +30,11 @@ namespace Inferno.ChaosMode.WeaponProvider
             CustomClosedWeapons = weaponArray.Intersect(ChaosModeWeapons.ClosedWeapons).ToArray();
             CustomProjectileWeapons = weaponArray.Intersect(ChaosModeWeapons.ProjectileWeapons).ToArray();
             CustomDriveByWeapons = weaponListForDriveBy.Intersect(ChaosModeWeapons.DriveByWeapons).ToArray();
+            CustomExplosiveWeapons = weaponArray.Intersect(ChaosModeWeapons.ExplosiveWeapons).ToArray();
             CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons)
                 .Concat(CustomClosedWeapons)
                 .ToArray();
+            
         }
 
         public Weapon GetRandomCloseWeapons()
@@ -54,6 +57,13 @@ namespace Inferno.ChaosMode.WeaponProvider
         {
             return CustomExcludeClosedWeapons.Length > 0
                 ? CustomExcludeClosedWeapons[_random.Next(0, CustomExcludeClosedWeapons.Length)]
+                : Weapon.Unarmed;
+        }
+
+        public Weapon GetExplosiveWeapon()
+        {
+            return CustomExplosiveWeapons.Length > 0
+                ? CustomExplosiveWeapons[_random.Next(0, CustomExplosiveWeapons.Length)]
                 : Weapon.Unarmed;
         }
 

@@ -25,11 +25,9 @@ namespace InfernoTest
             Assert.AreEqual(3, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(50, result.Interval);
             Assert.AreEqual(60, result.ShootAccuracy);
-            Assert.AreEqual(100, result.WeaponChangeProbabillity);
+            Assert.AreEqual(100, result.WeaponChangeProbability);
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
             CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
             CollectionAssert.AreEqual(new[] { Weapon.MicroSMG }, result.WeaponListForDriveBy);
@@ -54,11 +52,9 @@ namespace InfernoTest
 
             //それ以外はjsonの通り
             Assert.AreEqual(100, result.Radius);
-            Assert.AreEqual(50, result.Interval);
             Assert.AreEqual(60, result.ShootAccuracy);
-            Assert.AreEqual(100, result.WeaponChangeProbabillity);
+            Assert.AreEqual(100, result.WeaponChangeProbability);
             Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsFalse(result.IsStupidShooting);
             Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
             CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
         }
@@ -72,11 +68,9 @@ namespace InfernoTest
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbabillity);
+            Assert.AreEqual(30, result.WeaponChangeProbability);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
@@ -95,11 +89,9 @@ namespace InfernoTest
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbabillity);
+            Assert.AreEqual(30, result.WeaponChangeProbability);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);
@@ -115,11 +107,9 @@ namespace InfernoTest
             Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
             Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(500, result.Interval);
             Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbabillity);
+            Assert.AreEqual(30, result.WeaponChangeProbability);
             Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsStupidShooting);
             Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
             var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
             CollectionAssert.AreEqual(allWeapons, result.WeaponList);

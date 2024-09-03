@@ -12,6 +12,11 @@
         Weapon GetRandomWeaponExcludeClosedWeapon();
 
         /// <summary>
+        /// 爆発物系の武器を取得する
+        /// </summary>
+        Weapon GetExplosiveWeapon();
+        
+        /// <summary>
         /// ドライブバイ用の武器を取得する
         /// </summary>
         Weapon GetRandomDriveByWeapon();

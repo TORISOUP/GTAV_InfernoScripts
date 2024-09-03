@@ -24,6 +24,11 @@
             return current;
         }
 
+        public Weapon GetExplosiveWeapon()
+        {
+            return current;
+        }
+
         public Weapon GetRandomDriveByWeapon()
         {
             return current;

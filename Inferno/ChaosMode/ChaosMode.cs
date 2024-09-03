@@ -71,7 +71,6 @@ namespace Inferno.ChaosMode
             _defaultWeaponProvider =
                 new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
 
-
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
@@ -276,7 +275,6 @@ namespace Inferno.ChaosMode
             }
 
 
-
             if (ped.IsRequiredForMission())
             {
                 var playerGroup = Game.Player.GetPlayerGroup();
@@ -309,9 +307,9 @@ namespace Inferno.ChaosMode
                 }
 
                 SetPedStatus(ped);
-                
+
                 //武器を変更する
-                if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbabillity)
+                if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbability)
                 {
                     GiveWeaponTpPed(ped);
                 }
@@ -342,7 +340,7 @@ namespace Inferno.ChaosMode
                 var targets = GetTargetPeds(ped);
                 //攻撃する
                 TryRiot(ped, targets);
-                
+
                 // 行動時間
                 float waitTime = Random.Next(5, 40);
                 float checkWaitTime = 0;
@@ -570,45 +568,49 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped">市民</param>
         /// <returns>装備した武器</returns>
-        private Weapon GiveWeaponTpPed(Ped ped)
+        private void GiveWeaponTpPed(Ped ped)
         {
             try
             {
                 if (!ped.IsSafeExist())
                 {
-                    return Weapon.Unarmed;
+                    return;
                 }
 
                 //市民の武器を変更して良いか調べる
                 if (!chaosChecker.IsPedChangebalWeapon(ped))
                 {
-                    return Weapon.Unarmed;
+                    return;
                 }
 
                 //車に乗っているなら車用の武器を渡す
-                var weapon = Weapon.Unarmed;
+                Weapon weapon;
                 if (_isBaseball)
                 {
                     weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
                 }
                 else
                 {
-                    weapon = ped.IsInVehicle()
-                        ? CurrentWeaponProvider.GetRandomDriveByWeapon()
-                        : CurrentWeaponProvider.GetRandomAllWeapons();
+                    if (Random.Next(0, 99) < chaosModeSetting.ForceExplosiveWeaponProbability)
+                    {
+                        // 爆発物補正
+                        weapon = CurrentWeaponProvider.GetExplosiveWeapon();
+                    }
+                    else
+                    {
+                        weapon = ped.IsInVehicle()
+                            ? CurrentWeaponProvider.GetRandomDriveByWeapon()
+                            : CurrentWeaponProvider.GetRandomAllWeapons();
+                    }
                 }
 
                 ped.Weapons.Give((WeaponHash)weapon, 9999, true, true);
                 ped.SetDropWeaponWhenDead(false); //武器を落とさない
-
-                return weapon;
             }
             catch (Exception e)
             {
                 LogWrite("AttachPedWeaponError!" + e.Message);
             }
-
-            return Weapon.Unarmed;
         }
     }
 }

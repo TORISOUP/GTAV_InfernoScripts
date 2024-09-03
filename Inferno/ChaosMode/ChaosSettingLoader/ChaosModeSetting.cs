@@ -12,7 +12,7 @@ namespace Inferno.ChaosMode
         /// カオスモードの有効半径
         /// </summary>
         public int Radius { get; private set; }
-        
+
         /// <summary>
         /// ミッションキャラクタの武器を上書きするか（DefaultMissionCharacterTreatment設定は無視して上書きされる）
         /// </summary>
@@ -57,7 +57,12 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 市民の武器を変更する確率
         /// </summary>
-        public int WeaponChangeProbabillity { get; private set; }
+        public int WeaponChangeProbability { get; private set; }
+
+        /// <summary>
+        /// 爆発系武器が強制的に選択される確率
+        /// </summary>
+        public int ForceExplosiveWeaponProbability { get; private set; }
 
         /// <summary>
         /// カオスモード設定ファイルを生成
@@ -65,7 +70,10 @@ namespace Inferno.ChaosMode
         /// <param name="dto">DTOから生成する</param>
         public ChaosModeSetting(ChaosModeSettingDTO dto)
         {
-            if (dto == null) { dto = new ChaosModeSettingDTO(); }
+            if (dto == null)
+            {
+                dto = new ChaosModeSettingDTO();
+            }
 
             //バリデーション処理
             Radius = dto.Radius.Clamp(1, 3000);
@@ -74,7 +82,8 @@ namespace Inferno.ChaosMode
             StupidPedRate = dto.StupidPedRate.Clamp(0, 100);
             AttackPlayerCorrectionProbabillity = dto.AttackPlayerCorrectionProbability.Clamp(0, 100);
             ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
-            WeaponChangeProbabillity = dto.WeaponChangeProbability.Clamp(0, 100);
+            WeaponChangeProbability = dto.WeaponChangeProbability.Clamp(0, 100);
+            ForceExplosiveWeaponProbability = dto.ForceExplosiveWeaponProbability.Clamp(0, 100);
 
             //ミッションキャラクタの扱い
             DefaultMissionCharacterTreatment =
@@ -96,9 +105,12 @@ namespace Inferno.ChaosMode
             var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
             if (weaponList == null || weaponList.Length == 0)
             {
-                return new Weapon[0];
+                return Array.Empty<Weapon>();
             }
-            var enableWeapons = allWeapons.Where(x => weaponList.Contains(x.ToString())).ToArray();
+
+            var upperCaseWeaponList = weaponList.Select(x => x.ToUpper()).ToArray();
+            
+            var enableWeapons = allWeapons.Where(x => upperCaseWeaponList.Contains(x.ToString().ToUpper())).ToArray();
             return enableWeapons.Length > 0 ? enableWeapons : allWeapons;
         }
     }
