@@ -12,9 +12,9 @@
         public int AttackPlayerCorrectionProbability { get; set; } = 100;
         public string[] WeaponList { get; set; } = new[] { "" };
         public string[] WeaponListForDriveBy { get; set; } = new[] { "" };
-        public int StupidPedRate { get; set; } = 80;
+        public int StupidPedRate { get; set; } = 50;
         public int ShootAccuracy { get; set; } = 10;
         public int WeaponChangeProbability { get; set; } = 100;
-        public int ForceExplosiveWeaponProbability { get; set; } = 10;
+        public int ForceExplosiveWeaponProbability { get; set; } = 30;
     }
 }

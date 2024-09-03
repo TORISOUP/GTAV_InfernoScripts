@@ -342,13 +342,17 @@ namespace Inferno.ChaosMode
                 TryRiot(ped, targets);
 
                 // 行動時間
-                float waitTime = Random.Next(5, 40);
-                float checkWaitTime = 0;
+                float waitTime = Random.Next(3, 20);
+                float checkWaitTime = 100;
+                float stupidShootingTime = 100;
+                var isStupidShooting = Random.Next(0, 100) < chaosModeSetting.StupidPedRate;
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
-                    waitTime -= NativeFunctions.GetFrameTime();
-                    checkWaitTime += NativeFunctions.GetFrameTime();
+                    var f = NativeFunctions.GetFrameTime();
+                    waitTime -= f;
+                    checkWaitTime += f;
+                    stupidShootingTime += f;
 
                     // 自分が死んでるなら中止
                     if (!ped.IsSafeExist() || !ped.IsAlive)
@@ -361,6 +365,25 @@ namespace Inferno.ChaosMode
                         // 除外キャラに指定されたら停止
                         chaosedPedList.Remove(pedId);
                         return;
+                    }
+
+                    if (isStupidShooting && stupidShootingTime > 2f)
+                    {
+                        stupidShootingTime = 0;
+                        
+                        // バカ射撃なら今のターゲットを執拗にうち続ける
+                        var t = Function.Call<Entity>(Hash.GET_PED_TARGET_FROM_COMBAT_PED, ped, 1);
+                        if (t.IsSafeExist())
+                        {
+                            if (t.Model.IsPed)
+                            {
+                                ped.Task.ShootAt((Ped)t, 5000, GTA.FiringPattern.FullAuto);
+                            }
+                            else
+                            {
+                                ped.Task.ShootAt(t.Position, 5000, GTA.FiringPattern.FullAuto);
+                            }
+                        }
                     }
 
                     // 定期的にチェックする部分
@@ -521,13 +544,13 @@ namespace Inferno.ChaosMode
             //戦闘能力？
             ped.SetCombatAbility(100);
             //戦闘範囲
-            ped.SetCombatRange(100);
+            ped.SetCombatRange(3);
+
+            Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, ped, 3);
+
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
             ped.FiringPattern = GTA.FiringPattern.FullAuto;
-
-            // バカ射撃
-            Function.Call(Hash.SET_PED_PATH_AVOID_FIRE, ped, Random.Next(0, 99) < chaosModeSetting.StupidPedRate);
         }
 
         /// <summary>
