@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -7,8 +9,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("みんなばくはつ")]
     internal class KillCitizens : ParupunteScript
     {
-        private uint coroutineId;
-
         public KillCitizens(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
@@ -19,36 +19,34 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            coroutineId = StartCoroutine(KillCitizensCoroutine());
+            KillCitizensAsync(ActiveCancellationToken).Forget();
         }
 
         protected override void OnFinished()
         {
-            StopCoroutine(coroutineId);
             ParupunteEnd();
         }
 
-        private IEnumerable<object> KillCitizensCoroutine()
+        private async ValueTask KillCitizensAsync(CancellationToken ct)
         {
             var radius = 100.0f;
             var player = core.PlayerPed;
-            var peds = core.CachedPeds.Where(x => x.IsSafeExist()
-                                                  && !x.IsSameEntity(core.PlayerPed)
-                                                  && !x.IsRequiredForMission()
-                                                  && x.IsInRangeOf(player.Position, radius))
-                .ToList();
-            while (peds.Count > 0) //一気に数十個も同時に爆発を起こせないので時間差で行う
+            for (int l = 0; l < 3; l++)
             {
-                var removePedList = peds.Take(10);
-                foreach (var ped in removePedList)
+                var peds = core.CachedPeds.Where(x => x.IsSafeExist()
+                                                      && !x.IsSameEntity(core.PlayerPed)
+                                                      && !x.IsRequiredForMission()
+                                                      && x.IsAlive
+                                                      && x.IsInRangeOf(player.Position, radius))
+                    .ToArray();
+
+                for (int i = 0; i < peds.Length; i++)
                 {
+                    var ped = peds[i];
                     ped.Kill();
-                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
+                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 0.5f);
+                    await Delay100MsAsync(ct);
                 }
-
-                peds.RemoveAll(removePedList.Contains);
-
-                yield return null;
             }
 
             ParupunteEnd();
