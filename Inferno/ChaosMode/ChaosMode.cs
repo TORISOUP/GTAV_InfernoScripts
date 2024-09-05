@@ -18,7 +18,7 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// カオス化済み市民一覧
         /// </summary>
-        private readonly HashSet<int> chaosedPedList = new();
+        private readonly HashSet<Ped> chaosedPedList = new();
 
         private readonly List<uint> coroutineIds = new();
 
@@ -59,6 +59,7 @@ namespace Inferno.ChaosMode
 
         private int chaosRelationShipId;
         private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
+        private IWeaponProvider DefaultWeaponProvider => _defaultWeaponProvider;
 
         protected override void Setup()
         {
@@ -128,6 +129,10 @@ namespace Inferno.ChaosMode
                 {
                     _isBaseball = !_isBaseball;
                     DrawText(_isBaseball ? "BaseBallMode:On" : "BaseBallMode:Off");
+                    if (IsActive)
+                    {
+                        ChangeAllRiotCitizenWeapon();
+                    }
                 })
                 .AddTo(CompositeDisposable);
 
@@ -178,6 +183,11 @@ namespace Inferno.ChaosMode
                     {
                         _singleWeaponProvider = new SingleWeaponProvider(changeWeaponEvent.Weapon);
                     }
+
+                    if (IsActive)
+                    {
+                        ChangeAllRiotCitizenWeapon();
+                    }
                 })
                 .AddTo(CompositeDisposable);
 
@@ -209,9 +219,9 @@ namespace Inferno.ChaosMode
 
             var ct = _linkedCts.Token;
 
-            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x.Handle)))
+            foreach (var ped in nearPeds.Where(x => x.IsSafeExist() && !chaosedPedList.Contains(x)))
             {
-                chaosedPedList.Add(ped.Handle);
+                chaosedPedList.Add(ped);
                 ChaosPedActionAsync(ped, ct).Forget();
             }
         }
@@ -227,6 +237,18 @@ namespace Inferno.ChaosMode
             }
 
             coroutineIds.Clear();
+        }
+
+        // すべての市民の武器を交換する
+        private void ChangeAllRiotCitizenWeapon()
+        {
+            foreach (var ped in chaosedPedList)
+            {
+                if (ped.IsSafeExist())
+                {
+                    GiveWeaponTpPed(ped, true);
+                }
+            }
         }
 
 
@@ -247,7 +269,6 @@ namespace Inferno.ChaosMode
                 return;
             }
 
-            var pedId = ped.Handle;
 
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
             GiveWeaponTpPed(ped);
@@ -257,7 +278,7 @@ namespace Inferno.ChaosMode
             {
                 // 不適格なら3秒間は何もせずに放置し、リストから削除
                 await DelayAsync(TimeSpan.FromSeconds(3), ct);
-                chaosedPedList.Remove(pedId);
+                chaosedPedList.Remove(ped);
                 return;
             }
 
@@ -363,14 +384,14 @@ namespace Inferno.ChaosMode
                     if (ped.IsNotChaosPed())
                     {
                         // 除外キャラに指定されたら停止
-                        chaosedPedList.Remove(pedId);
+                        chaosedPedList.Remove(ped);
                         return;
                     }
 
                     if (isStupidShooting && stupidShootingTime > 2f)
                     {
                         stupidShootingTime = 0;
-                        
+
                         // バカ射撃なら今のターゲットを執拗にうち続ける
                         var t = Function.Call<Entity>(Hash.GET_PED_TARGET_FROM_COMBAT_PED, ped, 1);
                         if (t.IsSafeExist())
@@ -395,7 +416,7 @@ namespace Inferno.ChaosMode
                         if (ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
                         {
                             // プレイヤから遠くにいるなら終了
-                            chaosedPedList.Remove(pedId);
+                            chaosedPedList.Remove(ped);
                             return;
                         }
 
@@ -416,7 +437,7 @@ namespace Inferno.ChaosMode
                         {
                             // 攻撃しちゃいけない相手が近くにいるなら停止
                             ped.Task.ClearAll();
-                            chaosedPedList.Remove(pedId);
+                            chaosedPedList.Remove(ped);
                             return;
                         }
 
@@ -431,7 +452,7 @@ namespace Inferno.ChaosMode
                 }
             } while (ped.IsSafeExist() && ped.IsAlive);
 
-            chaosedPedList.Remove(pedId);
+            chaosedPedList.Remove(ped);
         }
 
 
@@ -591,7 +612,7 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="ped">市民</param>
         /// <returns>装備した武器</returns>
-        private void GiveWeaponTpPed(Ped ped)
+        private void GiveWeaponTpPed(Ped ped, bool removeWeapon = false)
         {
             try
             {
@@ -610,7 +631,7 @@ namespace Inferno.ChaosMode
                 Weapon weapon;
                 if (_isBaseball)
                 {
-                    weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
+                    weapon = DefaultWeaponProvider.GetRandomCloseWeapons();
                 }
                 else
                 {
@@ -625,6 +646,11 @@ namespace Inferno.ChaosMode
                             ? CurrentWeaponProvider.GetRandomDriveByWeapon()
                             : CurrentWeaponProvider.GetRandomAllWeapons();
                     }
+                }
+
+                if (removeWeapon)
+                {
+                    ped.Weapons.RemoveAll();
                 }
 
                 ped.Weapons.Give((WeaponHash)weapon, 9999, true, true);
