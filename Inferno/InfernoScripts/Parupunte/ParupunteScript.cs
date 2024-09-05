@@ -270,7 +270,7 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             return core.CreateWaitForSeconds(seconds);
         }
-
+        
         protected ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
         {
             return core.DelayAsync(timeSpan, ct);

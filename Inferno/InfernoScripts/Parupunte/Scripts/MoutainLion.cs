@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -13,16 +15,22 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnCharacter());
+            SpawnCharacterAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> SpawnCharacter()
+        private async ValueTask SpawnCharacterAsync(CancellationToken ct)
         {
-            foreach (var s in WaitForSeconds(2))
+            var targetTime = core.ElapsedTime + 3f;
+            while (core.ElapsedTime < targetTime && !ct.IsCancellationRequested)
             {
                 Spawn();
+                await YieldAsync(ct);
                 Spawn();
-                yield return s;
+                await YieldAsync(ct);
+                Spawn();
+                await YieldAsync(ct);
+
+                await DelaySecondsAsync(0.5f, ct);
             }
 
             ParupunteEnd();

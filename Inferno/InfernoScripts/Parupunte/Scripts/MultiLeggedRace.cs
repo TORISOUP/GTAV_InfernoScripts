@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -11,8 +14,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("さんきんこうたい")]
     internal class MultiLeggedRace : ParupunteScript
     {
-        private readonly List<Ped> explosionList = new();
-        private List<Ped> allPedList = new();
+        private List<Ped> _allPedList = new();
 
         public MultiLeggedRace(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -34,10 +36,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in allPedList)
+                foreach (var ped in _allPedList)
                 {
-                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.0f);
-                    ped.Kill();
+                    if (ped.IsSafeExist())
+                    {
+                        GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.0f);
+                        ped.Kill();
+                    }
                 }
 
                 ParupunteEnd();
@@ -51,46 +56,40 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
-            allPedList =
-                core.CachedPeds.Where(x => x.IsSafeExist() && !x.IsRequiredForMission() && !x.IsCutsceneOnlyPed())
-                    .Take(30)
+            _allPedList =
+                core.CachedPeds.Where(x =>
+                        x.IsSafeExist() && !x.IsRequiredForMission() && !x.IsCutsceneOnlyPed() && x.IsAlive)
+                    .Take(50)
                     .ToList();
 
             var playerPos = core.PlayerPed.Position;
-            var num = 5;
+            var num = 10;
 
-            var i = -allPedList.Count / 2;
-            foreach (var p in allPedList.Where(x => x.IsSafeExist()))
+            var i = -_allPedList.Count / 2;
+            foreach (var p in _allPedList.Where(x => x.IsSafeExist()))
             {
                 p.Task.ClearAllImmediately();
                 p.Position =
                     playerPos
-                    + core.PlayerPed.RightVector * 1.5f * (i / num)
+                    + core.PlayerPed.RightVector * 2.5f * (i / num)
                     + core.PlayerPed.ForwardVector * (Math.Abs(i) % num)
-                    + core.PlayerPed.ForwardVector;
+                    + core.PlayerPed.ForwardVector * 5;
 
                 if (p.IsSafeExist())
                 {
                     AutoReleaseOnParupunteEnd(p);
-                    p.Rotation = core.PlayerPed.Rotation;
-                    p.Health = 1;
-                    StartCoroutine(DashCoroutine(p));
+                    p.Rotation = Quaternion.RotationAxis(core.PlayerPed.UpVector, (float)Math.PI) *
+                                 core.PlayerPed.Rotation;
+                    p.Health = 100;
+                    DashAsync(p, ActiveCancellationToken).Forget();
                     i++;
                 }
             }
         }
 
-
-        protected override void OnUpdate()
+        protected override void OnFinished()
         {
-            base.OnUpdate();
-            var targetList = explosionList.Take(1).ToArray();
-            foreach (var ped in targetList)
-            {
-                GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.2f);
-                ped.Kill();
-                explosionList.Remove(ped);
-            }
+            _allPedList.Clear();
         }
 
         private void SetAnimRate(Ped ped, float rate)
@@ -98,21 +97,21 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.SET_ANIM_RATE, ped, (double)rate, 0.0, 0.0);
         }
 
-        private IEnumerable<object> DashCoroutine(Ped ped)
+        private async ValueTask DashAsync(Ped ped, CancellationToken ct)
         {
             var speed = 5;
             var isReturedCount = 10;
-            while (!ReduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted && !ct.IsCancellationRequested)
             {
                 if (!ped.IsSafeExist())
                 {
-                    yield break;
+                    return;
                 }
 
                 if (ped.IsDead)
                 {
-                    explosionList.Add(ped);
-                    yield break;
+                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Grenade, 1.0f, 0.2f);
+                    return;
                 }
 
                 if (isReturedCount == 0)
@@ -120,7 +119,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     isReturedCount = 10;
                     ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)Math.PI) * ped.Quaternion;
                 }
-
+                
                 if (isReturedCount > 0)
                 {
                     isReturedCount--;
@@ -137,7 +136,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     0, 0, 0);
                 StartFire(ped);
 
-                yield return null;
+                await Delay100MsAsync(ct);
             }
         }
 
