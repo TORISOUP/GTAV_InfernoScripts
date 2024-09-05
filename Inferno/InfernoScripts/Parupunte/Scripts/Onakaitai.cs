@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -55,27 +58,31 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //コルーチン起動
             foreach (var ped in targetPeds)
             {
-                StartCoroutine(OilCoroutine(ped));
+                OilAsync(ped, ActiveCancellationToken).Forget();
             }
 
-            //終わったら着火する
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
-                {
-                    Ignition(ped);
-                }
-
                 ParupunteEnd();
             });
         }
 
-        private IEnumerable<object> OilCoroutine(Ped ped)
+        protected override void OnFinished()
         {
-            while (!ReduceCounter.IsCompleted)
+            //終わったら着火する
+            foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
+            {
+                Ignition(ped);
+            }
+            targetPeds.Clear();
+        }
+
+        private async ValueTask OilAsync(Ped ped, CancellationToken ct)
+        {
+            while (!ReduceCounter.IsCompleted && !ct.IsCancellationRequested)
             {
                 CreateEffect(ped, petroEffect);
-                yield return WaitForSeconds(1);
+                await DelaySecondsAsync(1, ct);
             }
         }
 

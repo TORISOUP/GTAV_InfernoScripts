@@ -1,7 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -86,13 +88,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnCharacter());
+            SpawnCharacterAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> SpawnCharacter()
+        private async ValueTask SpawnCharacterAsync(CancellationToken ct)
         {
             var player = core.PlayerPed;
-            foreach (var s in WaitForSeconds(2))
+            for (int i = 0; i < 20; i++)
             {
                 var ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
                 if (ped.IsSafeExist())
@@ -101,7 +103,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GiveWeaponTpPed(ped);
                 }
 
-                yield return s;
+                await Delay100MsAsync(ct);
             }
 
             ParupunteEnd();
@@ -130,6 +132,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
+            ped.Task.FightAgainst(core.PlayerPed);
         }
     }
 }
