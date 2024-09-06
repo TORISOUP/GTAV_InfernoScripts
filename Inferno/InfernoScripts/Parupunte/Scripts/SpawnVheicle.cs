@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -38,7 +40,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnVehicle());
+            SpawnVehicle(ActiveCancellationToken).Forget();
         }
 
         protected override void OnFinished()
@@ -49,7 +51,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
-        private IEnumerable<object> SpawnVehicle()
+        private async ValueTask SpawnVehicle(CancellationToken ct)
         {
             _veh = GTA.World.CreateVehicle(new Model(vehicleHash), core.PlayerPed.Position + Vector3.WorldUp * 5.0f);
             AutoReleaseOnParupunteEnd(_veh);
@@ -62,6 +64,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (_ped.IsSafeExist())
                 {
                     _ped.MarkAsNoLongerNeeded();
+                    _ped.Task.DriveTo(_veh, core.PlayerPed.Position.Around(300), 10.0f, 100.0f,
+                        DrivingStyle.AvoidTrafficExtremely);
                 }
 
                 //車がすぐに消えないように数秒待つ
@@ -73,7 +77,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         break;
                     }
 
-                    yield return null;
+                    await Delay100MsAsync(ct);
                 }
             }
 

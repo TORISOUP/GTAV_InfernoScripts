@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
+using GTA.Math;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -25,20 +29,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnTaxi());
+            SpawnTaxi(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> SpawnTaxi()
+        private async ValueTask SpawnTaxi(CancellationToken ct)
         {
             var player = core.PlayerPed;
 
-            foreach (var s in WaitForSeconds(1))
+            for (int i = 0; i < 10; i++)
             {
-                var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, player.Position.AroundRandom2D(20));
+                var pos = core.PlayerPed.Position.Around(10) + (Vector3.WorldUp * (float)Random.NextDouble() * 30.0f);
+                var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, pos,
+                    (float)(Random.NextDouble() * 2f * Math.PI));
 
                 if (taxi.IsSafeExist())
                 {
                     taxi.MarkAsNoLongerNeeded();
+                    taxi.ApplyForce(-Vector3.WorldUp * 20.0f);
                     var ped = taxi.CreateRandomPedAsDriver();
                     if (ped.IsSafeExist())
                     {
@@ -46,7 +53,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 }
 
-                yield return null;
+                await Delay100MsAsync(ct);
             }
 
             ParupunteEnd();

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     /// <summary>
     /// 上空からソロモンを落として大爆発させる
     /// </summary>
-    [ParupunteConfigAttribute("頭の中に爆弾が!")]
+    [ParupunteConfigAttribute("ボルガ博士！お許し下さい!")]
     [ParupunteIsono("ぼるが")]
     internal class Volga : ParupunteScript
     {
@@ -18,11 +18,27 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
+        private Blip _blip;
+
         public override void OnStart()
         {
-            StartCoroutine(AirPlaneCoroutine());
+            var playerPos = core.PlayerPed.Position;
+            var around = playerPos.Around(70);
+            var spawnPoint = around + Vector3.WorldUp * 200f;
+
+            // 簡略化
+            VolgaAsync(spawnPoint, Vector3.Zero, ActiveCancellationToken).Forget();
         }
 
+        protected override void OnFinished()
+        {
+            if (_blip.Exists())
+            {
+                _blip.Delete();
+            }
+        }
+
+        /*
         /// <summary>
         /// 飛行機を召喚する
         /// </summary>
@@ -117,31 +133,41 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 100, 100);
         }
 
-        private IEnumerable<object> VolgaCoroutine(Vector3 createPosition, Vector3 forward)
+        */
+
+        private async ValueTask VolgaAsync(Vector3 createPosition, Vector3 forward, CancellationToken ct)
         {
             var volga = GTA.World.CreatePed(new Model(PedHash.Solomon), createPosition);
             if (!volga.IsSafeExist())
             {
                 ParupunteEnd();
-                yield break;
+                return;
             }
 
-            core.DrawParupunteText("ボルガ博士！お許し下さい！", 3.0f);
 
             volga.Task.ClearAllImmediately();
             volga.FreezePosition(false);
-            volga.Health = 30;
+            volga.Health = 100;
             volga.IsCollisionProof = false;
             volga.IsInvincible = false;
             volga.Velocity = forward;
-            yield return WaitForSeconds(1);
+            volga.IsPersistent = true;
+            _blip = volga.AddBlip();
+            if (_blip.Exists())
+            {
+                _blip.Color = BlipColor.Yellow2;
+            }
 
-            foreach (var w in WaitForSeconds(10))
+            AutoReleaseOnParupunteEnd(volga);
+            await DelaySecondsAsync(1, ct);
+
+            var targetTime = core.ElapsedTime + 10;
+            while (core.ElapsedTime < targetTime && !ct.IsCancellationRequested)
             {
                 if (!volga.IsSafeExist())
                 {
                     ParupunteEnd();
-                    yield break;
+                    return;
                 }
 
                 //着地するまで
@@ -150,19 +176,22 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     break;
                 }
 
-                yield return null;
+                await YieldAsync(ct);
             }
 
             if (!volga.IsSafeExist())
             {
                 ParupunteEnd();
-                yield break;
+                return;
             }
 
             //着死したら大爆発する
             volga.MarkAsNoLongerNeeded();
             GTA.World.AddExplosion(volga.Position, GTA.ExplosionType.Rocket, 10.0f, 2.0f);
+            GTA.World.AddExplosion(volga.Position, GTA.ExplosionType.RayGun, 10.0f, 2.0f);
+
             BlowOff(volga.Position);
+
             ParupunteEnd();
         }
 
@@ -171,8 +200,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// </summary>
         private void BlowOff(Vector3 centerPos)
         {
-            var peds = GTA.World.GetNearbyPeds(centerPos, 150);
-            var vehicles = GTA.World.GetNearbyVehicles(centerPos, 150);
+            var peds = core.CachedPeds.Concat(new[] { core.PlayerPed });
+            var vehicles = core.CachedVehicles;
 
             foreach (var p in peds)
             {
@@ -186,11 +215,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     continue;
                 }
 
-                var dir = p.Position - centerPos;
+                if (!p.IsInRangeOf(centerPos, 150))
+                {
+                    continue;
+                }
+
+                var dir = p.Position + Vector3.WorldUp * 10 - centerPos;
                 var lenght = dir.Length();
                 dir.Normalize();
                 p.CanRagdoll = true;
-                p.SetToRagdoll(100);
+                p.SetToRagdoll();
 
                 float power = 50;
                 if (lenght <= 30)
@@ -213,7 +247,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     continue;
                 }
 
-                var dir = w.Position - centerPos;
+                if (!w.IsInRangeOf(centerPos, 150))
+                {
+                    continue;
+                }
+
+
+                var dir = w.Position + Vector3.WorldUp * 15 - centerPos;
                 var lenght = dir.Length();
                 dir.Normalize();
 
