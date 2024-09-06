@@ -558,8 +558,13 @@ namespace Inferno.ChaosMode
 
             ped.SetFleeAttributes(0, 0);
 
-            ped.MaxHealth = 5000;
-            ped.Health = 5000;
+            // ミッションキャラクタでないならば体力を上書きする
+            if (!ped.IsRequiredForMission())
+            {
+                ped.MaxHealth = 5000;
+                ped.Health = 5000;
+            }
+
             ped.SetPedShootRate(100);
             ped.Accuracy = chaosModeSetting.ShootAccuracy;
             //戦闘能力？

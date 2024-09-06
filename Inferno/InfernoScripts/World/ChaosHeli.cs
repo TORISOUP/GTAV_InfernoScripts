@@ -76,7 +76,7 @@ namespace Inferno.InfernoScripts.World
                     {
                         _heliBlip.Delete();
                     }
-                    
+
                     DrawText("ChaosHeli:" + (IsActive ? "ON" : "OFF"));
                     if (IsActive)
                     {
@@ -105,10 +105,11 @@ namespace Inferno.InfernoScripts.World
             OnAbortAsync
                 .Subscribe(_ =>
                 {
-                    if(_heliBlip?.Exists() ?? false)
+                    if (_heliBlip?.Exists() ?? false)
                     {
                         _heliBlip.Delete();
                     }
+
                     ReleasePedAndHeli();
                 });
         }
@@ -129,8 +130,7 @@ namespace Inferno.InfernoScripts.World
                         playerIsDead = false;
                         ResetHeli();
                     }
-
-                    if (PlayerPed.IsDead)
+                    else if (PlayerPed.IsDead)
                     {
                         playerIsDead = true;
                     }
@@ -154,7 +154,7 @@ namespace Inferno.InfernoScripts.World
                     ResetHeli();
                 }
 
-                await DelaySecondsAsync(20, ct);
+                await DelaySecondsAsync(40, ct);
             }
         }
 
@@ -170,14 +170,14 @@ namespace Inferno.InfernoScripts.World
                     break;
                 }
 
-                var targetPosition = PlayerPed.Position + new Vector3(0, 0, 10);
+                var targetPosition = PlayerPed.Position.Around(20) + new Vector3(0, 0, 10);
 
                 //ヘリがプレイヤから離れすぎていた場合は追いかける
                 MoveHeli(_heliDriver, targetPosition);
 
                 SpawnPassengersToEmptySeat();
 
-                await DelaySecondsAsync(1, ct);
+                await DelaySecondsAsync(5, ct);
             }
 
             ReleasePedAndHeli();
@@ -196,7 +196,7 @@ namespace Inferno.InfernoScripts.World
                 return;
             }
 
-            if (_heli.IsInRangeOf(targetPosition, 30))
+            if (_heli.IsInRangeOf(targetPosition, 70))
             {
                 //プレイヤに近い場合は攻撃する
 
@@ -218,9 +218,10 @@ namespace Inferno.InfernoScripts.World
                 if (_isNearPlayer)
                 {
                     _heliDriver.Task.ClearAll();
-                    _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
                     _isNearPlayer = false;
                 }
+
+                _heli.DriveTo(_heliDriver, targetPosition, 100, DrivingStyle.IgnoreLights);
             }
         }
 
@@ -233,10 +234,11 @@ namespace Inferno.InfernoScripts.World
             _heliCts?.Cancel();
             _heliCts?.Dispose();
             _heliCts = new CancellationTokenSource();
-            if(_heliBlip?.Exists() ?? false)
+            if (_heliBlip?.Exists() ?? false)
             {
                 _heliBlip.Delete();
             }
+
             ReleasePedAndHeli();
             CreateChaosHeli();
         }
@@ -270,7 +272,7 @@ namespace Inferno.InfernoScripts.World
 
                 var player = PlayerPed;
                 var playerPosition = player.Position;
-                var spawnHeliPosition = playerPosition + new Vector3(0, 0, 40);
+                var spawnHeliPosition = playerPosition.Around(100) + new Vector3(0, 0, 40);
                 var heli = GTA.World.CreateVehicle(Helis[Random.Next(0, Helis.Length)], spawnHeliPosition);
                 if (!heli.IsSafeExist())
                 {
@@ -282,7 +284,7 @@ namespace Inferno.InfernoScripts.World
                 heli.MaxHealth = 3000;
                 heli.Health = 3000;
                 _heli = heli;
-                
+
                 _heliBlip = _heli.AddBlip();
                 if (_heliBlip?.Exists() ?? false)
                 {

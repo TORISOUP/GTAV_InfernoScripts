@@ -12,7 +12,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteConfigAttribute("あっちこっち", "おわり")]
     [ParupunteIsono("あっちこっち")]
     // クラッシュするので封印
-    [ParupunteDebug(isIgnore: false)]
+    [ParupunteDebug(isIgnore: true)]
     internal class PositionShuffle : ParupunteScript
     {
         private readonly Random random = new();
