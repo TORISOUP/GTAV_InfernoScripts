@@ -620,7 +620,8 @@ namespace Inferno.ChaosMode
                 Weapon weapon;
                 if (_isBaseball)
                 {
-                    weapon = DefaultWeaponProvider.GetRandomCloseWeapons();
+                    // 野球大会中でもパルプンテ側の効果が優先される
+                    weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
                 }
                 else
                 {
