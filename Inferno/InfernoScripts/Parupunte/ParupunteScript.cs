@@ -146,7 +146,6 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             onUpdateSubject?.OnNext(Unit.Default);
             OnUpdate();
-            Internal_UpdateAsync(ActiveCancellationToken).Forget();
         }
 
 
@@ -156,37 +155,7 @@ namespace Inferno.InfernoScripts.Parupunte
         protected virtual void OnUpdate()
         {
         }
-
-        /// <summary>
-        /// 毎フレーム実行されるが、await中は呼び出されない
-        /// </summary>
-        protected virtual ValueTask OnUpdateAsync(CancellationToken ct)
-        {
-            return default;
-        }
-
-        private async ValueTask Internal_UpdateAsync(CancellationToken ct)
-        {
-            lock (_gateUpdateAsync)
-            {
-                if (_isUpdateAsyncActive)
-                {
-                    return;
-                }
-
-                _isUpdateAsyncActive = true;
-            }
-
-            try
-            {
-                await OnUpdateAsync(ct);
-            }
-            finally
-            {
-                _isUpdateAsyncActive = false;
-            }
-        }
-
+        
         public void OnFinishedCore()
         {
             if (IsFinished)

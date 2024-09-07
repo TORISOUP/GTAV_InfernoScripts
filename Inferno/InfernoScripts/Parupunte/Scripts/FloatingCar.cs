@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -30,21 +31,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             Function.Call(Hash.SET_GRAVITY_LEVEL, 1);
+            UpdateAsync(ActiveCancellationToken).Forget();
         }
 
-        protected override async ValueTask OnUpdateAsync(CancellationToken ct)
+        private async ValueTask UpdateAsync(CancellationToken ct)
         {
-            var player = core.PlayerPed;
-            foreach (var vehicle in core.CachedVehicles
-                         .Where(x => x.IsSafeExist()
-                                     && !_targetList.Contains(x)
-                                     && x.IsInRangeOf(player.Position, 150.0f)
-                                     && !x.IsPersistent))
+            while (!ct.IsCancellationRequested)
             {
-                _targetList.Add(vehicle);
-            }
+                var player = core.PlayerPed;
+                foreach (var vehicle in core.CachedVehicles
+                             .Where(x => x.IsSafeExist()
+                                         && !_targetList.Contains(x)
+                                         && x.IsInRangeOf(player.Position, 150.0f)
+                                         && !x.IsPersistent))
+                {
+                    _targetList.Add(vehicle);
+                }
 
-            await DelaySecondsAsync(1, ct);
+                await DelaySecondsAsync(1, ct);
+            }
         }
 
         protected override void OnUpdate()

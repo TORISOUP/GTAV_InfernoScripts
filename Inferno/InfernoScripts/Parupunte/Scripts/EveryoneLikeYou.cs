@@ -30,32 +30,37 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
+
+            UpdateAsync(ActiveCancellationToken).Forget();
         }
 
-        protected override async ValueTask OnUpdateAsync(CancellationToken ct)
+        private async ValueTask UpdateAsync(CancellationToken ct)
         {
-            var playerPos = core.PlayerPed.Position;
-            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
-                                                           && x.IsInRangeOf(playerPos, 30)
-                                                           && !entityList.Contains(x)
-                                                           && !x.IsCutsceneOnlyPed()))
+            while (!ct.IsCancellationRequested)
             {
-                entityList.Add(ped);
-                MoveAsync(ped, ActiveCancellationToken).Forget();
-            }
-
-            foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
+                var playerPos = core.PlayerPed.Position;
+                foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
                                                                && x.IsInRangeOf(playerPos, 30)
                                                                && !entityList.Contains(x)
-                     ))
-            {
-                if (entityList.Add(veh))
+                                                               && !x.IsCutsceneOnlyPed()))
                 {
-                    MoveAsync(veh, ActiveCancellationToken).Forget();
+                    entityList.Add(ped);
+                    MoveAsync(ped, ActiveCancellationToken).Forget();
                 }
+
+                foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
+                                                                   && x.IsInRangeOf(playerPos, 30)
+                                                                   && !entityList.Contains(x)
+                         ))
+                {
+                    if (entityList.Add(veh))
+                    {
+                        MoveAsync(veh, ActiveCancellationToken).Forget();
+                    }
+                }
+
+                await DelaySecondsAsync(1, ct);
             }
-            
-            await DelaySecondsAsync(1, ct);
         }
 
         private async ValueTask MoveAsync(Entity entity, CancellationToken ct)

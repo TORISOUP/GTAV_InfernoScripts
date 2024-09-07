@@ -36,6 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //プレイヤ監視
             ObservePlayerAsync(ActiveCancellationToken).Forget();
+            UpdateAsync(ActiveCancellationToken).Forget();
         }
 
         protected override void OnFinished()
@@ -46,28 +47,31 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
-        protected override async ValueTask OnUpdateAsync(CancellationToken ct)
+        private async ValueTask UpdateAsync(CancellationToken ct)
         {
-            //周辺車両を監視
-            var playerPos = core.PlayerPed.Position;
-            foreach (var v in core.CachedVehicles.Where(
-                         x => x.IsSafeExist()
-                              && !vehicles.Contains(x.Handle)
-                              && x.IsAlive
-                              && x.IsInRangeOf(playerPos, 50)
-                     ))
+            while (!ct.IsCancellationRequested)
             {
-                var driver = v.Driver;
-                if (!driver.IsSafeExist() || driver.IsPlayer)
+                //周辺車両を監視
+                var playerPos = core.PlayerPed.Position;
+                foreach (var v in core.CachedVehicles.Where(
+                             x => x.IsSafeExist()
+                                  && !vehicles.Contains(x.Handle)
+                                  && x.IsAlive
+                                  && x.IsInRangeOf(playerPos, 50)
+                         ))
                 {
-                    continue;
+                    var driver = v.Driver;
+                    if (!driver.IsSafeExist() || driver.IsPlayer)
+                    {
+                        continue;
+                    }
+
+                    vehicles.Add(v.Handle);
+                    CitizenVehicleAsync(v, ct).Forget();
                 }
 
-                vehicles.Add(v.Handle);
-                CitizenVehicleAsync(v, ct).Forget();
+                await Delay100MsAsync(ct);
             }
-
-            await Delay100MsAsync(ct);
         }
 
         /// <summary>
