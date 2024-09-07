@@ -415,9 +415,10 @@ namespace Inferno.ChaosMode
                             ped.ClearEntityLastDamageEntity();
                         }
 
-                        if (_chaosChecker.IsPedNearAvoidAttackEntities(ped))
+                        // 攻撃しちゃいけない相手が近くにいるなら停止
+                        // ただしミッションキャラクターの場合は無視
+                        if (_chaosChecker.IsPedNearAvoidAttackEntities(ped) && !ped.IsRequiredForMission())
                         {
-                            // 攻撃しちゃいけない相手が近くにいるなら停止
                             ped.Task.ClearAll();
                             chaosedPedList.Remove(ped);
                             return;
