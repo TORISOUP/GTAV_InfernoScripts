@@ -95,7 +95,6 @@ namespace Inferno.InfernoScripts.World
                 {
                     currentSpeedType = nextType;
                     DrawText($"SpeedMax:[Type:{currentSpeedType}][OK]", 2.0f);
-                    StopAllCoroutine();
                     vehicleHashSet.Clear();
                 });
 
@@ -105,7 +104,6 @@ namespace Inferno.InfernoScripts.World
                 {
                     excludeMissionVehicle = !excludeMissionVehicle;
                     vehicleHashSet.Clear();
-                    StopAllCoroutine();
                     DrawText($"SpeedMax:ExcludeMissionVehicles[{excludeMissionVehicle}]");
                 });
 

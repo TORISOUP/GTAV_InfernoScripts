@@ -12,7 +12,6 @@ using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using Inferno.InfernoScripts.InfernoCore.Coroutine;
 using Inferno.Utilities;
 
 namespace Inferno
@@ -59,7 +58,7 @@ namespace Inferno
                     }
                 });
 
-             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)
@@ -210,7 +209,7 @@ namespace Inferno
             }
 
             hash = entity.Model.Hash;
-            
+
             var time = 0f;
             while (time < 3.0f)
             {
@@ -317,7 +316,7 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 生成した味方を監視するコルーチン
+        /// 生成した味方を監視する
         /// </summary>
         private async ValueTask FriendAsync(Ped ped, CancellationToken ct)
         {
@@ -342,43 +341,19 @@ namespace Inferno
             var hash = motherbaseVeh.Dequeue();
             var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)hash);
             DrawText(NativeFunctions.GetGXTEntry(vehicleGxtEntry));
-            StartCoroutine(SpawnVehicleCoroutine(new Model(hash), PlayerPed.Position.AroundRandom2D(20)));
+            SpawnVehicle(new Model(hash), PlayerPed.Position.AroundRandom2D(20));
         }
 
-        private IEnumerable<object> SpawnVehicleCoroutine(Model model, Vector3 targetPosition)
+        private void SpawnVehicle(Model model, Vector3 targetPosition)
         {
-            var car = World.CreateVehicle(model, targetPosition + new Vector3(0, 0, 20));
+            var car = World.CreateVehicle(model, targetPosition + new Vector3(0, 0, 10));
             if (!car.IsSafeExist())
             {
-                yield break;
+                return;
             }
 
-            var upVector = new Vector3(0, 0, 1.0f);
             car.FreezePosition(false);
-            car.Velocity = new Vector3();
             World.AddExplosion(targetPosition, GTA.ExplosionType.Flare, 1.0f, 0.0f);
-
-            foreach (var s in WaitForSeconds(10))
-            {
-                if (!car.IsSafeExist())
-                {
-                    yield break;
-                }
-
-                car.ApplyForce(upVector);
-                if (!car.IsInAir)
-                {
-                    break;
-                }
-
-                yield return null;
-            }
-
-            if (!car.IsSafeExist())
-            {
-                yield break;
-            }
-
             car.MarkAsNoLongerNeeded();
         }
 

@@ -48,7 +48,24 @@ namespace Inferno
                         return;
                     }
 
-                    var damageName = damageWeapon.ToString();
+                    string damageName = null;
+                    if (damageWeapon == Weapon.VEHICLE_ROCKET)
+                    {
+                        var killer = PlayerPed.Killer;
+                        if (killer.IsSafeExist())
+                        {
+                            damageName = damageWeapon.ToString();
+                        }
+                        else
+                        {
+                            damageName = "Meteor Strike";
+                        }
+                    }
+                    else
+                    {
+                        damageName = damageWeapon.ToString();
+                    }
+
                     if (PlayerPed.Killer == PlayerPed)
                     {
                         damageName += "(SUICIDE)";

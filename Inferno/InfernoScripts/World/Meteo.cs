@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using Inferno.Utilities;
@@ -22,7 +24,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("Meteo:" + IsActive);
+                    DrawText("Meteor:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -62,16 +64,16 @@ namespace Inferno
 
                 //たまに花火
                 var weapon = Random.Next(0, 100) < 3
-                    ? new WeaponAsset(WeaponHash.Firework)
-                    : new WeaponAsset(WeaponHash.RPG);
+                    ?  Weapon.Firework
+                    :  Weapon.VEHICLE_ROCKET;
 
                 //ライト描画
-                StartCoroutine(CreateMeteoLight(targetPosition, 2.0f));
+                CreateMeteoLightAsync(targetPosition, 2.0f, ActivationCancellationToken).Forget();
 
-                //そこら辺の市民のせいにする
-                var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
-
-                World.ShootBullet(createPosition, targetPosition, ped, weapon, 200);
+                NativeFunctions.ShootSingleBulletBetweenCoords(
+                    createPosition,
+                    targetPosition, 200, weapon, null, -1.0f);
+                
             }
             catch (Exception ex)
             {
@@ -126,10 +128,10 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private IEnumerable<object> CreateMeteoLight(Vector3 position, float durationSecond)
+        private async ValueTask CreateMeteoLightAsync(Vector3 position, float durationSecond, CancellationToken ct)
         {
             _meteoLightPositionList.Add(position);
-            yield return WaitForSeconds(durationSecond);
+            await DelaySecondsAsync(durationSecond, ct);
             _meteoLightPositionList.Remove(position);
         }
 
