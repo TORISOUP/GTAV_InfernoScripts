@@ -1,119 +1,141 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Inferno;
 using Inferno.ChaosMode;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using Xunit;
+using Xunit.Sdk;
 
 namespace InfernoTest
 {
     /// <summary>
     /// ChaosModeSettingLoaderTest の概要の説明
     /// </summary>
-    [TestClass]
     public class ChaosModeSettingLoaderTest
     {
-        [TestMethod]
-        public void 全て正常値が設定されたJsonからChaosSettingが生成できる()
+        [Theory]
+        [FileData("ChaosModeSettingLoader/TestData/CorrectConf.json")]
+        public void 全て正常値が設定されたJsonからChaosSettingが生成できる(string json)
         {
-            var testLoader =
-                new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbability\":3,\"DefaultMissionCharacterTreatment\":2,\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"WeaponChangeProbability\":100,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponList\":[\"RPG\",\"Bat\"],\"WeaponListForDriveBy\":[\"MicroSMG\"]}");
-
+            var testLoader = new TestChaosModeSettingLoader(json);
             var result = testLoader.LoadSettingFile("");
 
-            Assert.AreEqual(100, result.Radius);
-            Assert.AreEqual(3, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeAllMissionCharacter,
+            Assert.Equal(500, result.Radius);
+            Assert.True(result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(60, result.ShootAccuracy);
-            Assert.AreEqual(100, result.WeaponChangeProbability);
-            Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
-            CollectionAssert.AreEqual(new[] { Weapon.MicroSMG }, result.WeaponListForDriveBy);
+            Assert.False(result.IsAttackPlayerCorrectionEnabled);
+            Assert.Equal(100, result.AttackPlayerCorrectionProbability);
+            Assert.Equal(new[] { Weapon.AdvancedRifle }, result.WeaponList);
+            Assert.Equal(new[] { Weapon.Pistol, Weapon.SMGMk2 }, result.WeaponListForDriveBy);
+            Assert.Equal(50, result.StupidPedRate);
+            Assert.Equal(10, result.ShootAccuracy);
+            Assert.Equal(100, result.WeaponChangeProbability);
+            Assert.Equal(30, result.ForceExplosiveWeaponProbability);
         }
 
-        [TestMethod]
-        public void 一部パラメータが抜けていてもデフォルト値で上書きされたChaosSettingが生成できる()
+        [Theory]
+        [FileData("ChaosModeSettingLoader/TestData/PartialConf.json")]
+        public void 一部パラメータが抜けていてもデフォルト値で上書きされたChaosSettingが生成できる(string json)
         {
-            //AttackPlayerCorrectionProbabillityとDefaultMissionCharacterTreatmentとWeaponListForDriveByが未設定
-            var testLoader =
-                new TestChaosModeSettingLoader(
-                    "{\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"Bat\"]}");
-
+            var testLoader = new TestChaosModeSettingLoader(json);
             var result = testLoader.LoadSettingFile("");
 
-            //設定されていない要素はデフォルト値
-            Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
-                result.DefaultMissionCharacterTreatment);
-            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
-            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
+            // 存在する
+            Assert.Equal(100, result.Radius);
+            Assert.False(result.IsChangeMissionCharacterWeapon);
+            Assert.True(result.IsAttackPlayerCorrectionEnabled);
+            Assert.Equal(10, result.AttackPlayerCorrectionProbability);
+            Assert.Equal(new[] { Weapon.AdvancedRifle }, result.WeaponList);
+            Assert.Equal(new[] { Weapon.Pistol }, result.WeaponListForDriveBy);
 
-            //それ以外はjsonの通り
-            Assert.AreEqual(100, result.Radius);
-            Assert.AreEqual(60, result.ShootAccuracy);
-            Assert.AreEqual(100, result.WeaponChangeProbability);
-            Assert.IsTrue(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsFalse(result.IsChangeMissionCharacterWeapon);
-            CollectionAssert.AreEqual(new[] { Weapon.Bat, Weapon.RPG }, result.WeaponList);
+            var settingDefault = new ChaosModeSettingDTO();
+
+            // 存在しないものはデフォルト値
+            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
+                result.DefaultMissionCharacterTreatment);
+
+            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
+            Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
+            Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
         }
 
-        [TestMethod]
+
+        [Fact]
         public void 不正なjsonが渡された場合はデフォルト値の設定ファイルになる()
         {
             var testLoader = new TestChaosModeSettingLoader("{AAA,BBB}"); //jsonの文法違反
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(300, result.Radius);
-            Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+
+            // デフォルト値
+            var settingDefault = new ChaosModeSettingDTO();
+
+            Assert.Equal(settingDefault.Radius, result.Radius);
+            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
+            Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
+            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbability);
-            Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
-            CollectionAssert.AreEqual(allWeapons, result.WeaponList);
-            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
+            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
+            Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
+            Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
+
+            // リストは少なくとも1つ以上の値がある
+            Assert.True(result.WeaponList.Length > 0);
+            Assert.True(result.WeaponListForDriveBy.Length > 0);
         }
 
-        [TestMethod]
-        public void jsonの型が一致しない場合はデフォルト値の設定ファイルになる()
+        [Theory]
+        [FileData("ChaosModeSettingLoader/TestData/WrongType.json")]
+        public void jsonの型が一致しない場合はデフォルト値の設定ファイルになる(string json)
         {
-            var testLoader =
-                new TestChaosModeSettingLoader(
-                    "{\"AttackPlayerCorrectionProbability\":true,\"DefaultMissionCharacterTreatment\":\"hoge\",\"Interval\":50,\"IsAttackPlayerCorrectionEnabled\":true,\"IsChangeMissionCharacterWeapon\":false,\"IsStupidShooting\":false,\"Radius\":100,\"ShootAccuracy\":60,\"WeaponChangeProbability\":100,\"WeaponList\":[\"RPG\",\"Bat\"]}");
-
+            var testLoader = new TestChaosModeSettingLoader(json);
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(300, result.Radius);
-            Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+            
+            // デフォルト値
+            var settingDefault = new ChaosModeSettingDTO();
+
+            Assert.Equal(settingDefault.Radius, result.Radius);
+            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
+            Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
+            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbability);
-            Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
-            CollectionAssert.AreEqual(allWeapons, result.WeaponList);
-            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
+            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
+            Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
+            Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
+
+            // リストは少なくとも1つ以上の値がある
+            Assert.True(result.WeaponList.Length > 0);
+            Assert.True(result.WeaponListForDriveBy.Length > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void 空文字列だった場合はデフォルト値のChaosSettingが生成される()
         {
             var testLoader = new TestChaosModeSettingLoader("");
             var result = testLoader.LoadSettingFile("");
-            Assert.AreEqual(300, result.Radius);
-            Assert.AreEqual(100, result.AttackPlayerCorrectionProbabillity);
-            Assert.AreEqual(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
+            
+            // デフォルト値
+            var settingDefault = new ChaosModeSettingDTO();
+
+            Assert.Equal(settingDefault.Radius, result.Radius);
+            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
+            Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
+            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
                 result.DefaultMissionCharacterTreatment);
-            Assert.AreEqual(30, result.ShootAccuracy);
-            Assert.AreEqual(30, result.WeaponChangeProbability);
-            Assert.IsFalse(result.IsAttackPlayerCorrectionEnabled);
-            Assert.IsTrue(result.IsChangeMissionCharacterWeapon);
-            var allWeapons = (Weapon[])Enum.GetValues(typeof(Weapon));
-            CollectionAssert.AreEqual(allWeapons, result.WeaponList);
-            CollectionAssert.AreEqual(allWeapons, result.WeaponListForDriveBy);
+            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
+            Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
+            Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
+
+            // リストは少なくとも1つ以上の値がある
+            Assert.True(result.WeaponList.Length > 0);
+            Assert.True(result.WeaponListForDriveBy.Length > 0);
         }
 
         /// <summary>
@@ -135,18 +157,42 @@ namespace InfernoTest
             /// <summary>
             /// テスト時はログを吐かないようにMockに挿し替える
             /// </summary>
-            protected override DebugLogger DebugLogger
-            {
-                get
-                {
-                    var mockDebugLogger = new Mock<DebugLogger>("");
-                    return mockDebugLogger.Object;
-                }
-            }
+            protected override IDebugLogger DebugLogger => EmptyDebugLogger.Instance;
 
             protected override string ReadFile(string filePath)
             {
                 return _readJson;
+            }
+        }
+
+        private class EmptyDebugLogger : IDebugLogger
+        {
+            public static EmptyDebugLogger Instance = new EmptyDebugLogger();
+
+            public void Dispose()
+            {
+            }
+
+            public void Log(string message)
+            {
+            }
+        }
+
+        public class FileDataAttribute : DataAttribute
+        {
+            private readonly string _path;
+
+            public FileDataAttribute(string path)
+            {
+                _path = path;
+            }
+
+            public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+            {
+                if (File.Exists(_path))
+                {
+                    yield return new object[] { File.ReadAllText(_path) };
+                }
             }
         }
     }

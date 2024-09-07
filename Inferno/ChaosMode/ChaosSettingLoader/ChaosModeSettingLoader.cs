@@ -22,9 +22,11 @@ namespace Inferno.ChaosMode
         protected override ChaosModeSettingDTO CreateDefault()
         {
             //デフォルト設定を吐き出す
-            var dto = new ChaosModeSettingDTO();
-            dto.WeaponList = ChaosModeWeapons.AllWeapons.Select(x => x.ToString()).ToArray();
-            dto.WeaponListForDriveBy = ChaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray();
+            var dto = new ChaosModeSettingDTO
+            {
+                WeaponList = ChaosModeWeapons.AllWeapons.Select(x => x.ToString()).ToArray(),
+                WeaponListForDriveBy = ChaosModeWeapons.DriveByWeapons.Select(x => x.ToString()).ToArray()
+            };
             return dto;
         }
     }

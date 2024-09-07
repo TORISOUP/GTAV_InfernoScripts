@@ -463,7 +463,7 @@ namespace Inferno.ChaosMode
 
             //プレイヤへの攻撃補正が設定されているならプレイヤをリストに追加する
             if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
-                Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbabillity)
+                Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbability)
             {
                 return nearPeds.Concat(new[] { PlayerPed }).ToArray();
             }

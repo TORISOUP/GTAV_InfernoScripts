@@ -32,7 +32,7 @@ namespace Inferno.ChaosMode
         /// 市民がプレイヤをどれくらいの割合で狙ってくるか（0～100%）
         /// IsAttackPlayerCorrectionEnabledがTrueの場合のみ有効
         /// </summary>
-        public int AttackPlayerCorrectionProbabillity { get; private set; }
+        public int AttackPlayerCorrectionProbability { get; private set; }
 
         /// <summary>
         /// 乗車中ではない市民が使用する武器リスト
@@ -80,7 +80,7 @@ namespace Inferno.ChaosMode
             IsChangeMissionCharacterWeapon = dto.IsChangeMissionCharacterWeapon;
             IsAttackPlayerCorrectionEnabled = dto.IsAttackPlayerCorrectionEnabled;
             StupidPedRate = dto.StupidPedRate.Clamp(0, 100);
-            AttackPlayerCorrectionProbabillity = dto.AttackPlayerCorrectionProbability.Clamp(0, 100);
+            AttackPlayerCorrectionProbability = dto.AttackPlayerCorrectionProbability.Clamp(0, 100);
             ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
             WeaponChangeProbability = dto.WeaponChangeProbability.Clamp(0, 100);
             ForceExplosiveWeaponProbability = dto.ForceExplosiveWeaponProbability.Clamp(0, 100);

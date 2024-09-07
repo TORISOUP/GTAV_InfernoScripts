@@ -7,7 +7,12 @@ using Inferno.Utilities;
 
 namespace Inferno
 {
-    public class DebugLogger : IDisposable
+    public interface IDebugLogger : IDisposable
+    {
+        public void Log(string message);
+    }
+    
+    public class DebugLogger : IDebugLogger
     {
         private readonly Encoding _encoding;
         private readonly string _logPath;

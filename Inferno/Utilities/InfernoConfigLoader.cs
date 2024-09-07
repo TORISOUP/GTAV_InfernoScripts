@@ -10,11 +10,11 @@ namespace Inferno.Utilities
     /// </summary>
     public class InfernoConfigLoader<T> where T : new()
     {
-        protected readonly Encoding _encoding = Encoding.UTF8;
-        protected string _baseFilePath = @"./scripts/confs/";
-        protected DebugLogger _debugLogger;
+        private readonly Encoding _encoding = Encoding.UTF8;
+        private readonly string _baseFilePath = @"./scripts/confs/";
+        private IDebugLogger _debugLogger;
 
-        protected virtual DebugLogger DebugLogger
+        protected virtual IDebugLogger DebugLogger
         {
             get
             {

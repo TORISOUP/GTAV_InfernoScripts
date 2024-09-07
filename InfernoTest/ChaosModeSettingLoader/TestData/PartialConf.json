@@ -1,0 +1,12 @@
+{
+  "Radius": 100,
+  "IsChangeMissionCharacterWeapon": false,
+  "IsAttackPlayerCorrectionEnabled": true,
+  "AttackPlayerCorrectionProbability": 10,
+  "WeaponList": [
+    "AdvancedRifle"
+  ],
+  "WeaponListForDriveBy": [
+    "Pistol"
+  ]
+}
