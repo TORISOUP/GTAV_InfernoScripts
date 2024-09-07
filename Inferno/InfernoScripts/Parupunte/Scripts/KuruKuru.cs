@@ -11,8 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("くるくる")]
     internal class KuruKuru : ParupunteScript
     {
-        private IDisposable mainStream;
-
         public KuruKuru(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
@@ -68,6 +66,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         0 => Vector3.WorldUp,
                         1 => Vector3.RelativeRight,
                         2 => Vector3.RelativeFront,
+                        _ => Vector3.WorldUp
                     };
 
                     veh.Quaternion = Quaternion.RotationAxis(angle, 1.0f * rate) * veh.Quaternion;

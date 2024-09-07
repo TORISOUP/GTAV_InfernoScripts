@@ -70,7 +70,7 @@ namespace Inferno.InfernoScripts
             }
         }
 
-        public async Task SaveSettings(Dictionary<string, ParupunteConfigElement> configs)
+        public async ValueTask SaveSettings(Dictionary<string, ParupunteConfigElement> configs)
         {
             var directoryPath = Path.GetDirectoryName(_filePath);
             //存在しないならディレクトリを作る

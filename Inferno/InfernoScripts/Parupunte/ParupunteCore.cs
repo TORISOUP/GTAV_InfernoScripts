@@ -238,7 +238,7 @@ namespace Inferno.InfernoScripts.Parupunte
             }
 
             // 最終的なconfをファイルに書き出す
-            configRepository.SaveSettings(mergedConfig);
+            configRepository.SaveSettings(mergedConfig).Forget();
 
             // 設定完了
             _parupunteConfigs = mergedConfig;
@@ -302,7 +302,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 _currentScript = Activator.CreateInstance(script, this, conf) as ParupunteScript;
                 ParupunteCoreLoopAsync(_currentScript, ct).Forget();
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 IsActive = false;
             }

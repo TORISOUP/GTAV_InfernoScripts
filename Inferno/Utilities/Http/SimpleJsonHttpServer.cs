@@ -66,7 +66,7 @@ namespace Inferno.Utilities.Http
                                 {
                                     v = JsonConvert.DeserializeObject<T>(json);
                                 }
-                                catch (Exception _)
+                                catch (Exception)
                                 {
                                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                                     response.Close();

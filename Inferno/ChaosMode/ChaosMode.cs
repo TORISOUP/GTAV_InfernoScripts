@@ -50,27 +50,25 @@ namespace Inferno.ChaosMode
 
         private MissionCharacterTreatmentType _nextTreatType;
         private SingleWeaponProvider _singleWeaponProvider;
-        private CharacterChaosChecker chaosChecker;
+        private CharacterChaosChecker _chaosChecker;
 
         /// <summary>
         /// 設定
         /// </summary>
-        private ChaosModeSetting chaosModeSetting;
-
-        private int chaosRelationShipId;
+        private ChaosModeSetting _chaosModeSetting;
         private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
         private IWeaponProvider DefaultWeaponProvider => _defaultWeaponProvider;
 
         protected override void Setup()
         {
             var chaosSettingLoader = new ChaosModeSettingLoader();
-            chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
+            _chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
-            chaosChecker = new CharacterChaosChecker(chaosModeSetting.DefaultMissionCharacterTreatment,
-                chaosModeSetting.IsChangeMissionCharacterWeapon);
+            _chaosChecker = new CharacterChaosChecker(_chaosModeSetting.DefaultMissionCharacterTreatment,
+                _chaosModeSetting.IsChangeMissionCharacterWeapon);
 
             _defaultWeaponProvider =
-                new CustomWeaponProvider(chaosModeSetting.WeaponList, chaosModeSetting.WeaponListForDriveBy);
+                new CustomWeaponProvider(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
 
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable(Keyword)
@@ -91,7 +89,7 @@ namespace Inferno.ChaosMode
                     else
                     {
                         DrawText("ChaosMode:Off");
-                        chaosChecker.AvoidAttackEntities = Array.Empty<Entity>();
+                        _chaosChecker.AvoidAttackEntities = Array.Empty<Entity>();
                     }
                 })
                 .AddTo(CompositeDisposable);
@@ -111,7 +109,7 @@ namespace Inferno.ChaosMode
                 .Subscribe(_ =>
                 {
                     _currentTreatType = _nextTreatType;
-                    chaosChecker.MissionCharacterTreatment = _nextTreatType;
+                    _chaosChecker.MissionCharacterTreatment = _nextTreatType;
                     DrawText("CharacterChaos:" + _currentTreatType + "[OK]");
                     chaosedPedList.Clear();
                     _localCts?.Cancel();
@@ -192,8 +190,8 @@ namespace Inferno.ChaosMode
                 .Where(_ => IsActive)
                 .Subscribe(all =>
                 {
-                    chaosChecker.AvoidAttackEntities = all
-                        .Where(x => !chaosChecker.IsAttackableEntity(x))
+                    _chaosChecker.AvoidAttackEntities = all
+                        .Where(x => !_chaosChecker.IsAttackableEntity(x))
                         .ToArray();
                 })
                 .AddTo(CompositeDisposable);
@@ -208,7 +206,7 @@ namespace Inferno.ChaosMode
 
             //まだ処理をしていない市民を対象とする
             var nearPeds =
-                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius));
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, _chaosModeSetting.Radius));
 
             _localCts ??= new CancellationTokenSource();
             _linkedCts ??=
@@ -258,7 +256,7 @@ namespace Inferno.ChaosMode
             GiveWeaponTpPed(ped);
 
             //ここでカオス化して良いか検査する
-            if (!chaosChecker.IsPedChaosAvailable(ped))
+            if (!_chaosChecker.IsPedChaosAvailable(ped))
             {
                 // 不適格なら3秒間は何もせずに放置し、リストから削除
                 await DelayAsync(TimeSpan.FromSeconds(3), ct);
@@ -301,12 +299,12 @@ namespace Inferno.ChaosMode
                     break;
                 }
 
-                if (!ped.IsInRangeOf(PlayerPed.Position, chaosModeSetting.Radius + 10))
+                if (!ped.IsInRangeOf(PlayerPed.Position, _chaosModeSetting.Radius + 10))
                 {
                     break;
                 }
 
-                if (!chaosChecker.IsPedChaosAvailable(ped))
+                if (!_chaosChecker.IsPedChaosAvailable(ped))
                 {
                     break;
                 }
@@ -314,7 +312,7 @@ namespace Inferno.ChaosMode
                 SetPedStatus(ped);
 
                 //武器を変更する
-                if (Random.Next(0, 100) < chaosModeSetting.WeaponChangeProbability)
+                if (Random.Next(0, 100) < _chaosModeSetting.WeaponChangeProbability)
                 {
                     GiveWeaponTpPed(ped);
                 }
@@ -336,7 +334,7 @@ namespace Inferno.ChaosMode
                 }
 
 
-                if (counterattackTarget.IsSafeExist() && chaosChecker.IsAttackableEntity(counterattackTarget))
+                if (counterattackTarget.IsSafeExist() && _chaosChecker.IsAttackableEntity(counterattackTarget))
                 {
                     // 反撃対象が設定されているならその人を対象に追加する
                     Function.Call(Hash.REGISTER_TARGET, ped, counterattackTarget);
@@ -350,7 +348,7 @@ namespace Inferno.ChaosMode
                 float waitTime = Random.Next(3, 20);
                 float checkWaitTime = 100;
                 float stupidShootingTime = 100;
-                var isStupidShooting = Random.Next(0, 100) < chaosModeSetting.StupidPedRate;
+                var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidPedRate;
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
@@ -397,7 +395,7 @@ namespace Inferno.ChaosMode
                         checkWaitTime = 0;
                         ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
 
-                        if (ped.Position.DistanceTo(PlayerPed.Position) > chaosModeSetting.Radius + 30)
+                        if (ped.Position.DistanceTo(PlayerPed.Position) > _chaosModeSetting.Radius + 30)
                         {
                             // プレイヤから遠くにいるなら終了
                             chaosedPedList.Remove(ped);
@@ -417,7 +415,7 @@ namespace Inferno.ChaosMode
                             ped.ClearEntityLastDamageEntity();
                         }
 
-                        if (chaosChecker.IsPedNearAvoidAttackEntities(ped))
+                        if (_chaosChecker.IsPedNearAvoidAttackEntities(ped))
                         {
                             // 攻撃しちゃいけない相手が近くにいるなら停止
                             ped.Task.ClearAll();
@@ -456,14 +454,14 @@ namespace Inferno.ChaosMode
             var nearPeds = CachedPeds
                 .Concat(new[] { PlayerPed })
                 .Where(x => x.IsSafeExist() && x.IsAlive && x != ped)
-                .Where(x => chaosChecker.IsAttackableEntity(x))
+                .Where(x => _chaosChecker.IsAttackableEntity(x))
                 .OrderBy(x => (ped.Position - x.Position).Length())
                 .Take(5)
                 .ToArray();
 
             //プレイヤへの攻撃補正が設定されているならプレイヤをリストに追加する
-            if (chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
-                Random.Next(0, 100) < chaosModeSetting.AttackPlayerCorrectionProbability)
+            if (_chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
+                Random.Next(0, 100) < _chaosModeSetting.AttackPlayerCorrectionProbability)
             {
                 return nearPeds.Concat(new[] { PlayerPed }).ToArray();
             }
@@ -550,7 +548,7 @@ namespace Inferno.ChaosMode
             }
 
             ped.SetPedShootRate(100);
-            ped.Accuracy = chaosModeSetting.ShootAccuracy;
+            ped.Accuracy = _chaosModeSetting.ShootAccuracy;
             //戦闘能力？
             ped.SetCombatAbility(100);
             //戦闘範囲
@@ -611,7 +609,7 @@ namespace Inferno.ChaosMode
                 }
 
                 //市民の武器を変更して良いか調べる
-                if (!chaosChecker.IsPedChangebalWeapon(ped))
+                if (!_chaosChecker.IsPedChangebalWeapon(ped))
                 {
                     return;
                 }
@@ -625,7 +623,7 @@ namespace Inferno.ChaosMode
                 }
                 else
                 {
-                    if (Random.Next(0, 99) < chaosModeSetting.ForceExplosiveWeaponProbability)
+                    if (Random.Next(0, 99) < _chaosModeSetting.ForceExplosiveWeaponProbability)
                     {
                         // 爆発物補正
                         weapon = CurrentWeaponProvider.GetExplosiveWeapon();
