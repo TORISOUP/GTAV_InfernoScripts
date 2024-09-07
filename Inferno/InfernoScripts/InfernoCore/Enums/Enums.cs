@@ -36,7 +36,8 @@
         RStickRight = 6,
         VehicleAccelerateKey = 232,
         VehicleForwardTiltKey = 209,
-        VehicleBackwardTiltKey = 224
+        VehicleBackwardTiltKey = 224,
+        PadDown = 19,
     }
 
     public enum FiringPattern

@@ -169,7 +169,8 @@ namespace Inferno
                 }
 
                 //しばらく待つ
-                foreach (var _ in WaitForSeconds(10))
+                var targetTime = ElapsedTime + 10;
+                while (ElapsedTime < targetTime && IsActive && !ct.IsCancellationRequested)
                 {
                     if (!IsPlaneActive(plane, ped))
                     {
@@ -288,7 +289,8 @@ namespace Inferno
             var targetPosition = targetArea.AroundRandom2D(10.0f);
 
             NativeFunctions.ShootSingleBulletBetweenCoords(
-                startPosition, targetPosition, 100, WeaponHash.RPG, driver, speed);
+                startPosition,
+                targetPosition, 200, Weapon.AIRSTRIKE_ROCKET, driver, -1.0f);
         }
     }
 }

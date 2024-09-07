@@ -86,7 +86,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 return;
             }
-            
+
             float targetTime = Random.Next(1, 10);
             while (targetTime > 0 && !ct.IsCancellationRequested)
             {
@@ -207,7 +207,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //速度が一定以下になったら爆発
-            foreach (var x in WaitForSeconds(10))
+            var targetTime = core.ElapsedTime + 10;
+            while (core.ElapsedTime < targetTime && !ct.IsCancellationRequested)
             {
                 if (!fish.IsSafeExist())
                 {

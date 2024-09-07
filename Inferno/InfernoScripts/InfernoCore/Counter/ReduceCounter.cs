@@ -43,21 +43,27 @@ namespace Inferno
             }
 
             Current = Current > countValue ? Current - countValue : 0;
-            
+
             if (Current != 0)
             {
                 return;
             }
 
             IsCompleted = true;
-            _onFinishedSubject.OnNext(Unit.Default);
-            _onFinishedSubject.OnCompleted();
+            if (!_onFinishedSubject.IsCompleted)
+            {
+                _onFinishedSubject.OnNext(Unit.Default);
+                _onFinishedSubject.OnCompleted();
+            }
         }
 
         public void Finish()
         {
-            IsCompleted = true;
-            _onFinishedSubject.OnCompleted();
+            if (!_onFinishedSubject.IsCompleted)
+            {
+                IsCompleted = true;
+                _onFinishedSubject.OnCompleted();
+            }
         }
 
         public void Dispose()

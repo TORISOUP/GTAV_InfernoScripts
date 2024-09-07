@@ -489,37 +489,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     return hash.ToString();
             }
         }
-
-        /// <summary>
-        /// コルーチンの実行をCoreに委託する
-        /// </summary>
-        public uint RegisterCoroutine(IEnumerable<object> coroutine)
-        {
-            return StartCoroutine(coroutine);
-        }
-
-        /// <summary>
-        /// コルーチンの実行を終了する
-        /// </summary>
-        /// <param scriptname="id"></param>
-        public void UnregisterCoroutine(uint id)
-        {
-            StopCoroutine(id);
-        }
-
-        /// <summary>
-        /// WaitForSeconsの結果を返す
-        /// </summary>
-        public IEnumerable CreateWaitForSeconds(float seconds)
-        {
-            return WaitForSeconds(seconds);
-        }
-
-        public IEnumerable CreateRadomWait()
-        {
-            return RandomWait();
-        }
-
+        
         public void AddProgressBar(ReduceCounter reduceCounter)
         {
             var prgoressbarData = new ProgressBarData(reduceCounter,

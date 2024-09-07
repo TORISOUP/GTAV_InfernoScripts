@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA.UI;
+using Inferno.Utilities;
 
 namespace Inferno
 {
     /// <summary>
     /// 画面左上の表示を管理する
     /// </summary>
-    public class ToastTextDrawing : InfernoScript
+    public sealed class ToastTextDrawing : InfernoScript
     {
         private ContainerElement _container;
-        private int _coroutineId = -1;
-
-        //画面表示を消すまでの残りCoroutineループ回数
-        private int _currentTickCounter;
 
         public static ToastTextDrawing Instance { get; private set; }
+        private CancellationTokenSource _cts;
 
         protected override void Setup()
         {
@@ -32,6 +32,14 @@ namespace Inferno
 
             OnAllOnCommandObservable
                 .Subscribe(_ => DrawText("Inferno:AllOn"));
+
+            OnAbortAsync.Subscribe(_ =>
+            {
+                _cts?.Cancel();
+                _cts?.Dispose();
+                _cts = null;
+                _container.Items.Clear();
+            });
         }
 
         /// <summary>
@@ -41,19 +49,16 @@ namespace Inferno
         /// <param name="time">時間</param>
         public void DrawDebugText(string text, float time)
         {
-            if (_coroutineId >= 0)
-                //既に実行中のがあれば止める
-            {
-                StopCoroutine((uint)_coroutineId);
-            }
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            _container.Items.Clear();
 
-            _coroutineId = (int)StartCoroutine(DrawTextEnumerator(text, time));
+            DrawTextAsync(text, time, _cts.Token).Forget();
         }
 
-        private IEnumerable<object> DrawTextEnumerator(string text, float time)
+        private async ValueTask DrawTextAsync(string text, float time, CancellationToken ct)
         {
-            _container.Items.Clear();
-            _currentTickCounter = (int)(time * 10);
             _container.Items.Add(new TextElement(
                 text,
                 new Point(0, 0),
@@ -64,11 +69,8 @@ namespace Inferno
                 false,
                 true));
 
-            while (--_currentTickCounter > 0)
-            {
-                yield return _currentTickCounter;
-            }
 
+            await DelaySecondsAsync(time, ct);
             _container.Items.Clear();
         }
     }

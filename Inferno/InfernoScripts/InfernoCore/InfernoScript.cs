@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using Inferno.InfernoScripts.Event;
-using Inferno.InfernoScripts.InfernoCore.Coroutine;
 using Inferno.Utilities;
 using Inferno.Utilities.Awaiters;
 using Reactive.Bindings;
@@ -182,14 +180,7 @@ namespace Inferno
                     }
                 })
                 .AddTo(CompositeDisposable);
-
-            _coroutinePool = new CoroutinePool(5);
-
-            //コルーチンを実行する
-            CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
-                .Subscribe(_ => _coroutinePool.Run())
-                .AddTo(CompositeDisposable);
-
+            
             OnAbortAsync.Subscribe(_ =>
                 {
                     Destroy();
@@ -617,51 +608,6 @@ namespace Inferno
         }
 
         #endregion
-
-        #region forCoroutine
-
-        private readonly CoroutinePool _coroutinePool;
-
-        protected uint StartCoroutine(IEnumerable<object> coroutine)
-        {
-            return _coroutinePool.RegisterCoroutine(coroutine);
-        }
-
-        protected void StopCoroutine(uint id)
-        {
-            _coroutinePool.RemoveCoroutine(id);
-        }
-
-        protected void StopAllCoroutine()
-        {
-            _coroutinePool.RemoveAllCoroutine();
-        }
-
-
-        /// <summary>
-        /// 指定秒数待機するIEnumerable
-        /// </summary>
-        /// <param name="secound">秒</param>
-        /// <returns></returns>
-        protected IEnumerable WaitForSeconds(float secound)
-        {
-            return Awaitable.ToCoroutine(TimeSpan.FromSeconds(secound));
-        }
-
-        /// <summary>
-        /// 0-10回待機する
-        /// </summary>
-        /// <returns></returns>
-        protected IEnumerable RandomWait()
-        {
-            var waitLoopCount = Random.Next(0, 10);
-            for (var i = 0; i < waitLoopCount; i++)
-            {
-                yield return i;
-            }
-        }
-
-        #endregion forCoroutine
 
         #region forDraw
 

@@ -13,6 +13,12 @@ namespace Inferno
             return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
         }
 
+        public static bool IsGamePadJustPressed(this Script script, GameKey gameKey)
+        {
+            return Function.Call<bool>(Hash.IS_CONTROL_JUST_PRESSED, 0, (int)gameKey);
+        }
+
+        
         /// <summary>
         /// スティックの入力状態の取得
         /// </summary>

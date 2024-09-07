@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("リジェネ", "おわり")]
     internal class HealthRegen : ParupunteScript
     {
-        private uint coroutineId;
-        private ReduceCounter reduceCounter;
+        private ReduceCounter _reduceCounter;
 
         public HealthRegen(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -19,21 +21,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            reduceCounter = new ReduceCounter(10000);
-            reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-            coroutineId = StartCoroutine(HealthRegenCoroutine());
-            AddProgressBar(reduceCounter);
+            _reduceCounter = new ReduceCounter(10000);
+            _reduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+            HealthRegenAsync(ActiveCancellationToken).Forget();
+            AddProgressBar(_reduceCounter);
         }
 
         protected override void OnFinished()
         {
-            reduceCounter.Finish();
-            StopCoroutine(coroutineId);
+            _reduceCounter.Finish();
         }
 
-        private IEnumerable<object> HealthRegenCoroutine()
+        private async ValueTask HealthRegenAsync(CancellationToken ct)
         {
-            while (!reduceCounter.IsCompleted)
+            while (!_reduceCounter.IsCompleted)
             {
                 if (core.PlayerPed.Health < core.PlayerPed.MaxHealth)
                 {
@@ -44,7 +45,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     core.PlayerPed.Armor += 20;
                 }
 
-                yield return WaitForSeconds(1);
+                await DelaySecondsAsync(1, ct);
             }
         }
     }

@@ -78,7 +78,6 @@ namespace Inferno.ChaosMode
                 {
                     IsActive = !IsActive;
                     chaosedPedList.Clear();
-                    StopAllChaosCoroutine();
 
                     _localCts?.Cancel();
                     _localCts?.Dispose();
@@ -119,7 +118,6 @@ namespace Inferno.ChaosMode
                     _localCts?.Dispose();
                     _localCts = null;
                     _linkedCts = null;
-                    StopAllChaosCoroutine();
                 })
                 .AddTo(CompositeDisposable);
 
@@ -155,7 +153,6 @@ namespace Inferno.ChaosMode
                 .Subscribe(_ =>
                 {
                     chaosedPedList.Clear();
-                    StopAllChaosCoroutine();
                     _localCts?.Cancel();
                     _localCts?.Dispose();
                     _localCts = null;
@@ -225,20 +222,7 @@ namespace Inferno.ChaosMode
                 ChaosPedActionAsync(ped, ct).Forget();
             }
         }
-
-        /// <summary>
-        /// 全てのカオスモードの用のコルーチンを停止する
-        /// </summary>
-        private void StopAllChaosCoroutine()
-        {
-            foreach (var id in coroutineIds)
-            {
-                StopCoroutine(id);
-            }
-
-            coroutineIds.Clear();
-        }
-
+        
         // すべての市民の武器を交換する
         private void ChangeAllRiotCitizenWeapon()
         {

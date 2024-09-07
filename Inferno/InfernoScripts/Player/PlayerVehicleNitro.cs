@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
@@ -102,10 +104,10 @@ namespace Inferno
                 1.0f
             });
 
-            StartCoroutine(NitroAfterTreatment(driver, vehicle));
+            NitroAfterTreatmentAsync(ActivationCancellationToken).Forget();
         }
 
-        private IEnumerable<object> NitroAfterTreatment(Ped driver, Vehicle vehicle)
+        private async ValueTask NitroAfterTreatmentAsync(CancellationToken ct)
         {
             //カウンタ作成
             var counter = new ReduceCounter((int)(CoolDownSeconds * 1000));
@@ -119,17 +121,17 @@ namespace Inferno
             //カウンタを自動カウント
             RegisterCounter(counter);
 
-            foreach (var s in WaitForSeconds(CoolDownSeconds))
+            while (!ct.IsCancellationRequested && !counter.IsCompleted)
             {
                 if (!PlayerPed.IsInVehicle() || PlayerPed.IsDead)
                 {
                     //死んだりクルマから降りたらリセット
                     counter.Finish();
                     _isNitroOk = true;
-                    yield break;
+                    return;
                 }
 
-                yield return s;
+                await YieldAsync(ct);
             }
 
             counter.Finish();
