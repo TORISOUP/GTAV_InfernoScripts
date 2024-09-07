@@ -1,52 +1,97 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GTA;
+using GTA.Math;
+using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Player
 {
     internal class BondCar : InfernoScript
     {
+        private bool _isButtonA = false;
+        private bool _isButtonB = false;
+
         protected override void Setup()
         {
             config = LoadConfig<BondCarConfig>();
 
-            OnThinnedTickAsObservable
+
+            OnTickAsObservable
                 .Where(_ =>
-                    PlayerVehicle.Value.IsSafeExist()
-                    && this.IsGamePadPressed(GameKey.VehicleAim)
-                    && this.IsGamePadPressed(GameKey.VehicleAttack)
-                    && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
+                    PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle() &&
+                    _isButtonA && _isButtonB && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
                 )
                 .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScheduler)
+                .Subscribe(_ => Shoot());
+
+            OnTickAsObservable
                 .Subscribe(_ =>
                 {
-                    var v = PlayerVehicle.Value;
-                    if (!v.IsSafeExist())
+                    if (this.IsGamePadPressed(GameKey.VehicleAim))
                     {
-                        return;
+                        _isButtonA = true;
                     }
 
-                    //そこら辺の市民のせいにする
-                    var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
-                    InvincibleVehicleAsync(v, DestroyCancellationToken).Forget();
-                    CreateRpgBullet(v, ped, 1.5f);
-                    CreateRpgBullet(v, ped, -1.5f);
-                    v.EngineHealth *= 0.9f;
+                    if (this.IsGamePadRelease(GameKey.VehicleAim))
+                    {
+                        _isButtonA = false;
+                    }
+
+                    if (this.IsGamePadPressed(GameKey.VehicleAttack))
+                    {
+                        _isButtonB = true;
+                    }
+
+                    if (this.IsGamePadRelease(GameKey.VehicleAttack))
+                    {
+                        _isButtonB = false;
+                    }
                 });
+        }
+
+        private void Shoot()
+        {
+            var v = PlayerPed.CurrentVehicle;
+            if (!v.IsSafeExist())
+            {
+                return;
+            }
+
+            //そこら辺の市民のせいにする
+            var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
+            InvincibleVehicleAsync(v, DestroyCancellationToken).Forget();
+            CreateRpgBullet(v, ped, 1.5f);
+            CreateRpgBullet(v, ped, -1.5f);
+            v.EngineHealth *= 0.9f;
         }
 
         private void CreateRpgBullet(Vehicle vehicle, Ped ped, float rightOffset)
         {
-            var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 4, 0.2f);
+            var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 0, 0.2f);
             var target = vehicle.GetOffsetFromEntityInWorldCoords(0, 1000, 0.2f);
 
-            NativeFunctions.ShootSingleBulletBetweenCoords(
-                startPosition, target, 100, WeaponHash.RPG, ped, 500);
+            Function.Call(
+                Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
+                startPosition.X,
+                startPosition.Y,
+                startPosition.Z,
+                target.X,
+                target.Y,
+                target.Z,
+                200,
+                1,
+                Weapon.VEHICLE_ROCKET,
+                0,
+                1,
+                0,
+                1000f);
         }
+
 
         private async ValueTask InvincibleVehicleAsync(Vehicle v, CancellationToken ct)
         {
@@ -54,7 +99,7 @@ namespace Inferno.InfernoScripts.Player
             v.IsInvincible = true;
             try
             {
-                await DelaySecondsAsync(2, ct);
+                await DelaySecondsAsync(CoolDownMillSeconds / 1000f, ct);
             }
             finally
             {

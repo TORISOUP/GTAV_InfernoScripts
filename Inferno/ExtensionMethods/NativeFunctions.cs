@@ -12,6 +12,11 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
         }
+        
+        public static bool IsGamePadRelease(this Script script, GameKey gameKey)
+        {
+            return Function.Call<bool>(Hash.IS_CONTROL_RELEASED, 0, (int)gameKey);
+        }
 
         public static bool IsGamePadJustPressed(this Script script, GameKey gameKey)
         {
@@ -716,6 +721,7 @@ namespace Inferno
             Ped owner,
             float speed)
         {
+
             World.ShootBullet(start, end, owner, new WeaponAsset((int)weapon), damage, speed);
         }
 

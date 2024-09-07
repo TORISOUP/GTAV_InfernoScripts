@@ -52,12 +52,13 @@ namespace Inferno
                 Game.Player.CanControlRagdoll = true;
                 player.CanRagdoll = true;
 
-                player.ClearTasksImmediately();
-                player.Position += new Vector3(0, 0, 0.5f);
+                player.Task.LeaveVehicle(vec, LeaveVehicleFlags.WarpOut);
+                await YieldAsync(ct);
+                player.Position += new Vector3(0, 0, 1.0f);
                 var shootPos = player.Position;
                 player.SetToRagdoll();
                 player.ApplyForce(new Vector3(0, 0, EscapePower) + vec.Velocity,
-                    InfernoUtilities.CreateRandomVector() * 10.0f);
+                    Vector3.Zero, ForceType.MaxForceRot);
 
                 player.IsInvincible = true;
                 await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
