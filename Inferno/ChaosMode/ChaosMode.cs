@@ -56,6 +56,7 @@ namespace Inferno.ChaosMode
         /// 設定
         /// </summary>
         private ChaosModeSetting _chaosModeSetting;
+
         private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
         private IWeaponProvider DefaultWeaponProvider => _defaultWeaponProvider;
 
@@ -195,6 +196,63 @@ namespace Inferno.ChaosMode
                         .ToArray();
                 })
                 .AddTo(CompositeDisposable);
+
+            CheckModels().Forget();
+        }
+
+
+        private async ValueTask CheckModels()
+        {
+            await DelaySecondsAsync(3);
+
+            LogWrite("Start!");
+
+
+            int count = 0;
+
+            // PedHashをすべて列挙する
+            var pedHashes = Enum.GetValues(typeof(PedHash)).Cast<GTA.PedHash>().ToArray();
+            foreach (var p in pedHashes)
+            {
+                Game.Player.WantedLevel = 0;
+
+
+                count++;
+
+                if (count % 10 == 0)
+                {
+                    await DelaySecondsAsync(2);
+                }
+
+                await DelayFrameAsync(5);
+
+                var ped = World.CreatePed(p, PlayerPed.Position.AroundRandom2D(10));
+                if (!ped.IsSafeExist())
+                {
+                    LogWrite($"Failed:{p}");
+                    continue;
+                }
+
+                ped.Task.FightAgainst(PlayerPed);
+                await DelayFrameAsync(2);
+
+                if (Game.Player.WantedLevel > 0)
+                {
+                    LogWrite($"Wanted:{p}\t{(int)p}");
+                    Game.Player.WantedLevel = 0;
+                }
+
+                if (ped.IsSafeExist())
+                {
+                    ped.Delete();
+                }
+
+                await DelayFrameAsync(5);
+
+                Function.Call(Hash.SET_MODEL_AS_NO_LONGER_NEEDED, (int)p);
+            }
+
+            LogWrite("Done!");
         }
 
         private void CitizenChaos()
@@ -220,7 +278,7 @@ namespace Inferno.ChaosMode
                 ChaosPedActionAsync(ped, ct).Forget();
             }
         }
-        
+
         // すべての市民の武器を交換する
         private void ChangeAllRiotCitizenWeapon()
         {

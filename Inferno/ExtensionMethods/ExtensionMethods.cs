@@ -95,11 +95,12 @@ namespace Inferno
         {
             return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
         }
+
         public static void FreezePosition(this Entity entity, bool freeze)
         {
             Function.Call(Hash.FREEZE_ENTITY_POSITION, entity.Handle, freeze);
         }
-        
+
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
         {
             return entity.Position.DistanceTo(position) < distance;
@@ -197,6 +198,40 @@ namespace Inferno
             return quaternion;
         }
 
+        public static PedType GetPedType(this Ped p)
+        {
+            return Function.Call<PedType>(Hash.GET_PED_TYPE, p.Handle);
+        }
+
+        /// <summary>
+        /// 敵対すると手配度がつくPed一覧
+        /// </summary>
+        private static readonly PedHash[] CopPedHas =
+        {
+            PedHash.Cop01SFY, PedHash.Snowcop01SMM, PedHash.PrologueSec02, PedHash.Highsec02SMM, PedHash.ChemSec01SMM,
+            PedHash.Sheriff01SFY, PedHash.JackHowitzerCutscene, PedHash.Prisguard01SMM, PedHash.Marine02SMY,
+            PedHash.FibSec01, PedHash.Cop01SMY, PedHash.CiaSec01SMM, PedHash.Armymech01SMY, PedHash.Armoured02SMM,
+            PedHash.Marine01SMY, PedHash.PrologueSec01, PedHash.Marine03SMY, PedHash.Hwaycop01SMY,
+            PedHash.FibSec01SMM, PedHash.PrologueSec01Cutscene, PedHash.Swat01SMY, PedHash.Armoured01SMM,
+            PedHash.Devinsec01SMY, PedHash.Sheriff01SMY, PedHash.Autopsy01SMY, PedHash.Uscg01SMY, PedHash.Security01SMM,
+            PedHash.SecuroGuardMale01, PedHash.Ranger01SMY, PedHash.Marine02SMM, PedHash.Highsec01SMM,
+            PedHash.Marine01SMM
+        };
+
+        /// <summary>
+        /// 敵対すると手配度がつくPedであるかどうか
+        /// </summary>
+        /// <param name="ped"></param>
+        public static bool IsCop(this Ped ped)
+        {
+            return ped.GetPedType() switch
+            {
+                PedType.PED_TYPE_COP => true,
+                PedType.PED_TYPE_SWAT => true,
+                PedType.PED_TYPE_ARMY => true,
+                _ => CopPedHas.Contains((PedHash)ped.Model.Hash)
+            };
+        }
 
         #region Weapon
 
