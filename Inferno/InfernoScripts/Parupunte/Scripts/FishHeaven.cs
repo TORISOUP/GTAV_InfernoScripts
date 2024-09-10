@@ -142,7 +142,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //キー入力待機
-            while (!core.IsGamePadPressed(GameKey.VehicleHorn))
+            while (!Game.IsControlPressed(Control.VehicleHorn))
             {
                 //途中で車を降りたら発射
                 if (!core.PlayerPed.IsInVehicle())

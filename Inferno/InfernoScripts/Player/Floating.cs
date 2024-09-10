@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reactive.Linq;
+using GTA;
 using GTA.Math;
 
 namespace Inferno.InfernoScripts.Player
@@ -7,11 +8,17 @@ namespace Inferno.InfernoScripts.Player
     //ふわふわジャンプ
     internal class Floating : InfernoScript
     {
+        private float _currentPower;
+
         protected override void Setup()
         {
-            CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
-                .Where(_ => this.IsGamePadPressed(GameKey.Sprint) && this.IsGamePadPressed(GameKey.Jump))
-                .Subscribe(_ => { PlayerPed.ApplyForce(Vector3.WorldUp * 1.3f); });
+            OnTickAsObservable
+                .Where(_ => Game.IsControlPressed(Control.Jump) && Game.IsControlPressed(Control.Sprint))
+                .Subscribe(_ =>
+                {
+                    _currentPower = PlayerPed.IsInAir ? Math.Max(0.3f, _currentPower * 0.8f) : 1.3f;
+                    PlayerPed.ApplyForce(Vector3.WorldUp * _currentPower);
+                });
         }
     }
 }

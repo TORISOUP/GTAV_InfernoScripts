@@ -13,9 +13,6 @@ namespace Inferno.InfernoScripts.Player
 {
     internal class BondCar : InfernoScript
     {
-        private bool _isButtonA = false;
-        private bool _isButtonB = false;
-
         protected override void Setup()
         {
             config = LoadConfig<BondCarConfig>();
@@ -24,34 +21,11 @@ namespace Inferno.InfernoScripts.Player
             OnTickAsObservable
                 .Where(_ =>
                     PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle() &&
-                    _isButtonA && _isButtonB && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
+                    Game.IsControlPressed(Control.VehicleAim) && Game.IsControlPressed(Control.VehicleAttack) &&
+                    PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
                 )
                 .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScheduler)
                 .Subscribe(_ => Shoot());
-
-            OnTickAsObservable
-                .Subscribe(_ =>
-                {
-                    if (this.IsGamePadPressed(GameKey.VehicleAim))
-                    {
-                        _isButtonA = true;
-                    }
-
-                    if (this.IsGamePadRelease(GameKey.VehicleAim))
-                    {
-                        _isButtonA = false;
-                    }
-
-                    if (this.IsGamePadPressed(GameKey.VehicleAttack))
-                    {
-                        _isButtonB = true;
-                    }
-
-                    if (this.IsGamePadRelease(GameKey.VehicleAttack))
-                    {
-                        _isButtonB = false;
-                    }
-                });
         }
 
         private void Shoot()

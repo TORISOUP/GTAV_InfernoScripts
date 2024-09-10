@@ -118,9 +118,10 @@ namespace Inferno.InfernoScripts.Parupunte
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
+            
 
             OnKeyDownAsObservable
-                .Where(x => x.KeyCode == Keys.NumPad0)
+                .Where(x => x.KeyCode is Keys.NumPad0 or Keys.PageDown)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f), base.InfernoScheduler)
                 .Subscribe(_ =>
                 {

@@ -74,7 +74,7 @@ namespace Inferno
                     return;
                 }
 
-                if (core.IsGamePadPressed(GameKey.Sprint))
+                if (Game.IsControlPressed(Control.Sprint))
                 {
                     if (isReseted)
                     {

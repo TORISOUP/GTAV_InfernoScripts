@@ -34,9 +34,10 @@ namespace Inferno
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(
                     _ =>
-                        _isNitroOk && this.IsGamePadPressed(GameKey.VehicleAccelerate) &&
-                        this.IsGamePadPressed(GameKey.VehicleHandbrake) &&
-                        this.IsGamePadPressed(GameKey.VehicleDuck))
+                        _isNitroOk &&
+                        Game.IsControlPressed(Control.VehicleAccelerate) &&
+                        Game.IsControlPressed(Control.VehicleHandbrake) &&
+                        Game.IsControlPressed(Control.VehicleDuck))
                 .Subscribe(_ => NitroVehicle());
         }
 
@@ -55,9 +56,9 @@ namespace Inferno
             }
 
             float rotation;
-            if (this.IsGamePadPressed(GameKey.VehicleAccelerateKey))
+            if (Game.IsControlPressed(Control.ScriptPadUp))
             {
-                rotation = this.IsGamePadPressed(GameKey.VehicleForwardTiltKey) ? 0.5f : 0.0f;
+                rotation = Game.IsControlPressed(Control.FrontendLs) ? 0.5f : 0.0f;
             }
             else
                 //車体回転時用にスティック入力を-127～127で取得して-0.5～0.5の値になるように調整
@@ -72,7 +73,7 @@ namespace Inferno
             var addSpeed = rotation > deadZone || rotation < -deadZone
                 ? JumpAccelerationSpeed
                 : StraightAccelerationSpeed;
-            if (this.IsGamePadPressed(GameKey.VehicleHorn))
+            if (Game.IsControlPressed(Control.VehicleHorn))
             {
                 vehicle.SetForwardSpeed(vehicle.Speed - addSpeed);
             }

@@ -525,6 +525,7 @@ namespace Inferno
                     Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
                             h => KeyDown -= h)
                         .Select(e => e.EventArgs)
+                        .TakeUntil(_disposeSubject)
                         .Publish()
                         .RefCount();
                 return _onKeyDownAsObservable;

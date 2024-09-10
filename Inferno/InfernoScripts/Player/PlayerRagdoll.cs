@@ -12,7 +12,7 @@ namespace Inferno
         protected override void Setup()
         {
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
-                .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
+                .Where(_ => Game.IsControlPressed(Control.Duck) && Game.IsControlPressed(Control.Jump))
                 .Subscribe(_ =>
                 {
                     var playerChar = Game.Player;

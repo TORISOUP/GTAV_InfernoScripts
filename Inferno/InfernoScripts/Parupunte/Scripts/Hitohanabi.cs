@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
-using Inferno.ChaosMode;
+using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
@@ -28,19 +31,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             _targetPosition = core.PlayerPed.Position.Around(30) + new Vector3(0, 0, 15);
             _pedList = new HashSet<Ped>();
+
+            ReduceCounter.OnFinishedAsync.Subscribe(_ => Explode());
+            CheckAroundPedAsync(ActiveCancellationToken).Forget();
         }
 
-        protected override void OnUpdate()
+        private async ValueTask CheckAroundPedAsync(CancellationToken ct)
         {
-            //タイマが終わるまでカウントし続ける
-            if (!ReduceCounter.IsCompleted)
+            while (!ct.IsCancellationRequested && !ReduceCounter.IsCompleted)
             {
                 foreach (
                         var targetPed in
                         core.CachedPeds.Where(
                             x => x.IsSafeExist()
                                  && x.IsAlive
-                                 && x.IsHuman
                                  && !x.IsCutsceneOnlyPed()
                                  && x.IsInRangeOf(core.PlayerPed.Position, 100))
                     )
@@ -48,37 +52,58 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     if (_pedList.Add(targetPed))
                     {
-                        if (targetPed.IsInVehicle())
-                        {
-                            targetPed.Task.ClearAllImmediately();
-                        }
-
+                        targetPed.Task.ClearAllImmediately();
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
                         targetPed.FreezePosition(false);
+
+                        PedLoopAsync(targetPed, ct).Forget();
                     }
                 }
 
-                foreach (var targetPed in _pedList.Where(x => x.IsSafeExist()))
+                await Delay100MsAsync(ct);
+            }
+        }
+
+        private async ValueTask PedLoopAsync(Ped ped, CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested && !ReduceCounter.IsCompleted)
+            {
+                if (!ped.IsSafeExist())
                 {
-                    //すいこむ
-                    var direction = _targetPosition - targetPed.Position;
-                    var lenght = direction.Length();
-                    direction.Normalize();
-                    targetPed.ApplyForce(direction * lenght.Clamp(0, 1.5f));
+                    return;
                 }
 
-                return;
-            }
+                if (!Function.Call<bool>(Hash.DOES_ENTITY_HAVE_PHYSICS, ped))
+                {
+                    Function.Call(Hash.ACTIVATE_PHYSICS, ped);
+                }
 
+                //すいこむ
+                var direction = _targetPosition - ped.Position;
+                direction.Normalize();
+                ped.ApplyForce(direction * 10f, Vector3.RandomXY(),
+                    ForceType.MaxForceRot);
+                await YieldAsync(ct);
+            }
+        }
+
+        private void Explode()
+        {
             var expolodeCount = 0;
 
             //バクハツシサン
             foreach (var targetPed in _pedList.Where(x => x.IsSafeExist())
                          .OrderBy(x => x.Position.DistanceToSquared(_targetPosition)))
             {
+                if (!Function.Call<bool>(Hash.DOES_ENTITY_HAVE_PHYSICS, targetPed))
+                {
+                    Function.Call(Hash.ACTIVATE_PHYSICS, targetPed);
+                }
                 targetPed.Kill();
-                targetPed.ApplyForce(InfernoUtilities.CreateRandomVector() * 10);
+                targetPed.Task.ClearAllImmediately();
+                targetPed.ApplyForce(Vector3.RandomXYZ() * 100f, Vector3.RandomXY(),
+                    ForceType.MaxForceRot);
                 if (expolodeCount++ < 5)
                 {
                     GTA.World.AddExplosion(targetPed.Position, GTA.ExplosionType.FireWork, 2.0f, 1.0f);
