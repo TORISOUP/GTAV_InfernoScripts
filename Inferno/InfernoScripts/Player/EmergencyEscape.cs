@@ -80,9 +80,10 @@ namespace Inferno
 
         #region config
 
+        [Serializable]
         private class EmergencyEscapeConf : InfernoConfig
         {
-            public float EscapePower { get; } = 60.0f;
+            public float EscapePower = 60.0f;
 
             public override bool Validate()
             {

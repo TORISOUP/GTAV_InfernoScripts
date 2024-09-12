@@ -86,12 +86,13 @@ namespace Inferno.InfernoScripts.Player
 
         #region config
 
+        [Serializable]
         private class BondCarConfig : InfernoConfig
         {
             /// <summary>
             /// ミサイルの発射間隔[ms]
             /// </summary>
-            public int CoolDownMillSeconds { get; } = 500;
+            public int CoolDownMillSeconds = 500;
 
             public override bool Validate()
             {

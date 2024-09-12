@@ -11,14 +11,16 @@ namespace Inferno
     {
         public void Log(string message);
     }
-    
+
     public class DebugLogger : IDebugLogger
     {
         private readonly Encoding _encoding;
         private readonly string _logPath;
         private readonly SemaphoreSlim _semaphore = new(1);
 
-        public DebugLogger(string logPath)
+        public static DebugLogger Instance { get; } = new DebugLogger(@"Inferno.log");
+
+        private DebugLogger(string logPath)
         {
             _logPath = logPath;
             _encoding = Encoding.GetEncoding("UTF-8");

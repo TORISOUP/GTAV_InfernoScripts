@@ -50,9 +50,10 @@ namespace Inferno
             }
         }
 
+        [Serializable]
         private class CitizenVehicleBombConfig : InfernoConfig
         {
-            public int Probability { get; } = 10;
+            public int Probability = 10;
 
             public override bool Validate()
             {

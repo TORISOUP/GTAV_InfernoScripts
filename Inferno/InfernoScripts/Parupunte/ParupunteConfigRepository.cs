@@ -26,7 +26,7 @@ namespace Inferno.InfernoScripts
                     return _debugLogger;
                 }
 
-                _debugLogger = new DebugLogger(@"Inferno.log");
+                _debugLogger = DebugLogger.Instance;
                 return _debugLogger;
             }
         }

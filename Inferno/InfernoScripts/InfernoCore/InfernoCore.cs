@@ -22,13 +22,13 @@ namespace Inferno
 
         private readonly AsyncSubject<Unit> _disposeSubject = new();
 
-        private readonly ReactiveProperty<Entity[]> _missionEntity = new();
+        private readonly ReactiveProperty<Entity[]> _missionEntity = new(Array.Empty<Entity>());
 
-        private readonly ReactiveProperty<Entity[]> _nearEntities = new();
+        private readonly ReactiveProperty<Entity[]> _nearEntities = new(Array.Empty<Entity>());
 
-        private readonly ReactiveProperty<Ped[]> _nearPeds = new();
+        private readonly ReactiveProperty<Ped[]> _nearPeds = new(Array.Empty<Ped>());
 
-        private readonly ReactiveProperty<Vehicle[]> _nearVehicles = new();
+        private readonly ReactiveProperty<Vehicle[]> _nearVehicles = new(Array.Empty<Vehicle>());
 
         private readonly ReactiveProperty<Ped> _playerPed = new();
 
@@ -40,7 +40,7 @@ namespace Inferno
         {
             Instance = this;
 
-            _debugLogger = new DebugLogger(@"InfernoScript.log");
+            _debugLogger = DebugLogger.Instance;
 
             _lastUpdate = DateTimeOffset.Now;
 

@@ -140,11 +140,12 @@ namespace Inferno
             DrawText("Nitro:OK", 2.0f);
         }
 
+        [Serializable]
         private class PlayerNitroConf : InfernoConfig
         {
-            public float StraightAccelerationSpeed { get; } = 50;
-            public float JumpAccelerationSpeed { get; } = 20;
-            public float CoolDownSeconds { get; } = 10.0f;
+            public float StraightAccelerationSpeed = 50;
+            public float JumpAccelerationSpeed = 20;
+            public float CoolDownSeconds = 10.0f;
 
             public override bool Validate()
             {

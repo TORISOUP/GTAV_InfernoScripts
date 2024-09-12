@@ -115,12 +115,13 @@ namespace Inferno
             }
         }
 
+        [Serializable]
         private class SpawnParachuteCitizenArmyConfig : InfernoConfig
         {
             /// <summary>
             /// 生成間隔
             /// </summary>
-            public int SpawnDurationSeconds { get; } = 5;
+            public int SpawnDurationSeconds = 5;
 
             public override bool Validate()
             {

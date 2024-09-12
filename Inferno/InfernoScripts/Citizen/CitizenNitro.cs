@@ -170,9 +170,10 @@ namespace Inferno
             ped.SetNotChaosPed(false);
         }
 
+        [Serializable]
         private class CitizenNitroConfig : InfernoConfig
         {
-            public int Probability { get; } = 7;
+            public int Probability = 7;
 
             public override bool Validate()
             {

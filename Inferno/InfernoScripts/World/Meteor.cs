@@ -1,51 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GTA;
 using GTA.Math;
+using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno
 {
     internal sealed class Meteor : InfernoScript
     {
-        private readonly List<Vector3> _meteoLightPositionList = new();
-
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
 
         protected override void Setup()
         {
-            config = LoadConfig<MeteoConfig>();
-
+            _config = LoadConfig<MeteorConfig>();
             CreateInputKeywordAsObservable("meteo")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
                     DrawText("Meteor:" + IsActive);
-                });
-
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
-            //落下地点マーカ描画
-            OnDrawingTickAsObservable
-                .Where(_ => _meteoLightPositionList.Count > 0)
-                .Subscribe(_ =>
-                {
-                    var insensity = 10;
-                    foreach (var point in _meteoLightPositionList.ToArray())
+                    if (IsActive)
                     {
-                        NativeFunctions.CreateLight(point, 255, 0, 0, 1.0f, insensity);
+                        MeteorLoopAsync(ActivationCancellationToken).Forget();
                     }
                 });
 
-            CreateTickAsObservable(TimeSpan.FromMilliseconds(DurationMillSeconds))
-                .Where(_ => IsActive && Random.Next(0, 100) <= Probability)
-                .Subscribe(_ => { ShootMeteo(); });
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
 
-        private void ShootMeteo()
+        private async ValueTask MeteorLoopAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                if (Random.Next(0, 100) <= Probability)
+                {
+                    ShootMeteorAsync(ct).Forget();
+                }
+
+                await DelayAsync(TimeSpan.FromMilliseconds(DurationMillSeconds), ct);
+            }
+        }
+
+        private Vector3 GetOffsetCenterPosition()
+        {
+            var playerVelocity = PlayerPed.Velocity;
+            return PlayerPed.Position + playerVelocity;
+        }
+
+        private async ValueTask ShootMeteorAsync(CancellationToken ct)
         {
             try
             {
@@ -63,16 +70,18 @@ namespace Inferno
 
                 //たまに花火
                 var weapon = Random.Next(0, 100) < 3
-                    ?  Weapon.Firework
-                    :  Weapon.VEHICLE_ROCKET;
+                    ? Weapon.Firework
+                    : Weapon.VEHICLE_ROCKET;
 
-                //ライト描画
-                CreateMeteoLightAsync(targetPosition, 2.0f, ActivationCancellationToken).Forget();
+                //　マーカー描画
+                CreateMeteorMarkerAsync(targetPosition, 3.0f, ActivationCancellationToken).Forget();
+
+                // 先に警告表示を出してちょっと待ってから落下
+                await DelaySecondsAsync(1, ct);
 
                 NativeFunctions.ShootSingleBulletBetweenCoords(
                     createPosition,
                     targetPosition, 200, weapon, null, -1.0f);
-                
             }
             catch (Exception ex)
             {
@@ -90,21 +99,18 @@ namespace Inferno
                     return (false, default);
                 }
 
-                var playerPosition = player.Position;
+                // プレイヤーの移動速度に応じて補正をする
+                var centerPosition = GetOffsetCenterPosition();
                 var range = Radius;
 
-                // ランダムな水平ベクトル
-                var addPosition = new Vector3(0, 0, 0).AroundRandom2D(range);
+                // プレイヤーの移動速度が遅い場合は近くには降らせない
 
-                // プレイヤーの移動速度に応じて補正をする
-                if (IsPlayerMoveSlowly && addPosition.Length() < 10.0f)
-                {
-                    // プレイヤーがゆっくり移動しているなら落下範囲をより狭くする
-                    addPosition.Normalize();
-                    addPosition *= Random.Next(10, 20);
-                }
+                var addPosition =
+                    IsPlayerMoveSlowly
+                        ? new Vector3(0, 0, 0).Around(RandomFloat(5, range))
+                        : new Vector3(0, 0, 0).Around(RandomFloat(0, range));
 
-                var targetPosition = playerPosition + addPosition;
+                var targetPosition = centerPosition + addPosition;
 
                 var isNearMissionEntity =
                     CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(targetPosition) < 30.0f);
@@ -127,31 +133,79 @@ namespace Inferno
         /// <param name="position"></param>
         /// <param name="durationSecond"></param>
         /// <returns></returns>
-        private async ValueTask CreateMeteoLightAsync(Vector3 position, float durationSecond, CancellationToken ct)
+        private async ValueTask CreateMeteorMarkerAsync(Vector3 position, float durationSecond, CancellationToken ct)
         {
-            _meteoLightPositionList.Add(position);
-            await DelaySecondsAsync(durationSecond, ct);
-            _meteoLightPositionList.Remove(position);
+            var elapsed = 0.0f;
+            var gh = World.GetGroundHeight(position);
+            position = new Vector3(position.X, position.Y, gh);
+            while (!ct.IsCancellationRequested && elapsed <= durationSecond)
+            {
+                if (!PlayerPed.IsSafeExist())
+                {
+                    return;
+                }
+
+                elapsed += DeltaTime;
+
+                var markerType = (int)((durationSecond - elapsed) / durationSecond * 10) + 10;
+
+                var playerSpeed = PlayerPed.Velocity.Length();
+
+                // プレイヤーの移動速度に応じてmarkerThresholdを変える
+                var markerThreshold = 30 * Clamp(playerSpeed / 30f, 0, 1) + 20;
+
+                var lenght = (PlayerPed.Position - position).Length();
+                // マーカー描画範囲内
+                if (lenght <= markerThreshold)
+                {
+                    var alpha = 150 * Clamp((markerThreshold - lenght) / markerThreshold, 0, 1f);
+
+                    Function.Call(Hash.DRAW_MARKER,
+                        markerType, // markerType
+                        position.X, position.Y, position.Z + 0.5f,
+                        0.0, 0.0, 0.0, // direction
+                        0.0, 0.0, 0.0, // rot 
+                        0.25f, 0.25f, 0.25f, // scale
+                        255, 255, 255, (int)alpha, // color 
+                        false, true, 2, null, null, false);
+                }
+
+                NativeFunctions.CreateLight(position + Vector3.WorldUp, 255, 100, 100, 2f, 100f);
+
+
+                await YieldAsync(ct);
+            }
+        }
+
+        private float RandomFloat(float min, float max)
+        {
+            return (float)Random.NextDouble() * (max - min) + min;
+        }
+
+        private static float Clamp(float value, float min, float max)
+        {
+            return Math.Max(min, Math.Min(max, value));
         }
 
         #region config
 
-        private class MeteoConfig : InfernoConfig
+        [Serializable]
+        public class MeteorConfig : InfernoConfig
         {
             /// <summary>
-            /// プレイヤを中心としたメテオ落下範囲[m]
+            /// メテオ落下の最小範囲[m]
             /// </summary>
-            public int Radius { get; } = 30;
+            public int Radius  = 30;
 
             /// <summary>
             /// メテオを落下させるのかの判定頻度[ms]
             /// </summary>
-            public int DurationMillSeconds { get; } = 1000;
+            public int DurationMillSeconds = 1000;
 
             /// <summary>
             /// メテオを落下させる確率
             /// </summary>
-            public int Probability { get; } = 25;
+            public int Probability  = 40;
 
             public override bool Validate()
             {
@@ -172,13 +226,19 @@ namespace Inferno
 
                 return true;
             }
+
+            public override string ToString()
+            {
+                return
+                    $"{nameof(Radius)}: {Radius}, {nameof(DurationMillSeconds)}: {DurationMillSeconds}, {nameof(Probability)}: {Probability}";
+            }
         }
 
         protected override string ConfigFileName { get; } = "Meteor.conf";
-        private MeteoConfig config;
-        private int Radius => config?.Radius ?? 30;
-        private int DurationMillSeconds => config?.DurationMillSeconds ?? 1000;
-        private int Probability => config?.Probability ?? 25;
+        private MeteorConfig _config;
+        private float Radius => _config?.Radius ?? 30;
+        private float DurationMillSeconds => _config?.DurationMillSeconds ?? 1000;
+        private int Probability => _config?.Probability ?? 25;
 
         #endregion
     }

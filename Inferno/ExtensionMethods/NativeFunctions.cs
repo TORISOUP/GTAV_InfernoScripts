@@ -441,8 +441,8 @@ namespace Inferno
                 red,
                 green,
                 blue,
-                5.0f,
-                100.0f);
+                radius,
+                intensity);
         }
 
         public static void ThrowProjectile(this Ped ped, Vector3 vector3)

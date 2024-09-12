@@ -14,7 +14,7 @@
         public override void OnStart()
         {
             var player = core.PlayerPed;
-            player.Health = 1;
+            player.Health = 10;
             player.Armor = 0;
             ParupunteEnd();
         }

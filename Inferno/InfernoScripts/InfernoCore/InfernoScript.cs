@@ -621,6 +621,11 @@ namespace Inferno
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
+        
+        public void DrawText(object text, float time = 3.0f)
+        {
+            ToastTextDrawing.Instance.DrawDebugText(text.ToString(), time);
+        }
 
         /// <summary>
         /// ProgressBarを描画登録する

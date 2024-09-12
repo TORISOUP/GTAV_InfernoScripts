@@ -12,9 +12,10 @@ using Inferno.Utilities;
 
 namespace Inferno
 {
+    [Serializable]
     internal class ChaosAirPlaneConfig : InfernoConfig
     {
-        public int AirPlaneCount { get; set; } = 2;
+        public int AirPlaneCount = 2;
 
         public override bool Validate()
         {

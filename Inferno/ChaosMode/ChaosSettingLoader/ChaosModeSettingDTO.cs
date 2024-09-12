@@ -1,20 +1,23 @@
-﻿namespace Inferno.ChaosMode
+﻿using System;
+
+namespace Inferno.ChaosMode
 {
     /// <summary>
     /// jsonの読み込み結果をマッピングするDTO
     /// </summary>
+    [Serializable]
     public class ChaosModeSettingDTO
     {
-        public int Radius { get; set; } = 500;
-        public bool IsChangeMissionCharacterWeapon { get; set; } = true;
-        public int DefaultMissionCharacterTreatment { get; set; } = 1;
-        public bool IsAttackPlayerCorrectionEnabled { get; set; } = false;
-        public int AttackPlayerCorrectionProbability { get; set; } = 100;
-        public string[] WeaponList { get; set; } = new[] { "" };
-        public string[] WeaponListForDriveBy { get; set; } = new[] { "" };
-        public int StupidPedRate { get; set; } = 50;
-        public int ShootAccuracy { get; set; } = 10;
-        public int WeaponChangeProbability { get; set; } = 100;
-        public int ForceExplosiveWeaponProbability { get; set; } = 30;
+        public int Radius = 500;
+        public bool IsChangeMissionCharacterWeapon = true;
+        public int DefaultMissionCharacterTreatment = 1;
+        public bool IsAttackPlayerCorrectionEnabled = false;
+        public int AttackPlayerCorrectionProbability = 100;
+        public string[] WeaponList = new[] { "" };
+        public string[] WeaponListForDriveBy = new[] { "" };
+        public int StupidPedRate = 50;
+        public int ShootAccuracy = 10;
+        public int WeaponChangeProbability = 100;
+        public int ForceExplosiveWeaponProbability = 30;
     }
 }

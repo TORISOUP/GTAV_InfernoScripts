@@ -351,6 +351,12 @@ namespace Inferno.ChaosMode
                 float stupidShootingTime = 100;
                 var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidPedRate;
 
+                if (isStupidShooting)
+                {
+                    // その場から動かない
+                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, ped, 0);
+                }
+
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
                     var f = NativeFunctions.GetFrameTime();
@@ -371,7 +377,7 @@ namespace Inferno.ChaosMode
                         return;
                     }
 
-                    if (isStupidShooting && stupidShootingTime > 2f)
+                    if (isStupidShooting && stupidShootingTime > 5f)
                     {
                         stupidShootingTime = 0;
 
@@ -381,11 +387,11 @@ namespace Inferno.ChaosMode
                         {
                             if (t.Model.IsPed)
                             {
-                                ped.Task.ShootAt((Ped)t, 5000, GTA.FiringPattern.FullAuto);
+                                ped.Task.ShootAt((Ped)t, 4000, GTA.FiringPattern.FullAuto);
                             }
                             else
                             {
-                                ped.Task.ShootAt(t.Position, 5000, GTA.FiringPattern.FullAuto);
+                                ped.Task.ShootAt(t.Position, 4000, GTA.FiringPattern.FullAuto);
                             }
                         }
                     }
@@ -408,7 +414,6 @@ namespace Inferno.ChaosMode
                             ped.Task.ClearAll();
                             break;
                         }
-
 
                         // 攻撃されたら次の反撃対象にしておく
                         if (ped.HasEntityBeenDamagedByAnyPed())
@@ -556,12 +561,9 @@ namespace Inferno.ChaosMode
             ped.SetCombatAbility(100);
             //戦闘範囲
             ped.SetCombatRange(3);
-
-            Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, ped, 3);
-
+            
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
-            ped.FiringPattern = GTA.FiringPattern.FullAuto;
         }
 
         /// <summary>
