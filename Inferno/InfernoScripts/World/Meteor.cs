@@ -165,12 +165,12 @@ namespace Inferno
                         position.X, position.Y, position.Z + 0.5f,
                         0.0, 0.0, 0.0, // direction
                         0.0, 0.0, 0.0, // rot 
-                        0.25f, 0.25f, 0.25f, // scale
+                        0.5f, 0.5f, 0.5f, // scale
                         255, 255, 255, (int)alpha, // color 
                         false, true, 2, null, null, false);
                 }
 
-                NativeFunctions.CreateLight(position + Vector3.WorldUp, 255, 100, 100, 2f, 100f);
+                NativeFunctions.CreateLight(position + Vector3.WorldUp, 255, 50, 50, 3f, 500f);
 
 
                 await YieldAsync(ct);

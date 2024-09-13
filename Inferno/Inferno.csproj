@@ -112,6 +112,7 @@
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs"/>
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoHttpServer.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />
+        <Compile Include="InfernoScripts\Parupunte\Scripts\PedBlade.cs" />
         <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\World\BombBat.cs" />
         <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />

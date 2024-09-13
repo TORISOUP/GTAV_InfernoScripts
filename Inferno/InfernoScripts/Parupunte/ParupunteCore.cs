@@ -251,8 +251,8 @@ namespace Inferno.InfernoScripts.Parupunte
             var c = command;
             if (c.Contains("とまれ"))
             {
-                //       ParupunteStop();
-                //       return true;
+                ParupunteStop();
+                return true;
             }
 
             if (IsActive)
