@@ -19,5 +19,6 @@ namespace Inferno.ChaosMode
         public int ShootAccuracy = 10;
         public int WeaponChangeProbability = 100;
         public int ForceExplosiveWeaponProbability = 30;
+        public int WeaponDropProbability = 30;
     }
 }

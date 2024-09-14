@@ -50,7 +50,7 @@ namespace Inferno.InfernoScripts.World
             VehicleHash.Hunter,
             VehicleHash.Maverick,
             VehicleHash.Havok,
-            VehicleHash.Volatol
+            VehicleHash.Volatus
         };
 
         //ヘリのドライバー以外の座席
@@ -149,7 +149,7 @@ namespace Inferno.InfernoScripts.World
             while (IsActive && !ct.IsCancellationRequested)
             {
                 if ((PlayerPed.IsSafeExist() && !_heli.IsSafeExist()) || _heli.IsDead ||
-                    !_heli.IsInRangeOf(PlayerPed.Position, 200.0f))
+                    !_heli.IsInRangeOfIgnoreZ(PlayerPed.Position, 200.0f))
                 {
                     ResetHeli();
                 }
@@ -196,7 +196,7 @@ namespace Inferno.InfernoScripts.World
                 return;
             }
 
-            if (_heli.IsInRangeOf(targetPosition, 70))
+            if (_heli.IsInRangeOfIgnoreZ(targetPosition, 70))
             {
                 //プレイヤに近い場合は攻撃する
 
@@ -362,7 +362,7 @@ namespace Inferno.InfernoScripts.World
                 return;
             }
 
-            var p = _heli.CreateRandomPedOnSeat(seat);
+            var p = _heli.CreatePedOnSeat(seat, new Model(PedHash.LamarDavis02));
             if (p.IsSafeExist())
             {
                 AutoReleaseOnGameEnd(p);
@@ -386,7 +386,7 @@ namespace Inferno.InfernoScripts.World
         private void FightAgainstNearPeds(Ped p)
         {
             foreach (var target in CachedPeds.Where(x =>
-                         x.IsSafeExist() && x != p && x.IsAlive && x.IsInRangeOf(p.Position, 100)))
+                         x.IsSafeExist() && x != p && x.IsAlive && x.IsInRangeOfIgnoreZ(p.Position, 100)))
             {
                 if (CachedMissionEntities.Value.Any(x => x.Position.DistanceTo2D(target.Position) < 30.0f))
                 {

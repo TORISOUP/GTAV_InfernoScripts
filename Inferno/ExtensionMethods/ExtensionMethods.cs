@@ -101,9 +101,24 @@ namespace Inferno
             Function.Call(Hash.FREEZE_ENTITY_POSITION, entity.Handle, freeze);
         }
 
+        public static bool IsFloating(this Entity entity, float thresholdFromGround = 0.5f)
+        {
+            var groundZ = World.GetGroundHeight(entity.Position);
+            var offset = entity is Ped ? 1.0f : 0f;
+            return entity.Position.Z - offset - groundZ > thresholdFromGround;
+        }
+
         public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
         {
             return entity.Position.DistanceTo(position) < distance;
+        }
+
+        public static bool IsInRangeOfIgnoreZ(this Entity entity, Vector3 position, float distance)
+        {
+            var e = new Vector3(entity.Position.X, entity.Position.Y, 0);
+            var p = new Vector3(position.X, position.Y, 0);
+
+            return e.DistanceTo(p) < distance;
         }
 
         public static void SetForwardSpeed(this Vehicle v, float value)

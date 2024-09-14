@@ -63,6 +63,11 @@ namespace Inferno.ChaosMode
         /// 爆発系武器が強制的に選択される確率
         /// </summary>
         public int ForceExplosiveWeaponProbability { get; private set; }
+        
+        /// <summary>
+        /// 市民が武器を落とす確率
+        /// </summary>
+        public int WeaponDropProbability { get; private set; }
 
         /// <summary>
         /// カオスモード設定ファイルを生成
@@ -84,6 +89,7 @@ namespace Inferno.ChaosMode
             ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
             WeaponChangeProbability = dto.WeaponChangeProbability.Clamp(0, 100);
             ForceExplosiveWeaponProbability = dto.ForceExplosiveWeaponProbability.Clamp(0, 100);
+            WeaponDropProbability = dto.WeaponDropProbability.Clamp(0, 100);
 
             //ミッションキャラクタの扱い
             DefaultMissionCharacterTreatment =

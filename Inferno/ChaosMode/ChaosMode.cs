@@ -561,7 +561,7 @@ namespace Inferno.ChaosMode
             ped.SetCombatAbility(100);
             //戦闘範囲
             ped.SetCombatRange(3);
-            
+
             //攻撃を受けたら反撃する
             ped.RegisterHatedTargetsAroundPed(20);
         }
@@ -659,7 +659,7 @@ namespace Inferno.ChaosMode
                 }
 
                 ped.Weapons.Give((WeaponHash)weapon, 9999, true, true);
-                ped.SetDropWeaponWhenDead(false); //武器を落とさない
+                ped.SetDropWeaponWhenDead(Random.Next(0, 99) < _chaosModeSetting.WeaponDropProbability); //武器を落とすかどうか
             }
             catch (Exception e)
             {

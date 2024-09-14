@@ -98,7 +98,7 @@ namespace Inferno
                     }
 
                     //着地していたら監視終了
-                    if (!ped.IsInAir)
+                    if (!ped.IsInAir && !ped.IsFloating())
                     {
                         break;
                     }
