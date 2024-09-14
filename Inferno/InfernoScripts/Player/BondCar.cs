@@ -17,8 +17,17 @@ namespace Inferno.InfernoScripts.Player
         {
             config = LoadConfig<BondCarConfig>();
 
+            CreateInputKeywordAsObservable("bond")
+                .Subscribe(_ =>
+                {
+                    IsActive = !IsActive;
+                    DrawText("BondCar:" + IsActive);
+                });
+
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             OnTickAsObservable
+                .Where(_ => IsActive)
                 .Where(_ =>
                     PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle() &&
                     Game.IsControlPressed(Control.VehicleAim) && Game.IsControlPressed(Control.VehicleAttack) &&
@@ -26,6 +35,13 @@ namespace Inferno.InfernoScripts.Player
                 )
                 .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScheduler)
                 .Subscribe(_ => Shoot());
+
+            CreateTickAsObservable(TimeSpan.FromSeconds(1))
+                .Where(_ => IsActive)
+                .Select(_ => PlayerPed.IsInVehicle())
+                .DistinctUntilChanged()
+                .Where(x => x)
+                .Subscribe(_ => { PlayerPed.Weapons.Select(WeaponHash.Unarmed, true); });
         }
 
         private void Shoot()

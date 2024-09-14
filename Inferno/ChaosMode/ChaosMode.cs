@@ -561,9 +561,6 @@ namespace Inferno.ChaosMode
             ped.SetCombatAbility(100);
             //戦闘範囲
             ped.SetCombatRange(3);
-
-            //攻撃を受けたら反撃する
-            ped.RegisterHatedTargetsAroundPed(20);
         }
 
         /// <summary>
@@ -600,6 +597,7 @@ namespace Inferno.ChaosMode
                     ped.Task.FightAgainst(target, 60000);
                     Function.Call(Hash.REGISTER_TARGET, ped, target);
                 }
+                
 
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
             }

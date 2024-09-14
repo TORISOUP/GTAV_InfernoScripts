@@ -350,22 +350,7 @@ namespace Inferno
 
             Function.Call(Hash.SET_PED_COMBAT_RANGE, ped, range);
         }
-
-        /// <summary>
-        /// 攻撃してきた対象を攻撃する？
-        /// </summary>
-        /// <param name="ped"></param>
-        /// <param name="range"></param>
-        public static void RegisterHatedTargetsAroundPed(this Ped ped, int range)
-        {
-            if (!ped.IsSafeExist())
-            {
-                return;
-            }
-
-            Function.Call(Hash.REGISTER_HATED_TARGETS_AROUND_PED, ped, range);
-        }
-
+        
         /// <summary>
         /// 警官とし設定する
         /// </summary>
