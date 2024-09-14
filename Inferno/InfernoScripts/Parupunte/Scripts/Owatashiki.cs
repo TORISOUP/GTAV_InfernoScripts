@@ -1,4 +1,6 @@
-﻿namespace Inferno.InfernoScripts.Parupunte.Scripts
+﻿using GTA.Native;
+
+namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("オワタ式の可能性")]
     internal class Owatashiki : ParupunteScript
@@ -14,7 +16,7 @@
         public override void OnStart()
         {
             var player = core.PlayerPed;
-            player.Health = 10;
+            player.Health = 101;
             player.Armor = 0;
             ParupunteEnd();
         }

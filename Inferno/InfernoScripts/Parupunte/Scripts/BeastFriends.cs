@@ -82,7 +82,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 #endregion
             }
 
-            ReduceCounter = new ReduceCounter(15 * 1000);
+            ReduceCounter = new ReduceCounter(10 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 

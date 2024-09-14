@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Reactive.Linq;
+using GTA;
 using GTA.Math;
 using GTA.UI;
 
@@ -63,7 +64,16 @@ namespace Inferno
                     }
                     else
                     {
-                        damageName = damageWeapon.ToString();
+                        // damageWeaponがWeapon内に定義されているか
+                        if (Enum.IsDefined(typeof(Weapon), damageWeapon))
+                        {
+                            damageName = damageWeapon.ToString();
+                        }
+                        else
+                        {
+                            //定義されていない場合はWeaponHashとして表示
+                            damageName = ((WeaponHash)damageWeapon).ToString();
+                        }
                     }
 
                     if (PlayerPed.Killer == PlayerPed)

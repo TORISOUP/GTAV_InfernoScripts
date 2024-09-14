@@ -12,11 +12,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("回　転　寿　司", "ち　ら　し　寿　司")]
     [ParupunteIsono("かいてんずし")]
-    internal sealed class PedBlade : ParupunteScript
+    internal sealed class RotateSushi : ParupunteScript
     {
         private readonly HashSet<Ped> _joinedPeds = new();
 
-        public PedBlade(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
+        public RotateSushi(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 

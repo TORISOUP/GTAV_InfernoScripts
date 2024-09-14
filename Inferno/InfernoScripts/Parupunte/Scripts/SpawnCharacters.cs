@@ -94,9 +94,37 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private async ValueTask SpawnCharacterAsync(CancellationToken ct)
         {
             var player = core.PlayerPed;
+            var isInVehicle = player.IsInVehicle();
+            var pv = player.CurrentVehicle;
+            var isSeatFull = false;
+
+            // Vehicle seatをすべて列挙
+            var seats = (VehicleSeat[])Enum.GetValues(typeof(VehicleSeat));
+
             for (int i = 0; i < 20; i++)
             {
-                var ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                Ped ped = null;
+
+                if (isInVehicle && pv.IsSafeExist() && !isSeatFull)
+                {
+                    for (int s = 0; s < seats.Length; i++)
+                    {
+                        var seat = seats[i];
+                        if (pv.IsSeatFree(seat))
+                        {
+                            ped = pv.CreatePedOnSeat(seat, pedModel);
+                            break;
+                        }
+                    }
+
+                    isSeatFull = true;
+                }
+                else
+                {
+                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                }
+                
+
                 if (ped.IsSafeExist())
                 {
                     ped.MarkAsNoLongerNeeded();

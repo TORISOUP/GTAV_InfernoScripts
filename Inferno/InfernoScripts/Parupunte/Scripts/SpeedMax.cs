@@ -30,6 +30,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                          x => x.IsSafeExist() && x.IsInRangeOf(player.Position, radius)
                      ))
             {
+                if (player.CurrentVehicle == vec)
+                {
+                    continue;
+                }
                 vec.SetForwardSpeed(vec.Handle % 10 == 0 ? -200 : 200);
             }
         }

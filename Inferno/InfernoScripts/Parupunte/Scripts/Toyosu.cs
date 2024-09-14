@@ -29,11 +29,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnUpdate()
         {
             var player = core.PlayerPed;
-            var playerViecle = player.CurrentVehicle;
             var targets = core.CachedVehicles
                 .Where(x => x.IsSafeExist()
                             && x.IsInRangeOf(player.Position, 30.0f)
-                            && x != playerViecle
                 );
 
             foreach (var v in targets)
@@ -54,6 +52,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 if (!v.IsSafeExist() || !v.IsAlive)
                 {
                     return;
+                }
+
+                if (v == core.PlayerPed.CurrentVehicle)
+                {
+                    continue;
                 }
 
                 if (!v.IsInRangeOf(core.PlayerPed.Position, 30.0f))

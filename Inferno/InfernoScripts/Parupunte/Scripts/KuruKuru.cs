@@ -51,7 +51,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var targets = core.CachedVehicles
                     .Where(x => x.IsSafeExist()
                                 && x.IsInRangeOf(player.Position, 80.0f)
-                                && x != player.CurrentVehicle
                     );
                 var rate = 1.0f - ReduceCounter.Rate;
                 foreach (var veh in targets)
@@ -60,6 +59,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         continue;
                     }
+
+                    if (player.CurrentVehicle == veh)
+                    {
+                        continue;
+                    }
+
 
                     var angle = (veh.Handle % 3) switch
                     {

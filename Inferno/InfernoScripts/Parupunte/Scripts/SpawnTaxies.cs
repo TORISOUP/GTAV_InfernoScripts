@@ -36,9 +36,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var player = core.PlayerPed;
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 15; i++)
             {
-                var pos = core.PlayerPed.Position.Around(10) + (Vector3.WorldUp * (float)Random.NextDouble() * 30.0f);
+                var pos = core.PlayerPed.Position.Around(5) + (Vector3.WorldUp * (float)Random.NextDouble() * 30.0f);
                 var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, pos,
                     (float)(Random.NextDouble() * 2f * Math.PI));
 

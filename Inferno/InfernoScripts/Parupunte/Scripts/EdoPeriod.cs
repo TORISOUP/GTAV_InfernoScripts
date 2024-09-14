@@ -88,6 +88,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     return;
                 }
 
+                if (ped == core.PlayerPed)
+                {
+                    continue;
+                }
+                
                 if (ped.IsDead)
                 {
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
