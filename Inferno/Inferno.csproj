@@ -115,6 +115,7 @@
         <Compile Include="InfernoScripts\Parupunte\Scripts\PedBlade.cs" />
         <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\Player\NoWanted.cs" />
+        <Compile Include="InfernoScripts\Player\PlayerInvincible.cs" />
         <Compile Include="InfernoScripts\World\BombBat.cs" />
         <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />

@@ -57,13 +57,19 @@ namespace Inferno
                 return;
             }
 
+            ped.IsInvincible = true;
+            ped.SetNotChaosPed(true);
             ped.MarkAsNoLongerNeeded();
             ped.Task.ClearAllImmediately();
             ped.TaskSetBlockingOfNonTemporaryEvents(true);
             ped.SetPedKeepTask(true);
             ped.AlwaysKeepTask = true;
+            // 戦闘開始時のリアクションを無効化
+            ped.SetCombatAttributes(26, true);
+            // 弾丸に対してのリアクションを無効化するか
+            ped.SetCombatAttributes(38, true);
             //プレイヤ周囲15mを目標に降下
-            var targetPosition = playerPosition.AroundRandom2D(15);
+            var targetPosition = World.GetSafeCoordForPed(playerPosition.AroundRandom2D(15), false, 16);
             ped.ParachuteTo(targetPosition);
 
             //着地までカオス化させない
@@ -77,9 +83,6 @@ namespace Inferno
         /// <returns></returns>
         private async ValueTask PedOnGroundedCheckAsync(Ped ped, CancellationToken ct)
         {
-            //市民無敵化
-            ped.IsInvincible = true;
-            ped.SetNotChaosPed(true);
             try
             {
                 for (var i = 0; i < 10; i++)
@@ -98,7 +101,7 @@ namespace Inferno
                     }
 
                     //着地していたら監視終了
-                    if (!ped.IsInAir && !ped.IsFloating())
+                    if (!ped.IsFloating())
                     {
                         break;
                     }
