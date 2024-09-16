@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
 using GTA.Native;
 using GTA.UI;
@@ -8,7 +9,6 @@ namespace Inferno
 {
     public static class NativeFunctions
     {
-        
         /// <summary>
         /// スティックの入力状態の取得
         /// </summary>
@@ -350,7 +350,7 @@ namespace Inferno
 
             Function.Call(Hash.SET_PED_COMBAT_RANGE, ped, range);
         }
-        
+
         /// <summary>
         /// 警官とし設定する
         /// </summary>
@@ -647,6 +647,20 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_PED_GROUP_MEMBER, ped, groupId);
         }
+        
+        public static bool IsPedEnemy(this Ped ped)
+        {
+            var playerPed = Game.Player.Character;
+            var playerPedGroup = playerPed.RelationshipGroup;
+            var relationship = ped.RelationshipGroup.GetRelationshipBetweenGroups(playerPedGroup);
+            if (relationship is Relationship.Hate or Relationship.Dislike)
+            {
+                return true;
+            }
+
+            var target = Function.Call<Entity>(Hash.GET_PED_TARGET_FROM_COMBAT_PED, ped, 1);
+            return target == ped;
+        }
 
         /// <summary>
         /// 市民をグループから除外する
@@ -691,7 +705,6 @@ namespace Inferno
             Ped owner,
             float speed)
         {
-
             World.ShootBullet(start, end, owner, new WeaponAsset((int)weapon), damage, speed);
         }
 

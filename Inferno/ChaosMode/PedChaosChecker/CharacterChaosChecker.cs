@@ -102,7 +102,19 @@ namespace Inferno.ChaosMode
                     return true;
 
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
-                    return !IsUniqueCharacter((uint)entity.Model.Hash); //ユニークキャラじゃないならカオス化
+                {
+                    if (!IsUniqueCharacter((uint)entity.Model.Hash))
+                    {
+                        return true;
+                    }
+
+                    if (entity is Ped p)
+                    {
+                        return p.IsPedEnemy();
+                    }
+
+                    return false;
+                }
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
 

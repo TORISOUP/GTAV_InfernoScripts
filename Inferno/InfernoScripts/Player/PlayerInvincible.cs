@@ -20,14 +20,12 @@ namespace Inferno.InfernoScripts.Player
                     IsActive = !IsActive;
                     DrawText("Player Start Invincible:" + IsActive);
                 });
-
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
+            
             OnThinnedTickAsObservable
                 .Where(_ => IsActive && PlayerPed.IsSafeExist())
                 .Select(_ => (Game.IsMissionActive, PlayerPed.IsAlive))
                 .DistinctUntilChanged()
-                .Where(x => x is { IsAlive: true, IsMissionActive: true })
+                .Where(x => x.Item1 || x.Item2)
                 .Subscribe(_ =>
                 {
                     _lastCts?.Cancel();

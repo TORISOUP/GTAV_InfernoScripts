@@ -251,11 +251,10 @@ namespace Inferno.ChaosMode
             {
                 return;
             }
-
-
+            
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
             GiveWeaponTpPed(ped);
-
+            
             //ここでカオス化して良いか検査する
             if (!_chaosChecker.IsPedChaosAvailable(ped))
             {

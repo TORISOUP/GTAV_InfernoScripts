@@ -10,7 +10,7 @@ namespace Inferno.InfernoScripts.Player
     {
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("suwanted")
+            CreateInputKeywordAsObservable("swanted")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -25,7 +25,6 @@ namespace Inferno.InfernoScripts.Player
                     DrawText("No Wanted!");
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
             CreateTickAsObservable(TimeSpan.FromSeconds(1))
                 .Where(_ => IsActive)

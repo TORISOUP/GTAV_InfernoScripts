@@ -52,6 +52,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     if (_pedList.Add(targetPed))
                     {
+                        if (targetPed.PedGroup != null && targetPed.PedGroup.Exists())
+                        {
+                            core.LogWrite(
+                                $"{(PedHash)targetPed.Model.Hash} - {(PedHash)(targetPed.PedGroup.Leader.Model.Hash)}");
+                        }
+
+                        var blips = targetPed.AttachedBlips;
+                        if (blips is { Length: > 0 })
+                        {
+                            foreach (var b in blips)
+                            {
+                                if (b.Exists())
+                                {
+                                    core.LogWrite($"{(PedHash)targetPed.Model.Hash} - {Function.Call<int>(Hash.GET_BLIP_COLOUR, (InputArgument) b.Handle)}");
+                                }
+                            }
+                        }
+
+
                         targetPed.Task.ClearAllImmediately();
                         targetPed.CanRagdoll = true;
                         targetPed.SetToRagdoll();
@@ -100,6 +119,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     Function.Call(Hash.ACTIVATE_PHYSICS, targetPed);
                 }
+
                 targetPed.Kill();
                 targetPed.Task.ClearAllImmediately();
                 targetPed.ApplyForce(Vector3.RandomXYZ() * 100f, Vector3.RandomXY(),
