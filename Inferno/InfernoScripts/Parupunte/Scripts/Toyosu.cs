@@ -56,6 +56,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 if (v == core.PlayerPed.CurrentVehicle)
                 {
+                    await Delay100MsAsync(ct);
                     continue;
                 }
 
