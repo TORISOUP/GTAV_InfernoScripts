@@ -1,28 +1,19 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
+using GTA;
 using Inferno.Utilities;
-using UniRx;
 
 namespace Inferno
 {
-
     /// <summary>
     /// 爆雷
     /// </summary>
     internal class CitizenVehicleBomb : InfernoScript
     {
-        class CitizenVehicleBombConfig : InfernoConfig
-        {
-            public int Probability { get; set; } = 10;
-
-            public override bool Validate()
-            {
-                return Probability > 0 && Probability <= 100;
-            }
-        }
+        private CitizenVehicleBombConfig config;
 
         protected override string ConfigFileName { get; } = "CitizenVehicleBomb.conf";
-        private CitizenVehicleBombConfig config;
         private int Probability => config?.Probability ?? 10;
 
         protected override void Setup()
@@ -32,7 +23,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("VehicleBomb:" + IsActive, 3.0f);
+                    DrawText("VehicleBomb:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -48,7 +39,7 @@ namespace Inferno
             var targetVehicles = CachedVehicles
                 .Where(x =>
                     x.IsSafeExist() && x.IsAlive && x.PetrolTankHealth >= 0 && !x.IsPersistent && !x.IsPlayerVehicle()
-                    && x.GetPedOnSeat(GTA.VehicleSeat.Driver).IsSafeExist());
+                    && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist());
 
             foreach (var vehicle in targetVehicles)
             {
@@ -56,6 +47,17 @@ namespace Inferno
                 {
                     vehicle.PetrolTankHealth = -1;
                 }
+            }
+        }
+
+        [Serializable]
+        private class CitizenVehicleBombConfig : InfernoConfig
+        {
+            public int Probability = 10;
+
+            public override bool Validate()
+            {
+                return Probability > 0 && Probability <= 100;
             }
         }
     }

@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GTA;
-using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode.WeaponProvider;
-using UniRx;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("けものふれんず")]
-    class BeastFriends : ParupunteScript
+    internal class BeastFriends : ParupunteScript
     {
+        private readonly HashSet<int> _setEntities = new();
+
+        private readonly bool isBeast;
         private PedHash[] _animalsHash;
-
-        private HashSet<int> _setEntities = new HashSet<int>();
-
-        private bool isBeast = false;
 
         public BeastFriends(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -33,7 +29,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-
             if (!isBeast)
             {
                 _animalsHash = new[]
@@ -49,7 +44,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
             else
             {
-
                 #region animal
 
                 _animalsHash =
@@ -87,22 +81,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 #endregion
             }
-            ReduceCounter = new ReduceCounter(15 * 1000);
+
+            ReduceCounter = new ReduceCounter(10 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            StartCoroutine(SpawnCoroutineToPed());
-            StartCoroutine(SpawnCoroutineToVehicle());
+            SpawnToPedAsync(ActiveCancellationToken).Forget();
+            SpawnToVehicleAsync(ActiveCancellationToken).Forget();
         }
 
-        IEnumerable<object> SpawnCoroutineToVehicle()
+        private async ValueTask SpawnToVehicleAsync(CancellationToken ct)
         {
-            while (true)
+            while (!ct.IsCancellationRequested)
             {
                 var centerPos = core.PlayerPed.Position;
 
                 var targetVehs = core.CachedVehicles.Where(x =>
-                x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 30) && !_setEntities.Contains(x.Handle) && !x.Driver.IsSafeExist());
+                    x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 30) && !_setEntities.Contains(x.Handle) &&
+                    !x.Driver.IsSafeExist());
 
                 foreach (var veh in targetVehs)
                 {
@@ -110,10 +106,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         var m = _animalsHash[Random.Next(_animalsHash.Length)];
 
-                        var seat = new[] { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[i];
+                        var seat = new[]
+                        {
+                            VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear
+                        }[i];
                         var animal = veh.CreatePedOnSeat(seat, m);
 
-                        if (!animal.IsSafeExist()) continue;
+                        if (!animal.IsSafeExist())
+                        {
+                            continue;
+                        }
 
                         animal.MarkAsNoLongerNeeded();
                         animal.MaxHealth = 10000;
@@ -121,23 +123,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         animal.Task.FightAgainst(core.PlayerPed);
                         _setEntities.Add(animal.Handle);
                         _setEntities.Add(veh.Handle);
-
                     }
-                    yield return null;
+
+                    await Delay100MsAsync(ct);
                 }
-                yield return WaitForSeconds(0.2f);
+
+                await DelaySecondsAsync(0.2f, ct);
             }
         }
 
-        IEnumerable<object> SpawnCoroutineToPed()
+        private async ValueTask SpawnToPedAsync(CancellationToken ct)
         {
-
-            while (IsActive)
+            while (!ct.IsCancellationRequested)
             {
                 var playerPos = core.PlayerPed.Position;
 
                 var targetPeds = core.CachedPeds.Where(x =>
-                x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(playerPos, 20) && !_setEntities.Contains(x.Handle));
+                    x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(playerPos, 20) &&
+                    !_setEntities.Contains(x.Handle));
 
                 foreach (var ped in targetPeds)
                 {
@@ -145,7 +148,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     {
                         var animal = SpawnPed(ped, i);
 
-                        if (!animal.IsSafeExist()) continue;
+                        if (!animal.IsSafeExist())
+                        {
+                            continue;
+                        }
 
                         animal.MarkAsNoLongerNeeded();
                         animal.MaxHealth = 10000;
@@ -153,11 +159,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         _setEntities.Add(animal.Handle);
                         animal.Task.FightAgainst(ped);
                         _setEntities.Add(ped.Handle);
-
                     }
-                    yield return null;
+
+                    await Delay100MsAsync(ct);
                 }
-                yield return WaitForSeconds(0.25f);
+
+                await DelaySecondsAsync(0.25f, ct);
             }
         }
 
@@ -174,15 +181,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var spawnPosition = pos.AroundRandom2D(2 + (float)Random.NextDouble() * 15.0f);
                 return GTA.World.CreatePed(m, spawnPosition);
             }
-            else
-            {
-                if (index >= 3) return null;
-                var seat = new[] { VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[index];
-                var v = targetPed.CurrentVehicle;
-                _setEntities.Add(v.Handle);
-                return v.CreatePedOnSeat(seat, m);
-            }
-        }
 
+            if (index >= 3)
+            {
+                return null;
+            }
+
+            var seat = new[] { VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[index];
+            var v = targetPed.CurrentVehicle;
+            _setEntities.Add(v.Handle);
+            return v.CreatePedOnSeat(seat, m);
+        }
     }
 }

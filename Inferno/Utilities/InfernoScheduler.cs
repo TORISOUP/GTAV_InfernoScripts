@@ -1,79 +1,106 @@
 ﻿using System;
-using System.Diagnostics;
-using UniRx;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 
 namespace Inferno.Utilities
 {
-    /// <summary>
-    /// 指定したタイミングで実行されるスケジューラ
-    /// </summary>
     public class InfernoScheduler : IScheduler
     {
+        private readonly object _lockObject = new();
+        private readonly PriorityQueue<ScheduledItem> _queue = new();
 
-        private object lockObject = new object();
+        public DateTimeOffset Now => DateTimeOffset.UtcNow;
 
-        private SchedulerQueue schedulerQueue = new SchedulerQueue(4);
-        private static Stopwatch stopWatch = Stopwatch.StartNew();
-
-        private TimeSpan Time { get { return stopWatch.Elapsed; } }
-
-        public IDisposable Schedule(Action action)
+        public IDisposable Schedule<TState>(TState state, Func<IScheduler, TState, IDisposable> action)
         {
-            return Schedule(TimeSpan.Zero, action);
+            return Schedule(state, TimeSpan.Zero, action);
         }
 
-        public IDisposable Schedule(TimeSpan dueTime, Action action)
+        public IDisposable Schedule<TState>(TState state,
+            TimeSpan dueTime,
+            Func<IScheduler, TState, IDisposable> action)
         {
-            if (action == null)
-                throw new ArgumentNullException("action");
+            return Schedule(state, Now.Add(dueTime), action);
+        }
 
-            //実行する時間を決定
-            var doTime = Time + Scheduler.Normalize(dueTime);
-            var item = new ScheduledItem(action, doTime);
+        public IDisposable Schedule<TState>(TState state,
+            DateTimeOffset dueTime,
+            Func<IScheduler, TState, IDisposable> action)
+        {
+            var scheduledItem = new ScheduledItem(this, state, dueTime, ObjAction);
 
-            lock (lockObject)
+            lock (_lockObject)
             {
-                schedulerQueue.Enqueue(item);
+                _queue.Enqueue(scheduledItem);
             }
 
-            return item.Cancellation;
+            return Disposable.Create(() => scheduledItem.Cancel());
+
+            IDisposable ObjAction(IScheduler scheduler, object objState)
+            {
+                return action(scheduler, (TState)objState);
+            }
         }
 
         public void Run()
         {
-            lock (lockObject)
+            lock (_lockObject)
             {
-                if (schedulerQueue.Count == 0) return;
-
-                //登録されたアクションを実行
-                while (schedulerQueue.Count > 0)
+                while (_queue.Count > 0)
                 {
-                    //1個取り出す
-                    var c = schedulerQueue.Peek();
-
-                    if (c.IsCanceled)
+                    var next = _queue.Peek();
+                    if (next.DueTime > Now)
                     {
-                        //キャンセル済みなら破棄
-                        schedulerQueue.Dequeue();
-                        continue;
+                        break;
                     }
 
-                    var wait = c.DueTime - Time;
-                    if (wait.Ticks <= 0)
+                    _queue.Dequeue();
+                    if (!next.IsCanceled)
                     {
-                        //実行可能状態なら実行
-                        c.Invoke();
-                        schedulerQueue.Dequeue();
-                        continue;
+                        next.Invoke();
                     }
-
-                    //ここに到達する時は1つも処理できなかったとき
-                    //つまり実行できるアクションがまだ無い
-                    break;
                 }
             }
         }
 
-        public DateTimeOffset Now => Scheduler.Now;
+        private class ScheduledItem : IComparable<ScheduledItem>
+        {
+            private readonly Func<IScheduler, object, IDisposable> _action;
+            private readonly InfernoScheduler _scheduler;
+
+            public ScheduledItem(InfernoScheduler scheduler,
+                object state,
+                DateTimeOffset dueTime,
+                Func<IScheduler, object, IDisposable> action)
+            {
+                _scheduler = scheduler;
+                _action = action;
+                DueTime = dueTime;
+                State = state;
+            }
+
+            public DateTimeOffset DueTime { get; }
+            public bool IsCanceled { get; private set; }
+
+            private object State { get; }
+
+            public int CompareTo(ScheduledItem other)
+            {
+                return DueTime.CompareTo(other.DueTime);
+            }
+
+            public void Cancel()
+            {
+                IsCanceled = true;
+            }
+
+            public void Invoke()
+            {
+                if (!IsCanceled)
+                {
+                    _action(_scheduler, State);
+                }
+            }
+        }
     }
 }

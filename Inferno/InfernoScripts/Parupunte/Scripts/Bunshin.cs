@@ -1,16 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
-using UniRx;
+using Inferno.Utilities;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ブンシンノジツ", "おわり")]
     [ParupunteIsono("ぶんしん")]
-    class Bunshin : ParupunteScript
+    internal class Bunshin : ParupunteScript
     {
-        private List<Ped> peds = new List<Ped>();
+        private readonly List<Ped> peds = new();
 
         public Bunshin(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -18,40 +22,46 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnCoroutine());
+            SpawnAsync(ActiveCancellationToken).Forget();
 
             ReduceCounter = new ReduceCounter(20000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ =>
                 {
                     foreach (var p in peds)
                     {
-                        if (p.IsSafeExist()) p.MarkAsNoLongerNeeded();
+                        if (p.IsSafeExist())
+                        {
+                            p.MarkAsNoLongerNeeded();
+                        }
                     }
                 });
         }
 
-        IEnumerable<object> SpawnCoroutine()
+        private async ValueTask SpawnAsync(CancellationToken ct)
         {
             foreach (var i in Enumerable.Range(0, 12))
             {
                 CreatePed(i < 6);
-                yield return null;
+                await Delay100MsAsync(ct);
             }
         }
 
         private void CreatePed(bool isFriend)
         {
             var ped = GTA.World.CreatePed(core.PlayerPed.Model, core.PlayerPed.Position.Around(Random.Next(5, 10)));
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             if (isFriend)
             {
                 ped.SetNotChaosPed(true);
-                core.PlayerPed.CurrentPedGroup.Add(ped, false);
+                core.PlayerPed.PedGroup.Add(ped, false);
                 AutoReleaseOnGameEnd(ped);
                 peds.Add(ped);
             }
@@ -67,7 +77,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
-
         }
     }
 }

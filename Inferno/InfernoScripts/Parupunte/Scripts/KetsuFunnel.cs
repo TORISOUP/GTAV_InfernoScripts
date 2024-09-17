@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
-using GTA.Native;
-using UniRx;
+using Inferno.Utilities;
+
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ケツファンネル", "弾切れ")]
     [ParupunteIsono("けつふぁんねる")]
-    class KetsuFunnel : ParupunteScript
+    internal class KetsuFunnel : ParupunteScript
     {
         public KetsuFunnel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -23,16 +23,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-
             core.PlayerPed.IsExplosionProof = true;
-            this.OnFinishedAsObservable
+            OnFinishedAsObservable
                 .Subscribe(_ => core.PlayerPed.IsExplosionProof = false);
-            StartCoroutine(KetuCoroutine());
+
+            KetuLoopAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> KetuCoroutine()
+        private async ValueTask KetuLoopAsync(CancellationToken ct)
         {
-            while (IsActive)
+            while (IsActive && !ct.IsCancellationRequested)
             {
                 if (!core.PlayerPed.IsInVehicle())
                 {
@@ -41,22 +41,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     var ketsuDir = -core.PlayerPed.ForwardVector;
 
                     var targetList = core
-                        .CachedPeds.Cast<Entity>().Concat(core.CachedVehicles)
+                        .CachedEntities
                         .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(playerPos, 100))
-                        .Where(x => Vector3.Angle(ketsuDir, x.Position - playerPos) < 30);
+                        .Where(x => Vector3.Angle(ketsuDir, x.Position - playerPos) < 30)
+                        .ToArray();
 
-                    var target = targetList.ElementAt(Random.Next(targetList.Count()));
+                    var target = targetList[Random.Next(0, targetList.Length)];
 
-                    var startPoint = core.PlayerPed.GetBoneCoord(Bone.SKEL_Pelvis);
+                    var startPoint = core.PlayerPed.Bones[Bone.SkelSpineRoot].Position;
 
                     var dir = (target.Position - startPoint).Normalized;
-
+                    
                     NativeFunctions.ShootSingleBulletBetweenCoords(
-                        startPoint + dir * 1, target.Position, 100, WeaponHash.RPG, null, 500);
+                        startPoint + dir * 1, target.Position, 100, Weapon.RPG, null, 500);
                 }
-                yield return WaitForSeconds(0.4f);
+
+                await DelaySecondsAsync(0.5f, ct);
             }
         }
-
     }
 }

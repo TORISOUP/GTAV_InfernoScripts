@@ -1,38 +1,28 @@
-﻿using GTA;
+﻿using System;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Inferno.ChaosMode;
 using Inferno.Utilities;
-using UniRx;
 
 namespace Inferno
 {
-
     /// <summary>
     /// 市ニトロ
     /// </summary>
     public class CitizenNitro : InfernoScript
     {
-        class CitizenNitroConfig : InfernoConfig
-        {
-            public int Probability { get; set; } = 7;
-
-            public override bool Validate()
-            {
-                return Probability > 0 && Probability <= 100;
-            }
-        }
-
-        protected override string ConfigFileName { get; } = "CitizenNitro.conf";
-        private CitizenNitroConfig config;
-        private int Probability => config?.Probability ?? 7;
+        private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
 
         private readonly string Keyword = "cnitro";
-        private readonly int[] _velocities = { -100, -70, -50, 50, 70, 100 };
+        private CitizenNitroConfig config;
+
+        protected override string ConfigFileName { get; } = "CitizenNitro.conf";
+        private int Probability => config?.Probability ?? 7;
 
         protected override void Setup()
         {
@@ -43,7 +33,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("CitizenNitro:" + IsActive, 3.0f);
+                    DrawText("CitizenNitro:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -64,13 +54,14 @@ namespace Inferno
                 var playerVehicle = this.GetPlayerVehicle();
 
                 var nitroAvailableVeles = CachedVehicles
-                    .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
+                    .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) &&
+                                x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
 
                 foreach (var veh in nitroAvailableVeles)
                 {
                     if (Random.Next(0, 100) <= Probability)
                     {
-                        DelayCoroutine(veh);
+                        DelayCoroutine(veh, ActivationCancellationToken).Forget();
                     }
                 }
             }
@@ -84,10 +75,10 @@ namespace Inferno
         /// <summary>
         /// ニトロの発動を遅延させる
         /// </summary>
-        private async Task DelayCoroutine(Vehicle v)
+        private async ValueTask DelayCoroutine(Vehicle v, CancellationToken ct)
         {
             var waitSeconds = Random.Next(0, 5);
-            await Task.Delay(TimeSpan.FromSeconds(waitSeconds));
+            await DelayAsync(TimeSpan.FromSeconds(waitSeconds), ct);
             var driver = v.GetPedOnSeat(VehicleSeat.Driver);
             EscapeVehicle(driver);
             NitroVehicle(v);
@@ -108,10 +99,11 @@ namespace Inferno
 
             if (velocitiesSpeed > 0 && Random.Next(0, 100) <= 15)
             {
-                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, (Random.Next(20, 60) / 100.0f)) * vehicle.Quaternion;
+                vehicle.Quaternion = Quaternion.RotationAxis(vehicle.RightVector, Random.Next(20, 60) / 100.0f) *
+                                     vehicle.Quaternion;
             }
 
-            vehicle.Speed += velocitiesSpeed;
+            vehicle.SetForwardSpeed(vehicle.Speed + velocitiesSpeed);
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
@@ -130,33 +122,63 @@ namespace Inferno
         //車に乗ってたら緊急脱出する
         private void EscapeVehicle(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
-            DelayParachute(ped);
+            DelayParachute(ped, ActivationCancellationToken).Forget();
         }
 
-        private async Task DelayParachute(Ped ped)
+        private async ValueTask DelayParachute(Ped ped, CancellationToken ct)
         {
             ped.SetNotChaosPed(true);
             ped.ClearTasksImmediately();
             ped.Position += new Vector3(0, 0, 0.5f);
             ped.SetToRagdoll();
 
-            await Task.Delay(TimeSpan.FromSeconds(0.1f));
+            await DelayAsync(TimeSpan.FromSeconds(0.1f), ct);
 
             ped.ApplyForce(new Vector3(0, 0, 40.0f));
             ped.IsInvincible = true;
 
-            await Task.Delay(TimeSpan.FromSeconds(1.5f));
+            try
+            {
+                await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+            }
+            finally
+            {
+                if (ped.IsSafeExist())
+                {
+                    ped.IsInvincible = false;
+                }
+            }
 
-            if (!ped.IsSafeExist()) return;
-            ped.IsInvincible = false;
             ped.ParachuteTo(PlayerPed.Position);
 
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            await DelayAsync(TimeSpan.FromSeconds(15), ct);
 
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             ped.SetNotChaosPed(false);
+        }
+
+        [Serializable]
+        private class CitizenNitroConfig : InfernoConfig
+        {
+            public int Probability = 7;
+
+            public override bool Validate()
+            {
+                return Probability > 0 && Probability <= 100;
+            }
         }
     }
 }

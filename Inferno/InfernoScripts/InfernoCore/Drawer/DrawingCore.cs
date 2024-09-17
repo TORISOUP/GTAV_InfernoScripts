@@ -1,6 +1,8 @@
-﻿using GTA;
-using System;
-using UniRx;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using GTA;
 
 namespace Inferno
 {
@@ -9,21 +11,33 @@ namespace Inferno
     /// </summary>
     internal class DrawingCore : Script
     {
-        public static DrawingCore Instance { get; private set; }
-
-        private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
-
-        public static UniRx.IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+        private static readonly Subject<Unit> OnTickSubject = new();
+        private readonly IDisposable _disposable;
 
         public DrawingCore()
         {
             Instance = this;
 
             Interval = 0;
-            Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+            _disposable = Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
                 .Select(_ => Unit.Default)
                 .Multicast(OnTickSubject)
                 .Connect();
+
+            Aborted += (_, _) => Dispose();
+        }
+
+        public static DrawingCore Instance { get; private set; }
+
+        public static IObservable<Unit> OnDrawingTickAsObservable => OnTickSubject.AsObservable();
+
+
+        private void Dispose()
+        {
+            _disposable?.Dispose();
+            OnTickSubject.OnCompleted();
+            OnTickSubject.Dispose();
         }
     }
 }

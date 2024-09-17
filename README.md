@@ -8,19 +8,17 @@ MIT Licenseで公開します。
 [MODダウンロード](https://github.com/TORISOUP/GTAV_InfernoScripts/wiki/MOD%E6%A6%82%E8%A6%81)  
 [wiki](https://github.com/TORISOUP/GTAV_InfernoScripts/wiki)
 
-## 導入方法（開発者向け）
+## 開発者向け情報
 
-下記を参照設定に追加してください
+ * .NET Framework 4.8
+ * C# 9.0
 
-* [ScriptHookVDotNet.dll](http://gtaforums.com/topic/789907-vrel-community-script-hook-v-net/)
+NuGetパッケージを解決すればビルドできるはずです。
+
+[依存ライブラリの権利表記はこちら](./Rights.md)
 
 ## License
 
 This library is under the MIT License.
 
-### 使用ライブラリ
-UniRx  
-Copyright (c) 2014 Yoshifumi Kawai https://github.com/neuecc/UniRx/blob/master/LICENSE
 
-Json.NET
-Copyright (c) 2007 James Newton-King https://raw.githubusercontent.com/JamesNK/Newtonsoft.Json/master/LICENSE.md

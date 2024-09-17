@@ -1,23 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
+using GTA;
 using GTA.Math;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Player
 {
     //ふわふわジャンプ
-    class Floating : InfernoScript
+    internal class Floating : InfernoScript
     {
+        private float _currentPower;
+
         protected override void Setup()
         {
-            this.CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
-                .Where(_ => this.IsGamePadPressed(GameKey.Sprint) && this.IsGamePadPressed(GameKey.Jump))
+            OnTickAsObservable
+                .Where(_ => Game.IsControlPressed(Control.Jump) && Game.IsControlPressed(Control.Sprint))
                 .Subscribe(_ =>
                 {
-                    PlayerPed.ApplyForce(Vector3.WorldUp * 1.1f);
+                    _currentPower = (PlayerPed.IsFloating(0.25f) || PlayerPed.IsInAir)
+                        ? Math.Max(0.3f, _currentPower * 0.8f)
+                        : 1.3f;
+                    PlayerPed.ApplyForce(Vector3.WorldUp * _currentPower);
                 });
         }
     }

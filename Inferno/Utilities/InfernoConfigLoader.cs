@@ -10,19 +10,10 @@ namespace Inferno.Utilities
     /// </summary>
     public class InfernoConfigLoader<T> where T : new()
     {
-        protected readonly Encoding _encoding = Encoding.UTF8;
-        protected DebugLogger _debugLogger;
-        protected string _baseFilePath = @"./scripts/confs/";
-
-        protected virtual DebugLogger DebugLogger
-        {
-            get
-            {
-                if (_debugLogger != null) return _debugLogger;
-                _debugLogger = new DebugLogger(@"Inferno.log");
-                return _debugLogger;
-            }
-        }
+        private readonly Encoding _encoding = Encoding.UTF8;
+        private readonly string _baseFilePath = @"./scripts/confs/";
+        private IDebugLogger _debugLogger => DebugLogger.Instance;
+        
 
         /// <summary>
         /// ファイルから読み込んで設定ファイルを生成する
@@ -43,8 +34,8 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                DebugLogger.Log(e.Message);
-                DebugLogger.Log(e.StackTrace);
+                _debugLogger.Log(e.Message);
+                _debugLogger.Log(e.StackTrace);
                 //例外発生時はデフォルトの設定ファイルを返す
                 return new T();
             }
@@ -63,18 +54,17 @@ namespace Inferno.Utilities
                 CreateDefaultSettingFile(filePath);
                 return "";
             }
+
             var readString = "";
             try
             {
-                using (var sr = new StreamReader(filePath, _encoding))
-                {
-                    readString = sr.ReadToEnd();
-                }
+                using var sr = new StreamReader(filePath, _encoding);
+                readString = sr.ReadToEnd();
             }
             catch (Exception e)
             {
-                DebugLogger.Log(e.Message);
-                DebugLogger.Log(e.StackTrace);
+                _debugLogger.Log(e.Message);
+                _debugLogger.Log(e.StackTrace);
             }
             return readString;
         }
@@ -96,17 +86,15 @@ namespace Inferno.Utilities
 
             try
             {
-                using (var w = new StreamWriter(filePath, false, _encoding))
-                {
-                    var json = JsonConvert.SerializeObject(dto, Formatting.Indented);
-                    w.WriteAsync(json);
-                    w.Flush();
-                }
+                using var w = new StreamWriter(filePath, false, _encoding);
+                var json = JsonConvert.SerializeObject(dto, Formatting.Indented);
+                w.WriteAsync(json);
+                w.Flush();
             }
             catch (Exception e)
             {
-                DebugLogger.Log(e.Message);
-                DebugLogger.Log(e.StackTrace);
+                _debugLogger.Log(e.Message);
+                _debugLogger.Log(e.StackTrace);
             }
         }
 

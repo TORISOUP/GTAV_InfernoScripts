@@ -1,10 +1,9 @@
-﻿using GTA;
-using GTA.Native;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Media;
-using UniRx;
+using System.Reactive.Linq;
+using GTA;
 
 namespace Inferno
 {
@@ -17,7 +16,10 @@ namespace Inferno
         {
             filePaths = LoadWavFilePaths(@"scripts/SpecialAbilityBgm");
 
-            if (filePaths.Length <= 0) return;
+            if (filePaths.Length <= 0)
+            {
+                return;
+            }
 
             soundPlayer = new SoundPlayer { SoundLocation = filePaths[Random.Next(filePaths.Length)] };
 
@@ -25,7 +27,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("SpecialAbilityBGM:" + IsActive, 3.0f);
+                    DrawText("SpecialAbilityBGM:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -57,7 +59,7 @@ namespace Inferno
         {
             if (!Directory.Exists(targetPath))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();

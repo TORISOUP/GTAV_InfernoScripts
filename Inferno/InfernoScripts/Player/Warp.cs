@@ -1,7 +1,6 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
-using System.Linq;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Player
 {
@@ -10,27 +9,34 @@ namespace Inferno.InfernoScripts.Player
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("moveto")
-
                 .Subscribe(_ =>
                 {
-                    var blip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
-                    if (blip == null) return;
+                    var blip = GTA.World.WaypointBlip;
+                    if (blip == null)
+                    {
+                        return;
+                    }
+
                     var targetHeight = GTA.World.GetGroundHeight(blip.Position);
                     //地面ピッタリだと地面に埋まるので少し上空を指定する
-                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f );
+                    var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f);
 
                     var tryPos = GTA.World.GetSafeCoordForPed(targetPos);
                     if (tryPos != Vector3.Zero)
                     {
                         targetPos = tryPos;
                     }
-                    
+
                     var targetEntity = default(Entity);
 
                     if (PlayerPed.IsInVehicle())
                     {
                         var vec = PlayerPed.CurrentVehicle;
-                        if (!vec.IsSafeExist()) return;
+                        if (!vec.IsSafeExist())
+                        {
+                            return;
+                        }
+
                         targetEntity = vec;
                     }
                     else
@@ -42,6 +48,5 @@ namespace Inferno.InfernoScripts.Player
                     targetEntity.ApplyForce(new Vector3(0, 0, 1));
                 });
         }
-
     }
 }

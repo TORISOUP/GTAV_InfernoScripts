@@ -1,0 +1,21 @@
+{
+  "Radius": "aaa",
+  "IsChangeMissionCharacterWeapon": 0,
+  "DefaultMissionCharacterTreatment": "aaa",
+  "IsAttackPlayerCorrectionEnabled": "T",
+  "AttackPlayerCorrectionProbability": "aaa",
+  "WeaponList": [
+    0,
+    1,
+    2
+  ],
+  "WeaponListForDriveBy": [
+    0,
+    1,
+    2
+  ],
+  "StupidPedRate": "50",
+  "ShootAccuracy": "aaa",
+  "WeaponChangeProbability": true,
+  "ForceExplosiveWeaponProbability": false
+}

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace Inferno.InfernoScripts
 {
     internal class ParupunteConfigElement
     {
-        public string StartMessage { get; set; }
-        public string SubMessage { get; set; }
-        public string FinishMessage { get; set; }
+        public static ParupunteConfigElement Default = new("", "");
 
         public ParupunteConfigElement(string startMessage, string subMessage, string finishMessage)
         {
@@ -28,7 +20,9 @@ namespace Inferno.InfernoScripts
             FinishMessage = finishMessage;
         }
 
-        public static ParupunteConfigElement Default = new ParupunteConfigElement("", "");
+        public string StartMessage { get; set; }
+        public string SubMessage { get; set; }
+        public string FinishMessage { get; set; }
 
         public ParupunteConfigDto ToDto()
         {
@@ -38,22 +32,18 @@ namespace Inferno.InfernoScripts
 
     internal class ParupunteConfigDto
     {
-
-        [DefaultValue("")]
-        public string StartMessage { get; set; }
-
-        [DefaultValue("")]
-        public string SubMessage { get; set; }
-
-        [DefaultValue("")]
-        public string FinishMessage { get; set; }
-
         public ParupunteConfigDto(string startMessage, string subMessage, string finishMessage)
         {
             StartMessage = startMessage;
             SubMessage = subMessage;
             FinishMessage = finishMessage;
         }
+
+        [DefaultValue("")] public string StartMessage { get; set; }
+
+        [DefaultValue("")] public string SubMessage { get; set; }
+
+        [DefaultValue("")] public string FinishMessage { get; set; }
 
         public ParupunteConfigElement ToDomain()
         {

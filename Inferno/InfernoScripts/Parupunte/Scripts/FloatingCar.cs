@@ -1,7 +1,12 @@
-﻿using GTA.Math;
-using GTA.Native;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -9,6 +14,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("ふわふわ")]
     internal class FloatingCar : ParupunteScript
     {
+        private readonly List<Vehicle> _targetList = new();
+
         public FloatingCar(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
@@ -22,30 +29,44 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
+
+            Function.Call(Hash.SET_GRAVITY_LEVEL, 1);
+            UpdateAsync(ActiveCancellationToken).Forget();
+        }
+
+        private async ValueTask UpdateAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                var player = core.PlayerPed;
+                foreach (var vehicle in core.CachedVehicles
+                             .Where(x => x.IsSafeExist()
+                                         && !_targetList.Contains(x)
+                                         && x.IsInRangeOf(player.Position, 150.0f)
+                                         && !x.IsPersistent))
+                {
+                    _targetList.Add(vehicle);
+                }
+
+                await DelaySecondsAsync(1, ct);
+            }
         }
 
         protected override void OnUpdate()
         {
-            var player = core.PlayerPed;
-            var targets = core.CachedVehicles
-                .Where(x => x.IsSafeExist()
-                            && x.IsInRangeOf(player.Position, 50.0f)
-                            && x != player.CurrentVehicle
-                            && !x.IsPersistent
-                );
-            foreach (var vehicle in targets)
+            foreach (var v in _targetList)
             {
-                vehicle.ApplyForce(Vector3.WorldUp);
-            }
-
-            if (player.IsInVehicle() && player.CurrentVehicle.IsSafeExist())
-            {
-                var v = player.CurrentVehicle;
-                if (Function.Call<bool>(Hash.IS_VEHICLE_ON_ALL_WHEELS, v))
+                if (v.IsSafeExist() && v.IsOnAllWheels)
                 {
-                    v.ApplyForce(Vector3.WorldUp * 1.2f);
+                    v.ApplyForce(Vector3.WorldUp * (float)Random.NextDouble() * 1.5f);
                 }
             }
+        }
+
+        protected override void OnFinished()
+        {
+            Function.Call(Hash.SET_GRAVITY_LEVEL, 0);
+            _targetList.Clear();
         }
     }
 }

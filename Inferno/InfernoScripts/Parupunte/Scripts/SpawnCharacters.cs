@@ -1,17 +1,17 @@
-using GTA;
-using GTA.Native;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("てきとうにしょうかん")]
     internal class SpawnCharacters : ParupunteScript
     {
-        private Model pedModel;
         private string name;
+        private Model pedModel;
         private Random random;
 
         public SpawnCharacters(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -71,39 +71,69 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 case 8:
                     pedModel = new Model(PedHash.Imporage);
-		            name = "インポマン";
+                    name = "インポマン";
                     break;
 
                 case 9:
                     pedModel = new Model(PedHash.MovAlien01);
-		            name = "ロスサントス決戦";
+                    name = "ロスサントス決戦";
                     break;
 
                 case 10:
                     pedModel = new Model(PedHash.Clown01SMY);
-	                name = "らんらんる～";
+                    name = "らんらんる～";
                     break;
             }
         }
 
         public override void OnStart()
         {
-            StartCoroutine(SpawnCharacter());
+            SpawnCharacterAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> SpawnCharacter()
+        private async ValueTask SpawnCharacterAsync(CancellationToken ct)
         {
             var player = core.PlayerPed;
-            foreach (var s in WaitForSeconds(2))
+            var isInVehicle = player.IsInVehicle();
+            var pv = player.CurrentVehicle;
+            var isSeatFull = false;
+
+            // Vehicle seatをすべて列挙
+            var seats = (VehicleSeat[])Enum.GetValues(typeof(VehicleSeat));
+
+            for (int i = 0; i < 20; i++)
             {
-                var ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                Ped ped = null;
+
+                if (isInVehicle && pv.IsSafeExist() && !isSeatFull)
+                {
+                    for (int s = 0; s < seats.Length; i++)
+                    {
+                        var seat = seats[i];
+                        if (pv.IsSeatFree(seat))
+                        {
+                            ped = pv.CreatePedOnSeat(seat, pedModel);
+                            break;
+                        }
+                    }
+
+                    isSeatFull = true;
+                }
+                else
+                {
+                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                }
+                
+
                 if (ped.IsSafeExist())
                 {
                     ped.MarkAsNoLongerNeeded();
                     GiveWeaponTpPed(ped);
                 }
-                yield return s;
+
+                await Delay100MsAsync(ct);
             }
+
             ParupunteEnd();
         }
 
@@ -114,7 +144,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <returns>装備した武器</returns>
         private void GiveWeaponTpPed(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             //車に乗っているなら車用の武器を渡す
             var weapon = Enum.GetValues(typeof(WeaponHash))
@@ -127,6 +160,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
+            ped.Task.FightAgainst(core.PlayerPed);
         }
     }
 }

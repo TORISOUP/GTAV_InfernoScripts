@@ -5,7 +5,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("けいさつ")]
     internal class ChangeWantedLevel : ParupunteScript
     {
-        private int wantedLevelThreshold = 1;
+        private readonly int wantedLevelThreshold = 1;
         private int wantedLevel;
 
         public ChangeWantedLevel(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
@@ -34,6 +34,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 IncreasePlayerWantedLevel();
             }
+
             ParupunteEnd();
         }
 

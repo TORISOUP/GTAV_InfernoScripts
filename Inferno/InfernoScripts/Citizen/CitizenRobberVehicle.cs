@@ -1,9 +1,12 @@
-﻿using GTA;
-using Inferno.ChaosMode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using Inferno.ChaosMode;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -15,12 +18,12 @@ namespace Inferno
         /// <summary>
         /// プレイヤの周囲何ｍの市民が対象か
         /// </summary>
-        private float PlayerAroundDistance = 100.0f;
+        private readonly float PlayerAroundDistance = 100.0f;
 
         /// <summary>
         /// 車両強盗する確率
         /// </summary>
-        private readonly int probability = 20;
+        private readonly int probability = 5;
 
         protected override void Setup()
         {
@@ -28,7 +31,7 @@ namespace Inferno
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("CitizenRobberVehicle:" + IsActive, 3.0f);
+                    DrawText("CitizenRobberVehicle:" + IsActive);
                 });
 
             CreateTickAsObservable(TimeSpan.FromSeconds(1))
@@ -41,7 +44,10 @@ namespace Inferno
 
         private void RobberVehicle()
         {
-            if (!PlayerPed.IsSafeExist()) return;
+            if (!PlayerPed.IsSafeExist())
+            {
+                return;
+            }
 
             var playerVehicle = this.GetPlayerVehicle();
 
@@ -66,15 +72,22 @@ namespace Inferno
                     //市民周辺の車が対象
                     var targetVehicle =
                         CachedVehicles
-                            .FirstOrDefault(x => x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 40.0f) && x != targetPed.CurrentVehicle);
+                            .FirstOrDefault(x =>
+                                x.IsSafeExist() && x.IsInRangeOf(targetPed.Position, 40.0f) &&
+                                x != targetPed.CurrentVehicle);
 
                     //30%の確率でプレイヤの車を盗むように変更
                     if (playerVehicle.IsSafeExist() && Random.Next(0, 100) < 30)
                     {
                         targetVehicle = playerVehicle;
                     }
-                    if (!targetVehicle.IsSafeExist()) continue;
-                    StartCoroutine(RobberVehicleCoroutine(targetPed, targetVehicle));
+
+                    if (!targetVehicle.IsSafeExist())
+                    {
+                        continue;
+                    }
+
+                    RobberVehicleAsync(targetPed, targetVehicle, ActivationCancellationToken).Forget();
                 }
                 catch (Exception e)
                 {
@@ -83,43 +96,60 @@ namespace Inferno
             }
         }
 
-        private IEnumerable<Object> RobberVehicleCoroutine(Ped ped, Vehicle targetVehicle)
+        private async ValueTask RobberVehicleAsync(Ped ped, Vehicle targetVehicle, CancellationToken ct)
         {
-            yield return RandomWait();
-            if (!ped.IsSafeExist()) yield break;
+            await DelayRandomSecondsAsync(1, 2, ct);
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             //カオス化しない
             ped.SetNotChaosPed(true);
-
-            ped.TaskSetBlockingOfNonTemporaryEvents(true);
-            ped.SetPedKeepTask(true);
-            ped.AlwaysKeepTask = true;
-
-            if (ped.IsInVehicle())
+            try
             {
-                ped.Task.ClearAll();
-                ped.Task.LeaveVehicle(ped.CurrentVehicle, false);
-                yield return WaitForSeconds(1);
-            }
-            else
-            {
+                ped.TaskSetBlockingOfNonTemporaryEvents(true);
+                ped.SetPedKeepTask(true);
+                ped.AlwaysKeepTask = true;
+
+                if (ped.IsInVehicle())
+                {
+                    ped.Task.ClearAll();
+                    ped.Task.LeaveVehicle(ped.CurrentVehicle, false);
+                    await DelayAsync(TimeSpan.FromSeconds(3), ct);
+                }
+                else
+                {
+                    ped.Task.ClearAllImmediately();
+                }
+
                 ped.Task.ClearAllImmediately();
-            }
-            ped.Task.ClearAllImmediately();
-            ped.Task.EnterVehicle(targetVehicle, VehicleSeat.Any);
+                ped.Task.EnterVehicle(targetVehicle);
 
-            foreach (var t in Enumerable.Range(0, 5))
+                for (var i = 0; i < 20; i++)
+                {
+                    //20秒間車に乗れたか監視する
+                    if (!ped.IsSafeExist())
+                    {
+                        return;
+                    }
+
+                    if (ped.IsInVehicle())
+                    {
+                        break;
+                    }
+
+                    await DelaySecondsAsync(1, ct);
+                }
+            }
+            finally
             {
-                //20秒間車に乗れたか監視する
-                if (!ped.IsSafeExist()) yield break;
-                if (ped.IsInVehicle()) break;
-                ped.Task.ClearAllImmediately();
-                yield return WaitForSeconds(5);
+                if (ped.IsSafeExist())
+                {
+                    //カオス化許可
+                    ped.SetNotChaosPed(false);
+                }
             }
-
-            if (!ped.IsSafeExist()) yield break;
-
-            //カオス化許可
-            ped.SetNotChaosPed(false);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA.Math;
-using UniRx;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -9,8 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("くるくる")]
     internal class KuruKuru : ParupunteScript
     {
-        private IDisposable mainStream;
-
         public KuruKuru(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
@@ -31,45 +31,59 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     .Where(x => x.IsSafeExist()
                                 && x.IsInRangeOf(player.Position, 80.0f)
                                 && x != player.CurrentVehicle
-
                     );
                 foreach (var veh in targets)
                 {
-                    veh.Speed = 200;
+                    veh.SetForwardSpeed(500);
                 }
+
                 ParupunteEnd();
             });
 
-            //TODO 別の場所にHookする
-            mainStream =
-            DrawingCore.OnDrawingTickAsObservable
-                .TakeUntil(ReduceCounter.OnFinishedAsync)
-                .Subscribe(_ =>
-                {
-                    var player = core.PlayerPed;
-                    var targets = core.CachedVehicles
-                        .Where(x => x.IsSafeExist()
-                                    && x.IsInRangeOf(player.Position, 80.0f)
-                                    && x != player.CurrentVehicle
-
-                        );
-                    var rate = (1.0f - ReduceCounter.Rate);
-                    foreach (var veh in targets)
-                    {
-                        if (!veh.IsSafeExist()) continue;
-                        veh.Quaternion = Quaternion.RotationAxis(Vector3.WorldUp, 1.0f * rate) * veh.Quaternion;
-                        if (rate > 0.5f)
-                        {
-                            veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
-                            veh.Speed = 40.0f * 2.0f * (rate - 0.5f);
-                        }
-                    }
-                });
+            MainLoopAsync(ActiveCancellationToken).Forget();
         }
 
-        protected override void OnFinished()
+        async ValueTask MainLoopAsync(CancellationToken ct)
         {
-            mainStream?.Dispose();
+            while (!ct.IsCancellationRequested)
+            {
+                var player = core.PlayerPed;
+                var targets = core.CachedVehicles
+                    .Where(x => x.IsSafeExist()
+                                && x.IsInRangeOf(player.Position, 80.0f)
+                    );
+                var rate = 1.0f - ReduceCounter.Rate;
+                foreach (var veh in targets)
+                {
+                    if (!veh.IsSafeExist())
+                    {
+                        continue;
+                    }
+
+                    if (player.CurrentVehicle == veh)
+                    {
+                        continue;
+                    }
+
+
+                    var angle = (veh.Handle % 3) switch
+                    {
+                        0 => Vector3.WorldUp,
+                        1 => Vector3.RelativeRight,
+                        2 => Vector3.RelativeFront,
+                        _ => Vector3.WorldUp
+                    };
+
+                    veh.Quaternion = Quaternion.RotationAxis(angle, 1.0f * rate) * veh.Quaternion;
+                    if (rate > 0.5f)
+                    {
+                        veh.ApplyForce(Vector3.WorldUp * 2.0f * rate);
+                        veh.SetForwardSpeed(40.0f * 2.0f * (rate - 0.5f));
+                    }
+                }
+
+                await YieldAsync(ct);
+            }
         }
     }
 }

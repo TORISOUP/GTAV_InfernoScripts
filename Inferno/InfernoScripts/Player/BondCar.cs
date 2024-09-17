@@ -1,25 +1,114 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.Utilities;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Player
 {
-    class BondCar : InfernoScript
+    internal class BondCar : InfernoScript
     {
+        protected override void Setup()
+        {
+            config = LoadConfig<BondCarConfig>();
+
+            CreateInputKeywordAsObservable("bond")
+                .Subscribe(_ =>
+                {
+                    IsActive = !IsActive;
+                    DrawText("BondCar:" + IsActive);
+                });
+
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
+            OnTickAsObservable
+                .Where(_ => IsActive)
+                .Where(_ =>
+                    PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle() &&
+                    Game.IsControlPressed(Control.VehicleAim) && Game.IsControlPressed(Control.VehicleAttack) &&
+                    PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
+                )
+                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScheduler)
+                .Subscribe(_ => Shoot());
+
+            CreateTickAsObservable(TimeSpan.FromSeconds(1))
+                .Where(_ => IsActive)
+                .Select(_ => PlayerPed.IsInVehicle())
+                .DistinctUntilChanged()
+                .Where(x => x)
+                .Subscribe(_ => { PlayerPed.Weapons.Select(WeaponHash.Unarmed, true); });
+        }
+
+        private void Shoot()
+        {
+            var v = PlayerPed.CurrentVehicle;
+            if (!v.IsSafeExist())
+            {
+                return;
+            }
+
+            //そこら辺の市民のせいにする
+            var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
+            InvincibleVehicleAsync(v, DestroyCancellationToken).Forget();
+            CreateRpgBullet(v, ped, 1.5f);
+            CreateRpgBullet(v, ped, -1.5f);
+            v.EngineHealth *= 0.9f;
+        }
+
+        private void CreateRpgBullet(Vehicle vehicle, Ped ped, float rightOffset)
+        {
+            var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 0, 0.2f);
+            var target = vehicle.GetOffsetFromEntityInWorldCoords(0, 1000, 0.2f);
+
+            Function.Call(
+                Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
+                startPosition.X,
+                startPosition.Y,
+                startPosition.Z,
+                target.X,
+                target.Y,
+                target.Z,
+                200,
+                1,
+                Weapon.VEHICLE_ROCKET,
+                0,
+                1,
+                0,
+                1000f);
+        }
+
+
+        private async ValueTask InvincibleVehicleAsync(Vehicle v, CancellationToken ct)
+        {
+            var lastValue = v.IsInvincible;
+            v.IsInvincible = true;
+            try
+            {
+                await DelaySecondsAsync(CoolDownMillSeconds / 1000f, ct);
+            }
+            finally
+            {
+                if (v.IsSafeExist())
+                {
+                    v.IsInvincible = lastValue;
+                }
+            }
+        }
+
         #region config
-        class BondCarConfig : InfernoConfig
+
+        [Serializable]
+        private class BondCarConfig : InfernoConfig
         {
             /// <summary>
             /// ミサイルの発射間隔[ms]
             /// </summary>
-            public int CoolDownMillSeconds { get; set; } = 500;
+            public int CoolDownMillSeconds = 500;
 
             public override bool Validate()
             {
@@ -32,54 +121,5 @@ namespace Inferno.InfernoScripts.Player
         private int CoolDownMillSeconds => config?.CoolDownMillSeconds ?? 500;
 
         #endregion
-
-        protected override void Setup()
-        {
-            config = LoadConfig<BondCarConfig>();
-
-            OnThinnedTickAsObservable
-                .Where(_ =>
-                    PlayerVehicle.Value.IsSafeExist()
-                    && this.IsGamePadPressed(GameKey.VehicleAim)
-                    && this.IsGamePadPressed(GameKey.VehicleAttack)
-                    && PlayerPed.Weapons.Current.Hash == WeaponHash.Unarmed
-                 )
-                .ThrottleFirst(TimeSpan.FromMilliseconds(CoolDownMillSeconds), InfernoScriptScheduler)
-                .Subscribe(_ =>
-                {
-                    var v = PlayerVehicle.Value;
-                    //そこら辺の市民のせいにする
-                    var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
-                    StartCoroutine(InvincibleVehicle(v, 2));
-                    CreateRpgBullet(v, ped, 1.5f);
-                    CreateRpgBullet(v, ped, -1.5f);
-                    v.EngineHealth *= 0.9f;
-                });
-        }
-
-        private void CreateRpgBullet(Vehicle vehicle, Ped ped, float rightOffset)
-        {
-            var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 4, 0.2f);
-            var target = vehicle.GetOffsetFromEntityInWorldCoords(0, 1000, 0.2f);
-
-            NativeFunctions.ShootSingleBulletBetweenCoords(
-                startPosition, target, 100, WeaponHash.RPG, ped, 500);
-        }
-
-        private IEnumerable<object> InvincibleVehicle(Vehicle v, float sec)
-        {
-
-            foreach (var c in WaitForSeconds(sec))
-            {
-                if (v.IsSafeExist())
-                {
-                    v.IsInvincible = true;
-                }
-                yield return null;
-            }
-
-            if (!v.IsSafeExist()) yield break;
-            v.IsInvincible = false;
-        }
     }
 }

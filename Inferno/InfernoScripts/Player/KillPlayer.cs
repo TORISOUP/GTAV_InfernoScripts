@@ -1,7 +1,6 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 using GTA.Math;
-using System;
-using UniRx;
 
 namespace Inferno
 {

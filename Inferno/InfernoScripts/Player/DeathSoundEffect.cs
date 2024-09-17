@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-
 using System.Media;
-using UniRx;
+using System.Reactive.Linq;
 
 namespace Inferno
 {
@@ -21,15 +20,12 @@ namespace Inferno
 
             soundPlayer = new SoundPlayer();
             //音声ファイルロード完了時に再生する
-            soundPlayer.LoadCompleted += (sender, args) =>
-            {
-                soundPlayer.Play();
-            };
+            soundPlayer.LoadCompleted += (sender, args) => { soundPlayer.Play(); };
 
             //ファイルが存在した時のみ
             if (filePath.Length > 0)
-            {
                 //プレイヤが死亡したら再生
+            {
                 OnThinnedTickAsObservable
                     .Select(_ => PlayerPed)
                     .Where(p => p.IsSafeExist())
@@ -44,7 +40,7 @@ namespace Inferno
         {
             if (!Directory.Exists(targetPath))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();

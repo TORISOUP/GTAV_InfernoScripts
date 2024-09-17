@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Reactive.Linq;
 using GTA;
-using UniRx;
 
 namespace Inferno
 {
@@ -9,16 +9,15 @@ namespace Inferno
     /// </summary>
     public class PlayerRagdoll : InfernoScript
     {
-
         protected override void Setup()
         {
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
-                    .Where(_ => this.IsGamePadPressed(GameKey.Stealth) && this.IsGamePadPressed(GameKey.Jump))
-                    .Subscribe(_ =>
-                    {
-                        var playerChar = Game.Player;
-                        SetPlayerRagdoll(playerChar);
-                    });
+                .Where(_ => Game.IsControlPressed(Control.Duck) && Game.IsControlPressed(Control.Jump))
+                .Subscribe(_ =>
+                {
+                    var playerChar = Game.Player;
+                    SetPlayerRagdoll(playerChar);
+                });
         }
 
         private void SetPlayerRagdoll(Player PlayerChar)

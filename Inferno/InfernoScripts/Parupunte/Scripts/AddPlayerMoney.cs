@@ -8,11 +8,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         public AddPlayerMoney(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        public override void OnSetUp()
-        {
-        }
-
+        
         public override void OnStart()
         {
             Game.Player.Money += 20000;

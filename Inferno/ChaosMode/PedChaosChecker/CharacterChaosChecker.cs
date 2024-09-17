@@ -1,10 +1,17 @@
-﻿using GTA;
-using System;
+﻿using System;
+using GTA;
 
 namespace Inferno.ChaosMode
 {
     public class CharacterChaosChecker
     {
+        public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment,
+            bool isChangeMissonCharacterWeapon)
+        {
+            MissionCharacterTreatment = missionCharacterTreatment;
+            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
+        }
+
         /// <summary>
         /// ミッションキャラの武器を変更するか
         /// </summary>
@@ -15,11 +22,10 @@ namespace Inferno.ChaosMode
         /// </summary>
         public MissionCharacterTreatmentType MissionCharacterTreatment { get; set; }
 
-        public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment, bool isChangeMissonCharacterWeapon)
-        {
-            MissionCharacterTreatment = missionCharacterTreatment;
-            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
-        }
+        /// <summary>
+        /// 攻撃を避けるべき対象群
+        /// </summary>
+        public Entity[] AvoidAttackEntities { get; set; } = Array.Empty<Entity>();
 
         /// <summary>
         /// カオス化対象であるか
@@ -28,7 +34,27 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化して良い</returns>
         public bool IsPedChaosAvailable(Ped ped)
         {
-            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() && IsChaosableMissionCharacter(ped);
+            return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer && !ped.IsNotChaosPed() &&
+                   IsRiotableMissionCharacter(ped) && !IsPedNearAvoidAttackEntities(ped);
+        }
+
+        public bool IsPedNearAvoidAttackEntities(Ped ped)
+        {
+            foreach (var avoidAttackEntity in AvoidAttackEntities)
+            {
+                if (!avoidAttackEntity.IsSafeExist())
+                {
+                    continue;
+                }
+
+                // 対象者の近くにいる
+                if (avoidAttackEntity.Position.DistanceTo(ped.Position) < 5.0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -39,7 +65,7 @@ namespace Inferno.ChaosMode
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer
-                && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
+                   && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
         }
 
         /// <summary>
@@ -53,15 +79,22 @@ namespace Inferno.ChaosMode
         }
 
         /// <summary>
-        /// 対象の市民がミッションキャラだった時にカオス化してよいか判定する
+        /// カオスモードの対象として選出して良いEntityであるかどうか
         /// </summary>
-        /// <param name="ped">市民</param>
+        /// <param name="entity">市民</param>
         /// <returns>trueでカオス化</returns>
-        private bool IsChaosableMissionCharacter(Entity ped)
+        private bool IsRiotableMissionCharacter(Entity entity)
         {
-            if (!ped.IsSafeExist()) return false;
+            if (!entity.IsSafeExist())
+            {
+                return false;
+            }
+
             //ミッションキャラじゃないならtrue
-            if (!ped.IsRequiredForMission()) return true;
+            if (!entity.IsRequiredForMission())
+            {
+                return true;
+            }
 
             switch (MissionCharacterTreatment)
             {
@@ -69,13 +102,39 @@ namespace Inferno.ChaosMode
                     return true;
 
                 case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
-                    return !IsUniqueCharacter((uint)ped.Model.Hash); //ユニークキャラじゃないならカオス化
+                {
+                    if (!IsUniqueCharacter((uint)entity.Model.Hash))
+                    {
+                        return true;
+                    }
+
+                    if (entity is Ped p)
+                    {
+                        return p.IsPedEnemy();
+                    }
+
+                    return false;
+                }
                 case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
                     return false;
 
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// 攻撃を加えて良いEntityであるかどうか
+        /// </summary>
+        public bool IsAttackableEntity(Entity entity)
+        {
+            if (Game.Player.Character == entity)
+            {
+                return true;
+            }
+
+            // カオス化して良い判定と条件は今のところ同じ
+            return IsRiotableMissionCharacter(entity);
         }
 
         private enum UniqueCharacters : uint

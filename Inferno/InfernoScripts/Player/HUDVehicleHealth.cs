@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reactive.Linq;
 using GTA;
 using GTA.Native;
-using UniRx;
+using GTA.UI;
 
 namespace Inferno
 {
     /// <summary>
     /// 乗り物の体力表示
     /// </summary>
-    class HUDVehicleHealth : InfernoScript
+    internal class HUDVehicleHealth : InfernoScript
     {
-
-        private UIContainer _mContainer = null;
+        private ContainerElement _mContainer;
         private int _screenHeight;
         private int _screenWidth;
 
@@ -25,7 +21,7 @@ namespace Inferno
             var screenResolution = NativeFunctions.GetScreenResolution();
             _screenHeight = (int)screenResolution.Y;
             _screenWidth = (int)screenResolution.X;
-            _mContainer = new UIContainer(new Point(0, 0), new Size(_screenWidth, _screenHeight));
+            _mContainer = new ContainerElement(new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
             OnDrawingTickAsObservable
                 .Where(_ => this.GetPlayerVehicle().IsSafeExist() && PlayerPed.IsAlive)
@@ -43,7 +39,10 @@ namespace Inferno
         private void GetVehicleHealth()
         {
             var vheicle = this.GetPlayerVehicle();
-            if(!vheicle.IsSafeExist()) return;
+            if (!vheicle.IsSafeExist())
+            {
+                return;
+            }
 
             var bodyHealth = vheicle.BodyHealth;
             var engineHealth = vheicle.EngineHealth;
@@ -62,9 +61,12 @@ namespace Inferno
             var barXPosition = 550 - (int)(545 * safeZoneSize);
             var barYPosition = 240 + (int)(315 * safeZoneSize);
 
-            DrawHealthBar(vheiclePetrolTankHealth, 1000.0f, new Point(barXPosition, barYPosition), petrolTankHealthColor);
-            DrawHealthBar(bodyHealth, 1000.0f, new Point(barXPosition, barYPosition + 10), Color.FromArgb(200, 0, 128, 200));
-            DrawHealthBar(engineHealth, 1000.0f, new Point(barXPosition, barYPosition + 20), Color.FromArgb(200, 128, 200, 0));
+            DrawHealthBar(vheiclePetrolTankHealth, 1000.0f, new Point(barXPosition, barYPosition),
+                petrolTankHealthColor);
+            DrawHealthBar(bodyHealth, 1000.0f, new Point(barXPosition, barYPosition + 10),
+                Color.FromArgb(200, 0, 128, 200));
+            DrawHealthBar(engineHealth, 1000.0f, new Point(barXPosition, barYPosition + 20),
+                Color.FromArgb(200, 128, 200, 0));
         }
 
         /// <summary>
@@ -84,8 +86,8 @@ namespace Inferno
             var barSize = default(Size);
             var backGroundColor = Color.FromArgb(128, 0, 0, 0);
 
-            var t = Function.Call<float>(Hash._GET_SCREEN_ASPECT_RATIO, true);
-            width = (int)(width + (width*(1.75f - t)));
+            var t = Function.Call<float>(Hash.GET_ASPECT_RATIO, true);
+            width = (int)(width + width * (1.75f - t));
 
             if (health > maxHealth)
             {
@@ -93,7 +95,11 @@ namespace Inferno
             }
 
             barLength = (int)(width * (health / maxHealth));
-            if (barLength < 0) barLength = 0;
+            if (barLength < 0)
+            {
+                barLength = 0;
+            }
+
             barPosition = new Point(pos.X, pos.Y);
             barSize = new Size(barLength, height);
 

@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using Inferno.Utilities;
-using UniRx;
 
 namespace Inferno
 {
@@ -11,23 +14,8 @@ namespace Inferno
     /// </summary>
     public class EmergencyEscape : InfernoScript
     {
-        #region config
-
-        class EmergencyEscapeConf : InfernoConfig
-        {
-            public float EscapePower { get; set; } = 60.0f;
-            public float OpenParachutoSeconds { get; set; } = 1.5f;
-            public override bool Validate()
-            {
-                return true;
-            }
-        }
-
-        #endregion
-
         private EmergencyEscapeConf conf;
         private float EscapePower => conf?.EscapePower ?? 60.0f;
-        private float OpenParachutoSeconds => conf?.OpenParachutoSeconds ?? 1.5f;
         protected override string ConfigFileName { get; } = "EmergencyEscape.conf";
 
         protected override void Setup()
@@ -35,7 +23,7 @@ namespace Inferno
             conf = LoadConfig<EmergencyEscapeConf>();
 
             OnThinnedTickAsObservable
-                .Where(_ => this.IsGamePadPressed(GameKey.VehicleHorn) && this.IsGamePadPressed(GameKey.VehicleExit))
+                .Where(_ => Game.IsControlPressed(Control.VehicleHorn) && Game.IsControlPressed(Control.VehicleExit))
                 .Subscribe(_ => EscapeVehicle());
         }
 
@@ -43,27 +31,66 @@ namespace Inferno
         private void EscapeVehicle()
         {
             var player = PlayerPed;
-            if (!player.IsInVehicle()) return;
+            if (!player.IsInVehicle())
+            {
+                return;
+            }
+
             var playerVec = player.CurrentVehicle;
-            if (!playerVec.IsSafeExist()) return;
+            if (!playerVec.IsSafeExist())
+            {
+                return;
+            }
 
-            Game.Player.CanControlRagdoll = true;
-            player.CanRagdoll = true;
-
-            player.ClearTasksImmediately();
-            player.Position += new Vector3(0, 0, 0.5f);
-            player.SetToRagdoll();
-            player.ApplyForce(new Vector3(0, 0, EscapePower) + playerVec.Velocity, InfernoUtilities.CreateRandomVector() * 10.0f);
-
-            StartCoroutine(DelayParachute());
+            DelayParachuteAsync(PlayerPed, playerVec, DestroyCancellationToken).Forget();
         }
 
-        private IEnumerable<object> DelayParachute()
+        private async ValueTask DelayParachuteAsync(Ped player, Vehicle vec, CancellationToken ct)
         {
-            PlayerPed.IsInvincible = true;
-            yield return WaitForSeconds(OpenParachutoSeconds);
-            PlayerPed.IsInvincible = false;
-            PlayerPed.ParachuteTo(PlayerPed.Position);
+            try
+            {
+                Game.Player.CanControlRagdoll = true;
+                player.CanRagdoll = true;
+
+                player.Task.LeaveVehicle(vec, LeaveVehicleFlags.WarpOut);
+                await YieldAsync(ct);
+                player.Position += new Vector3(0, 0, 1.0f);
+                var shootPos = player.Position;
+                player.SetToRagdoll();
+                player.ApplyForce(new Vector3(0, 0, EscapePower) + vec.Velocity,
+                    Vector3.Zero, ForceType.MaxForceRot);
+
+                player.IsInvincible = true;
+                await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
+
+                // 発射位置より高い位置にいる場合はパラシュートを開く
+                if (player.Position.Z > shootPos.Z)
+                {
+                    player.ParachuteTo(player.Position);
+                }
+            }
+            finally
+            {
+                if (PlayerPed.IsSafeExist())
+                {
+                    PlayerPed.IsInvincible = false;
+                }
+            }
         }
+
+        #region config
+
+        [Serializable]
+        private class EmergencyEscapeConf : InfernoConfig
+        {
+            public float EscapePower = 60.0f;
+
+            public override bool Validate()
+            {
+                return true;
+            }
+        }
+
+        #endregion
     }
 }

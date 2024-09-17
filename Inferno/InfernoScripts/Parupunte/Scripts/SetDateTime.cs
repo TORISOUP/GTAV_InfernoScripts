@@ -1,5 +1,5 @@
-﻿using GTA.Native;
-using System;
+﻿using System;
+using GTA.Native;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -21,14 +21,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
-            Random random = new Random();
+            var random = new Random();
             hour = random.Next(0, 23);
-            name = hour.ToString() + "時かな";
+            name = hour + "時かな";
         }
 
         public override void OnStart()
         {
-            var dayTime = GTA.World.CurrentDayTime;
+            var dayTime = GTA.World.CurrentTimeOfDay;
             Function.Call(Hash.SET_CLOCK_TIME, hour, dayTime.Minutes, dayTime.Seconds);
             ParupunteEnd();
         }

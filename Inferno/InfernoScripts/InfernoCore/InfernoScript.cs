@@ -1,15 +1,19 @@
-﻿using GTA;
-using Inferno.Utilities;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using GTA;
 using Inferno.InfernoScripts.Event;
-using Inferno.InfernoScripts.InfernoCore.Coroutine;
-using UniRx;
+using Inferno.Utilities;
+using Inferno.Utilities.Awaiters;
+using Reactive.Bindings;
 
 namespace Inferno
 {
@@ -18,21 +22,251 @@ namespace Inferno
     /// </summary>
     public abstract class InfernoScript : Script
     {
-        protected Random Random = new Random();
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
+        private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
 
-        private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new ReactiveProperty<bool>(false);
+        private readonly List<StepAwaiter> _stepAwaiters = new(8);
+        private readonly List<TimeAwaiter> _timeAwaiters = new(8);
+        protected readonly Random Random = new();
+        private CancellationTokenSource _activationCancellationTokenSource;
+        private readonly CancellationTokenSource _destroyCancellationTokenSource = new();
+        private CancellationTokenSource _linkedCancellationTokenSource;
+
+        private InfernoSynchronizationContext _infernoSynchronizationContext;
+        private InfernoScheduler infernoScheduler;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        protected InfernoScript()
+        {
+            // 毎フレーム実行
+            Interval = 0;
+
+            // StepAwaiterの初期化
+            for (var i = 0; i < 4; i++)
+            {
+                _stepAwaiters.Add(new StepAwaiter());
+            }
+
+            // TimeAwaiterの初期化
+            for (var i = 0; i < 4; i++)
+            {
+                _timeAwaiters.Add(new TimeAwaiter());
+            }
+
+            //初期化をちょっと遅延させる
+            Observable.Interval(TimeSpan.FromMilliseconds(10))
+                .Where(_ => InfernoCore.Instance != null)
+                .Take(1)
+                .TakeUntil(_disposeSubject)
+                .Subscribe(_ =>
+                {
+                    InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
+                    InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
+                })
+                .AddTo(CompositeDisposable);
+
+            OnTickAsObservable =
+                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                    .Select(_ => Unit.Default)
+                    .TakeUntil(_disposeSubject)
+                    .Publish()
+                    .RefCount(); //Subscribeされたらイベントハンドラを登録する
+
+            OnThinnedTickAsObservable =
+                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScheduler)
+                    .Publish()
+                    .RefCount();
+
+            OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
+
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+
+            //スケジューラなどの定期実行系
+            OnTickAsObservable.Subscribe(_ =>
+                {
+                    FrameCount++;
+                    DeltaTime = Game.LastFrameTime;
+                    ElapsedTime += DeltaTime;
+
+                    try
+                    {
+                        if (_counterList.Any())
+                        {
+                            foreach (var c in _counterList)
+                            {
+                                c.Update((int)(DeltaTime * 1000));
+                            }
+
+                            //完了状態にあるタイマを全て削除
+                            _counterList.RemoveAll(x => x.IsCompleted);
+                        }
+                    }
+                    catch
+                    {
+                        //
+                    }
+
+
+                    try
+                    {
+                        infernoScheduler?.Run();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        InfernoSynchronizationContext.Update();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        lock (_stepAwaiters)
+                        {
+                            foreach (var stepAwaiter in _stepAwaiters)
+                            {
+                                if (stepAwaiter is { IsActive: true })
+                                {
+                                    stepAwaiter.Step();
+                                }
+                            }
+
+                            foreach (var stepAwaiter in _stepAwaiters)
+                            {
+                                if (stepAwaiter is { IsActive: true })
+                                {
+                                    stepAwaiter.Check();
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    try
+                    {
+                        lock (_timeAwaiters)
+                        {
+                            foreach (var timeAwaiter in _timeAwaiters)
+                            {
+                                if (timeAwaiter is { IsActive: true })
+                                {
+                                    timeAwaiter.Step(DeltaTime);
+                                }
+                            }
+
+                            foreach (var timeAwaiter in _timeAwaiters)
+                            {
+                                if (timeAwaiter is { IsActive: true })
+                                {
+                                    timeAwaiter.Check();
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                })
+                .AddTo(CompositeDisposable);
+            
+            OnAbortAsync.Subscribe(_ =>
+                {
+                    Destroy();
+                    IsActive = false;
+                    foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
+                    {
+                        e.MarkAsNoLongerNeeded();
+                    }
+
+                    _autoReleaseEntities.Clear();
+                })
+                .AddTo(CompositeDisposable);
+            ;
+
+            // Setupは最初のTickタイミングまで遅らせる
+            // OnTickAsObservableとは独立させて実行しないとイベント登録順で
+            // 怪しい挙動をする可能性がある
+            Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                .Select(_ => Unit.Default)
+                .Take(1)
+                .Subscribe(_ =>
+                {
+                    try
+                    {
+                        // SynchronizationContextはこのタイミングで設定しないといけない
+                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
+                        Setup();
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.ToString());
+                    }
+                })
+                .AddTo(CompositeDisposable);
+        }
+
+        protected CompositeDisposable CompositeDisposable { get; } = new();
 
         protected virtual string ConfigFileName => null;
 
-        private InfernoScheduler infernoScheduler;
+        public ulong FrameCount { get; private set; }
+        public float ElapsedTime { get; private set; }
 
-        private InfernoSynchronizationContext _infernoSynchronizationContext;
+        public float DeltaTime { get; private set; }
 
-        protected InfernoSynchronizationContext InfernoSynchronizationContext
-            => _infernoSynchronizationContext ?? (_infernoSynchronizationContext = new InfernoSynchronizationContext());
+        private InfernoSynchronizationContext InfernoSynchronizationContext
+            => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
-        protected IScheduler InfernoScriptScheduler
-            => infernoScheduler ?? (infernoScheduler = new InfernoScheduler());
+        public IScheduler InfernoScheduler
+            => infernoScheduler ??= new InfernoScheduler();
+
+        /// <summary>
+        /// スクリプトが動作中であるか
+        /// </summary>
+        protected bool IsActive
+        {
+            get => _isActiveReactiveProperty.Value;
+            set
+            {
+                if (!value)
+                {
+                    try
+                    {
+                        _linkedCancellationTokenSource?.Cancel();
+                        _linkedCancellationTokenSource?.Dispose();
+                        _linkedCancellationTokenSource = null;
+                        _activationCancellationTokenSource?.Cancel();
+                        _activationCancellationTokenSource?.Dispose();
+                        _activationCancellationTokenSource = null;
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+
+                _isActiveReactiveProperty.Value = value;
+            }
+        }
+
+        /// <summary>
+        /// IsActiveが変化したことを通知する
+        /// </summary>
+        protected IObservable<bool> IsActiveAsObservable =>
+            _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -51,19 +285,183 @@ namespace Inferno
         }
 
         /// <summary>
-        /// スクリプトが動作中であるか
+        /// 初期化処理はここに書く
         /// </summary>
-        protected bool IsActive
+        protected abstract void Setup();
+
+        protected virtual void Destroy()
         {
-            get { return _isActiveReactiveProperty.Value; }
-            set { _isActiveReactiveProperty.Value = value; }
+            try
+            {
+                CompositeDisposable.Dispose();
+                _disposeSubject.OnNext(Unit.Default);
+                _disposeSubject.OnCompleted();
+                _disposeSubject.Dispose();
+                _destroyCancellationTokenSource.Cancel();
+                _destroyCancellationTokenSource.Dispose();
+                _activationCancellationTokenSource?.Cancel();
+                _activationCancellationTokenSource?.Dispose();
+                _activationCancellationTokenSource = null;
+                lock (_stepAwaiters)
+                {
+                    foreach (var stepAwaiter in _stepAwaiters)
+                    {
+                        stepAwaiter?.Dispose();
+                    }
+
+                    _stepAwaiters.Clear();
+                }
+
+                lock (_timeAwaiters)
+                {
+                    foreach (var timeAwaiter in _timeAwaiters)
+                    {
+                        timeAwaiter?.Dispose();
+                    }
+
+                    _timeAwaiters.Clear();
+                }
+            }
+            catch
+            {
+                //
+            }
         }
 
+        #region forTaks
+
+        protected async ValueTask DelaySecondsAsync(float seconds, CancellationToken ct = default)
+        {
+            await DelayAsync(TimeSpan.FromSeconds(seconds), ct);
+        }
+
+        protected async ValueTask DelayAsync(TimeSpan timeSpan, CancellationToken ct = default)
+        {
+            TimeAwaiter timeAwaiter;
+            lock (_timeAwaiters)
+            {
+                // 使用可能なStepAwaiterを探す
+                timeAwaiter = _timeAwaiters.FirstOrDefault(x => !x.IsActive);
+                // 存在しなければ新規作成
+                if (timeAwaiter == null)
+                {
+                    timeAwaiter = new TimeAwaiter();
+                    _timeAwaiters.Add(timeAwaiter);
+                }
+
+                timeAwaiter.Reset(timeSpan, ct);
+            }
+
+            try
+            {
+                await timeAwaiter;
+                ct.ThrowIfCancellationRequested();
+            }
+            finally
+            {
+                timeAwaiter.Release();
+            }
+        }
+
+        protected async ValueTask DelayFrameAsync(int frame, CancellationToken ct = default)
+        {
+            StepAwaiter stepAwaiter;
+            lock (_stepAwaiters)
+            {
+                // 使用可能なStepAwaiterを探す
+                stepAwaiter = _stepAwaiters.FirstOrDefault(x => !x.IsActive);
+                // 存在しなければ新規作成
+                if (stepAwaiter == null)
+                {
+                    stepAwaiter = new StepAwaiter();
+                    _stepAwaiters.Add(stepAwaiter);
+                }
+
+                stepAwaiter.Reset(frame, ct);
+            }
+
+            try
+            {
+                await stepAwaiter;
+                ct.ThrowIfCancellationRequested();
+            }
+            finally
+            {
+                stepAwaiter.Release();
+            }
+        }
+
+        protected ValueTask YieldAsync(CancellationToken ct = default)
+        {
+            return DelayFrameAsync(1, ct);
+        }
+
+        protected ValueTask DelayRandomFrameAsync(int min, int max, CancellationToken ct)
+        {
+            var waitLoopCount = Random.Next(min, max);
+            return DelayFrameAsync(waitLoopCount, ct);
+        }
+
+        protected ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
+        {
+            var waitSeconds = Random.NextDouble() * (max - min) + min;
+            return DelayAsync(TimeSpan.FromSeconds(waitSeconds), ct);
+        }
+
+
+        protected CancellationToken ActivationCancellationToken
+        {
+            get
+            {
+                if (!IsActive)
+                {
+                    throw new Exception("Script is not active.");
+                }
+
+                if (_linkedCancellationTokenSource != null)
+                {
+                    return _linkedCancellationTokenSource.Token;
+                }
+
+                _activationCancellationTokenSource ??= new CancellationTokenSource();
+
+                var at = _activationCancellationTokenSource.Token;
+                _linkedCancellationTokenSource =
+                    CancellationTokenSource.CreateLinkedTokenSource(at, _destroyCancellationTokenSource.Token);
+
+                return _linkedCancellationTokenSource.Token;
+            }
+        }
+
+        protected CancellationToken DestroyCancellationToken => _destroyCancellationTokenSource.Token;
+
+        #endregion
+
+        #region Debug
+
         /// <summary>
-        /// IsActiveが変化したことを通知する
+        /// ログを吐く
         /// </summary>
-        protected UniRx.IObservable<bool> IsActiveAsObservable =>
-            _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+        /// <param name="message">ログメッセージ</param>
+        public void LogWrite(string message, bool stackTrace = false)
+        {
+            InfernoCore.Instance.LogWrite(message + "\n");
+            if (stackTrace)
+            {
+                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            }
+        }
+
+        public void LogWrite(object message, bool stackTrace = false)
+        {
+            InfernoCore.Instance.LogWrite(message + "\n");
+            if (stackTrace)
+            {
+                InfernoCore.Instance.LogWrite(Environment.StackTrace + "\n");
+            }
+        }
+
+        #endregion Debug
 
         #region Chace
 
@@ -73,18 +471,25 @@ namespace Inferno
         public Ped PlayerPed => cahcedPlayerPed ?? Game.Player.Character;
 
         private Ped cahcedPlayerPed;
-        public readonly ReactiveProperty<Vehicle> PlayerVehicle = new ReactiveProperty<Vehicle>();
+        public readonly ReactiveProperty<Vehicle> PlayerVehicle = new();
 
 
         /// <summary>
         /// キャッシュされたプレイヤ周辺の市民
         /// </summary>
         public Ped[] CachedPeds => InfernoCore.Instance.PedsNearPlayer.Value;
-        
+
         /// <summary>
         /// キャッシュされたプレイヤ周辺の車両
         /// </summary>
-        public Vehicle[] CachedVehicles => InfernoCore.Instance.VehicleNearPlayer.Value;
+        public Vehicle[] CachedVehicles => InfernoCore.Instance.VehiclesNearPlayer.Value;
+
+        public Entity[] CachedEntities => InfernoCore.Instance.EntitiesNearPlayer.Value;
+
+        /// <summary>
+        /// Not thread safe.
+        /// </summary>
+        protected IReadOnlyReactiveProperty<Entity[]> CachedMissionEntities => InfernoCore.Instance.MissionEntities;
 
         #endregion Chace
 
@@ -93,49 +498,54 @@ namespace Inferno
         /// <summary>
         /// 100ms間隔のTickイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnThinnedTickAsObservable { get; private set; }
+        public IObservable<Unit> OnThinnedTickAsObservable { get; }
 
         /// <summary>
         /// たぶん16msごとに実行されるイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnTickAsObservable { get; private set; }
+        public IObservable<Unit> OnTickAsObservable { get; }
 
         /// <summary>
         /// 描画用のTickイベント
         /// </summary>
-        public UniRx.IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
+        public IObservable<Unit> OnDrawingTickAsObservable { get; private set; }
 
-        private UniRx.IObservable<KeyEventArgs> _onKeyDownAsObservable;
+        private IObservable<KeyEventArgs> _onKeyDownAsObservable;
 
-        public UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable
+        public IObservable<KeyEventArgs> OnKeyDownAsObservable
         {
             get
             {
-                if (_onKeyDownAsObservable != null) return _onKeyDownAsObservable;
+                if (_onKeyDownAsObservable != null)
+                {
+                    return _onKeyDownAsObservable;
+                }
+
                 _onKeyDownAsObservable =
                     Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
                             h => KeyDown -= h)
                         .Select(e => e.EventArgs)
+                        .TakeUntil(_disposeSubject)
                         .Publish()
                         .RefCount();
                 return _onKeyDownAsObservable;
             }
         }
 
-        public UniRx.IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
 
         /// <summary>
         /// InfernoEvent
         /// </summary>
-        protected UniRx.IObservable<IEventMessage> OnRecievedInfernoEvent
-            => InfernoCore.OnRecievedEventMessage.ObserveOn(InfernoScriptScheduler);
+        protected IObservable<IEventMessage> OnReceivedInfernoEvent
+            => InfernoCore.OnReceivedEventMessage.ObserveOn(InfernoScheduler);
 
         /// <summary>
         /// 入力文字列に応じて反応するIObservableを生成する
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
+        protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
         {
             if (string.IsNullOrEmpty(keyword))
             {
@@ -148,8 +558,9 @@ namespace Inferno
                 .Select(x => x.Aggregate((p, c) => p + c))
                 .Where(x => x == keyword.ToUpper()) //入力文字列を比較
                 .Select(_ => Unit.Default)
-                .First()
+                .Take(1)
                 .Repeat() //1回動作したらBufferをクリア
+                .TakeUntil(_disposeSubject)
                 .Publish()
                 .RefCount();
         }
@@ -157,9 +568,9 @@ namespace Inferno
         /// <summary>
         /// 任意のTickObservableを生成する
         /// <returns></returns>
-        protected UniRx.IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
+        protected IObservable<Unit> CreateTickAsObservable(TimeSpan timeSpan)
         {
-            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScriptScheduler).Share();
+            return OnTickAsObservable.ThrottleFirst(timeSpan, InfernoScheduler).Publish().RefCount();
         }
 
         #endregion forEvents
@@ -169,7 +580,7 @@ namespace Inferno
         /// <summary>
         /// ゲーム中断時に自動開放する対象リスト
         /// </summary>
-        private List<Entity> _autoReleaseEntities = new List<Entity>();
+        private readonly List<Entity> _autoReleaseEntities = new();
 
         /// <summary>
         /// ゲーム中断時に自動開放する
@@ -181,69 +592,23 @@ namespace Inferno
             _autoReleaseEntities.Add(entity);
         }
 
-        private UniRx.IObservable<Unit> _onAbortObservable;
+        private IObservable<Unit> _onAbortObservable;
 
         /// <summary>
         /// ゲームが中断した時に実行される
         /// </summary>
-        protected UniRx.IObservable<Unit> OnAbortAsync
+        protected IObservable<Unit> OnAbortAsync
         {
             get
             {
-                return _onAbortObservable ??
-                       (_onAbortObservable =
-                           Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Aborted += h,
-                                   h => Aborted -= h)
-                               .AsUnitObservable());
+                return _onAbortObservable ??= Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke,
+                        h => Aborted += h,
+                        h => Aborted -= h)
+                    .Select(_ => Unit.Default);
             }
         }
 
         #endregion
-
-        #region forCoroutine
-
-        private CoroutinePool _coroutinePool;
-
-        protected uint StartCoroutine(IEnumerable<Object> coroutine)
-        {
-            return _coroutinePool.RegisterCoroutine(coroutine);
-        }
-
-        protected void StopCoroutine(uint id)
-        {
-            _coroutinePool.RemoveCoroutine(id);
-        }
-
-        protected void StopAllCoroutine()
-        {
-            _coroutinePool.RemoveAllCoroutine();
-        }
-
-
-        /// <summary>
-        /// 指定秒数待機するIEnumerable
-        /// </summary>
-        /// <param name="secound">秒</param>
-        /// <returns></returns>
-        protected IEnumerable WaitForSeconds(float secound)
-        {
-            return Awaitable.ToCoroutine(TimeSpan.FromSeconds(secound));
-        }
-
-        /// <summary>
-        /// 0-10回待機する
-        /// </summary>
-        /// <returns></returns>
-        protected IEnumerable RandomWait()
-        {
-            var waitLoopCount = Random.Next(0, 10);
-            for (var i = 0; i < waitLoopCount; i++)
-            {
-                yield return i;
-            }
-        }
-
-        #endregion forCoroutine
 
         #region forDraw
 
@@ -255,6 +620,11 @@ namespace Inferno
         public void DrawText(string text, float time = 3.0f)
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
+        }
+        
+        public void DrawText(object text, float time = 3.0f)
+        {
+            ToastTextDrawing.Instance.DrawDebugText(text.ToString(), time);
         }
 
         /// <summary>
@@ -269,7 +639,7 @@ namespace Inferno
 
         #region forTimer
 
-        private List<ICounter> _counterList = new List<ICounter>();
+        private readonly List<ICounter> _counterList = new();
 
         /// <summary>
         /// カウンタを登録して自動カウントさせる
@@ -281,110 +651,5 @@ namespace Inferno
         }
 
         #endregion forTimer
-
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        protected InfernoScript()
-        {
-            Interval = 16;
-
-            //初期化をちょっと遅延させる
-            Observable.Interval(TimeSpan.FromMilliseconds(10))
-                .Where(_ => InfernoCore.Instance != null)
-                .First()
-                .Subscribe(_ =>
-                {
-                    InfernoCore.Instance.PlayerPed.Subscribe(x => cahcedPlayerPed = x);
-                    InfernoCore.Instance.PlayerVehicle.Subscribe(x => PlayerVehicle.Value = x);
-                });
-
-            OnTickAsObservable =
-                Observable.FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                    .Select(_ => Unit.Default)
-                    .Share(); //Subscribeされたらイベントハンドラを登録する
-
-            OnThinnedTickAsObservable =
-                OnTickAsObservable.ThrottleFirst(TimeSpan.FromMilliseconds(100), InfernoScriptScheduler)
-                    .Share();
-
-            OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
-
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
-
-            //スケジューラ実行
-            OnTickAsObservable.Subscribe(_ => infernoScheduler?.Run());
-
-            // SynchronizationContextの実行
-            OnTickAsObservable
-                .Subscribe(_ =>
-                {
-                    if (SynchronizationContext.Current == null)
-                    {
-                        SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
-                    }
-
-                    InfernoSynchronizationContext.Update();
-                });
-
-            //タイマのカウント
-            OnThinnedTickAsObservable
-                .Where(_ => _counterList.Any())
-                .Subscribe(_ =>
-                {
-                    foreach (var c in _counterList)
-                    {
-                        c.Update(100);
-                    }
-
-                    //完了状態にあるタイマを全て削除
-                    _counterList.RemoveAll(x => x.IsCompleted);
-                });
-
-            _coroutinePool = new CoroutinePool(5);
-
-            //コルーチンを実行する
-            CreateTickAsObservable(TimeSpan.FromMilliseconds(_coroutinePool.ExpectExecutionInterbalMillSeconds))
-                .Subscribe(_ => _coroutinePool.Run());
-
-
-            OnAbortAsync.Subscribe(_ =>
-            {
-                IsActive = false;
-                foreach (var e in _autoReleaseEntities.Where(x => x.IsSafeExist()))
-                {
-                    e.MarkAsNoLongerNeeded();
-                }
-
-                _autoReleaseEntities.Clear();
-            });
-
-            try
-            {
-                Setup();
-            }
-            catch (Exception e)
-            {
-                LogWrite(e.ToString());
-            }
-        }
-
-        /// <summary>
-        /// 初期化処理はここに書く
-        /// </summary>
-        protected abstract void Setup();
-
-        #region Debug
-
-        /// <summary>
-        /// ログを吐く
-        /// </summary>
-        /// <param name="message">ログメッセージ</param>
-        public void LogWrite(string message)
-        {
-            InfernoCore.Instance.LogWrite(message + "\n");
-        }
-
-        #endregion Debug
     }
 }

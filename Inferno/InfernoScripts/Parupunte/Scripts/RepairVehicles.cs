@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
