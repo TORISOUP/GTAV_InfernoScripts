@@ -58,6 +58,9 @@
         <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="LemonUI.SHVDN3, Version=2.1.2.0, Culture=neutral, processorArchitecture=Amd64">
+          <HintPath>..\packages\LemonUI.SHVDN3.2.1.2\lib\net48\LemonUI.SHVDN3.dll</HintPath>
+        </Reference>
         <Reference Include="mscorlib"/>
         <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
             <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -112,6 +115,8 @@
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs"/>
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoHttpServer.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
         <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\Player\NoWanted.cs" />
