@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 using LemonUI.Menus;
+using Newtonsoft.Json;
 
 namespace Inferno
 {
     internal sealed class Meteor : InfernoScript
     {
         private bool IsPlayerMoveSlowly => PlayerPed.Velocity.Length() < 5.0f;
+
+        private bool _isDebug = false;
 
         protected override void Setup()
         {
@@ -26,8 +30,14 @@ namespace Inferno
                     DrawText("Meteor:" + IsActive);
                 });
 
-            IsActivePR.Where(x => x)
-                .Subscribe(_ => MeteorLoopAsync(ActivationCancellationToken).Forget());
+            IsActivePR
+                .Where(x => x)
+                .Subscribe(_ =>
+                {
+                    var m = new Model(WeaponHash.RPG);
+                    m.Request();
+                    MeteorLoopAsync(ActivationCancellationToken).Forget();
+                });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
@@ -36,7 +46,7 @@ namespace Inferno
         {
             while (!ct.IsCancellationRequested)
             {
-                if (Random.Next(0, 100) <= Probability)
+                if (Random.Next(0, 99) < Probability)
                 {
                     ShootMeteorAsync(ct).Forget();
                 }
@@ -70,7 +80,7 @@ namespace Inferno
                 //たまに花火
                 var weapon = Random.Next(0, 100) < 3
                     ? Weapon.Firework
-                    : Weapon.VEHICLE_ROCKET;
+                    : Weapon.RPG;
 
                 //　マーカー描画
                 CreateMeteorMarkerAsync(targetPosition, 3.0f, ActivationCancellationToken).Forget();
@@ -106,8 +116,8 @@ namespace Inferno
 
                 var addPosition =
                     IsPlayerMoveSlowly
-                        ? new Vector3(0, 0, 0).Around(RandomFloat(5, range))
-                        : new Vector3(0, 0, 0).Around(RandomFloat(0, range));
+                        ? new Vector3(0, 0, 0).Around(Random.RandomFloat(5, range))
+                        : new Vector3(0, 0, 0).Around(Random.RandomFloat(0, range));
 
                 var targetPosition = centerPosition + addPosition;
 
@@ -151,13 +161,13 @@ namespace Inferno
                 var playerSpeed = PlayerPed.Velocity.Length();
 
                 // プレイヤーの移動速度に応じてmarkerThresholdを変える
-                var markerThreshold = 30 * Clamp(playerSpeed / 30f, 0, 1) + 20;
+                var markerThreshold = 30 * (playerSpeed / 30f).Clamp(0f, 1f) + 20;
 
                 var lenght = (PlayerPed.Position - position).Length();
                 // マーカー描画範囲内
                 if (lenght <= markerThreshold)
                 {
-                    var alpha = 150 * Clamp((markerThreshold - lenght) / markerThreshold, 0, 1f);
+                    var alpha = 150 * ((markerThreshold - lenght) / markerThreshold).Clamp(0, 1f);
 
                     Function.Call(Hash.DRAW_MARKER,
                         markerType, // markerType
@@ -176,53 +186,116 @@ namespace Inferno
             }
         }
 
-        private float RandomFloat(float min, float max)
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => "Meteor";
+
+        public override bool CanChangeActive => true;
+
+        public override void OnUiMenuConstruct(NativeMenu menu)
         {
-            return (float)Random.NextDouble() * (max - min) + min;
+            // 落下範囲
+            {
+                var radiusItem =
+                    new NativeSliderItem($"Range {_config.Radius}[m]", "Meteor fall range", 100, _config.Radius)
+                    {
+                        Multiplier = 5
+                    };
+
+                radiusItem.ValueChanged += (_, _) =>
+                {
+                    radiusItem.Title = $"Range {radiusItem.Value}[m]";
+                    _config.Radius = radiusItem.Value;
+                };
+                menu.Add(radiusItem);
+            }
+
+            // 落下間隔
+            {
+                var durationItem =
+                    new NativeSliderItem($"Duration {_config.DurationMillSeconds}[ms]", "Meteor fall duration", 10000,
+                        _config.DurationMillSeconds)
+                    {
+                        Multiplier = 100
+                    };
+
+                durationItem.ValueChanged += (_, _) =>
+                {
+                    durationItem.Title = $"Duration {durationItem.Value}[ms]";
+                    _config.DurationMillSeconds = durationItem.Value;
+                };
+                menu.Add(durationItem);
+            }
+
+            // 落下確率
+            {
+                var probabilityItem =
+                    new NativeSliderItem($"Probability {_config.Probability}[%]", "Meteor fall probability", 100,
+                        _config.Probability)
+                    {
+                        Multiplier = 5
+                    };
+
+                probabilityItem.ValueChanged += (_, _) =>
+                {
+                    probabilityItem.Title = $"Probability {probabilityItem.Value}[%]";
+                    _config.Probability = probabilityItem.Value;
+                };
+                menu.Add(probabilityItem);
+            }
+            
+            // Debug
+            {
+                var debugItem = new NativeCheckboxItem("Debug", _isDebug);
+                debugItem.CheckboxChanged += (_, e) => _isDebug = debugItem.Checked;
+                menu.Add(debugItem);
+            }
         }
 
-        private static float Clamp(float value, float min, float max)
-        {
-            return Math.Max(min, Math.Min(max, value));
-        }
+        #endregion
 
         #region config
 
-        [Serializable]
         public class MeteorConfig : InfernoConfig
         {
             /// <summary>
             /// メテオ落下の最小範囲[m]
             /// </summary>
-            public int Radius = 30;
+            [JsonProperty("Radius")]
+            public int Radius
+            {
+                get => _radius;
+                set => _radius = value.Clamp(0, 100);
+            }
 
             /// <summary>
             /// メテオを落下させるのかの判定頻度[ms]
             /// </summary>
-            public int DurationMillSeconds = 1000;
+            [JsonProperty("DurationMillSeconds")]
+            public int DurationMillSeconds
+            {
+                get => _durationMillSeconds;
+                set => _durationMillSeconds = value.Clamp(100, 10000);
+            }
 
             /// <summary>
             /// メテオを落下させる確率
             /// </summary>
-            public int Probability = 40;
+            [JsonProperty("Probability")]
+            public int Probability
+            {
+                get => _probability;
+                set => _probability = value.Clamp(0, 100);
+            }
+
+            private int _radius = 30;
+            private int _durationMillSeconds = 1000;
+            private int _probability = 40;
 
             public override bool Validate()
             {
-                if (Radius <= 0)
-                {
-                    return false;
-                }
-
-                if (DurationMillSeconds <= 0)
-                {
-                    return false;
-                }
-
-                if (Probability <= 0 || Probability > 100)
-                {
-                    return false;
-                }
-
+                
                 return true;
             }
 
@@ -240,12 +313,5 @@ namespace Inferno
         private int Probability => _config?.Probability ?? 25;
 
         #endregion
-
-        public bool CanChangeActive => true;
-        public bool NeedSubMenu => true;
-
-        public void OnUiMenuConstruct(NativeMenu menu)
-        {
-        }
     }
 }

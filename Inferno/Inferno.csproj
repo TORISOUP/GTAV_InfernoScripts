@@ -232,6 +232,7 @@
         <Compile Include="Utilities\InfernoScheduler.cs" />
         <Compile Include="Utilities\InfernoSynchronizationContext.cs" />
         <Compile Include="Utilities\InfernoUtilities.cs" />
+        <Compile Include="Utilities\MathI.cs" />
         <Compile Include="Utilities\PriorityQueue.cs" />
         <Compile Include="Utilities\RequestDataPackage.cs" />
         <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />

@@ -50,31 +50,18 @@ namespace Inferno
                     }
 
                     string damageName = null;
-                    if (damageWeapon == Weapon.VEHICLE_ROCKET)
+
+                    // damageWeaponがWeapon内に定義されているか
+                    if (Enum.IsDefined(typeof(Weapon), damageWeapon))
                     {
-                        var killer = PlayerPed.Killer;
-                        if (killer.IsSafeExist())
-                        {
-                            damageName = damageWeapon.ToString();
-                        }
-                        else
-                        {
-                            damageName = "Meteor Strike";
-                        }
+                        damageName = damageWeapon.ToString();
                     }
                     else
                     {
-                        // damageWeaponがWeapon内に定義されているか
-                        if (Enum.IsDefined(typeof(Weapon), damageWeapon))
-                        {
-                            damageName = damageWeapon.ToString();
-                        }
-                        else
-                        {
-                            //定義されていない場合はWeaponHashとして表示
-                            damageName = ((WeaponHash)damageWeapon).ToString();
-                        }
+                        //定義されていない場合はWeaponHashとして表示
+                        damageName = ((WeaponHash)damageWeapon).ToString();
                     }
+
 
                     if (PlayerPed.Killer == PlayerPed)
                     {

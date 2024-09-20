@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using Inferno.InfernoScripts.Event;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 using Inferno.Utilities.Awaiters;
+using LemonUI.Menus;
 using Reactive.Bindings;
 
 namespace Inferno
@@ -20,7 +22,7 @@ namespace Inferno
     /// <summary>
     /// インフェルノスクリプトの基底
     /// </summary>
-    public abstract class InfernoScript : Script
+    public abstract class InfernoScript : Script, IScriptUiBuilder
     {
         private readonly AsyncSubject<Unit> _disposeSubject = new();
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
@@ -180,7 +182,7 @@ namespace Inferno
                     }
                 })
                 .AddTo(CompositeDisposable);
-            
+
             OnAbortAsync.Subscribe(_ =>
                 {
                     Destroy();
@@ -209,6 +211,20 @@ namespace Inferno
                         // SynchronizationContextはこのタイミングで設定しないといけない
                         SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
                         Setup();
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite(e.ToString());
+                    }
+                    
+                    try
+                    {
+                        // UIの構築
+                        if (UseUI)
+                        {
+                            InfernoUi.Instance.RegisterInfernoBuilder(this);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -257,7 +273,7 @@ namespace Inferno
                         // ignore
                     }
                 }
-
+                
                 _isActiveReactiveProperty.Value = value;
             }
         }
@@ -265,8 +281,7 @@ namespace Inferno
         /// <summary>
         /// IsActiveが変化したことを通知する
         /// </summary>
-        protected IObservable<bool> IsActiveAsObservable =>
-            _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+        protected IReadOnlyReactiveProperty<bool> IsActivePR => _isActiveReactiveProperty;
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -302,6 +317,7 @@ namespace Inferno
                 _activationCancellationTokenSource?.Cancel();
                 _activationCancellationTokenSource?.Dispose();
                 _activationCancellationTokenSource = null;
+                _isActiveReactiveProperty.Dispose();
                 lock (_stepAwaiters)
                 {
                     foreach (var stepAwaiter in _stepAwaiters)
@@ -621,7 +637,7 @@ namespace Inferno
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
-        
+
         public void DrawText(object text, float time = 3.0f)
         {
             ToastTextDrawing.Instance.DrawDebugText(text.ToString(), time);
@@ -651,5 +667,31 @@ namespace Inferno
         }
 
         #endregion forTimer
+
+        #region UI
+
+        public virtual bool UseUI => false;
+        public virtual string DisplayText => GetType().Name;
+        
+        public virtual bool CanChangeActive => false;
+
+        public virtual void OnUiMenuConstruct(NativeMenu menu)
+        {
+            return;
+        }
+
+        bool IScriptUiBuilder.IsActive
+        {
+            get => IsActive;
+            set
+            {
+                _infernoSynchronizationContext.Post(_ =>
+                {
+                    IsActive = value;
+                }, null);
+            }
+        }
+
+        #endregion
     }
 }
