@@ -136,7 +136,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 });
 
             //パルプンテが停止したタイミングで開放
-            IsActiveAsObservable
+            IsActivePR
                 .Where(x => !x)
                 .Subscribe(_ =>
                 {

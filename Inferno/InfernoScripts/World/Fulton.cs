@@ -49,16 +49,16 @@ namespace Inferno
                 {
                     IsActive = !IsActive;
                     DrawText("Fulton:" + IsActive);
-
-                    if (IsActive)
-                    {
-                        PlayerPed.GiveWeapon((int)Weapon.StunGun, 1);
-
-                        FulutonUpdateLoopAsync(ActivationCancellationToken).Forget();
-                    }
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
+            IsActivePR.Where(x => x)
+                .Subscribe(_ =>
+                {
+                    PlayerPed.GiveWeapon((int)Weapon.StunGun, 1);
+                    FulutonUpdateLoopAsync(ActivationCancellationToken).Forget();
+                });
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F9 && motherbaseVeh.Count > 0)

@@ -20,22 +20,16 @@ namespace Inferno.InfernoScripts.World
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("snax")
-                .Subscribe(_ => IsActive = !IsActive);
-
-            IsActiveAsObservable
-                .Where(x => x)
-                .Subscribe(x =>
+                .Subscribe(_ =>
                 {
+                    IsActive = !IsActive;
                     DrawText($"SpeedMax:{IsActive}[Type:{currentSpeedType}][Exclude:{excludeMissionVehicle}]");
-                    vehicleHashSet.Clear();
+
                 });
 
-            IsActiveAsObservable
-                .Skip(1)
-                .Where(x => !x)
+            IsActivePR
                 .Subscribe(x =>
                 {
-                    DrawText($"SpeedMax:{IsActive}");
                     vehicleHashSet.Clear();
                 });
 

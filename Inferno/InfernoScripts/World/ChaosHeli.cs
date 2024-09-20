@@ -69,38 +69,34 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    _heliCts?.Cancel();
-                    _heliCts?.Dispose();
-                    _heliCts = null;
-                    if (_heliBlip?.Exists() ?? false)
-                    {
-                        _heliBlip.Delete();
-                    }
-
                     DrawText("ChaosHeli:" + (IsActive ? "ON" : "OFF"));
-                    if (IsActive)
-                    {
-                        ResetHeli();
-                        ObserveHeliAsync(ActivationCancellationToken).Forget();
-                        ObservePlayerAsync(ActivationCancellationToken).Forget();
-                    }
-                    else
-                    {
-                        ReleasePedAndHeli();
-                    }
                 });
 
             OnAllOnCommandObservable
-                .Subscribe(_ =>
-                {
-                    IsActive = true;
-                    if (_heli.IsSafeExist())
-                    {
-                        return;
-                    }
+                .Subscribe(_ => IsActive = true);
 
+            IsActivePR.Subscribe(_ =>
+            {
+                _heliCts?.Cancel();
+                _heliCts?.Dispose();
+                _heliCts = null;
+                if (_heliBlip?.Exists() ?? false)
+                {
+                    _heliBlip.Delete();
+                }
+
+                if (IsActive)
+                {
                     ResetHeli();
-                });
+                    ObserveHeliAsync(ActivationCancellationToken).Forget();
+                    ObservePlayerAsync(ActivationCancellationToken).Forget();
+                }
+                else
+                {
+                    ReleasePedAndHeli();
+                }
+            });
+
 
             OnAbortAsync
                 .Subscribe(_ =>

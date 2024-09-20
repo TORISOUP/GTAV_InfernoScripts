@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
-using GTA.Native;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.World

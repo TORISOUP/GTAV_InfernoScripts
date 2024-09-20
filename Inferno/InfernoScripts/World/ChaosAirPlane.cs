@@ -58,7 +58,7 @@ namespace Inferno
             OnAllOnCommandObservable
                 .Subscribe(_ => { IsActive = true; });
 
-            IsActiveAsObservable
+            IsActivePR
                 .Where(x => x)
                 .Subscribe(_ => StartChaosPlanesAsync(ActivationCancellationToken).Forget());
 

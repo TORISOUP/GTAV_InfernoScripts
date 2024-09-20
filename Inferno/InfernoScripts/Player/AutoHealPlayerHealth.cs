@@ -1,4 +1,5 @@
 using System;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Inferno.Utilities;
@@ -18,15 +19,16 @@ namespace Inferno.InfernoScripts.Player
                 {
                     IsActive = !IsActive;
                     DrawText("AutoHealPlayerHealth:" + IsActive);
-
-                    if (IsActive)
-                    {
-                        PlayerHealthHealAsync(ActivationCancellationToken).Forget();
-                        PlayerDamageCheckAsync(ActivationCancellationToken).Forget();
-                    }
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
+            IsActivePR.Where(x => x)
+                .Subscribe(_ =>
+                {
+                    PlayerHealthHealAsync(ActivationCancellationToken).Forget();
+                    PlayerDamageCheckAsync(ActivationCancellationToken).Forget();
+                });
         }
 
         private async ValueTask PlayerHealthHealAsync(CancellationToken ct)

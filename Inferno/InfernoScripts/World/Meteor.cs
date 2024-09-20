@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -8,7 +6,9 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -24,11 +24,10 @@ namespace Inferno
                 {
                     IsActive = !IsActive;
                     DrawText("Meteor:" + IsActive);
-                    if (IsActive)
-                    {
-                        MeteorLoopAsync(ActivationCancellationToken).Forget();
-                    }
                 });
+
+            IsActivePR.Where(x => x)
+                .Subscribe(_ => MeteorLoopAsync(ActivationCancellationToken).Forget());
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
@@ -195,7 +194,7 @@ namespace Inferno
             /// <summary>
             /// メテオ落下の最小範囲[m]
             /// </summary>
-            public int Radius  = 30;
+            public int Radius = 30;
 
             /// <summary>
             /// メテオを落下させるのかの判定頻度[ms]
@@ -205,7 +204,7 @@ namespace Inferno
             /// <summary>
             /// メテオを落下させる確率
             /// </summary>
-            public int Probability  = 40;
+            public int Probability = 40;
 
             public override bool Validate()
             {
@@ -241,5 +240,12 @@ namespace Inferno
         private int Probability => _config?.Probability ?? 25;
 
         #endregion
+
+        public bool CanChangeActive => true;
+        public bool NeedSubMenu => true;
+
+        public void OnUiMenuConstruct(NativeMenu menu)
+        {
+        }
     }
 }
