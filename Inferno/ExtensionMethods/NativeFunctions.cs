@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using GTA;
 using GTA.Math;
 using GTA.Native;
@@ -647,7 +648,7 @@ namespace Inferno
         {
             return Function.Call<bool>(Hash.IS_PED_GROUP_MEMBER, ped, groupId);
         }
-        
+
         public static bool IsPedEnemy(this Ped ped)
         {
             var playerPed = Game.Player.Character;
@@ -726,6 +727,17 @@ namespace Inferno
         public static string GetGXTEntry(string entry)
         {
             return Function.Call<string>(Hash.GET_FILENAME_FOR_AUDIO_CONVERSATION, entry);
+        }
+
+        public static void DrawSphere(Vector3 position, float radius, Color color)
+        {
+            Function.Call(Hash.DRAW_MARKER_SPHERE,
+                position.X, position.Y, position.Z,
+                radius,
+                (int)color.R,
+                (int)color.G,
+                (int)color.B,
+                color.A / 255f);
         }
     }
 }

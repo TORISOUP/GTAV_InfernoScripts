@@ -1,4 +1,5 @@
 using LemonUI.Menus;
+using Reactive.Bindings;
 
 namespace Inferno.InfernoScripts.InfernoCore.UI
 {
@@ -9,11 +10,11 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         /// </summary>
         bool UseUI { get; }
         
-        
         bool CanChangeActive { get; }
         
         string DisplayText { get; }
         
+        MenuIndex MenuIndex { get; }
 
         /// <summary>
         /// SubMenuの構築
@@ -21,5 +22,15 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         void OnUiMenuConstruct(NativeMenu menu);
         
         bool IsActive { get; set; }
+        IReadOnlyReactiveProperty<bool> IsActiveRP { get; }
+    }
+    
+    public enum MenuIndex
+    {
+        Root,
+        World,
+        Player,
+        Entities,
+        Misc
     }
 }

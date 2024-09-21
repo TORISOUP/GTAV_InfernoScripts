@@ -117,6 +117,7 @@
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
         <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\Player\NoWanted.cs" />
@@ -125,7 +126,6 @@
         <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
-        <Compile Include="InfernoScripts\Citizen\CitizenRagdoll.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
         <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />

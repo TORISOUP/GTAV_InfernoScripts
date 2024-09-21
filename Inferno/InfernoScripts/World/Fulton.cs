@@ -12,6 +12,7 @@ using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 
 namespace Inferno
@@ -53,7 +54,7 @@ namespace Inferno
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            IsActivePR.Where(x => x)
+            IsActiveRP.Where(x => x)
                 .Subscribe(_ =>
                 {
                     PlayerPed.GiveWeapon((int)Weapon.StunGun, 1);
@@ -358,5 +359,12 @@ namespace Inferno
         }
 
         #endregion 生成
+        
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "フルトン回収" : "Fulton STARS";
+
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.Entities;
     }
 }

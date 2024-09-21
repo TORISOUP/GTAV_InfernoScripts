@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -30,13 +31,14 @@ namespace Inferno
                     DrawText("Meteor:" + IsActive);
                 });
 
-            IsActivePR
+            IsActiveRP
                 .Where(x => x)
                 .Subscribe(_ =>
                 {
                     var m = new Model(WeaponHash.RPG);
                     m.Request();
                     MeteorLoopAsync(ActivationCancellationToken).Forget();
+                    DebugLoopAsync(ActivationCancellationToken).Forget();
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
@@ -52,6 +54,32 @@ namespace Inferno
                 }
 
                 await DelayAsync(TimeSpan.FromMilliseconds(DurationMillSeconds), ct);
+            }
+        }
+
+        private async ValueTask DebugLoopAsync(CancellationToken ct)
+        {
+            var color = Color.FromArgb(100, 0, 255, 0);
+            while (!ct.IsCancellationRequested)
+            {
+                if (!_isDebug)
+                {
+                    await DelaySecondsAsync(1, ct);
+                    continue;
+                }
+
+                var player = PlayerPed;
+                if (!player.IsSafeExist())
+                {
+                    await DelaySecondsAsync(1, ct);
+                    continue;
+                }
+
+                var centerPosition = GetOffsetCenterPosition();
+                var range = Radius;
+
+                NativeFunctions.DrawSphere(centerPosition, range, color);
+                await YieldAsync(ct);
             }
         }
 
@@ -189,62 +217,54 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => "Meteor";
+        public override string DisplayText => IsLangJpn ? "メテオ" : "Meteor";
 
         public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.World;
 
         public override void OnUiMenuConstruct(NativeMenu menu)
         {
             // 落下範囲
-            {
-                var radiusItem =
-                    new NativeSliderItem($"Range {_config.Radius}[m]", "Meteor fall range", 100, _config.Radius)
-                    {
-                        Multiplier = 5
-                    };
 
-                radiusItem.ValueChanged += (_, _) =>
+
+            menu.AddSlider(
+                $"Range {_config.Radius}[m]",
+                IsLangJpn? "メテオの落下範囲" : "Meteor fall range",
+                _config.Radius,
+                100,
+                x => x.Multiplier = 5, item =>
                 {
-                    radiusItem.Title = $"Range {radiusItem.Value}[m]";
-                    _config.Radius = radiusItem.Value;
-                };
-                menu.Add(radiusItem);
-            }
+                    item.Title = $"Range {item.Value}[m]";
+                    _config.Radius = item.Value;
+                });
+
 
             // 落下間隔
-            {
-                var durationItem =
-                    new NativeSliderItem($"Duration {_config.DurationMillSeconds}[ms]", "Meteor fall duration", 10000,
-                        _config.DurationMillSeconds)
-                    {
-                        Multiplier = 100
-                    };
-
-                durationItem.ValueChanged += (_, _) =>
+            menu.AddSlider(
+                $"Duration {_config.DurationMillSeconds}[ms]",
+                IsLangJpn? "メテオの落下頻度" :"Meteor fall duration",
+                _config.DurationMillSeconds,
+                10000,
+                x => x.Multiplier = 100, item =>
                 {
-                    durationItem.Title = $"Duration {durationItem.Value}[ms]";
-                    _config.DurationMillSeconds = durationItem.Value;
-                };
-                menu.Add(durationItem);
-            }
+                    item.Title = $"Duration {item.Value}[ms]";
+                    _config.DurationMillSeconds = item.Value;
+                });
+
 
             // 落下確率
-            {
-                var probabilityItem =
-                    new NativeSliderItem($"Probability {_config.Probability}[%]", "Meteor fall probability", 100,
-                        _config.Probability)
-                    {
-                        Multiplier = 5
-                    };
-
-                probabilityItem.ValueChanged += (_, _) =>
+            menu.AddSlider(
+                $"Probability {_config.Probability}[%]",
+                IsLangJpn? "メテオの落下確率" :"Meteor fall probability",
+                _config.Probability,
+                100,
+                x => x.Multiplier = 5, item =>
                 {
-                    probabilityItem.Title = $"Probability {probabilityItem.Value}[%]";
-                    _config.Probability = probabilityItem.Value;
-                };
-                menu.Add(probabilityItem);
-            }
-            
+                    item.Title = $"Probability {item.Value}[%]";
+                    _config.Probability = item.Value;
+                });
+
             // Debug
             {
                 var debugItem = new NativeCheckboxItem("Debug", _isDebug);
@@ -295,7 +315,6 @@ namespace Inferno
 
             public override bool Validate()
             {
-                
                 return true;
             }
 

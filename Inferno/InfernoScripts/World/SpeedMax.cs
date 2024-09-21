@@ -6,16 +6,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI.Menus;
 
 namespace Inferno.InfernoScripts.World
 {
     internal class SpeedMax : InfernoScript
     {
         private readonly HashSet<int> vehicleHashSet = new();
-        private SpeedType currentSpeedType = SpeedType.Original;
-
+        private SpeedType currentSpeedType = SpeedType.Max;
         private bool excludeMissionVehicle;
+        private float radius = 800;
 
         protected override void Setup()
         {
@@ -24,14 +26,10 @@ namespace Inferno.InfernoScripts.World
                 {
                     IsActive = !IsActive;
                     DrawText($"SpeedMax:{IsActive}[Type:{currentSpeedType}][Exclude:{excludeMissionVehicle}]");
-
                 });
 
-            IsActivePR
-                .Subscribe(x =>
-                {
-                    vehicleHashSet.Clear();
-                });
+            IsActiveRP
+                .Subscribe(x => { vehicleHashSet.Clear(); });
 
             OnAllOnCommandObservable.Subscribe(_ =>
             {
@@ -66,7 +64,7 @@ namespace Inferno.InfernoScripts.World
                             }
                         }
 
-                        if (currentSpeedType == SpeedType.Original)
+                        if (currentSpeedType == SpeedType.Max)
                         {
                             OriginalSpeedMaxAsync(v, ActivationCancellationToken).Forget();
                         }
@@ -82,15 +80,10 @@ namespace Inferno.InfernoScripts.World
                 .Do(_ =>
                 {
                     nextType = GetNextSpeedType(nextType);
-                    DrawText($"SpeedMax:[Type:{nextType}]", 1.0f);
+                    DrawText($"SpeedMax:[Type:{nextType}]*", 1.0f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
-                .Subscribe(_ =>
-                {
-                    currentSpeedType = nextType;
-                    DrawText($"SpeedMax:[Type:{currentSpeedType}][OK]", 2.0f);
-                    vehicleHashSet.Clear();
-                });
+                .Subscribe(_ => { ChangeSpeedType(nextType); });
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F5)
@@ -117,6 +110,13 @@ namespace Inferno.InfernoScripts.World
                 .Do(_ => suspednFlag = true)
                 .Delay(TimeSpan.FromSeconds(3))
                 .Subscribe(_ => suspednFlag = false);
+        }
+
+        private void ChangeSpeedType(SpeedType nextType)
+        {
+            currentSpeedType = nextType;
+            DrawText($"SpeedMax:[Type:{currentSpeedType}]", 2.0f);
+            vehicleHashSet.Clear();
         }
 
         /// <summary>
@@ -197,11 +197,41 @@ namespace Inferno.InfernoScripts.World
 
         private enum SpeedType
         {
-            Original,
-            Low,
-            Middle,
+            Max,
             High,
+            Middle,
+            Low,
             Random
         }
+
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "スピードマックス" : "All vehicles super-accelerated";
+
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.World;
+
+        public override void OnUiMenuConstruct(NativeMenu menu)
+        {
+            // スピードタイプ
+            {
+                menu.AddEnumSlider($"Type: {currentSpeedType.ToString()}", "", SpeedType.Max,
+                    x =>
+                    {
+                        x.Title = $"Type: {currentSpeedType.ToString()}";
+                        x.Value = (int)currentSpeedType;
+                    }, x =>
+                    {
+                        ChangeSpeedType((SpeedType)x.Value);
+                        vehicleHashSet.Clear();
+                        x.Title = $"Type: {currentSpeedType.ToString()}";
+                    });
+            }
+        }
+
+        #endregion
     }
 }

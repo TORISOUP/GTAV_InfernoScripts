@@ -7,6 +7,7 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.World
@@ -75,7 +76,7 @@ namespace Inferno.InfernoScripts.World
             OnAllOnCommandObservable
                 .Subscribe(_ => IsActive = true);
 
-            IsActivePR.Subscribe(_ =>
+            IsActiveRP.Subscribe(_ =>
             {
                 _heliCts?.Cancel();
                 _heliCts?.Dispose();
@@ -394,5 +395,12 @@ namespace Inferno.InfernoScripts.World
 
             p.Task.FightAgainst(PlayerPed);
         }
+        
+        
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "カオスヘリ" : "Harassing helicopter";
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.World;
     }
 }

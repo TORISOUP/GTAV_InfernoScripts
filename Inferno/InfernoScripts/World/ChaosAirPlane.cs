@@ -8,14 +8,24 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI.Menus;
+using Newtonsoft.Json;
 
 namespace Inferno
 {
     [Serializable]
     internal class ChaosAirPlaneConfig : InfernoConfig
     {
-        public int AirPlaneCount = 2;
+        public int _airPlaneCount = 2;
+
+        [JsonProperty("AirPlaneCount")]
+        public int AirPlaneCount
+        {
+            get => _airPlaneCount;
+            set => _airPlaneCount = value.Clamp(1, 30);
+        }
 
         public override bool Validate()
         {
@@ -58,7 +68,7 @@ namespace Inferno
             OnAllOnCommandObservable
                 .Subscribe(_ => { IsActive = true; });
 
-            IsActivePR
+            IsActiveRP
                 .Where(x => x)
                 .Subscribe(_ => StartChaosPlanesAsync(ActivationCancellationToken).Forget());
 
@@ -293,5 +303,34 @@ namespace Inferno
                 startPosition,
                 targetPosition, 200, Weapon.AIRSTRIKE_ROCKET, driver, -1.0f);
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "カオス戦闘機" : "Harassing fighter aircraft";
+
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.World;
+
+        public override void OnUiMenuConstruct(NativeMenu menu)
+        {
+            // 戦闘機の数
+            menu.AddSlider(
+                $"Amount of fighters: {config.AirPlaneCount}",
+                IsLangJpn ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要" : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
+                config.AirPlaneCount,
+                30,
+                x => x.Multiplier = 1, item =>
+                {
+                    item.Title = $"Amount of fighters: {config.AirPlaneCount}";
+                    config.AirPlaneCount = item.Value;
+                    IsActive = false;
+                });
+
+
+        }
+
+        #endregion
     }
 }

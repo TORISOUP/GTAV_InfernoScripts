@@ -211,13 +211,12 @@ namespace Inferno
                         // SynchronizationContextはこのタイミングで設定しないといけない
                         SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
                         Setup();
-                        
                     }
                     catch (Exception e)
                     {
                         LogWrite(e.ToString());
                     }
-                    
+
                     try
                     {
                         // UIの構築
@@ -273,15 +272,16 @@ namespace Inferno
                         // ignore
                     }
                 }
-                
+
                 _isActiveReactiveProperty.Value = value;
             }
         }
 
+
         /// <summary>
         /// IsActiveが変化したことを通知する
         /// </summary>
-        protected IReadOnlyReactiveProperty<bool> IsActivePR => _isActiveReactiveProperty;
+        public IReadOnlyReactiveProperty<bool> IsActiveRP => _isActiveReactiveProperty;
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -670,9 +670,12 @@ namespace Inferno
 
         #region UI
 
+        protected bool IsLangJpn => Game.Language == Language.Japanese;
+        
         public virtual bool UseUI => false;
         public virtual string DisplayText => GetType().Name;
-        
+        public virtual MenuIndex MenuIndex => MenuIndex.Root;
+
         public virtual bool CanChangeActive => false;
 
         public virtual void OnUiMenuConstruct(NativeMenu menu)
@@ -683,13 +686,7 @@ namespace Inferno
         bool IScriptUiBuilder.IsActive
         {
             get => IsActive;
-            set
-            {
-                _infernoSynchronizationContext.Post(_ =>
-                {
-                    IsActive = value;
-                }, null);
-            }
+            set { _infernoSynchronizationContext.Post(_ => { IsActive = value; }, null); }
         }
 
         #endregion

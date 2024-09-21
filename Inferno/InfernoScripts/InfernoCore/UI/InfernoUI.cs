@@ -18,8 +18,10 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         private readonly ObjectPool _objectPool = new();
         private readonly CompositeDisposable _compositeDisposable = new();
-        readonly NativeMenu _rootMenu = new NativeMenu("Inferno MOD", "MOD Menu");
+        readonly NativeMenu _rootMenu = new("Inferno MOD", "MOD Menu");
         private readonly List<IScriptUiBuilder> _builders = new();
+
+        private readonly Dictionary<MenuIndex, NativeMenu> _manuIndex = new();
 
         public InfernoUi()
         {
@@ -46,6 +48,9 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             Tick += (_, _) => OnTick();
             Aborted += (_, _) => { _compositeDisposable.Dispose(); };
 
+
+            _manuIndex.Add(MenuIndex.Root, _rootMenu);
+
             #endregion
 
 
@@ -62,6 +67,17 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 }
             };
             _rootMenu.Add(allOnItem);
+
+
+            var allManu = Enum.GetValues(typeof(MenuIndex)).Cast<MenuIndex>();
+            foreach (var m in allManu.Where(x => x != MenuIndex.Root))
+            {
+                var menu = new NativeMenu(m.ToString(), m.ToString());
+                _rootMenu.AddSubMenu(menu);
+                _objectPool.Add(menu);
+
+                _manuIndex.Add(m, menu);
+            }
         }
 
         public static InfernoUi Instance { private set; get; }
@@ -76,7 +92,6 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         public void RegisterInfernoBuilder(IScriptUiBuilder builder)
         {
             _builders.Add(builder);
-            
             if (!builder.UseUI)
             {
                 return;
@@ -89,18 +104,21 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 var item = new NativeCheckboxItem("Active", builder.IsActive);
                 item.CheckboxChanged += (_, e) => builder.IsActive = item.Checked;
                 subMenu.Add(item);
-                
-                subMenu.ItemActivated += (_, _) =>
+                builder.IsActiveRP.Subscribe(x =>
                 {
-                    item.Checked = builder.IsActive;
-                };
-                
+                    item.Checked = x;
+                    item.Draw();
+                }).AddTo(_compositeDisposable);
             }
 
             // SubMenuの構築は各スクリプトが頑張る
             builder.OnUiMenuConstruct(subMenu);
-            _rootMenu.Add(subMenu);
             _objectPool.Add(subMenu);
+
+            _manuIndex[builder.MenuIndex].AddSubMenu(subMenu);
+
+            subMenu.BannerText.Scale = 0.5f;
+            subMenu.BannerText.Recalculate();
         }
     }
 }

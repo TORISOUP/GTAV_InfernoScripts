@@ -23,7 +23,7 @@ namespace Inferno.InfernoScripts.Player
 
             OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
 
-            IsActivePR.Where(x => x)
+            IsActiveRP.Where(x => x)
                 .Subscribe(_ =>
                 {
                     PlayerHealthHealAsync(ActivationCancellationToken).Forget();
