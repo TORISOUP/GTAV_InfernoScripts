@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.World
@@ -24,12 +25,13 @@ namespace Inferno.InfernoScripts.World
             CreateInputKeywordAsObservable(Keyword)
                 .Subscribe(_ =>
                 {
-                    _startedPeds.Clear();
                     IsActive = !IsActive;
                     DrawText("BombBat:" + IsActive);
                 });
 
             OnAllOnCommandObservable.Subscribe(_ => { IsActive = true; });
+
+            IsActiveRP.Subscribe(_ => _startedPeds.Clear());
 
             CreateTickAsObservable(TimeSpan.FromSeconds(1))
                 .Where(_ => IsActive)
@@ -164,5 +166,11 @@ namespace Inferno.InfernoScripts.World
 
             #endregion
         }
+        
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "ボンバット" : "Bomb baseball bat";
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.World;
     }
 }
