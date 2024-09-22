@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Reactive.Linq;
 using GTA;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -11,19 +13,34 @@ namespace Inferno
     {
         protected override void Setup()
         {
+            IsActive = true;
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
+                .Where(_ => IsActive)
                 .Where(_ => Game.IsControlPressed(Control.Duck) && Game.IsControlPressed(Control.Jump))
-                .Subscribe(_ =>
-                {
-                    var playerChar = Game.Player;
-                    SetPlayerRagdoll(playerChar);
-                });
+                .Subscribe(_ => SetPlayerRagdoll());
         }
 
-        private void SetPlayerRagdoll(Player PlayerChar)
+        private void SetPlayerRagdoll()
         {
-            var player = PlayerChar.Character;
-            player.SetToRagdoll(); //時間指定しなくても大丈夫っぽい
+            Game.Player.Character.SetToRagdoll();
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "脱力" : "Player ragdoll";
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        public override void OnUiMenuConstruct(NativeMenu menu)
+        {
+            menu.AddButton(
+                IsLangJpn ? "脱力する" : "Ragdoll",
+                IsLangJpn ? "プレイヤーを脱力状態にします" : "Set player to ragdoll",
+                () => Game.Player.Character.SetToRagdoll()
+            );
+        }
+
+        #endregion
     }
 }

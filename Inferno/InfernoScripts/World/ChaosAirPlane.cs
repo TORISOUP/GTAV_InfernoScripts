@@ -323,8 +323,8 @@ namespace Inferno
                 30,
                 x => x.Multiplier = 1, item =>
                 {
-                    item.Title = $"Amount of fighters: {config.AirPlaneCount}";
                     config.AirPlaneCount = item.Value;
+                    item.Title = $"Amount of fighters: {config.AirPlaneCount}";
                     IsActive = false;
                 });
 

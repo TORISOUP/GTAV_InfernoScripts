@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -29,11 +31,11 @@ namespace Inferno
         protected override void Setup()
         {
             conf = LoadConfig<PlayerNitroConf>();
-
             IsActive = true;
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(
                     _ =>
+                        IsActive &&
                         _isNitroOk &&
                         Game.IsControlPressed(Control.VehicleAccelerate) &&
                         Game.IsControlPressed(Control.VehicleHandbrake) &&
@@ -157,5 +159,61 @@ namespace Inferno
                 return true;
             }
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "ニトロ" : "Player Vehicle NOS";
+
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        public override void OnUiMenuConstruct(NativeMenu menu)
+        {
+            // 直線上の加速
+            menu.AddSlider(
+                $"Straight: {conf.StraightAccelerationSpeed}[ms]",
+                IsLangJpn
+                    ? "直線での加速量"
+                    : "Amount of acceleration in a straight line",
+                (int)conf.StraightAccelerationSpeed,
+                150,
+                x => x.Multiplier = 10, item =>
+                {
+                    conf.StraightAccelerationSpeed = item.Value;
+                    item.Title = $"Straight: {conf.StraightAccelerationSpeed}[ms]";
+                });
+            
+            // ジャンプ時の加速
+            menu.AddSlider(
+                $"Jump: {conf.JumpAccelerationSpeed}[ms]",
+                IsLangJpn
+                    ? "ジャンプ時の加速量"
+                    : "Amount of acceleration when jumping",
+                (int)conf.JumpAccelerationSpeed,
+                150,
+                x => x.Multiplier = 10, item =>
+                {
+                    conf.JumpAccelerationSpeed = item.Value;
+                    item.Title = $"Jump: {conf.JumpAccelerationSpeed}[ms]";
+                });
+            
+            // クールダウン時間
+            menu.AddSlider(
+                $"CoolDown: {conf.CoolDownSeconds}[s]",
+                IsLangJpn
+                    ? "クールダウン時間"
+                    : "Cool down time",
+                (int)conf.CoolDownSeconds,
+                60,
+                x => x.Multiplier = 1, item =>
+                {
+                    conf.CoolDownSeconds = item.Value;
+                    item.Title = $"CoolDown: {conf.CoolDownSeconds}[s]";
+                });
+        }
+
+        #endregion
     }
 }

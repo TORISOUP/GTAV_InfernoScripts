@@ -40,5 +40,17 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             parentManu.Add(slider);
             return slider;
         }
+
+        public static NativeItem AddButton(
+            this NativeMenu parentManu,
+            string title,
+            string description = null,
+            Action action = null)
+        {
+            var item = new NativeItem(title, description);
+            item.Activated += (_, _) => { action?.Invoke(); };
+            parentManu.Add(item);
+            return item;
+        }
     }
 }
