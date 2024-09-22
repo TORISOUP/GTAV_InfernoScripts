@@ -13,7 +13,9 @@ using GTA;
 using GTA.Math;
 using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI.Menus;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -118,7 +120,7 @@ namespace Inferno.InfernoScripts.Parupunte
             CreateInputKeywordAsObservable("snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
-            
+
 
             OnKeyDownAsObservable
                 .Where(x => x.KeyCode is Keys.NumPad0 or Keys.PageDown)
@@ -203,6 +205,8 @@ namespace Inferno.InfernoScripts.Parupunte
                 });
 
             #endregion Drawer
+
+            CreateUI();
         }
 
         // Configファイルの設定を行う
@@ -299,7 +303,6 @@ namespace Inferno.InfernoScripts.Parupunte
             try
             {
                 // スクリプトのインスタンスを生成
-                // スレッドプール上で呼び出すことで、メインスレッドをブロックしない
                 _currentScript = Activator.CreateInstance(script, this, conf) as ParupunteScript;
                 ParupunteCoreLoopAsync(_currentScript, ct).Forget();
             }
@@ -490,7 +493,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     return hash.ToString();
             }
         }
-        
+
         public void AddProgressBar(ReduceCounter reduceCounter)
         {
             var prgoressbarData = new ProgressBarData(reduceCounter,
@@ -552,6 +555,49 @@ namespace Inferno.InfernoScripts.Parupunte
         public new ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
         {
             return base.DelayRandomSecondsAsync(min, max, ct);
+        }
+
+        #endregion
+
+        #region UI
+
+        public void CreateUI()
+        {
+            var title = IsLangJpn ? "パルプンテ" : "Parupunte";
+            var subMenu = new NativeMenu(title, title,
+                IsLangJpn ? "何が起こるかわからない" : "There is no telling what will happen"
+            );
+
+            var context = InfernoSynchronizationContext;
+
+            // パルプンテのランダム実行
+            subMenu.AddButton("Start", IsLangJpn ? "ランダムに実行" : "Start random",
+                () => { context.Post(_ => ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken), null); });
+
+            // パルプンテの停止
+            subMenu.AddButton("Stop", IsLangJpn ? "実行中のパルプンテを停止" : "Stop the running parupunte",
+                () => { context.Post(_ => ParupunteStop(), null); });
+
+            // リスト一覧作成
+            var listMenu = new NativeMenu("Effect list", "Effect list");
+            {
+                foreach (var parupunteScritpt in _parupunteScritpts)
+                {
+                    var script = parupunteScritpt;
+                    var name = script.Name;
+                    var item = new NativeItem(name);
+                    item.Activated += (_, _) =>
+                    {
+                        context.Post(_ =>
+                        {
+                            ParupunteStart(script, DestroyCancellationToken);
+                        }, null);
+                    };
+                    listMenu.Add(item);
+                }
+            }
+            subMenu.AddSubMenu(listMenu);
+            InfernoUi.Instance.AddSubMenuToRootMenu(subMenu, listMenu);
         }
 
         #endregion

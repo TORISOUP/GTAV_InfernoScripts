@@ -242,7 +242,7 @@ namespace Inferno
 
         public float DeltaTime { get; private set; }
 
-        private InfernoSynchronizationContext InfernoSynchronizationContext
+        protected InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
         public IScheduler InfernoScheduler

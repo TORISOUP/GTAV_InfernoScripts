@@ -31,6 +31,6 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         World,
         Player,
         Entities,
-        Misc
+        Misc,
     }
 }

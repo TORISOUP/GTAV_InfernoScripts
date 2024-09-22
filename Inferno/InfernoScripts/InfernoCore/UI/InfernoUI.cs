@@ -105,10 +105,11 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 item.CheckboxChanged += (_, e) => builder.IsActive = item.Checked;
                 subMenu.Add(item);
                 builder.IsActiveRP.Subscribe(x =>
-                {
-                    item.Checked = x;
-                    item.Draw();
-                }).AddTo(_compositeDisposable);
+                    {
+                        item.Checked = x;
+                        item.Draw();
+                    })
+                    .AddTo(_compositeDisposable);
             }
 
             // SubMenuの構築は各スクリプトが頑張る
@@ -119,6 +120,20 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
             subMenu.BannerText.Scale = 0.5f;
             subMenu.BannerText.Recalculate();
+        }
+
+        public void AddSubMenuToRootMenu(NativeMenu menu, params NativeMenu[] subs)
+        {
+            _rootMenu.AddSubMenu(menu);
+            _objectPool.Add(menu);
+            
+            if (subs != null)
+            {
+                foreach (var sub in subs)
+                {
+                    _objectPool.Add(sub);
+                }
+            }
         }
     }
 }
