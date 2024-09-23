@@ -213,7 +213,7 @@
     /// <summary>
     /// ミッションキャラの扱い
     /// </summary>
-    public enum MissionCharacterTreatmentType
+    public enum MissionCharacterBehaviour
     {
         AffectAllCharacter = 0,
         ExcludeUniqueCharacter = 1,

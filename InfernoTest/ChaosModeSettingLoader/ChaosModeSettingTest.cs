@@ -17,28 +17,28 @@ namespace InfernoTest
             var dto = new ChaosModeSettingDTO();
 
             //0はAffectAllCharacter
-            dto.DefaultMissionCharacterTreatment = 0;
-            Assert.Equal(MissionCharacterTreatmentType.AffectAllCharacter
-                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
+            dto.MissionCharacterBehaviour = 0;
+            Assert.Equal(MissionCharacterBehaviour.AffectAllCharacter
+                , new ChaosModeSetting(dto).MissionCharacterBehaviour);
 
             //1はExcludeUniqueCharacter
-            dto.DefaultMissionCharacterTreatment = 1;
-            Assert.Equal(MissionCharacterTreatmentType.ExcludeUniqueCharacter
-                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
+            dto.MissionCharacterBehaviour = 1;
+            Assert.Equal(MissionCharacterBehaviour.ExcludeUniqueCharacter
+                , new ChaosModeSetting(dto).MissionCharacterBehaviour);
 
             //2はExcludeAllMissionCharacter
-            dto.DefaultMissionCharacterTreatment = 2;
-            Assert.Equal(MissionCharacterTreatmentType.ExcludeAllMissionCharacter
-                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
+            dto.MissionCharacterBehaviour = 2;
+            Assert.Equal(MissionCharacterBehaviour.ExcludeAllMissionCharacter
+                , new ChaosModeSetting(dto).MissionCharacterBehaviour);
         }
 
         [Fact]
         public void 不正なDefaultMissionCharacterTreatmentはExcludeUniqueCharacterになる()
         {
             var dto = new ChaosModeSettingDTO();
-            dto.DefaultMissionCharacterTreatment = -1;
-            Assert.Equal(MissionCharacterTreatmentType.ExcludeUniqueCharacter
-                , new ChaosModeSetting(dto).DefaultMissionCharacterTreatment);
+            dto.MissionCharacterBehaviour = -1;
+            Assert.Equal(MissionCharacterBehaviour.ExcludeUniqueCharacter
+                , new ChaosModeSetting(dto).MissionCharacterBehaviour);
         }
 
         private class TestSetting : ChaosModeSetting

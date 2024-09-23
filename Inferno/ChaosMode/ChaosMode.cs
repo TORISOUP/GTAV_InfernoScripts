@@ -9,7 +9,10 @@ using GTA;
 using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.Event.ChasoMode;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
+using LemonUI.Menus;
 
 namespace Inferno.ChaosMode
 {
@@ -35,8 +38,8 @@ namespace Inferno.ChaosMode
 
         private readonly string Keyword = "chaos";
 
-        private MissionCharacterTreatmentType _currentTreatType =
-            MissionCharacterTreatmentType.ExcludeUniqueCharacter;
+        private MissionCharacterBehaviour _currentTreatType =
+            MissionCharacterBehaviour.ExcludeUniqueCharacter;
 
         /// <summary>
         /// WeaponProvider
@@ -48,7 +51,7 @@ namespace Inferno.ChaosMode
 
         private CancellationTokenSource _localCts = new();
 
-        private MissionCharacterTreatmentType _nextTreatType;
+        private MissionCharacterBehaviour _nextTreatType;
         private SingleWeaponProvider _singleWeaponProvider;
         private CharacterChaosChecker _chaosChecker;
 
@@ -65,8 +68,8 @@ namespace Inferno.ChaosMode
             var chaosSettingLoader = new ChaosModeSettingLoader();
             _chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
-            _chaosChecker = new CharacterChaosChecker(_chaosModeSetting.DefaultMissionCharacterTreatment,
-                _chaosModeSetting.IsChangeMissionCharacterWeapon);
+            _chaosChecker = new CharacterChaosChecker(_chaosModeSetting.MissionCharacterBehaviour,
+                _chaosModeSetting.OverrideMissionCharacterWeapon);
 
             _defaultWeaponProvider =
                 new CustomWeaponProvider(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
@@ -103,7 +106,7 @@ namespace Inferno.ChaosMode
                 .Where(x => IsActive && x.KeyCode == Keys.F7)
                 .Do(_ =>
                 {
-                    _nextTreatType = (MissionCharacterTreatmentType)(((int)_nextTreatType + 1) % 3);
+                    _nextTreatType = (MissionCharacterBehaviour)(((int)_nextTreatType + 1) % 3);
                     DrawText("CharacterChaos:" + _nextTreatType, 1.1f);
                 })
                 .Throttle(TimeSpan.FromSeconds(1))
@@ -251,10 +254,10 @@ namespace Inferno.ChaosMode
             {
                 return;
             }
-            
+
             //市民の武器を交換する（内部でミッションキャラクタの判定をする）
             GiveWeaponTpPed(ped);
-            
+
             //ここでカオス化して良いか検査する
             if (!_chaosChecker.IsPedChaosAvailable(ped))
             {
@@ -348,7 +351,7 @@ namespace Inferno.ChaosMode
                 float waitTime = Random.Next(3, 20);
                 float checkWaitTime = 100;
                 float stupidShootingTime = 100;
-                var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidPedRate;
+                var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidShootingRate;
 
                 if (isStupidShooting)
                 {
@@ -457,9 +460,11 @@ namespace Inferno.ChaosMode
                 return Array.Empty<Ped>();
             }
 
+            var isCorrectionEnabled = _chaosModeSetting.IsAttackPlayerCorrectionEnabled;
+            
             // 近くのEntityを取得
             var nearPeds = CachedPeds
-                .Concat(new[] { PlayerPed })
+                .Concat( isCorrectionEnabled ? Array.Empty<Ped>() : new[] { PlayerPed })
                 .Where(x => x.IsSafeExist() && x.IsAlive && x != ped)
                 .Where(x => _chaosChecker.IsAttackableEntity(x))
                 .OrderBy(x => (ped.Position - x.Position).Length())
@@ -467,7 +472,7 @@ namespace Inferno.ChaosMode
                 .ToArray();
 
             //プレイヤへの攻撃補正が設定されているならプレイヤをリストに追加する
-            if (_chaosModeSetting.IsAttackPlayerCorrectionEnabled &&
+            if (isCorrectionEnabled &&
                 Random.Next(0, 100) < _chaosModeSetting.AttackPlayerCorrectionProbability)
             {
                 return nearPeds.Concat(new[] { PlayerPed }).ToArray();
@@ -596,7 +601,7 @@ namespace Inferno.ChaosMode
                     ped.Task.FightAgainst(target, 60000);
                     Function.Call(Hash.REGISTER_TARGET, ped, target);
                 }
-                
+
 
                 ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
             }
@@ -663,5 +668,120 @@ namespace Inferno.ChaosMode
                 LogWrite("AttachPedWeaponError!" + e.Message);
             }
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "カオスモード" : "Chaos Mode(Riot Mode)";
+
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.Root;
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
+            subMenu.Width = 780;
+
+            // Radius
+            subMenu.AddSlider(
+                $"Radius:{_chaosModeSetting.Radius}[m]",
+                IsLangJpn
+                    ? "カオス化する市民の探索範囲"
+                    : "Search range of citizens to be riot",
+                _chaosModeSetting.Radius,
+                1000,
+                x => x.Multiplier = 10, item =>
+                {
+                    _chaosModeSetting.Radius = item.Value;
+                    item.Title = $"Radius:{_chaosModeSetting.Radius}[m]";
+                });
+
+            // IsMissionCharacterChangeWeapon
+            subMenu.AddCheckbox(
+                "Override Mission Character Weapon",
+                IsLangJpn
+                    ? "ミッション関係キャラクターの武器を上書きするか\nMissionCharacterBehaviourの設定とは独立して機能します"
+                    : "Override mission character's weapons.\nWorks independently of 'MissionCharacterBehaviour' settings",
+                item => { item.Checked = _chaosModeSetting.OverrideMissionCharacterWeapon; },
+                x => { _chaosModeSetting.OverrideMissionCharacterWeapon = x; });
+
+            // MissionCharacterBehaviour
+            subMenu.AddEnumSlider(
+                "MissionCharacterBehaviour: " + _chaosModeSetting.MissionCharacterBehaviour,
+                IsLangJpn ? "ミッション関係キャラクターに影響を与えるか" : "Whether it affects mission-related characters",
+                _chaosModeSetting.MissionCharacterBehaviour,
+                x =>
+                {
+                    x.Title = "MissionCharacterBehaviour :" + _chaosModeSetting.MissionCharacterBehaviour;
+                    x.Value = (int)_chaosModeSetting.MissionCharacterBehaviour;
+                }, x =>
+                {
+                    _chaosModeSetting.MissionCharacterBehaviour = (MissionCharacterBehaviour)x.Value;
+                    x.Title = "MissionCharacterBehaviour: " + _chaosModeSetting.MissionCharacterBehaviour;
+                });
+
+            // IsAttackPlayerCorrectionEnabled
+            var isAttackPlayerCorrectionCheckbox = subMenu.AddCheckbox(
+                "Attack Player Correction",
+                IsLangJpn
+                    ? "プレイヤーの狙われやすさを補正するか\nOFFの場合は市民との位置関係に応じてプレイヤーが狙われます"
+                    : "Adjust the player's targetability.\nIf OFF, the player will be targeted depending on the position relationship with the ped",
+                item => { item.Checked = _chaosModeSetting.IsAttackPlayerCorrectionEnabled; },
+                x => { _chaosModeSetting.IsAttackPlayerCorrectionEnabled = x; });
+
+            // AttackPlayerCorrectionProbability
+            var attackPlayerCorrectionSlider = subMenu.AddSlider(
+                $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%",
+                IsLangJpn
+                    ? "プレイヤーが狙われる確率"
+                    : "Probability of player being targeted",
+                _chaosModeSetting.AttackPlayerCorrectionProbability,
+                100,
+                x =>
+                {
+                    x.Enabled = _chaosModeSetting.IsAttackPlayerCorrectionEnabled;
+                    x.Multiplier = 5;
+                }, item =>
+                {
+                    _chaosModeSetting.AttackPlayerCorrectionProbability = item.Value;
+                    item.Title =
+                        $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%";
+                });
+
+            isAttackPlayerCorrectionCheckbox.CheckboxChanged += (_, _) =>
+            {
+                attackPlayerCorrectionSlider.Enabled = isAttackPlayerCorrectionCheckbox.Checked;
+            };
+
+            // StupidShootingRate
+            subMenu.AddSlider(
+                $"Stupid Shooting Rate:{_chaosModeSetting.StupidShootingRate}%",
+                IsLangJpn
+                    ? "市民が射線が通っているかを無視して銃を乱射する割合"
+                    : "Probability of peds firing a gun without regard to whether the line of fire is through or not",
+                _chaosModeSetting.StupidShootingRate,
+                100,
+                x => x.Multiplier = 5, item =>
+                {
+                    _chaosModeSetting.StupidShootingRate = item.Value;
+                    item.Title = $"Stupid Shooting Rate:{_chaosModeSetting.StupidShootingRate}%";
+                });
+            
+            // ShootAccuracy
+            subMenu.AddSlider(
+                $"Shoot Accuracy:{_chaosModeSetting.ShootAccuracy}%",
+                IsLangJpn
+                    ? "市民の攻撃の命中精度"
+                    : "Accuracy of ped's attack",
+                _chaosModeSetting.ShootAccuracy,
+                100,
+                x => x.Multiplier = 1, item =>
+                {
+                    _chaosModeSetting.ShootAccuracy = item.Value;
+                    item.Title = $"Shoot Accuracy:{_chaosModeSetting.ShootAccuracy}%";
+                });
+        }
+
+        #endregion
     }
 }

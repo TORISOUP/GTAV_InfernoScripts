@@ -52,5 +52,22 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             parentManu.Add(item);
             return item;
         }
+
+        public static NativeCheckboxItem AddCheckbox(
+            this NativeMenu parentManu,
+            string title,
+            string description = null,
+            Action<NativeCheckboxItem> shown = null,
+            Action<bool> action = null
+        )
+        {
+            var checkbox =
+                new NativeCheckboxItem(title, description);
+
+            checkbox.CheckboxChanged += (_, e) => { action?.Invoke(checkbox.Checked); };
+            parentManu.Shown += (_, _) => { shown?.Invoke(checkbox); };
+            parentManu.Add(checkbox);
+            return checkbox;
+        }
     }
 }

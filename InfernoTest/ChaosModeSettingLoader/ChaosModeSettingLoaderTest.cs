@@ -21,14 +21,14 @@ namespace InfernoTest
             var result = testLoader.LoadSettingFile("");
 
             Assert.Equal(500, result.Radius);
-            Assert.True(result.IsChangeMissionCharacterWeapon);
-            Assert.Equal(MissionCharacterTreatmentType.ExcludeUniqueCharacter,
-                result.DefaultMissionCharacterTreatment);
+            Assert.True(result.OverrideMissionCharacterWeapon);
+            Assert.Equal(MissionCharacterBehaviour.ExcludeUniqueCharacter,
+                result.MissionCharacterBehaviour);
             Assert.False(result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(100, result.AttackPlayerCorrectionProbability);
             Assert.Equal(new[] { Weapon.AdvancedRifle }, result.WeaponList);
             Assert.Equal(new[] { Weapon.Pistol, Weapon.SMGMk2 }, result.WeaponListForDriveBy);
-            Assert.Equal(50, result.StupidPedRate);
+            Assert.Equal(50, result.StupidShootingRate);
             Assert.Equal(10, result.ShootAccuracy);
             Assert.Equal(100, result.WeaponChangeProbability);
             Assert.Equal(30, result.ForceExplosiveWeaponProbability);
@@ -43,7 +43,7 @@ namespace InfernoTest
 
             // 存在する
             Assert.Equal(100, result.Radius);
-            Assert.False(result.IsChangeMissionCharacterWeapon);
+            Assert.False(result.OverrideMissionCharacterWeapon);
             Assert.True(result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(10, result.AttackPlayerCorrectionProbability);
             Assert.Equal(new[] { Weapon.AdvancedRifle }, result.WeaponList);
@@ -52,10 +52,10 @@ namespace InfernoTest
             var settingDefault = new ChaosModeSettingDTO();
 
             // 存在しないものはデフォルト値
-            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
-                result.DefaultMissionCharacterTreatment);
+            Assert.Equal((MissionCharacterBehaviour)settingDefault.MissionCharacterBehaviour,
+                result.MissionCharacterBehaviour);
 
-            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal(settingDefault.StupidShootingRate, result.StupidShootingRate);
             Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
             Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
@@ -72,12 +72,12 @@ namespace InfernoTest
             var settingDefault = new ChaosModeSettingDTO();
 
             Assert.Equal(settingDefault.Radius, result.Radius);
-            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.OverrideMissionCharacterWeapon, result.OverrideMissionCharacterWeapon);
             Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
-            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
-                result.DefaultMissionCharacterTreatment);
-            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal((MissionCharacterBehaviour)settingDefault.MissionCharacterBehaviour,
+                result.MissionCharacterBehaviour);
+            Assert.Equal(settingDefault.StupidShootingRate, result.StupidShootingRate);
             Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
             Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
@@ -98,12 +98,12 @@ namespace InfernoTest
             var settingDefault = new ChaosModeSettingDTO();
 
             Assert.Equal(settingDefault.Radius, result.Radius);
-            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.OverrideMissionCharacterWeapon, result.OverrideMissionCharacterWeapon);
             Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
-            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
-                result.DefaultMissionCharacterTreatment);
-            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal((MissionCharacterBehaviour)settingDefault.MissionCharacterBehaviour,
+                result.MissionCharacterBehaviour);
+            Assert.Equal(settingDefault.StupidShootingRate, result.StupidShootingRate);
             Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
             Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
@@ -123,12 +123,12 @@ namespace InfernoTest
             var settingDefault = new ChaosModeSettingDTO();
 
             Assert.Equal(settingDefault.Radius, result.Radius);
-            Assert.Equal(settingDefault.IsChangeMissionCharacterWeapon, result.IsChangeMissionCharacterWeapon);
+            Assert.Equal(settingDefault.OverrideMissionCharacterWeapon, result.OverrideMissionCharacterWeapon);
             Assert.Equal(settingDefault.IsAttackPlayerCorrectionEnabled, result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(settingDefault.AttackPlayerCorrectionProbability, result.AttackPlayerCorrectionProbability);
-            Assert.Equal((MissionCharacterTreatmentType)settingDefault.DefaultMissionCharacterTreatment,
-                result.DefaultMissionCharacterTreatment);
-            Assert.Equal(settingDefault.StupidPedRate, result.StupidPedRate);
+            Assert.Equal((MissionCharacterBehaviour)settingDefault.MissionCharacterBehaviour,
+                result.MissionCharacterBehaviour);
+            Assert.Equal(settingDefault.StupidShootingRate, result.StupidShootingRate);
             Assert.Equal(settingDefault.ShootAccuracy, result.ShootAccuracy);
             Assert.Equal(settingDefault.WeaponChangeProbability, result.WeaponChangeProbability);
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
