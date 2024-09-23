@@ -47,7 +47,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.SniperRifle,
                 Weapon.StunGun,
                 Weapon.PetrolCan,
-               // Weapon.RailGun,
+                Weapon.RailGun,
                 Weapon.FlareGun,
                 Weapon.MarksmanPistol,
                 Weapon.MachinePistol,
@@ -77,9 +77,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.RPG,
                 Weapon.HomingLauncher,
                 Weapon.Firework,
-             //   Weapon.RailGun,
                 Weapon.CompactLauncher,
-                Weapon.Widowmaker,
                 Weapon.Grenade,
                 Weapon.Molotov,
                 Weapon.StickyBomb,
@@ -89,6 +87,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.FLARE,
                 Weapon.SmokeGrenade,
                 Weapon.PetrolCan,
+                Weapon.RailGun
             };
 
             //近距離系

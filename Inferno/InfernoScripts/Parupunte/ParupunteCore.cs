@@ -598,7 +598,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 }
             }
             subMenu.AddSubMenu(listMenu);
-            InfernoUi.Instance.AddSubMenuToRootMenu(subMenu, listMenu);
+            pool.Add(listMenu);
         }
         
 

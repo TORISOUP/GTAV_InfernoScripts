@@ -228,7 +228,7 @@ namespace Inferno
                     }
                     catch (Exception e)
                     {
-                        LogWrite(e.ToString());
+                        LogWrite($"[{this.GetType()}] " + e.ToString());
                     }
                 })
                 .AddTo(CompositeDisposable);
@@ -248,7 +248,7 @@ namespace Inferno
 
         public IScheduler InfernoScheduler
             => infernoScheduler ??= new InfernoScheduler();
-        
+
 
         /// <summary>
         /// スクリプトが動作中であるか
@@ -673,7 +673,7 @@ namespace Inferno
         #region UI
 
         protected bool IsLangJpn => Game.Language == Language.Japanese;
-        
+
         public virtual bool UseUI => false;
         public virtual string DisplayText => GetType().Name;
         public virtual MenuIndex MenuIndex => MenuIndex.Root;

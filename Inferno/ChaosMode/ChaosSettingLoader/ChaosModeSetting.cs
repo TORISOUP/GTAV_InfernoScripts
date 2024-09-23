@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Inferno.Utilities;
 
@@ -44,12 +45,12 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// 乗車中ではない市民が使用する武器リスト
         /// </summary>
-        public Weapon[] WeaponList { get; set; }
+        public HashSet<Weapon> WeaponList { get; set; }
 
         /// <summary>
         /// ドライブバイで使用する武器リスト
         /// </summary>
-        public Weapon[] WeaponListForDriveBy { get; set; }
+        public HashSet<Weapon> WeaponListForDriveBy { get; set; }
 
         /// <summary>
         /// 棒立ちで銃を乱射する割合
@@ -112,18 +113,18 @@ namespace Inferno.ChaosMode
         /// </summary>
         /// <param name="weaponList"></param>
         /// <returns></returns>
-        protected Weapon[] EnableWeaponListFilter(string[] weaponList)
+        protected HashSet<Weapon> EnableWeaponListFilter(string[] weaponList)
         {
-            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon)));
+            var allWeapons = ((Weapon[])Enum.GetValues(typeof(Weapon))).ToHashSet();
             if (weaponList == null || weaponList.Length == 0)
             {
-                return Array.Empty<Weapon>();
+                return new HashSet<Weapon>();
             }
 
-            var upperCaseWeaponList = weaponList.Select(x => x.ToUpper()).ToArray();
+            var upperCaseWeaponList = weaponList.Select(x => x.ToUpper()).ToHashSet();
 
-            var enableWeapons = allWeapons.Where(x => upperCaseWeaponList.Contains(x.ToString().ToUpper())).ToArray();
-            return enableWeapons.Length > 0 ? enableWeapons : allWeapons;
+            var enableWeapons = allWeapons.Where(x => upperCaseWeaponList.Contains(x.ToString().ToUpper())).ToHashSet();
+            return enableWeapons.Count > 0 ? enableWeapons : allWeapons;
         }
     }
 }

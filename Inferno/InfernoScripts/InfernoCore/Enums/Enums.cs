@@ -133,7 +133,7 @@
         Fire = -544306709,
         Musket = -1466123874,
         MarksmanRifle = -952879014,
-       // RailGun = 1834241177,
+        RailGun = 1834241177,
         FlareGun = 1198879012,
         MarksmanPistol = -598887786,
         MachinePistol = -619010992,

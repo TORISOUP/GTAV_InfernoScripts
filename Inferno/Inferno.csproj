@@ -101,6 +101,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ChaosMode\ChaosMode.cs"/>
+        <Compile Include="ChaosMode\ChaosModeUIBuilder.cs" />
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSetting.cs"/>
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs"/>
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs"/>
