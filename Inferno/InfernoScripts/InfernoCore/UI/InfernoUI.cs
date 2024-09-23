@@ -113,7 +113,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             }
 
             // SubMenuの構築は各スクリプトが頑張る
-            builder.OnUiMenuConstruct(subMenu);
+            builder.OnUiMenuConstruct(_objectPool, subMenu);
             _objectPool.Add(subMenu);
 
             _manuIndex[builder.MenuIndex].AddSubMenu(subMenu);
@@ -126,7 +126,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         {
             _rootMenu.AddSubMenu(menu);
             _objectPool.Add(menu);
-            
+
             if (subs != null)
             {
                 foreach (var sub in subs)

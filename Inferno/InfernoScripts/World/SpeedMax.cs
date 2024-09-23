@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using GTA;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
 using LemonUI.Menus;
 
 namespace Inferno.InfernoScripts.World
@@ -15,7 +16,7 @@ namespace Inferno.InfernoScripts.World
     internal class SpeedMax : InfernoScript
     {
         private readonly HashSet<int> vehicleHashSet = new();
-        private SpeedType currentSpeedType = SpeedType.Max;
+        private SpeedType currentSpeedType = SpeedType.Random;
         private bool excludeMissionVehicle;
         private float radius = 800;
 
@@ -33,7 +34,6 @@ namespace Inferno.InfernoScripts.World
 
             OnAllOnCommandObservable.Subscribe(_ =>
             {
-                currentSpeedType = SpeedType.Random;
                 excludeMissionVehicle = true;
                 IsActive = true;
             });
@@ -214,11 +214,11 @@ namespace Inferno.InfernoScripts.World
 
         public override MenuIndex MenuIndex => MenuIndex.World;
 
-        public override void OnUiMenuConstruct(NativeMenu menu)
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             // スピードタイプ
             {
-                menu.AddEnumSlider($"Type: {currentSpeedType.ToString()}", "", SpeedType.Max,
+                subMenu.AddEnumSlider($"Type: {currentSpeedType.ToString()}", "", SpeedType.Max,
                     x =>
                     {
                         x.Title = $"Type: {currentSpeedType.ToString()}";

@@ -14,6 +14,7 @@ using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 using Inferno.Utilities.Awaiters;
+using LemonUI;
 using LemonUI.Menus;
 using Reactive.Bindings;
 
@@ -247,6 +248,7 @@ namespace Inferno
 
         public IScheduler InfernoScheduler
             => infernoScheduler ??= new InfernoScheduler();
+        
 
         /// <summary>
         /// スクリプトが動作中であるか
@@ -678,9 +680,8 @@ namespace Inferno
 
         public virtual bool CanChangeActive => false;
 
-        public virtual void OnUiMenuConstruct(NativeMenu menu)
+        public virtual void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {
-            return;
         }
 
         bool IScriptUiBuilder.IsActive

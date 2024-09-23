@@ -15,6 +15,7 @@ using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
 using LemonUI.Menus;
 
 namespace Inferno.InfernoScripts.Parupunte
@@ -205,8 +206,6 @@ namespace Inferno.InfernoScripts.Parupunte
                 });
 
             #endregion Drawer
-
-            CreateUI();
         }
 
         // Configファイルの設定を行う
@@ -561,13 +560,15 @@ namespace Inferno.InfernoScripts.Parupunte
 
         #region UI
 
-        public void CreateUI()
-        {
-            var title = IsLangJpn ? "パルプンテ" : "Parupunte";
-            var subMenu = new NativeMenu(title, title,
-                IsLangJpn ? "何が起こるかわからない" : "There is no telling what will happen"
-            );
+        public override bool UseUI => true;
+        public override string DisplayText => IsLangJpn ? "パルプンテ" : "Parupunte";
 
+        public override bool CanChangeActive => false;
+
+        public override MenuIndex MenuIndex => MenuIndex.Root;
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
             var context = InfernoSynchronizationContext;
 
             // パルプンテのランダム実行
@@ -599,6 +600,7 @@ namespace Inferno.InfernoScripts.Parupunte
             subMenu.AddSubMenu(listMenu);
             InfernoUi.Instance.AddSubMenuToRootMenu(subMenu, listMenu);
         }
+        
 
         #endregion
     }

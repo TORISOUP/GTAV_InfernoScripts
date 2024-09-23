@@ -10,6 +10,7 @@ using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
 using LemonUI.Menus;
 using Newtonsoft.Json;
 
@@ -313,10 +314,10 @@ namespace Inferno
 
         public override MenuIndex MenuIndex => MenuIndex.World;
 
-        public override void OnUiMenuConstruct(NativeMenu menu)
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             // 戦闘機の数
-            menu.AddSlider(
+            subMenu.AddSlider(
                 $"Amount of fighters: {config.AirPlaneCount}",
                 IsLangJpn ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要" : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
                 config.AirPlaneCount,

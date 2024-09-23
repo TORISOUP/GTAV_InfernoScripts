@@ -10,6 +10,7 @@ using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
 using LemonUI.Menus;
 using Newtonsoft.Json;
 
@@ -223,12 +224,12 @@ namespace Inferno
 
         public override MenuIndex MenuIndex => MenuIndex.World;
 
-        public override void OnUiMenuConstruct(NativeMenu menu)
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             // 落下範囲
 
 
-            menu.AddSlider(
+            subMenu.AddSlider(
                 $"Range {_config.Radius}[m]",
                 IsLangJpn? "メテオの落下範囲" : "Meteor fall range",
                 _config.Radius,
@@ -241,7 +242,7 @@ namespace Inferno
 
 
             // 落下間隔
-            menu.AddSlider(
+            subMenu.AddSlider(
                 $"Duration {_config.DurationMillSeconds}[ms]",
                 IsLangJpn? "メテオの落下頻度" :"Meteor fall duration",
                 _config.DurationMillSeconds,
@@ -254,7 +255,7 @@ namespace Inferno
 
 
             // 落下確率
-            menu.AddSlider(
+            subMenu.AddSlider(
                 $"Probability {_config.Probability}[%]",
                 IsLangJpn? "メテオの落下確率" :"Meteor fall probability",
                 _config.Probability,
@@ -269,7 +270,7 @@ namespace Inferno
             {
                 var debugItem = new NativeCheckboxItem("Debug", _isDebug);
                 debugItem.CheckboxChanged += (_, e) => _isDebug = debugItem.Checked;
-                menu.Add(debugItem);
+                subMenu.Add(debugItem);
             }
         }
 

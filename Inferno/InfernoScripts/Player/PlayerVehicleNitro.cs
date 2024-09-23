@@ -9,6 +9,7 @@ using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
+using LemonUI;
 using LemonUI.Menus;
 
 namespace Inferno
@@ -169,7 +170,7 @@ namespace Inferno
 
         public override MenuIndex MenuIndex => MenuIndex.Player;
 
-        public override void OnUiMenuConstruct(NativeMenu menu)
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {
             // 直線上の加速
             menu.AddSlider(

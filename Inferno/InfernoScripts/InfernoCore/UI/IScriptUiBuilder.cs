@@ -1,3 +1,4 @@
+using LemonUI;
 using LemonUI.Menus;
 using Reactive.Bindings;
 
@@ -9,22 +10,22 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         /// UIを使うか
         /// </summary>
         bool UseUI { get; }
-        
+
         bool CanChangeActive { get; }
-        
+
         string DisplayText { get; }
-        
+
         MenuIndex MenuIndex { get; }
 
         /// <summary>
         /// SubMenuの構築
         /// </summary>
-        void OnUiMenuConstruct(NativeMenu menu);
-        
+        void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu);
+
         bool IsActive { get; set; }
         IReadOnlyReactiveProperty<bool> IsActiveRP { get; }
     }
-    
+
     public enum MenuIndex
     {
         Root,

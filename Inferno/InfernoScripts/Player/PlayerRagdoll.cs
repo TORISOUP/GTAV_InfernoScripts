@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using GTA;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using LemonUI;
 using LemonUI.Menus;
 
 namespace Inferno
@@ -32,7 +33,7 @@ namespace Inferno
         public override bool CanChangeActive => true;
         public override MenuIndex MenuIndex => MenuIndex.Player;
 
-        public override void OnUiMenuConstruct(NativeMenu menu)
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {
             menu.AddButton(
                 IsLangJpn ? "脱力する" : "Ragdoll",
