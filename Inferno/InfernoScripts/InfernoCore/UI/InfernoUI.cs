@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -25,6 +26,15 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         public InfernoUi()
         {
+            
+            CultureInfo.DefaultThreadCurrentUICulture = 
+                Game.Language switch
+                {
+                    Language.Japanese => new CultureInfo("ja-JP"),
+                    _ => new CultureInfo("en-US")
+                };
+
+            
             Instance = this;
 
             #region Inialize

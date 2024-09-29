@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -36,13 +37,14 @@ namespace Inferno
         private CancellationTokenSource _linkedCancellationTokenSource;
 
         private InfernoSynchronizationContext _infernoSynchronizationContext;
-        private InfernoScheduler infernoScheduler;
+        private InfernoScheduler _infernoScheduler;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         protected InfernoScript()
         {
+            
             // 毎フレーム実行
             Interval = 0;
 
@@ -114,7 +116,7 @@ namespace Inferno
 
                     try
                     {
-                        infernoScheduler?.Run();
+                        _infernoScheduler?.Run();
                     }
                     catch
                     {
@@ -247,7 +249,7 @@ namespace Inferno
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
         public IScheduler InfernoScheduler
-            => infernoScheduler ??= new InfernoScheduler();
+            => _infernoScheduler ??= new InfernoScheduler();
 
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GTA;
 using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using LemonUI;
 using LemonUI.Menus;
 
@@ -27,9 +28,7 @@ namespace Inferno.ChaosMode
             // Radius
             subMenu.AddSlider(
                 $"Radius:{_chaosModeSetting.Radius}[m]",
-                IsLangJpn
-                    ? "カオス化する市民の探索範囲"
-                    : "Search range of citizens to be riot",
+                InfernoResources.UI_ChaosMode_Radius,
                 _chaosModeSetting.Radius,
                 1000,
                 x => x.Multiplier = 10, item =>
@@ -38,19 +37,18 @@ namespace Inferno.ChaosMode
                     item.Title = $"Radius:{_chaosModeSetting.Radius}[m]";
                 });
 
+
             // IsMissionCharacterChangeWeapon
             subMenu.AddCheckbox(
                 "Override Mission Character Weapon",
-                IsLangJpn
-                    ? "ミッション関係キャラクターの武器を上書きするか\nMissionCharacterBehaviourの設定とは独立して機能します"
-                    : "Override mission character's weapons.\nWorks independently of 'MissionCharacterBehaviour' settings",
+                InfernoResources.ChaosMode_OverrideMissionCharacterWeapon,
                 item => { item.Checked = _chaosModeSetting.OverrideMissionCharacterWeapon; },
                 x => { _chaosModeSetting.OverrideMissionCharacterWeapon = x; });
 
             // MissionCharacterBehaviour
             subMenu.AddEnumSlider(
-                "MissionCharacterBehaviour: " + _chaosModeSetting.MissionCharacterBehaviour,
-                IsLangJpn ? "ミッション関係キャラクターに影響を与えるか" : "Whether it affects mission-related characters",
+                "Mission Character Behaviour: " + _chaosModeSetting.MissionCharacterBehaviour,
+                InfernoResources.UI_ChaosMode_MissionCharacterBehaviour,
                 _chaosModeSetting.MissionCharacterBehaviour,
                 x =>
                 {
@@ -65,18 +63,14 @@ namespace Inferno.ChaosMode
             // IsAttackPlayerCorrectionEnabled
             var isAttackPlayerCorrectionCheckbox = subMenu.AddCheckbox(
                 "Attack Player Correction",
-                IsLangJpn
-                    ? "プレイヤーの狙われやすさを補正するか\nOFFの場合は市民との位置関係に応じてプレイヤーが狙われます"
-                    : "Adjust the player's targetability.\nIf OFF, the player will be targeted depending on the position relationship with the ped",
+                InfernoResources.UI_ChaosMode_AttackPlayerCorrection,
                 item => { item.Checked = _chaosModeSetting.IsAttackPlayerCorrectionEnabled; },
                 x => { _chaosModeSetting.IsAttackPlayerCorrectionEnabled = x; });
 
             // AttackPlayerCorrectionProbability
             var attackPlayerCorrectionSlider = subMenu.AddSlider(
                 $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%",
-                IsLangJpn
-                    ? "プレイヤーが狙われる確率"
-                    : "Probability of player being targeted",
+                InfernoResources.UI_ChaosMode_AttackPlayerCorrectionProbability,
                 _chaosModeSetting.AttackPlayerCorrectionProbability,
                 100,
                 x =>
@@ -98,9 +92,7 @@ namespace Inferno.ChaosMode
             // StupidShootingRate
             subMenu.AddSlider(
                 $"Stupid Shooting Rate:{_chaosModeSetting.StupidShootingRate}%",
-                IsLangJpn
-                    ? "市民が射線が通っているかを無視して銃を乱射する割合"
-                    : "Probability of peds firing a gun without regard to whether the line of fire is through or not",
+                InfernoResources.UI_ChaosMode_StupidShootingRate,
                 _chaosModeSetting.StupidShootingRate,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -112,9 +104,7 @@ namespace Inferno.ChaosMode
             // ShootAccuracy
             subMenu.AddSlider(
                 $"Shoot Accuracy:{_chaosModeSetting.ShootAccuracy}%",
-                IsLangJpn
-                    ? "市民の攻撃の命中精度"
-                    : "Accuracy of ped's attack",
+                InfernoResources.UI_ChaosMode_ShootAccuracy,
                 _chaosModeSetting.ShootAccuracy,
                 100,
                 x => x.Multiplier = 1, item =>
@@ -126,9 +116,7 @@ namespace Inferno.ChaosMode
             // WeaponChangeProbability
             subMenu.AddSlider(
                 $"Weapon Change Probability:{_chaosModeSetting.WeaponChangeProbability}%",
-                IsLangJpn
-                    ? "市民が武器を変更する確率"
-                    : "Probability of peds changing weapon",
+                InfernoResources.UI_ChaosMode_WeaponChangeProbability,
                 _chaosModeSetting.WeaponChangeProbability,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -140,9 +128,7 @@ namespace Inferno.ChaosMode
             // ForceExplosiveWeaponProbability
             subMenu.AddSlider(
                 $"Force Explosive Weapon Probability:{_chaosModeSetting.ForceExplosiveWeaponProbability}%",
-                IsLangJpn
-                    ? "爆発系武器が強制的に選択される確率"
-                    : "Probability of explosive weapons being forcibly selected",
+                InfernoResources.UI_ChaosMode_ForceExplosiveWeaponProbability,
                 _chaosModeSetting.ForceExplosiveWeaponProbability,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -155,9 +141,7 @@ namespace Inferno.ChaosMode
             // WeaponDropProbability
             subMenu.AddSlider(
                 $"Weapon Drop Probability:{_chaosModeSetting.WeaponDropProbability}%",
-                IsLangJpn
-                    ? "市民が武器を落とす確率"
-                    : "Probability of peds dropping weapon",
+                InfernoResources.UI_ChaosMode_WeaponDropProbability,
                 _chaosModeSetting.WeaponDropProbability,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -170,7 +154,7 @@ namespace Inferno.ChaosMode
             var weaponListMenu = WeaponListMenu();
             subMenu.AddSubMenu(weaponListMenu);
             pool.Add(weaponListMenu);
-            
+
             // WeaponListForDriveBy
             var weaponListForDriveByMenu = DriveByWeaponListMenu();
             subMenu.AddSubMenu(weaponListForDriveByMenu);
@@ -257,12 +241,12 @@ namespace Inferno.ChaosMode
 
             var allOffButton = new NativeItem("All OFF", "");
             weaponListDriveByMenu.Add(allOffButton);
-            
+
             var filterButton = new NativeItem("Filter by main weapon list", "");
             weaponListDriveByMenu.Add(filterButton);
 
             var list = new Dictionary<Weapon, NativeCheckboxItem>();
-            
+
             // 各チェックボックス生成
             foreach (var weapon in ChaosModeWeapons.DriveByWeapons)
             {
@@ -321,13 +305,13 @@ namespace Inferno.ChaosMode
                 // WeaponListForDriveByのうち、WeaponListに含まれるものだけを残す
                 _chaosModeSetting.WeaponListForDriveBy
                     .RemoveWhere(x => !_chaosModeSetting.WeaponList.Contains(x));
-                
+
                 foreach (var item in list)
                 {
                     item.Value.Checked = _chaosModeSetting.WeaponListForDriveBy.Contains(item.Key);
                 }
             };
-            
+
             return weaponListDriveByMenu;
         }
 
