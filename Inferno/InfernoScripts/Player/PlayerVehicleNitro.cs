@@ -164,7 +164,7 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "ニトロ" : "Player Vehicle NOS";
+        public override string DisplayName => IsLangJpn ? "ニトロ" : "Player Vehicle NOS";
 
         public override bool CanChangeActive => true;
 

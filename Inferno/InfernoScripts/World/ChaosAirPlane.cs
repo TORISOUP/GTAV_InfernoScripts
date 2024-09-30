@@ -308,7 +308,7 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "カオス戦闘機" : "Harassing fighter aircraft";
+        public override string DisplayName => IsLangJpn ? "カオス戦闘機" : "Harassing fighter aircraft";
 
         public override bool CanChangeActive => true;
 

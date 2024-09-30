@@ -208,7 +208,7 @@ namespace Inferno.InfernoScripts.World
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "スピードマックス" : "All vehicles super-accelerated";
+        public override string DisplayName => IsLangJpn ? "スピードマックス" : "All vehicles super-accelerated";
 
         public override bool CanChangeActive => true;
 

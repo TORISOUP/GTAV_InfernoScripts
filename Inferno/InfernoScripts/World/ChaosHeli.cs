@@ -398,7 +398,7 @@ namespace Inferno.InfernoScripts.World
         
         
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "カオスヘリ" : "Harassing helicopter";
+        public override string DisplayName => IsLangJpn ? "カオスヘリ" : "Harassing helicopter";
 
         public override bool CanChangeActive => true;
         public override MenuIndex MenuIndex => MenuIndex.World;

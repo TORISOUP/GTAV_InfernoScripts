@@ -13,7 +13,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         bool CanChangeActive { get; }
 
-        string DisplayText { get; }
+        string DisplayName { get; }
 
         MenuIndex MenuIndex { get; }
 
@@ -24,6 +24,8 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         bool IsActive { get; set; }
         IReadOnlyReactiveProperty<bool> IsActiveRP { get; }
+        
+        string Description { get; }
     }
 
     public enum MenuIndex

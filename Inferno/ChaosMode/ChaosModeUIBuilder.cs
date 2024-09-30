@@ -12,8 +12,10 @@ namespace Inferno.ChaosMode
     public sealed class ChaosModeUIBuilder : IDisposable
     {
         private readonly ChaosModeSetting _chaosModeSetting;
-        private bool IsLangJpn => Game.Language == Language.Japanese;
 
+        public string DisplayName => ChaosModeLocalize.DisplayName;
+        public string Description => ChaosModeLocalize.Description;
+        
         public Action OnChangeWeaponSetting { get; set; }
 
         public ChaosModeUIBuilder(ChaosModeSetting chaosModeSetting)
@@ -28,7 +30,7 @@ namespace Inferno.ChaosMode
             // Radius
             subMenu.AddSlider(
                 $"Radius:{_chaosModeSetting.Radius}[m]",
-                InfernoResources.UI_ChaosMode_Radius,
+                ChaosModeLocalize.Radius,
                 _chaosModeSetting.Radius,
                 1000,
                 x => x.Multiplier = 10, item =>
@@ -41,14 +43,14 @@ namespace Inferno.ChaosMode
             // IsMissionCharacterChangeWeapon
             subMenu.AddCheckbox(
                 "Override Mission Character Weapon",
-                InfernoResources.ChaosMode_OverrideMissionCharacterWeapon,
+                ChaosModeLocalize.OverrideMissionCharacterWeapon,
                 item => { item.Checked = _chaosModeSetting.OverrideMissionCharacterWeapon; },
                 x => { _chaosModeSetting.OverrideMissionCharacterWeapon = x; });
 
             // MissionCharacterBehaviour
             subMenu.AddEnumSlider(
                 "Mission Character Behaviour: " + _chaosModeSetting.MissionCharacterBehaviour,
-                InfernoResources.UI_ChaosMode_MissionCharacterBehaviour,
+                ChaosModeLocalize.MissionCharacterBehaviour,
                 _chaosModeSetting.MissionCharacterBehaviour,
                 x =>
                 {
@@ -63,14 +65,14 @@ namespace Inferno.ChaosMode
             // IsAttackPlayerCorrectionEnabled
             var isAttackPlayerCorrectionCheckbox = subMenu.AddCheckbox(
                 "Attack Player Correction",
-                InfernoResources.UI_ChaosMode_AttackPlayerCorrection,
+                ChaosModeLocalize.AttackPlayerCorrection,
                 item => { item.Checked = _chaosModeSetting.IsAttackPlayerCorrectionEnabled; },
                 x => { _chaosModeSetting.IsAttackPlayerCorrectionEnabled = x; });
 
             // AttackPlayerCorrectionProbability
             var attackPlayerCorrectionSlider = subMenu.AddSlider(
                 $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%",
-                InfernoResources.UI_ChaosMode_AttackPlayerCorrectionProbability,
+                ChaosModeLocalize.AttackPlayerCorrectionProbability,
                 _chaosModeSetting.AttackPlayerCorrectionProbability,
                 100,
                 x =>
@@ -92,7 +94,7 @@ namespace Inferno.ChaosMode
             // StupidShootingRate
             subMenu.AddSlider(
                 $"Stupid Shooting Rate:{_chaosModeSetting.StupidShootingRate}%",
-                InfernoResources.UI_ChaosMode_StupidShootingRate,
+                ChaosModeLocalize.StupidShootingRate,
                 _chaosModeSetting.StupidShootingRate,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -104,7 +106,7 @@ namespace Inferno.ChaosMode
             // ShootAccuracy
             subMenu.AddSlider(
                 $"Shoot Accuracy:{_chaosModeSetting.ShootAccuracy}%",
-                InfernoResources.UI_ChaosMode_ShootAccuracy,
+                ChaosModeLocalize.ShootAccuracy,
                 _chaosModeSetting.ShootAccuracy,
                 100,
                 x => x.Multiplier = 1, item =>
@@ -116,7 +118,7 @@ namespace Inferno.ChaosMode
             // WeaponChangeProbability
             subMenu.AddSlider(
                 $"Weapon Change Probability:{_chaosModeSetting.WeaponChangeProbability}%",
-                InfernoResources.UI_ChaosMode_WeaponChangeProbability,
+                ChaosModeLocalize.WeaponChangeProbability,
                 _chaosModeSetting.WeaponChangeProbability,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -128,7 +130,7 @@ namespace Inferno.ChaosMode
             // ForceExplosiveWeaponProbability
             subMenu.AddSlider(
                 $"Force Explosive Weapon Probability:{_chaosModeSetting.ForceExplosiveWeaponProbability}%",
-                InfernoResources.UI_ChaosMode_ForceExplosiveWeaponProbability,
+                ChaosModeLocalize.ForceExplosiveWeaponProbability,
                 _chaosModeSetting.ForceExplosiveWeaponProbability,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -138,10 +140,12 @@ namespace Inferno.ChaosMode
                         $"Force Explosive Weapon Probability:{_chaosModeSetting.ForceExplosiveWeaponProbability}%";
                 });
 
+                
+                
             // WeaponDropProbability
             subMenu.AddSlider(
                 $"Weapon Drop Probability:{_chaosModeSetting.WeaponDropProbability}%",
-                InfernoResources.UI_ChaosMode_WeaponDropProbability,
+                ChaosModeLocalize.WeaponDropProbability,
                 _chaosModeSetting.WeaponDropProbability,
                 100,
                 x => x.Multiplier = 5, item =>

@@ -26,15 +26,14 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         public InfernoUi()
         {
-            
-            CultureInfo.DefaultThreadCurrentUICulture = 
+            CultureInfo.DefaultThreadCurrentUICulture =
                 Game.Language switch
                 {
                     Language.Japanese => new CultureInfo("ja-JP"),
                     _ => new CultureInfo("en-US")
                 };
 
-            
+
             Instance = this;
 
             #region Inialize
@@ -107,11 +106,12 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 return;
             }
 
-            var subMenu = new NativeMenu(builder.DisplayText, builder.DisplayText);
+            var subMenu = new NativeMenu(builder.DisplayName, builder.DisplayName, builder.Description);
 
             if (builder.CanChangeActive)
             {
                 var item = new NativeCheckboxItem("Active", builder.IsActive);
+                item.Description = builder.Description;
                 item.CheckboxChanged += (_, e) => builder.IsActive = item.Checked;
                 subMenu.Add(item);
                 builder.IsActiveRP.Subscribe(x =>

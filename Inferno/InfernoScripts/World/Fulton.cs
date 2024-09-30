@@ -361,7 +361,7 @@ namespace Inferno
         #endregion 生成
         
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "フルトン回収" : "Fulton STARS";
+        public override string DisplayName => IsLangJpn ? "フルトン回収" : "Fulton STARS";
 
         public override bool CanChangeActive => true;
 

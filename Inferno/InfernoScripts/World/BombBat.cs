@@ -168,7 +168,7 @@ namespace Inferno.InfernoScripts.World
         }
         
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "ボンバット" : "Bomb baseball bat";
+        public override string DisplayName => IsLangJpn ? "ボンバット" : "Bomb baseball bat";
 
         public override bool CanChangeActive => true;
         public override MenuIndex MenuIndex => MenuIndex.World;

@@ -21,14 +21,14 @@ namespace Inferno.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class InfernoResources {
+    internal class ChaosModeLocalize {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal InfernoResources() {
+        internal ChaosModeLocalize() {
         }
         
         /// <summary>
@@ -38,7 +38,7 @@ namespace Inferno.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Inferno.Properties.InfernoResources", typeof(InfernoResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Inferno.Properties.ChaosModeLocalize", typeof(ChaosModeLocalize).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,40 +60,48 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Override mission character&apos;s weapons.
-        ///Works independently of &apos;MissionCharacterBehaviour&apos; settings..
-        /// </summary>
-        internal static string ChaosMode_OverrideMissionCharacterWeapon {
-            get {
-                return ResourceManager.GetString("ChaosMode_OverrideMissionCharacterWeapon", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Adjust the player&apos;s targetability.
         ///If OFF, the player will be targeted depending on the position relationship with the ped..
         /// </summary>
-        internal static string UI_ChaosMode_AttackPlayerCorrection {
+        internal static string AttackPlayerCorrection {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_AttackPlayerCorrection", resourceCulture);
+                return ResourceManager.GetString("AttackPlayerCorrection", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Probability of player being targeted..
         /// </summary>
-        internal static string UI_ChaosMode_AttackPlayerCorrectionProbability {
+        internal static string AttackPlayerCorrectionProbability {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_AttackPlayerCorrectionProbability", resourceCulture);
+                return ResourceManager.GetString("AttackPlayerCorrectionProbability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pedestrians near the player become armed and attacking..
+        /// </summary>
+        internal static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ChaosMode( Riot Mode).
+        /// </summary>
+        internal static string DisplayName {
+            get {
+                return ResourceManager.GetString("DisplayName", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Probability of explosive weapons being forcibly selected..
         /// </summary>
-        internal static string UI_ChaosMode_ForceExplosiveWeaponProbability {
+        internal static string ForceExplosiveWeaponProbability {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_ForceExplosiveWeaponProbability", resourceCulture);
+                return ResourceManager.GetString("ForceExplosiveWeaponProbability", resourceCulture);
             }
         }
         
@@ -103,9 +111,9 @@ namespace Inferno.Properties {
         /// -ExcludeUniqueCharacter: Exclude named characters and important mission characters.
         /// -ExcludeAllMissionCharacter: Exclude all mission-related characters..
         /// </summary>
-        internal static string UI_ChaosMode_MissionCharacterBehaviour {
+        internal static string MissionCharacterBehaviour {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_MissionCharacterBehaviour", resourceCulture);
+                return ResourceManager.GetString("MissionCharacterBehaviour", resourceCulture);
             }
         }
         
@@ -113,54 +121,54 @@ namespace Inferno.Properties {
         ///   Looks up a localized string similar to Override mission character&apos;s weapons.
         ///Works independently of &apos;MissionCharacterBehaviour&apos; settings..
         /// </summary>
-        internal static string UI_ChaosMode_OverrideMissionCharacterWeapon {
+        internal static string OverrideMissionCharacterWeapon {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_OverrideMissionCharacterWeapon", resourceCulture);
+                return ResourceManager.GetString("OverrideMissionCharacterWeapon", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Radius of rioting..
         /// </summary>
-        internal static string UI_ChaosMode_Radius {
+        internal static string Radius {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_Radius", resourceCulture);
+                return ResourceManager.GetString("Radius", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Accuracy of ped&apos;s attack..
         /// </summary>
-        internal static string UI_ChaosMode_ShootAccuracy {
+        internal static string ShootAccuracy {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_ShootAccuracy", resourceCulture);
+                return ResourceManager.GetString("ShootAccuracy", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Probability of peds firing a gun without regard to whether the line of fire is through or not..
         /// </summary>
-        internal static string UI_ChaosMode_StupidShootingRate {
+        internal static string StupidShootingRate {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_StupidShootingRate", resourceCulture);
+                return ResourceManager.GetString("StupidShootingRate", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Probability of peds changing weapon..
         /// </summary>
-        internal static string UI_ChaosMode_WeaponChangeProbability {
+        internal static string WeaponChangeProbability {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_WeaponChangeProbability", resourceCulture);
+                return ResourceManager.GetString("WeaponChangeProbability", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Probability of peds dropping weapon..
         /// </summary>
-        internal static string UI_ChaosMode_WeaponDropProbability {
+        internal static string WeaponDropProbability {
             get {
-                return ResourceManager.GetString("UI_ChaosMode_WeaponDropProbability", resourceCulture);
+                return ResourceManager.GetString("WeaponDropProbability", resourceCulture);
             }
         }
     }

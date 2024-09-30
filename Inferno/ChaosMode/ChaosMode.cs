@@ -22,9 +22,7 @@ namespace Inferno.ChaosMode
         /// カオス化済み市民一覧
         /// </summary>
         private readonly HashSet<Ped> chaosedPedList = new();
-
-        private readonly List<uint> coroutineIds = new();
-
+        
         private readonly uint[] fishHashes =
         {
             (uint)PedHash.Fish,
@@ -686,7 +684,9 @@ namespace Inferno.ChaosMode
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "カオスモード" : "Chaos Mode(Riot Mode)";
+        public override string DisplayName => _uiBuilder.DisplayName;
+        
+        public override string Description => _uiBuilder.Description;
 
         public override bool CanChangeActive => true;
 

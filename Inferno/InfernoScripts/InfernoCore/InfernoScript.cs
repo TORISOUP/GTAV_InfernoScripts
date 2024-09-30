@@ -677,7 +677,7 @@ namespace Inferno
         protected bool IsLangJpn => Game.Language == Language.Japanese;
 
         public virtual bool UseUI => false;
-        public virtual string DisplayText => GetType().Name;
+        public virtual string DisplayName => GetType().Name;
         public virtual MenuIndex MenuIndex => MenuIndex.Root;
 
         public virtual bool CanChangeActive => false;
@@ -691,6 +691,8 @@ namespace Inferno
             get => IsActive;
             set { _infernoSynchronizationContext.Post(_ => { IsActive = value; }, null); }
         }
+
+        public virtual string Description => GetType().Name;
 
         #endregion
     }

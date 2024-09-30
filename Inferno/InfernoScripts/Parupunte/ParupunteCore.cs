@@ -561,7 +561,7 @@ namespace Inferno.InfernoScripts.Parupunte
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "パルプンテ" : "Parupunte";
+        public override string DisplayName => IsLangJpn ? "パルプンテ" : "Parupunte";
 
         public override bool CanChangeActive => false;
 

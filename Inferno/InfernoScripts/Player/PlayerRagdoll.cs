@@ -29,7 +29,7 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "脱力" : "Player ragdoll";
+        public override string DisplayName => IsLangJpn ? "脱力" : "Player ragdoll";
         public override bool CanChangeActive => true;
         public override MenuIndex MenuIndex => MenuIndex.Player;
 

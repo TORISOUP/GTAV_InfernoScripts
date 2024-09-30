@@ -18,43 +18,45 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="ChaosMode_OverrideMissionCharacterWeapon" xml:space="preserve">
+    <data name="OverrideMissionCharacterWeapon" xml:space="preserve">
         <value>Override mission character's weapons.
 Works independently of 'MissionCharacterBehaviour' settings.</value>
     </data>
-    <data name="UI_ChaosMode_OverrideMissionCharacterWeapon" xml:space="preserve">
-        <value>Override mission character's weapons.
-Works independently of 'MissionCharacterBehaviour' settings.</value>
-    </data>
-    <data name="UI_ChaosMode_MissionCharacterBehaviour" xml:space="preserve">
+    <data name="MissionCharacterBehaviour" xml:space="preserve">
         <value>Whether it affects mission-related characters.
  -AffectAllCharacter: Include all mission-related characters.
  -ExcludeUniqueCharacter: Exclude named characters and important mission characters.
  -ExcludeAllMissionCharacter: Exclude all mission-related characters.</value>
     </data>
-    <data name="UI_ChaosMode_AttackPlayerCorrection" xml:space="preserve">
+    <data name="AttackPlayerCorrection" xml:space="preserve">
         <value>Adjust the player's targetability.
 If OFF, the player will be targeted depending on the position relationship with the ped.</value>
     </data>
-    <data name="UI_ChaosMode_AttackPlayerCorrectionProbability" xml:space="preserve">
+    <data name="AttackPlayerCorrectionProbability" xml:space="preserve">
         <value>Probability of player being targeted.</value>
     </data>
-    <data name="UI_ChaosMode_StupidShootingRate" xml:space="preserve">
+    <data name="StupidShootingRate" xml:space="preserve">
         <value>Probability of peds firing a gun without regard to whether the line of fire is through or not.</value>
     </data>
-    <data name="UI_ChaosMode_ShootAccuracy" xml:space="preserve">
+    <data name="ShootAccuracy" xml:space="preserve">
         <value>Accuracy of ped's attack.</value>
     </data>
-    <data name="UI_ChaosMode_WeaponChangeProbability" xml:space="preserve">
+    <data name="WeaponChangeProbability" xml:space="preserve">
         <value>Probability of peds changing weapon.</value>
     </data>
-    <data name="UI_ChaosMode_ForceExplosiveWeaponProbability" xml:space="preserve">
+    <data name="ForceExplosiveWeaponProbability" xml:space="preserve">
         <value>Probability of explosive weapons being forcibly selected.</value>
     </data>
-    <data name="UI_ChaosMode_WeaponDropProbability" xml:space="preserve">
+    <data name="WeaponDropProbability" xml:space="preserve">
         <value>Probability of peds dropping weapon.</value>
     </data>
-    <data name="UI_ChaosMode_Radius" xml:space="preserve">
+    <data name="Radius" xml:space="preserve">
         <value>Radius of rioting.</value>
+    </data>
+    <data name="DisplayName" xml:space="preserve">
+        <value>ChaosMode( Riot Mode)</value>
+    </data>
+    <data name="Description" xml:space="preserve">
+        <value>Pedestrians near the player become armed and attacking.</value>
     </data>
 </root>

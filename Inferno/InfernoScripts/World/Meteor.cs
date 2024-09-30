@@ -218,7 +218,7 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayText => IsLangJpn ? "メテオ" : "Meteor";
+        public override string DisplayName => IsLangJpn ? "メテオ" : "Meteor";
 
         public override bool CanChangeActive => true;
 
