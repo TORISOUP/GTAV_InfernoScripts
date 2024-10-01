@@ -107,7 +107,6 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         public bool IsActive { get; private set; } = true;
 
-        private bool _isUpdateAsyncActive = false;
         private object _gateUpdateAsync = new();
 
         protected IObservable<Unit> OnUpdateAsObservable

@@ -230,6 +230,26 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\WorldModLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>WorldModLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\ParupunteLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ParupunteLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\PlayerVehicleNitroLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PlayerVehicleNitroLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\SpeedMaxLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>SpeedMaxLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Utilities\Awaiters\TimeAwaiter.cs" />
         <Compile Include="Utilities\Awaiters\StepAwaiter.cs" />
         <Compile Include="Utilities\Http\SimpleJsonHttpServer.cs" />
@@ -257,6 +277,34 @@
       <EmbeddedResource Include="Properties\ChaosModeLocalize.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ChaosModeLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\WorldModLocalize.ja.resx">
+        <DependentUpon>WorldModLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\WorldModLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>WorldModLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ParupunteLocalize.ja.resx">
+        <DependentUpon>ParupunteLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ParupunteLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ParupunteLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerVehicleNitroLocalize.ja.resx">
+        <DependentUpon>PlayerVehicleNitroLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerVehicleNitroLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlayerVehicleNitroLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\SpeedMaxLocalize.ja.resx">
+        <DependentUpon>SpeedMaxLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\SpeedMaxLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SpeedMaxLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

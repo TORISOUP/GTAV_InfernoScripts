@@ -9,6 +9,7 @@ using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -218,7 +219,9 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "メテオ" : "Meteor";
+        public override string DisplayName => WorldModLocalize.DisplayName;
+
+        public override string Description => WorldModLocalize.Description;
 
         public override bool CanChangeActive => true;
 
@@ -231,7 +234,7 @@ namespace Inferno
 
             subMenu.AddSlider(
                 $"Range {_config.Radius}[m]",
-                IsLangJpn? "メテオの落下範囲" : "Meteor fall range",
+                WorldModLocalize.Range,
                 _config.Radius,
                 100,
                 x => x.Multiplier = 5, item =>
@@ -244,7 +247,7 @@ namespace Inferno
             // 落下間隔
             subMenu.AddSlider(
                 $"Duration {_config.DurationMillSeconds}[ms]",
-                IsLangJpn? "メテオの落下頻度" :"Meteor fall duration",
+                WorldModLocalize.Duration,
                 _config.DurationMillSeconds,
                 10000,
                 x => x.Multiplier = 100, item =>
@@ -257,7 +260,7 @@ namespace Inferno
             // 落下確率
             subMenu.AddSlider(
                 $"Probability {_config.Probability}[%]",
-                IsLangJpn? "メテオの落下確率" :"Meteor fall probability",
+                WorldModLocalize.Probability,
                 _config.Probability,
                 100,
                 x => x.Multiplier = 5, item =>

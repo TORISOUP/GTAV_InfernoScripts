@@ -15,10 +15,9 @@ namespace Inferno.InfernoScripts.World
 {
     internal class SpeedMax : InfernoScript
     {
-        private readonly HashSet<int> vehicleHashSet = new();
-        private SpeedType currentSpeedType = SpeedType.Random;
-        private bool excludeMissionVehicle;
-        private float radius = 800;
+        private readonly HashSet<int> _vehicleHashSet = new();
+        private SpeedType _currentSpeedType = SpeedType.Random;
+        private bool _excludeMissionVehicle;
 
         protected override void Setup()
         {
@@ -26,15 +25,15 @@ namespace Inferno.InfernoScripts.World
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText($"SpeedMax:{IsActive}[Type:{currentSpeedType}][Exclude:{excludeMissionVehicle}]");
+                    DrawText($"SpeedMax:{IsActive}[Type:{_currentSpeedType}][Exclude:{_excludeMissionVehicle}]");
                 });
 
             IsActiveRP
-                .Subscribe(x => { vehicleHashSet.Clear(); });
+                .Subscribe(x => { _vehicleHashSet.Clear(); });
 
             OnAllOnCommandObservable.Subscribe(_ =>
             {
-                excludeMissionVehicle = true;
+                _excludeMissionVehicle = true;
                 IsActive = true;
             });
 
@@ -49,13 +48,13 @@ namespace Inferno.InfernoScripts.World
                                  .Where(x =>
                                      x.IsSafeExist()
                                      && x.IsInRangeOf(PlayerPed.Position, 100.0f)
-                                     && !vehicleHashSet.Contains(x.Handle)
-                                     && !(excludeMissionVehicle && x.IsPersistent)
+                                     && !_vehicleHashSet.Contains(x.Handle)
+                                     && !(_excludeMissionVehicle && x.IsPersistent)
                                  ))
                     {
-                        vehicleHashSet.Add(v.Handle);
+                        _vehicleHashSet.Add(v.Handle);
 
-                        if (currentSpeedType == SpeedType.Random)
+                        if (_currentSpeedType == SpeedType.Random)
                         {
                             if (Random.Next(0, 100) < 90)
                             {
@@ -64,7 +63,7 @@ namespace Inferno.InfernoScripts.World
                             }
                         }
 
-                        if (currentSpeedType == SpeedType.Max)
+                        if (_currentSpeedType == SpeedType.Max)
                         {
                             OriginalSpeedMaxAsync(v, ActivationCancellationToken).Forget();
                         }
@@ -74,7 +73,7 @@ namespace Inferno.InfernoScripts.World
                         }
                     }
                 });
-            var nextType = currentSpeedType;
+            var nextType = _currentSpeedType;
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F6)
                 .Do(_ =>
@@ -89,9 +88,9 @@ namespace Inferno.InfernoScripts.World
                 .Where(x => IsActive && x.KeyCode == Keys.F5)
                 .Subscribe(_ =>
                 {
-                    excludeMissionVehicle = !excludeMissionVehicle;
-                    vehicleHashSet.Clear();
-                    DrawText($"SpeedMax:ExcludeMissionVehicles[{excludeMissionVehicle}]");
+                    _excludeMissionVehicle = !_excludeMissionVehicle;
+                    _vehicleHashSet.Clear();
+                    DrawText($"SpeedMax:ExcludeMissionVehicles[{_excludeMissionVehicle}]");
                 });
 
             OnThinnedTickAsObservable
@@ -99,7 +98,7 @@ namespace Inferno.InfernoScripts.World
                 .Select(_ => PlayerPed.IsAlive)
                 .DistinctUntilChanged()
                 .Where(x => x)
-                .Subscribe(_ => vehicleHashSet.Clear());
+                .Subscribe(_ => _vehicleHashSet.Clear());
 
             //ミッションが始まった時にしばらく動作を止める
             OnThinnedTickAsObservable
@@ -114,9 +113,9 @@ namespace Inferno.InfernoScripts.World
 
         private void ChangeSpeedType(SpeedType nextType)
         {
-            currentSpeedType = nextType;
-            DrawText($"SpeedMax:[Type:{currentSpeedType}]", 2.0f);
-            vehicleHashSet.Clear();
+            _currentSpeedType = nextType;
+            DrawText($"SpeedMax:[Type:{_currentSpeedType}]", 2.0f);
+            _vehicleHashSet.Clear();
         }
 
         /// <summary>
@@ -139,7 +138,7 @@ namespace Inferno.InfernoScripts.World
             }
             finally
             {
-                vehicleHashSet.Remove(v.Handle);
+                _vehicleHashSet.Remove(v.Handle);
             }
         }
 
@@ -169,7 +168,7 @@ namespace Inferno.InfernoScripts.World
             }
             finally
             {
-                vehicleHashSet.Remove(v.Handle);
+                _vehicleHashSet.Remove(v.Handle);
             }
         }
 
@@ -180,7 +179,7 @@ namespace Inferno.InfernoScripts.World
 
         private float GetVehicleSpeed()
         {
-            switch (currentSpeedType)
+            switch (_currentSpeedType)
             {
                 case SpeedType.Low:
                     return Random.Next(50, 100);
@@ -218,16 +217,16 @@ namespace Inferno.InfernoScripts.World
         {
             // スピードタイプ
             {
-                subMenu.AddEnumSlider($"Type: {currentSpeedType.ToString()}", "", SpeedType.Max,
+                subMenu.AddEnumSlider($"Type: {_currentSpeedType.ToString()}", "", SpeedType.Max,
                     x =>
                     {
-                        x.Title = $"Type: {currentSpeedType.ToString()}";
-                        x.Value = (int)currentSpeedType;
+                        x.Title = $"Type: {_currentSpeedType.ToString()}";
+                        x.Value = (int)_currentSpeedType;
                     }, x =>
                     {
                         ChangeSpeedType((SpeedType)x.Value);
-                        vehicleHashSet.Clear();
-                        x.Title = $"Type: {currentSpeedType.ToString()}";
+                        _vehicleHashSet.Clear();
+                        x.Title = $"Type: {_currentSpeedType.ToString()}";
                     });
             }
         }
