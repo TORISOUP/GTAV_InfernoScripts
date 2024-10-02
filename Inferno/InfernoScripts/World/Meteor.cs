@@ -230,14 +230,16 @@ namespace Inferno
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             // 落下範囲
-
-
             subMenu.AddSlider(
                 $"Range {_config.Radius}[m]",
                 WorldModLocalize.Range,
                 _config.Radius,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _config.Radius;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     item.Title = $"Range {item.Value}[m]";
                     _config.Radius = item.Value;
@@ -250,7 +252,11 @@ namespace Inferno
                 WorldModLocalize.Duration,
                 _config.DurationMillSeconds,
                 10000,
-                x => x.Multiplier = 100, item =>
+                x =>
+                {
+                    x.Value = _config.DurationMillSeconds;
+                    x.Multiplier = 100;
+                }, item =>
                 {
                     item.Title = $"Duration {item.Value}[ms]";
                     _config.DurationMillSeconds = item.Value;
@@ -263,7 +269,11 @@ namespace Inferno
                 WorldModLocalize.Probability,
                 _config.Probability,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _config.Probability;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     item.Title = $"Probability {item.Value}[%]";
                     _config.Probability = item.Value;
@@ -275,6 +285,19 @@ namespace Inferno
                 debugItem.CheckboxChanged += (_, e) => _isDebug = debugItem.Checked;
                 subMenu.Add(debugItem);
             }
+
+            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+            {
+                _config = LoadDefaultConfig<MeteorConfig>();
+                subMenu.Visible = false;
+                subMenu.Visible = true;
+            });
+
+            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            {
+                SaveConfig(_config);
+                DrawText($"Saved to {ConfigFileName}");
+            });
         }
 
         #endregion

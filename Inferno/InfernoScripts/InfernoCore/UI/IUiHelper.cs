@@ -45,10 +45,12 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             this NativeMenu parentManu,
             string title,
             string description = null,
-            Action action = null)
+            Action<NativeItem> action = null,
+            Action<NativeItem> shown = null)
         {
             var item = new NativeItem(title, description);
-            item.Activated += (_, _) => { action?.Invoke(); };
+            item.Activated += (_, _) => { action?.Invoke(item); };
+            parentManu.Shown += (_, _) => { shown?.Invoke(item); };
             parentManu.Add(item);
             return item;
         }

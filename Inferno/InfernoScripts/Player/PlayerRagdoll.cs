@@ -38,7 +38,7 @@ namespace Inferno
             menu.AddButton(
                 IsLangJpn ? "脱力する" : "Ragdoll",
                 IsLangJpn ? "プレイヤーを脱力状態にします" : "Set player to ragdoll",
-                () => Game.Player.Character.SetToRagdoll()
+                _ => Game.Player.Character.SetToRagdoll()
             );
         }
 

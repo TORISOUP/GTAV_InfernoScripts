@@ -297,12 +297,29 @@ namespace Inferno
                 throw new Exception("設定ファイル名が設定されていません");
             }
 
-            var loader = new InfernoConfigLoader<T>();
+            var loader = new InfernoConfigReadWriter<T>();
             var dto = loader.LoadSettingFile(ConfigFileName);
             //バリデーションに引っかかったらデフォルト値を返す
             return dto.Validate() ? dto : new T();
         }
 
+        protected T LoadDefaultConfig<T>() where T : InfernoConfig, new()
+        {
+            return new T();
+        }
+        
+        protected void SaveConfig<T>(T setting) where T : InfernoConfig, new()
+        {
+            if (string.IsNullOrEmpty(ConfigFileName))
+            {
+                throw new Exception("設定ファイル名が設定されていません");
+            }
+
+            var loader = new InfernoConfigReadWriter<T>();
+            loader.SaveSettingFile(ConfigFileName, setting);
+        }
+        
+        
         /// <summary>
         /// 初期化処理はここに書く
         /// </summary>

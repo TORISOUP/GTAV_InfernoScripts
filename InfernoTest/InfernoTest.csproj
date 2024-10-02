@@ -84,7 +84,7 @@
         <Otherwise />
     </Choose>
     <ItemGroup>
-        <Compile Include="ChaosModeSettingLoader\ChaosModeSettingLoaderTest.cs" />
+        <Compile Include="ChaosModeSettingLoader\ChaosModeSettingReadWriterTest.cs" />
         <Compile Include="ChaosModeSettingLoader\ChaosModeSettingTest.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>

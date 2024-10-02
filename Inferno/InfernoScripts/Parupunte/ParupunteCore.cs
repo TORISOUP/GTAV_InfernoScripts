@@ -573,11 +573,11 @@ namespace Inferno.InfernoScripts.Parupunte
 
             // パルプンテのランダム実行
             subMenu.AddButton("Start", IsLangJpn ? "ランダムに実行" : "Start random",
-                () => { context.Post(_ => ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken), null); });
+                _ => { context.Post(_ => ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken), null); });
 
             // パルプンテの停止
             subMenu.AddButton("Stop", IsLangJpn ? "実行中のパルプンテを停止" : "Stop the running parupunte",
-                () => { context.Post(_ => ParupunteStop(), null); });
+                _ => { context.Post(_ => ParupunteStop(), null); });
 
             // リスト一覧作成
             var listMenu = new NativeMenu("Effect list", "Effect list");

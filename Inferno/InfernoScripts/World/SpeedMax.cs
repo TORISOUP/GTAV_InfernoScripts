@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -229,6 +230,7 @@ namespace Inferno.InfernoScripts.World
                         x.Title = $"Type: {_currentSpeedType.ToString()}";
                     });
             }
+            
         }
 
         #endregion

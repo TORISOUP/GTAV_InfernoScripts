@@ -9,6 +9,7 @@ using GTA.Math;
 using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -322,13 +323,30 @@ namespace Inferno
                 IsLangJpn ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要" : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
                 config.AirPlaneCount,
                 30,
-                x => x.Multiplier = 1, item =>
+                x =>
+                {
+                    x.Value = config.AirPlaneCount;
+                    x.Multiplier = 1;
+                }, item =>
                 {
                     config.AirPlaneCount = item.Value;
                     item.Title = $"Amount of fighters: {config.AirPlaneCount}";
                     IsActive = false;
                 });
 
+            
+            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+            {
+                config = LoadDefaultConfig<ChaosAirPlaneConfig>();
+                subMenu.Visible = false;
+                subMenu.Visible = true;
+            });
+
+            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            {
+                SaveConfig(config);
+                DrawText($"Saved to {ConfigFileName}");
+            });
 
         }
 

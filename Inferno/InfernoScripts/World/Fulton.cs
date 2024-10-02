@@ -13,7 +13,10 @@ using GTA.Native;
 using Inferno.ChaosMode;
 using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
+using LemonUI;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -295,6 +298,11 @@ namespace Inferno
 
         private void SpawnCitizen()
         {
+            if (motherBasePeds.Count == 0)
+            {
+                return;
+            }
+
             var hash = motherBasePeds.Dequeue();
             DrawText($"残り: {motherBasePeds.Count}人/{motherbaseVeh.Count}台");
 
@@ -313,6 +321,7 @@ namespace Inferno
             p.SetDropWeaponWhenDead(false); //武器を落とさない
             p.GiveWeapon(weaponhash, 1000); //指定武器所持
             p.EquipWeapon(weaponhash); //武器装備
+            AutoReleaseOnGameEnd(p);
             FriendAsync(p, ActivationCancellationToken).Forget();
         }
 
@@ -339,6 +348,11 @@ namespace Inferno
 
         private void SpawnVehicle()
         {
+            if (motherbaseVeh.Count == 0)
+            {
+                return;
+            }
+
             var hash = motherbaseVeh.Dequeue();
             var vehicleGxtEntry = Function.Call<string>(Hash.GET_DISPLAY_NAME_FROM_VEHICLE_MODEL, (int)hash);
             DrawText(NativeFunctions.GetGXTEntry(vehicleGxtEntry));
@@ -359,12 +373,40 @@ namespace Inferno
         }
 
         #endregion 生成
-        
-        public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "フルトン回収" : "Fulton STARS";
 
+        public override bool UseUI => true;
+        public override string DisplayName => FultonLocalize.Title;
+
+        public override string Description => FultonLocalize.Description;
         public override bool CanChangeActive => true;
 
         public override MenuIndex MenuIndex => MenuIndex.Entities;
+
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
+            subMenu.AddButton("", "", item =>
+            {
+                SpawnCitizen();
+                item.Title = string.Format(FultonLocalize.SpawnPed, motherBasePeds.Count);
+            }, item =>
+            {
+                var count = motherBasePeds.Count;
+                item.Title = string.Format(FultonLocalize.SpawnPed, count);
+                item.Enabled = count > 0;
+            });
+
+            subMenu.AddButton("", "", item =>
+                {
+                    SpawnVehicle();
+                    item.Title = string.Format(FultonLocalize.SpawnVeh, motherbaseVeh.Count);
+                },
+                item =>
+                {
+                    var count = motherbaseVeh.Count;
+                    item.Title = string.Format(FultonLocalize.SpawnVeh, count);
+                    item.Enabled = count > 0;
+                });
+        }
     }
 }

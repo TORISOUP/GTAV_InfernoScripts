@@ -65,7 +65,7 @@ namespace Inferno.ChaosMode
 
         protected override void Setup()
         {
-            var chaosSettingLoader = new ChaosModeSettingLoader();
+            var chaosSettingLoader = new ChaosModeSettingReadWriter();
             _chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
 
 

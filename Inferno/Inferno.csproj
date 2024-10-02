@@ -104,7 +104,7 @@
         <Compile Include="ChaosMode\ChaosModeUIBuilder.cs" />
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSetting.cs"/>
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs"/>
-        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingReadWriter.cs" />
         <Compile Include="ChaosMode\ChaosSettingLoader\ExstensionsMethods.cs"/>
         <Compile Include="ChaosMode\IWeaponProvider.cs"/>
         <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs"/>
@@ -230,6 +230,16 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\FultonLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FultonLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\InfernoCommon.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>InfernoCommon.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\WorldModLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -254,7 +264,7 @@
         <Compile Include="Utilities\Awaiters\StepAwaiter.cs" />
         <Compile Include="Utilities\Http\SimpleJsonHttpServer.cs" />
         <Compile Include="Utilities\InfernoConfig.cs" />
-        <Compile Include="Utilities\InfernoConfigLoader.cs" />
+        <Compile Include="Utilities\InfernoConfigReadWriter.cs" />
         <Compile Include="Utilities\InfernoScheduler.cs" />
         <Compile Include="Utilities\InfernoSynchronizationContext.cs" />
         <Compile Include="Utilities\InfernoUtilities.cs" />
@@ -277,6 +287,20 @@
       <EmbeddedResource Include="Properties\ChaosModeLocalize.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ChaosModeLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\FultonLocalize.ja.resx">
+        <DependentUpon>FultonLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\FultonLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>FultonLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\InfernoCommon.ja.resx">
+        <DependentUpon>InfernoCommon.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\InfernoCommon.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>InfernoCommon.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\WorldModLocalize.ja.resx">
         <DependentUpon>WorldModLocalize.resx</DependentUpon>
