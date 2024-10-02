@@ -17,7 +17,7 @@ namespace Inferno.InfernoScripts.Player
         {
             config = LoadConfig<BondCarConfig>();
 
-            CreateInputKeywordAsObservable("bond")
+            CreateInputKeywordAsObservable("BondCar", "bond")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

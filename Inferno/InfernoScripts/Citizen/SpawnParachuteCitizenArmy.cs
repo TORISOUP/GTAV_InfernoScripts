@@ -23,7 +23,7 @@ namespace Inferno
         protected override void Setup()
         {
             config = LoadConfig<SpawnParachuteCitizenArmyConfig>();
-            CreateInputKeywordAsObservable("carmy")
+            CreateInputKeywordAsObservable("SpawnParachuteCitizenArmy", "carmy")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

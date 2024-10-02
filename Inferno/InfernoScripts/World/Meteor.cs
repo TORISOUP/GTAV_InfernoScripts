@@ -26,7 +26,7 @@ namespace Inferno
         protected override void Setup()
         {
             _config = LoadConfig<MeteorConfig>();
-            CreateInputKeywordAsObservable("meteo")
+            CreateInputKeywordAsObservable("Meteor","meteo")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

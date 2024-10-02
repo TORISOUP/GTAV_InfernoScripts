@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.World
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("snax")
+            CreateInputKeywordAsObservable("SpeedMax","snax")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

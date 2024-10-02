@@ -60,7 +60,7 @@ namespace Inferno
         protected override void Setup()
         {
             config = LoadConfig<ChaosAirPlaneConfig>();
-            CreateInputKeywordAsObservable("abomb")
+            CreateInputKeywordAsObservable("ChaosAirPlane", "abomb")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -320,7 +320,9 @@ namespace Inferno
             // 戦闘機の数
             subMenu.AddSlider(
                 $"Amount of fighters: {config.AirPlaneCount}",
-                IsLangJpn ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要" : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
+                IsLangJpn
+                    ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要"
+                    : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
                 config.AirPlaneCount,
                 30,
                 x =>
@@ -334,20 +336,19 @@ namespace Inferno
                     IsActive = false;
                 });
 
-            
-            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+
+            subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
             {
                 config = LoadDefaultConfig<ChaosAirPlaneConfig>();
                 subMenu.Visible = false;
                 subMenu.Visible = true;
             });
 
-            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            subMenu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
             {
                 SaveConfig(config);
                 DrawText($"Saved to {ConfigFileName}");
             });
-
         }
 
         #endregion

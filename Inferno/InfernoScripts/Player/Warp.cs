@@ -8,7 +8,7 @@ namespace Inferno.InfernoScripts.Player
     {
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("moveto")
+            CreateInputKeywordAsObservable("WarpToWaypoint","moveto")
                 .Subscribe(_ =>
                 {
                     var blip = GTA.World.WaypointBlip;

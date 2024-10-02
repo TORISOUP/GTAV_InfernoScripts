@@ -23,7 +23,7 @@ namespace Inferno
 
             soundPlayer = new SoundPlayer { SoundLocation = filePaths[Random.Next(filePaths.Length)] };
 
-            CreateInputKeywordAsObservable("sbmg")
+            CreateInputKeywordAsObservable("SpecialAbilityBgm", "sbmg")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Forms;
 using GTA;
+using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Event;
 using Reactive.Bindings;
 
@@ -196,6 +197,8 @@ namespace Inferno
                 _disposeSubject.OnNext(Unit.Default);
                 _disposeSubject.OnCompleted();
                 _disposeSubject.Dispose();
+                
+                InfernoCommandProvider.Instance.Dispose();
             }
             catch
             {

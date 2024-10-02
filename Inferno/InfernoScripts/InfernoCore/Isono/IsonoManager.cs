@@ -13,7 +13,7 @@ namespace Inferno
         {
             _httpServer = new IsonoHttpServer(11211);
 
-            CreateInputKeywordAsObservable("isono")
+            CreateInputKeywordAsObservable("Isono","isono")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

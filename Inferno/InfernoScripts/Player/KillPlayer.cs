@@ -11,7 +11,7 @@ namespace Inferno
     {
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("killme")
+            CreateInputKeywordAsObservable("KillPlayer","killme")
                 .Subscribe(_ =>
                 {
                     World.AddExplosion(PlayerPed.Position, GTA.ExplosionType.Grenade, 10.0f, 0.1f);

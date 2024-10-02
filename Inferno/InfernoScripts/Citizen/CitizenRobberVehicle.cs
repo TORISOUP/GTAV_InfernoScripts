@@ -27,7 +27,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("robber")
+            CreateInputKeywordAsObservable("CitizenRobberVehicle", "robber")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -38,8 +38,6 @@ namespace Inferno
                 .Where(_ => IsActive)
                 .Subscribe(_ => RobberVehicle());
 
-            //デフォルトではOFFにする
-            //   OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
         }
 
         private void RobberVehicle()

@@ -114,17 +114,18 @@ namespace Inferno.InfernoScripts.Parupunte
 
             #region EventHook
 
-            CreateInputKeywordAsObservable("rnt")
+            CreateInputKeywordAsObservable("StartParupunte", "rnt")
                 .Where(_ => !IsActive)
                 .Subscribe(_ => { ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken); });
 
-            CreateInputKeywordAsObservable("snt")
+            CreateInputKeywordAsObservable("StopParupunte", "snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
 
+            var shortcutKey = InfernoCommandProvider.Instance.GetCommand("StartParupunte_shortcut", "Next");
 
             OnKeyDownAsObservable
-                .Where(x => x.KeyCode is Keys.NumPad0 or Keys.PageDown)
+                .Where(x => x.KeyCode.ToString() == shortcutKey)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f), base.InfernoScheduler)
                 .Subscribe(_ =>
                 {
@@ -589,10 +590,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     var item = new NativeItem(name);
                     item.Activated += (_, _) =>
                     {
-                        context.Post(_ =>
-                        {
-                            ParupunteStart(script, DestroyCancellationToken);
-                        }, null);
+                        context.Post(_ => { ParupunteStart(script, DestroyCancellationToken); }, null);
                     };
                     listMenu.Add(item);
                 }
@@ -600,7 +598,6 @@ namespace Inferno.InfernoScripts.Parupunte
             subMenu.AddSubMenu(listMenu);
             pool.Add(listMenu);
         }
-        
 
         #endregion
     }

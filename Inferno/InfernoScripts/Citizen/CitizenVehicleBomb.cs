@@ -19,7 +19,7 @@ namespace Inferno
         protected override void Setup()
         {
             config = LoadConfig<CitizenVehicleBombConfig>();
-            CreateInputKeywordAsObservable("vbomb")
+            CreateInputKeywordAsObservable("CitizenVehicleBomb", "vbomb")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

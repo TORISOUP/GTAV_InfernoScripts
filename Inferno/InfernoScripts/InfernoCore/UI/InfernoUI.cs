@@ -26,66 +26,75 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         public InfernoUi()
         {
-            CultureInfo.DefaultThreadCurrentUICulture =
-                Game.Language switch
-                {
-                    Language.Japanese => new CultureInfo("ja-JP"),
-                    _ => new CultureInfo("en-US")
-                };
-
-
-            Instance = this;
-
-            #region Inialize
-
-            Interval = 0;
-            _objectPool.Add(_rootMenu);
-            var keyword = "inferno";
-            Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
-                    h => KeyDown -= h)
-                .Select(e => e.EventArgs)
-                .Select(e => e.KeyCode.ToString())
-                .Buffer(keyword.Length, 1)
-                .Select(x => x.Aggregate((p, c) => p + c))
-                .Where(x => x == keyword.ToUpper())
-                .Select(_ => Unit.Default)
-                .Take(1)
-                .Repeat()
-                .Subscribe(_ => { _rootMenu.Visible = !_rootMenu.Visible; })
-                .AddTo(_compositeDisposable);
-
-            Tick += (_, _) => OnTick();
-            Aborted += (_, _) => { _compositeDisposable.Dispose(); };
-
-
-            _manuIndex.Add(MenuIndex.Root, _rootMenu);
-
-            #endregion
-
-
-            // 全部一斉ON
-            var allOnItem = new NativeItem("All ON", "All ON");
-            allOnItem.Activated += (_, __) =>
+            try
             {
-                foreach (var builder in _builders)
-                {
-                    if (builder.CanChangeActive)
+                CultureInfo.DefaultThreadCurrentUICulture =
+                    Game.Language switch
                     {
-                        builder.IsActive = true;
+                        Language.Japanese => new CultureInfo("ja-JP"),
+                        _ => new CultureInfo("en-US")
+                    };
+
+
+                Instance = this;
+
+                #region Inialize
+
+                Interval = 0;
+                _objectPool.Add(_rootMenu);
+
+                var keyword = InfernoCommandProvider.Instance.GetCommand("OpenMainMenu", "F5");
+                Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
+                        h => KeyDown -= h)
+                    .Select(e => e.EventArgs)
+                    .Select(e => e.KeyCode.ToString())
+                    .SelectMany(e => e)
+                    .Buffer(keyword.Length, 1)
+                    .Select(x => string.Join("", x))
+                    .Where(x => x == keyword.ToUpper())
+                    .Select(_ => Unit.Default)
+                    .Take(1)
+                    .Repeat()
+                    .Subscribe(_ => { _rootMenu.Visible = !_rootMenu.Visible; })
+                    .AddTo(_compositeDisposable);
+
+                Tick += (_, _) => OnTick();
+                Aborted += (_, _) => { _compositeDisposable.Dispose(); };
+
+
+                _manuIndex.Add(MenuIndex.Root, _rootMenu);
+
+                #endregion
+
+
+                // 全部一斉ON
+                var allOnItem = new NativeItem("All ON", "All ON");
+                allOnItem.Activated += (_, __) =>
+                {
+                    foreach (var builder in _builders)
+                    {
+                        if (builder.CanChangeActive)
+                        {
+                            builder.IsActive = true;
+                        }
                     }
+                };
+                _rootMenu.Add(allOnItem);
+
+
+                var allManu = Enum.GetValues(typeof(MenuIndex)).Cast<MenuIndex>();
+                foreach (var m in allManu.Where(x => x != MenuIndex.Root))
+                {
+                    var menu = new NativeMenu(m.ToString(), m.ToString());
+                    _rootMenu.AddSubMenu(menu);
+                    _objectPool.Add(menu);
+
+                    _manuIndex.Add(m, menu);
                 }
-            };
-            _rootMenu.Add(allOnItem);
-
-
-            var allManu = Enum.GetValues(typeof(MenuIndex)).Cast<MenuIndex>();
-            foreach (var m in allManu.Where(x => x != MenuIndex.Root))
+            }
+            catch (Exception e)
             {
-                var menu = new NativeMenu(m.ToString(), m.ToString());
-                _rootMenu.AddSubMenu(menu);
-                _objectPool.Add(menu);
-
-                _manuIndex.Add(m, menu);
+                DebugLogger.Instance.Log(e.ToString());
             }
         }
 

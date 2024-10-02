@@ -12,15 +12,16 @@ namespace Inferno.InfernoScripts.Player
     public sealed class PlayerInvincible : InfernoScript
     {
         private CancellationTokenSource _lastCts;
+
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("ainc")
+            CreateInputKeywordAsObservable("PlayerInvincible", "ainc")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
                     DrawText("Player Start Invincible:" + IsActive);
                 });
-            
+
             OnThinnedTickAsObservable
                 .Where(_ => IsActive && PlayerPed.IsSafeExist())
                 .Select(_ => (Game.IsMissionActive, PlayerPed.IsAlive))
@@ -31,7 +32,9 @@ namespace Inferno.InfernoScripts.Player
                     _lastCts?.Cancel();
                     _lastCts?.Dispose();
                     _lastCts = new CancellationTokenSource();
-                    var token = CancellationTokenSource.CreateLinkedTokenSource(_lastCts.Token, ActivationCancellationToken).Token;
+                    var token = CancellationTokenSource
+                        .CreateLinkedTokenSource(_lastCts.Token, ActivationCancellationToken)
+                        .Token;
                     PlayerInvincibleAsync(token).Forget();
                 });
         }
@@ -47,7 +50,7 @@ namespace Inferno.InfernoScripts.Player
                 player.IsMeleeProof = true;
                 player.IsCollisionProof = true;
                 player.IsOnlyDamagedByPlayer = true;
-                
+
                 var startTime = ElapsedTime;
                 while (!ct.IsCancellationRequested && ElapsedTime - startTime < 10f)
                 {
@@ -62,8 +65,8 @@ namespace Inferno.InfernoScripts.Player
                         color.R, color.G, color.B, 4 * rate, 100f * rate + 50);
 
                     player.IsInvincible = true;
-     
-                    
+
+
                     await YieldAsync(ct);
                 }
             }

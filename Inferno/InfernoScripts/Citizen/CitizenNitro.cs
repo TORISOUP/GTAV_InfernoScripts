@@ -29,7 +29,7 @@ namespace Inferno
             config = LoadConfig<CitizenNitroConfig>();
 
             //キーワードが入力されたらON／OFFを切り替える
-            CreateInputKeywordAsObservable(Keyword)
+            CreateInputKeywordAsObservable("CitizenNitro", Keyword)
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

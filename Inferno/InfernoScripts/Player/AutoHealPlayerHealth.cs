@@ -14,7 +14,7 @@ namespace Inferno.InfernoScripts.Player
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("autoheal")
+            CreateInputKeywordAsObservable("AutoHealPlayerHealth", "autoheal")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

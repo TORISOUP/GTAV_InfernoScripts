@@ -48,7 +48,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("fulton")
+            CreateInputKeywordAsObservable("Fulton","fulton")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -271,7 +271,7 @@ namespace Inferno
                         Game.Player.Money -= 1000;
                     }
 
-                    DrawText($"回収済: {motherBasePeds.Count}人/{motherbaseVeh.Count}台");
+                    DrawText($"Peds {motherBasePeds.Count}/Vehicle {motherbaseVeh.Count}");
                     return;
                 }
 
@@ -304,7 +304,7 @@ namespace Inferno
             }
 
             var hash = motherBasePeds.Dequeue();
-            DrawText($"残り: {motherBasePeds.Count}人/{motherbaseVeh.Count}台");
+            DrawText($"Peds {motherBasePeds.Count}/Vehicle {motherbaseVeh.Count}");
 
             var p = World.CreatePed(new Model(hash), PlayerPed.Position.AroundRandom2D(3.0f) + new Vector3(0, 0, 0.5f));
             if (!p.IsSafeExist())

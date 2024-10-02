@@ -16,7 +16,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("runaway")
+            CreateInputKeywordAsObservable("CitizenCrazyDriving","runaway")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

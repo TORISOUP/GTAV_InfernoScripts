@@ -10,7 +10,7 @@ namespace Inferno.InfernoScripts.Player
     {
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("swanted")
+            CreateInputKeywordAsObservable("Wanted_Suppress","swanted")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -18,7 +18,7 @@ namespace Inferno.InfernoScripts.Player
                     DrawText("Suppress Wanted:" + IsActive);
                 });
             
-            CreateInputKeywordAsObservable("nowanted")
+            CreateInputKeywordAsObservable("Wanted_Zero","nowanted")
                 .Subscribe(_ =>
                 {
                     Game.Player.WantedLevel = 0;

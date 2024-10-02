@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -11,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
+using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Event;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
@@ -44,7 +44,6 @@ namespace Inferno
         /// </summary>
         protected InfernoScript()
         {
-            
             // 毎フレーム実行
             Interval = 0;
 
@@ -86,7 +85,7 @@ namespace Inferno
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon");
 
             //スケジューラなどの定期実行系
             OnTickAsObservable.Subscribe(_ =>
@@ -307,7 +306,7 @@ namespace Inferno
         {
             return new T();
         }
-        
+
         protected void SaveConfig<T>(T setting) where T : InfernoConfig, new()
         {
             if (string.IsNullOrEmpty(ConfigFileName))
@@ -318,8 +317,8 @@ namespace Inferno
             var loader = new InfernoConfigReadWriter<T>();
             loader.SaveSettingFile(ConfigFileName, setting);
         }
-        
-        
+
+
         /// <summary>
         /// 初期化処理はここに書く
         /// </summary>
@@ -582,18 +581,23 @@ namespace Inferno
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
+        protected IObservable<Unit> CreateInputKeywordAsObservable(string commandName, string defaultValue)
         {
-            if (string.IsNullOrEmpty(keyword))
+            var command = InfernoCommandProvider.Instance.GetCommand(commandName, defaultValue);
+
+            if (string.IsNullOrEmpty(command))
             {
-                throw new Exception("Keyword is empty.");
+                return Observable.Empty<Unit>();
             }
+
+            var upper = command.ToUpper();
 
             return OnKeyDownAsObservable
                 .Select(e => e.KeyCode.ToString())
-                .Buffer(keyword.Length, 1)
-                .Select(x => x.Aggregate((p, c) => p + c))
-                .Where(x => x == keyword.ToUpper()) //入力文字列を比較
+                .SelectMany(e => e)
+                .Buffer(command.Length, 1)
+                .Select(x => string.Join("", x))
+                .Where(x => x == upper) //入力文字列を比較
                 .Select(_ => Unit.Default)
                 .Take(1)
                 .Repeat() //1回動作したらBufferをクリア

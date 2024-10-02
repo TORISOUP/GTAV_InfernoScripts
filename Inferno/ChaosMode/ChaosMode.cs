@@ -22,7 +22,7 @@ namespace Inferno.ChaosMode
         /// カオス化済み市民一覧
         /// </summary>
         private readonly HashSet<Ped> chaosedPedList = new();
-        
+
         private readonly uint[] fishHashes =
         {
             (uint)PedHash.Fish,
@@ -75,17 +75,17 @@ namespace Inferno.ChaosMode
             var customWeaponProvider =
                 new CustomWeaponProvider(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
             _defaultWeaponProvider = customWeaponProvider;
-            
+
             _uiBuilder = new ChaosModeUIBuilder(_chaosModeSetting);
             _uiBuilder.AddTo(CompositeDisposable);
             _uiBuilder.OnChangeWeaponSetting = () =>
             {
                 customWeaponProvider.SetUp(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
             };
-            
+
 
             //キーワードが入力されたらON／OFFを切り替える
-            CreateInputKeywordAsObservable(Keyword)
+            CreateInputKeywordAsObservable("ChaosMode_Activate", Keyword)
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -134,7 +134,7 @@ namespace Inferno.ChaosMode
                 .AddTo(CompositeDisposable);
 
 
-            CreateInputKeywordAsObservable("yakyu")
+            CreateInputKeywordAsObservable("ChaosMode_MeleeOnly", "yakyu")
                 .Subscribe(_ =>
                 {
                     _isBaseball = !_isBaseball;
@@ -685,7 +685,7 @@ namespace Inferno.ChaosMode
 
         public override bool UseUI => true;
         public override string DisplayName => _uiBuilder.DisplayName;
-        
+
         public override string Description => _uiBuilder.Description;
 
         public override bool CanChangeActive => true;

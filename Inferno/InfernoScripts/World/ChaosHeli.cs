@@ -66,7 +66,7 @@ namespace Inferno.InfernoScripts.World
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("cheli")
+            CreateInputKeywordAsObservable("ChaosHeli","cheli")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;

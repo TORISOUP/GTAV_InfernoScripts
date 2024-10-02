@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.World
         protected override void Setup()
         {
             //キーワードが入力されたらON／OFFを切り替える
-            CreateInputKeywordAsObservable(Keyword)
+            CreateInputKeywordAsObservable("BombBat", Keyword)
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -166,7 +166,7 @@ namespace Inferno.InfernoScripts.World
 
             #endregion
         }
-        
+
         public override bool UseUI => true;
         public override string DisplayName => IsLangJpn ? "ボンバット" : "Bomb baseball bat";
 

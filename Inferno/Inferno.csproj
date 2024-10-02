@@ -113,7 +113,9 @@
         <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
         <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
-        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs"/>
+        <Compile Include="InfernoScripts\Conf\InfernoCommandConfig.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\InfernoCommandProvider.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoHttpServer.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
@@ -124,7 +126,6 @@
         <Compile Include="InfernoScripts\Player\NoWanted.cs" />
         <Compile Include="InfernoScripts\Player\PlayerInvincible.cs" />
         <Compile Include="InfernoScripts\World\BombBat.cs" />
-        <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
