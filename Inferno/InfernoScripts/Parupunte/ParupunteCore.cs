@@ -581,7 +581,10 @@ namespace Inferno.InfernoScripts.Parupunte
                 _ => { context.Post(_ => ParupunteStop(), null); });
 
             // リスト一覧作成
-            var listMenu = new NativeMenu("Effect list", "Effect list");
+            var listMenu = new NativeMenu("Effect list", "Effect list")
+            {
+                Visible = false
+            };
             {
                 foreach (var parupunteScritpt in _parupunteScritpts)
                 {

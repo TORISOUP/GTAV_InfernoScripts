@@ -122,10 +122,10 @@
         <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
-        <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
-        <Compile Include="InfernoScripts\Player\NoWanted.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerInvincible.cs" />
-        <Compile Include="InfernoScripts\World\BombBat.cs" />
+        <Compile Include="InfernoScripts\Players\AutoHealPlayerHealth.cs" />
+        <Compile Include="InfernoScripts\Players\NoWanted.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerInvincible.cs" />
+        <Compile Include="InfernoScripts\Worlds\BombBat.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
@@ -199,33 +199,38 @@
         <Compile Include="InfernoScripts\Parupunte\Scripts\FloatingCar.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs" />
-        <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
-        <Compile Include="InfernoScripts\Player\BondCar.cs" />
-        <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
+        <Compile Include="InfernoScripts\Players\ArmorAndHealthSupplier.cs" />
+        <Compile Include="InfernoScripts\Players\BondCar.cs" />
+        <Compile Include="InfernoScripts\Players\DeathSoundEffect.cs" />
         <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
-        <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
-        <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
-        <Compile Include="InfernoScripts\Player\Floating.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerGripVehicle.cs" />
-        <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs" />
-        <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerHealthAlert.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
+        <Compile Include="InfernoScripts\Players\DisplayCauseOfDeath.cs" />
+        <Compile Include="InfernoScripts\Players\EmergencyEscape.cs" />
+        <Compile Include="InfernoScripts\Players\Floating.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerGripVehicle.cs" />
+        <Compile Include="InfernoScripts\Players\HUDVehicleHealth.cs" />
+        <Compile Include="InfernoScripts\Players\KillPlayer.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerHealthAlert.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerRagdoll.cs">
             <SubType>Code</SubType>
         </Compile>
-        <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
-        <Compile Include="InfernoScripts\Player\SpecialAbilityBgm.cs" />
-        <Compile Include="InfernoScripts\Player\Warp.cs" />
-        <Compile Include="InfernoScripts\World\ChaosAirPlane.cs" />
-        <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
-        <Compile Include="InfernoScripts\World\Fulton.cs" />
-        <Compile Include="InfernoScripts\World\Meteor.cs" />
-        <Compile Include="InfernoScripts\World\SpeedMax.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerVehicleNitro.cs" />
+        <Compile Include="InfernoScripts\Players\SpecialAbilityBgm.cs" />
+        <Compile Include="InfernoScripts\Players\Warp.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaosAirPlane.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaosHeli.cs" />
+        <Compile Include="InfernoScripts\Worlds\Fulton.cs" />
+        <Compile Include="InfernoScripts\Worlds\Meteor.cs" />
+        <Compile Include="InfernoScripts\Worlds\SpeedMax.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Properties\ChaosHeliLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ChaosHeliLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\ChaosModeLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -282,6 +287,13 @@
         <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
+      <EmbeddedResource Include="Properties\ChaosHeliLocalize.ja.resx">
+        <DependentUpon>ChaosHeliLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosHeliLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ChaosHeliLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
       <EmbeddedResource Include="Properties\ChaosModeLocalize.ja.resx">
         <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
       </EmbeddedResource>

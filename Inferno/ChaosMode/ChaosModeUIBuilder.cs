@@ -64,14 +64,14 @@ namespace Inferno.ChaosMode
 
             // IsAttackPlayerCorrectionEnabled
             var isAttackPlayerCorrectionCheckbox = subMenu.AddCheckbox(
-                "Attack Player Correction",
+                "Attack Players Correction",
                 ChaosModeLocalize.AttackPlayerCorrection,
                 item => { item.Checked = _chaosModeSetting.IsAttackPlayerCorrectionEnabled; },
                 x => { _chaosModeSetting.IsAttackPlayerCorrectionEnabled = x; });
 
             // AttackPlayerCorrectionProbability
             var attackPlayerCorrectionSlider = subMenu.AddSlider(
-                $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%",
+                $"Attack Players Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%",
                 ChaosModeLocalize.AttackPlayerCorrectionProbability,
                 _chaosModeSetting.AttackPlayerCorrectionProbability,
                 100,
@@ -83,7 +83,7 @@ namespace Inferno.ChaosMode
                 {
                     _chaosModeSetting.AttackPlayerCorrectionProbability = item.Value;
                     item.Title =
-                        $"Attack Player Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%";
+                        $"Attack Players Correction Probability:{_chaosModeSetting.AttackPlayerCorrectionProbability}%";
                 });
 
             isAttackPlayerCorrectionCheckbox.CheckboxChanged += (_, _) =>
@@ -167,7 +167,10 @@ namespace Inferno.ChaosMode
 
         private NativeMenu WeaponListMenu()
         {
-            var weaponListMenu = new NativeMenu("Weapon List", "Weapon List");
+            var weaponListMenu = new NativeMenu("Weapon List", "Weapon List")
+            {
+                Visible = false
+            };
             var isChanged = false;
 
             // ボタンだけ先に追加
@@ -236,7 +239,10 @@ namespace Inferno.ChaosMode
 
         private NativeMenu DriveByWeaponListMenu()
         {
-            var weaponListDriveByMenu = new NativeMenu("Weapon List for Drive-By", "Weapon List for Drive-By");
+            var weaponListDriveByMenu = new NativeMenu("Weapon List for Drive-By", "Weapon List for Drive-By")
+            {
+                Visible = false
+            };
             var isChanged = false;
 
             // ボタンだけ先に追加

@@ -19,7 +19,10 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         private readonly ObjectPool _objectPool = new();
         private readonly CompositeDisposable _compositeDisposable = new();
-        readonly NativeMenu _rootMenu = new("Inferno MOD", "MOD Menu");
+        readonly NativeMenu _rootMenu = new("Inferno MOD", "MOD Menu")
+        {
+            Visible = false
+        };
         private readonly List<IScriptUiBuilder> _builders = new();
 
         private readonly Dictionary<MenuIndex, NativeMenu> _manuIndex = new();
@@ -55,7 +58,21 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                     .Select(_ => Unit.Default)
                     .Take(1)
                     .Repeat()
-                    .Subscribe(_ => { _rootMenu.Visible = !_rootMenu.Visible; })
+                    .Subscribe(_ =>
+                    {
+                        var menus = _objectPool.OfType<NativeMenu>().ToArray();
+                        if (menus.Any(x=>x.Visible))
+                        {
+                            foreach (var m in menus)
+                            {
+                                m.Visible = false;
+                            }
+                        }
+                        else
+                        {
+                            _rootMenu.Visible = true;
+                        }
+                    })
                     .AddTo(_compositeDisposable);
 
                 Tick += (_, _) => OnTick();
@@ -85,7 +102,10 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 var allManu = Enum.GetValues(typeof(MenuIndex)).Cast<MenuIndex>();
                 foreach (var m in allManu.Where(x => x != MenuIndex.Root))
                 {
-                    var menu = new NativeMenu(m.ToString(), m.ToString());
+                    var menu = new NativeMenu(m.ToString(), m.ToString())
+                    {
+                        Visible = false
+                    };
                     _rootMenu.AddSubMenu(menu);
                     _objectPool.Add(menu);
 
@@ -115,7 +135,10 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 return;
             }
 
-            var subMenu = new NativeMenu(builder.DisplayName, builder.DisplayName, builder.Description);
+            var subMenu = new NativeMenu(builder.DisplayName, builder.DisplayName, builder.Description)
+            {
+                Visible = false
+            };
 
             if (builder.CanChangeActive)
             {
@@ -140,19 +163,6 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             subMenu.BannerText.Scale = 0.5f;
             subMenu.BannerText.Recalculate();
         }
-
-        public void AddSubMenuToRootMenu(NativeMenu menu, params NativeMenu[] subs)
-        {
-            _rootMenu.AddSubMenu(menu);
-            _objectPool.Add(menu);
-
-            if (subs != null)
-            {
-                foreach (var sub in subs)
-                {
-                    _objectPool.Add(sub);
-                }
-            }
-        }
+        
     }
 }

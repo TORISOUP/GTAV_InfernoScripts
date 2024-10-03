@@ -19,7 +19,7 @@ namespace Inferno.InfernoScripts.Player
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText("Player Start Invincible:" + IsActive);
+                    DrawText("Players Start Invincible:" + IsActive);
                 });
 
             OnThinnedTickAsObservable

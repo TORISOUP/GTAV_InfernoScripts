@@ -663,9 +663,9 @@ namespace Inferno
             ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
 
-        public void DrawText(object text, float time = 3.0f)
+        public void DrawTextL(object text, float time = 3.0f)
         {
-            ToastTextDrawing.Instance.DrawDebugText(text.ToString(), time);
+            ToastTextDrawing.Instance.DrawTextLowPriority(text.ToString(), time);
         }
 
         /// <summary>
