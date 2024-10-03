@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GTA;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
@@ -155,7 +156,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 .Concat(ProjectileWeapons)
                 .Distinct()
                 .ToArray();
-            
+
             ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).Distinct().ToArray();
         }
 
@@ -171,6 +172,11 @@ namespace Inferno.ChaosMode.WeaponProvider
         public static Weapon GetRandomWeapon()
         {
             return AllWeapons[random.Next(0, AllWeapons.Length)];
+        }
+
+        public static bool IsPedEquippedWithMeleeWeapon(this Ped ped)
+        {
+            return ClosedWeapons.Contains((Weapon)ped.Weapons.Current.Hash);
         }
     }
 }

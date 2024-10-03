@@ -10,6 +10,7 @@ using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 using Inferno.InfernoScripts.Event.ChasoMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -44,7 +45,6 @@ namespace Inferno.ChaosMode
         /// </summary>
         private IWeaponProvider _defaultWeaponProvider;
 
-        private bool _isBaseball;
         private CancellationTokenSource _linkedCts;
 
         private CancellationTokenSource _localCts = new();
@@ -62,11 +62,13 @@ namespace Inferno.ChaosMode
 
         private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
         private IWeaponProvider DefaultWeaponProvider => _defaultWeaponProvider;
+        
+        private ChaosModeSettingReadWriter _chaosSettingLoader = new();
 
         protected override void Setup()
         {
-            var chaosSettingLoader = new ChaosModeSettingReadWriter();
-            _chaosModeSetting = chaosSettingLoader.LoadSettingFile(@"ChaosMode_Default.conf");
+            _chaosSettingLoader = new ChaosModeSettingReadWriter();
+            _chaosModeSetting = _chaosSettingLoader.LoadSettingFile(@"ChaosMode.conf");
 
 
             _chaosChecker = new CharacterChaosChecker(_chaosModeSetting.MissionCharacterBehaviour,
@@ -137,8 +139,8 @@ namespace Inferno.ChaosMode
             CreateInputKeywordAsObservable("ChaosMode_MeleeOnly", "yakyu")
                 .Subscribe(_ =>
                 {
-                    _isBaseball = !_isBaseball;
-                    DrawText(_isBaseball ? "BaseBallMode:On" : "BaseBallMode:Off");
+                    _chaosModeSetting.MeleeWeaponOnly = !_chaosModeSetting.MeleeWeaponOnly;
+                    DrawText(_chaosModeSetting.MeleeWeaponOnly ? "BaseBallMode:On" : "BaseBallMode:Off");
                     if (IsActive)
                     {
                         ChangeAllRiotCitizenWeapon();
@@ -362,13 +364,8 @@ namespace Inferno.ChaosMode
                 float waitTime = Random.Next(3, 20);
                 float checkWaitTime = 100;
                 float stupidShootingTime = 100;
-                var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidShootingRate;
-
-                if (isStupidShooting)
-                {
-                    // その場から動かない
-                    Function.Call(Hash.SET_PED_COMBAT_MOVEMENT, ped, 0);
-                }
+                var isStupidShooting = Random.Next(0, 100) < _chaosModeSetting.StupidShootingRate &&
+                                       !ped.IsPedEquippedWithMeleeWeapon() && !_chaosModeSetting.MeleeWeaponOnly;
 
                 while (!ct.IsCancellationRequested && waitTime > 0)
                 {
@@ -414,7 +411,6 @@ namespace Inferno.ChaosMode
                     if (checkWaitTime > 1)
                     {
                         checkWaitTime = 0;
-                        ped.SetPedFiringPattern((int)FiringPattern.FullAuto);
 
                         if (ped.Position.DistanceTo(PlayerPed.Position) > _chaosModeSetting.Radius + 30)
                         {
@@ -450,6 +446,13 @@ namespace Inferno.ChaosMode
                             //攻撃対象がいなくなったらやりなおし
                             break;
                         }
+
+                        foreach (var t in targets.Where(x=>x.IsSafeExist() && x.IsAlive))
+                        {
+                            ped.Task.FightAgainst(t);
+                        }
+                        
+                        
                     }
 
                     await YieldAsync(ct);
@@ -647,10 +650,10 @@ namespace Inferno.ChaosMode
 
                 //車に乗っているなら車用の武器を渡す
                 Weapon weapon;
-                if (_isBaseball)
+                if (_chaosModeSetting.MeleeWeaponOnly)
                 {
                     // 野球大会中でもパルプンテ側の効果が優先される
-                    weapon = CurrentWeaponProvider.GetRandomCloseWeapons();
+                    weapon = CurrentWeaponProvider.GetRandomMeleeWeapons();
                 }
                 else
                 {
@@ -695,6 +698,20 @@ namespace Inferno.ChaosMode
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             _uiBuilder.OnUiMenuConstruct(pool, subMenu);
+            
+            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+            {
+                _chaosModeSetting.OverrideDto(_chaosSettingLoader.CreateDefaultChaosModeSetting);
+                subMenu.Visible = false;
+                subMenu.Visible = true;
+            });
+
+            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            {
+                _chaosSettingLoader.SaveSettingFile(@"ChaosMode.conf", _chaosModeSetting.ToDto());
+                DrawText($"Saved to ChaosMode.conf");
+            });
+            
         }
 
         #endregion

@@ -77,6 +77,8 @@ namespace Inferno.ChaosMode
         /// </summary>
         public int WeaponDropProbability { get; set; }
 
+        public bool MeleeWeaponOnly { get; set; }
+
         /// <summary>
         /// カオスモード設定ファイルを生成
         /// </summary>
@@ -88,24 +90,7 @@ namespace Inferno.ChaosMode
                 dto = new ChaosModeSettingDTO();
             }
 
-            Radius = dto.Radius;
-            OverrideMissionCharacterWeapon = dto.OverrideMissionCharacterWeapon;
-            IsAttackPlayerCorrectionEnabled = dto.IsAttackPlayerCorrectionEnabled;
-            StupidShootingRate = dto.StupidShootingRate.Clamp(0, 100);
-            AttackPlayerCorrectionProbability = dto.AttackPlayerCorrectionProbability.Clamp(0, 100);
-            ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
-            WeaponChangeProbability = dto.WeaponChangeProbability.Clamp(0, 100);
-            ForceExplosiveWeaponProbability = dto.ForceExplosiveWeaponProbability.Clamp(0, 100);
-            WeaponDropProbability = dto.WeaponDropProbability.Clamp(0, 100);
-
-            //ミッションキャラクタの扱い
-            MissionCharacterBehaviour =
-                !Enum.IsDefined(typeof(MissionCharacterBehaviour), dto.MissionCharacterBehaviour)
-                    ? MissionCharacterBehaviour.ExcludeUniqueCharacter //定義範囲外の数値ならExcludeUniqueCharacterにする
-                    : (MissionCharacterBehaviour)dto.MissionCharacterBehaviour;
-
-            WeaponList = EnableWeaponListFilter(dto.WeaponList);
-            WeaponListForDriveBy = EnableWeaponListFilter(dto.WeaponListForDriveBy);
+            OverrideDto(dto);
         }
 
         /// <summary>
@@ -125,6 +110,50 @@ namespace Inferno.ChaosMode
 
             var enableWeapons = allWeapons.Where(x => upperCaseWeaponList.Contains(x.ToString().ToUpper())).ToHashSet();
             return enableWeapons.Count > 0 ? enableWeapons : allWeapons;
+        }
+
+        public void OverrideDto(ChaosModeSettingDTO dto)
+        {
+            Radius = dto.Radius;
+            OverrideMissionCharacterWeapon = dto.OverrideMissionCharacterWeapon;
+            IsAttackPlayerCorrectionEnabled = dto.IsAttackPlayerCorrectionEnabled;
+            StupidShootingRate = dto.StupidShootingRate.Clamp(0, 100);
+            AttackPlayerCorrectionProbability = dto.AttackPlayerCorrectionProbability.Clamp(0, 100);
+            ShootAccuracy = dto.ShootAccuracy.Clamp(0, 100);
+            WeaponChangeProbability = dto.WeaponChangeProbability.Clamp(0, 100);
+            ForceExplosiveWeaponProbability = dto.ForceExplosiveWeaponProbability.Clamp(0, 100);
+            WeaponDropProbability = dto.WeaponDropProbability.Clamp(0, 100);
+
+            //ミッションキャラクタの扱い
+            MissionCharacterBehaviour =
+                !Enum.IsDefined(typeof(MissionCharacterBehaviour), dto.MissionCharacterBehaviour)
+                    ? MissionCharacterBehaviour.ExcludeUniqueCharacter //定義範囲外の数値ならExcludeUniqueCharacterにする
+                    : (MissionCharacterBehaviour)dto.MissionCharacterBehaviour;
+
+            WeaponList = EnableWeaponListFilter(dto.WeaponList);
+            WeaponListForDriveBy = EnableWeaponListFilter(dto.WeaponListForDriveBy);
+
+            MeleeWeaponOnly = dto.MeleeWeaponOnly;
+        }
+
+        public ChaosModeSettingDTO ToDto()
+        {
+            return new ChaosModeSettingDTO()
+            {
+                Radius = Radius,
+                OverrideMissionCharacterWeapon = OverrideMissionCharacterWeapon,
+                MissionCharacterBehaviour = (int)MissionCharacterBehaviour,
+                IsAttackPlayerCorrectionEnabled = IsAttackPlayerCorrectionEnabled,
+                AttackPlayerCorrectionProbability = AttackPlayerCorrectionProbability,
+                WeaponList = WeaponList.Select(x => x.ToString()).ToArray(),
+                WeaponListForDriveBy = WeaponListForDriveBy.Select(x => x.ToString()).ToArray(),
+                StupidShootingRate = StupidShootingRate,
+                ShootAccuracy = ShootAccuracy,
+                WeaponChangeProbability = WeaponChangeProbability,
+                ForceExplosiveWeaponProbability = ForceExplosiveWeaponProbability,
+                WeaponDropProbability = WeaponDropProbability,
+                MeleeWeaponOnly = MeleeWeaponOnly
+            };
         }
     }
 }

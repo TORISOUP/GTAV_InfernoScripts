@@ -41,7 +41,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 .ToArray();
         }
 
-        public Weapon GetRandomCloseWeapons()
+        public Weapon GetRandomMeleeWeapons()
         {
             return CustomClosedWeapons.Length == 0
                 ? Weapon.Unarmed

@@ -15,7 +15,7 @@ namespace Inferno.ChaosMode
 
         public string DisplayName => ChaosModeLocalize.DisplayName;
         public string Description => ChaosModeLocalize.Description;
-        
+
         public Action OnChangeWeaponSetting { get; set; }
 
         public ChaosModeUIBuilder(ChaosModeSetting chaosModeSetting)
@@ -23,9 +23,11 @@ namespace Inferno.ChaosMode
             _chaosModeSetting = chaosModeSetting;
         }
 
+
         public void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             subMenu.Width = 780;
+
 
             // Radius
             subMenu.AddSlider(
@@ -33,7 +35,11 @@ namespace Inferno.ChaosMode
                 ChaosModeLocalize.Radius,
                 _chaosModeSetting.Radius,
                 1000,
-                x => x.Multiplier = 10, item =>
+                x =>
+                {
+                    x.Value = _chaosModeSetting.Radius;
+                    x.Multiplier = 10;
+                }, item =>
                 {
                     _chaosModeSetting.Radius = item.Value;
                     item.Title = $"Radius:{_chaosModeSetting.Radius}[m]";
@@ -97,7 +103,11 @@ namespace Inferno.ChaosMode
                 ChaosModeLocalize.StupidShootingRate,
                 _chaosModeSetting.StupidShootingRate,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _chaosModeSetting.StupidShootingRate;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     _chaosModeSetting.StupidShootingRate = item.Value;
                     item.Title = $"Stupid Shooting Rate:{_chaosModeSetting.StupidShootingRate}%";
@@ -109,7 +119,11 @@ namespace Inferno.ChaosMode
                 ChaosModeLocalize.ShootAccuracy,
                 _chaosModeSetting.ShootAccuracy,
                 100,
-                x => x.Multiplier = 1, item =>
+                x =>
+                {
+                    x.Multiplier = 1;
+                    x.Value = _chaosModeSetting.ShootAccuracy;
+                }, item =>
                 {
                     _chaosModeSetting.ShootAccuracy = item.Value;
                     item.Title = $"Shoot Accuracy:{_chaosModeSetting.ShootAccuracy}%";
@@ -121,7 +135,11 @@ namespace Inferno.ChaosMode
                 ChaosModeLocalize.WeaponChangeProbability,
                 _chaosModeSetting.WeaponChangeProbability,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _chaosModeSetting.WeaponChangeProbability;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     _chaosModeSetting.WeaponChangeProbability = item.Value;
                     item.Title = $"Weapon Change Probability:{_chaosModeSetting.WeaponChangeProbability}%";
@@ -133,22 +151,29 @@ namespace Inferno.ChaosMode
                 ChaosModeLocalize.ForceExplosiveWeaponProbability,
                 _chaosModeSetting.ForceExplosiveWeaponProbability,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _chaosModeSetting.ForceExplosiveWeaponProbability;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     _chaosModeSetting.ForceExplosiveWeaponProbability = item.Value;
                     item.Title =
                         $"Force Explosive Weapon Probability:{_chaosModeSetting.ForceExplosiveWeaponProbability}%";
                 });
 
-                
-                
+
             // WeaponDropProbability
             subMenu.AddSlider(
                 $"Weapon Drop Probability:{_chaosModeSetting.WeaponDropProbability}%",
                 ChaosModeLocalize.WeaponDropProbability,
                 _chaosModeSetting.WeaponDropProbability,
                 100,
-                x => x.Multiplier = 5, item =>
+                x =>
+                {
+                    x.Value = _chaosModeSetting.WeaponDropProbability;
+                    x.Multiplier = 5;
+                }, item =>
                 {
                     _chaosModeSetting.WeaponDropProbability = item.Value;
                     item.Title = $"Weapon Drop Probability:{_chaosModeSetting.WeaponDropProbability}%";
@@ -163,6 +188,11 @@ namespace Inferno.ChaosMode
             var weaponListForDriveByMenu = DriveByWeaponListMenu();
             subMenu.AddSubMenu(weaponListForDriveByMenu);
             pool.Add(weaponListForDriveByMenu);
+
+
+            subMenu.AddCheckbox("Melee Weapon Only", ChaosModeLocalize.Yakyu,
+                item => { item.Checked = _chaosModeSetting.MeleeWeaponOnly; },
+                x => { _chaosModeSetting.MeleeWeaponOnly = x; });
         }
 
         private NativeMenu WeaponListMenu()

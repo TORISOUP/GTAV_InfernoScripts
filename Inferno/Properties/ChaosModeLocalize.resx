@@ -59,4 +59,7 @@ If OFF, the player will be targeted depending on the position relationship with 
     <data name="Description" xml:space="preserve">
         <value>Pedestrians near the player become armed and attacking.</value>
     </data>
+    <data name="Yakyu" xml:space="preserve">
+        <value>Limited to melee weapons.</value>
+    </data>
 </root>

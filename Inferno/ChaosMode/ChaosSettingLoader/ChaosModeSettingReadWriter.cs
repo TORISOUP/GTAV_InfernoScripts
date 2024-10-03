@@ -18,6 +18,8 @@ namespace Inferno.ChaosMode
         {
             return new ChaosModeSetting(base.LoadSettingFile(fileName));
         }
+        
+        public ChaosModeSettingDTO CreateDefaultChaosModeSetting => CreateDefault();
 
         protected override ChaosModeSettingDTO CreateDefault()
         {

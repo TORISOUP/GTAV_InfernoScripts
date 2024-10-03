@@ -20,5 +20,6 @@ namespace Inferno.ChaosMode
         public int WeaponChangeProbability = 100;
         public int ForceExplosiveWeaponProbability = 30;
         public int WeaponDropProbability = 30;
+        public bool MeleeWeaponOnly = false;
     }
 }

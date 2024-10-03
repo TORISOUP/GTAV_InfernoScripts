@@ -52,4 +52,7 @@ OFFの場合は市民との位置関係に応じてプレイヤーが狙われ�
     <data name="Description" xml:space="preserve">
         <value>周辺市民を暴徒化します。暴徒化した市民は武装して周囲を攻撃します。</value>
     </data>
+    <data name="Yakyu" xml:space="preserve">
+        <value>近接武器に限定される。</value>
+    </data>
 </root>

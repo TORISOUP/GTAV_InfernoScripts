@@ -171,5 +171,14 @@ namespace Inferno.Properties {
                 return ResourceManager.GetString("WeaponDropProbability", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limited to melee weapons..
+        /// </summary>
+        internal static string Yakyu {
+            get {
+                return ResourceManager.GetString("Yakyu", resourceCulture);
+            }
+        }
     }
 }
