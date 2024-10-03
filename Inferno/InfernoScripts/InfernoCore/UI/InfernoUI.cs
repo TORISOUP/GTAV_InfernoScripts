@@ -26,6 +26,8 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         private readonly List<IScriptUiBuilder> _builders = new();
 
         private readonly Dictionary<MenuIndex, NativeMenu> _manuIndex = new();
+        
+        private bool _isTickStarted;
 
         public InfernoUi()
         {
@@ -72,13 +74,17 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                         {
                             _rootMenu.Visible = true;
                         }
+
+                        if (!_isTickStarted)
+                        {
+                            _isTickStarted = true;
+                            Tick += (_, _) => OnTick();
+                        }
                     })
                     .AddTo(_compositeDisposable);
 
-                Tick += (_, _) => OnTick();
                 Aborted += (_, _) => { _compositeDisposable.Dispose(); };
-
-
+                
                 _manuIndex.Add(MenuIndex.Root, _rootMenu);
 
                 #endregion
