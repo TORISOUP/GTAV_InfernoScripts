@@ -136,11 +136,13 @@ namespace Inferno
         {
             var model = new Model(VehicleHash.Lazer);
             //戦闘機生成
-            var plane = World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(300) + new Vector3(0, 0, 150));
+            var plane = World.CreateVehicle(model, PlayerPed.Position.AroundRandom2D(500) + new Vector3(0, 0, 150));
             if (!plane.IsSafeExist())
             {
                 return null;
             }
+
+            plane.Rotation = new Vector3(0, 0, Random.Next(0, 360));
 
             AutoReleaseOnGameEnd(plane);
             plane.SetForwardSpeed(500);
@@ -175,7 +177,6 @@ namespace Inferno
 
                     SetPlaneTask(plane, ped, target, speed);
                     ped.SetCombatAttributes(53, true);
-
                     //少しづつ耐久値を削る
                     plane.PetrolTankHealth -= 1.0f;
                     await YieldAsync(ct);
@@ -309,8 +310,9 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "カオス戦闘機" : "Harassing fighter aircraft";
+        public override string DisplayName => Properties.ChaosAirPlaneLocalize.Name;
 
+        public override string Description => Properties.ChaosAirPlaneLocalize.Description;
         public override bool CanChangeActive => true;
 
         public override MenuIndex MenuIndex => MenuIndex.World;
@@ -320,9 +322,7 @@ namespace Inferno
             // 戦闘機の数
             subMenu.AddSlider(
                 $"Amount of fighters: {config.AirPlaneCount}",
-                IsLangJpn
-                    ? "同時に飛び交う戦闘機の数\n反映には再Activeが必要"
-                    : "Number of fighters flying simultaneously\nRe-activation is required to reflect",
+                ChaosAirPlaneLocalize.Amount,
                 config.AirPlaneCount,
                 30,
                 x =>

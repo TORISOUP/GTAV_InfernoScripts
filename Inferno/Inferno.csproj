@@ -226,6 +226,11 @@
         <Compile Include="InfernoScripts\Worlds\Meteor.cs" />
         <Compile Include="InfernoScripts\Worlds\SpeedMax.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Properties\ChaosAirPlaneLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ChaosAirPlaneLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\ChaosHeliLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -287,6 +292,13 @@
         <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
+      <EmbeddedResource Include="Properties\ChaosAirPlaneLocalize.ja.resx">
+        <DependentUpon>ChaosAirPlaneLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosAirPlaneLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ChaosAirPlaneLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
       <EmbeddedResource Include="Properties\ChaosHeliLocalize.ja.resx">
         <DependentUpon>ChaosHeliLocalize.resx</DependentUpon>
       </EmbeddedResource>
