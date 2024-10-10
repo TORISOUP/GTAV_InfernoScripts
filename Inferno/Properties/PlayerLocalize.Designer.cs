@@ -60,6 +60,15 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Teleport to.
+        /// </summary>
+        internal static string WarpAction {
+            get {
+                return ResourceManager.GetString("WarpAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Teleports the player to the location marked on the map. It is sometimes buried in the ground, but it is normal..
         /// </summary>
         internal static string WarpDescription {

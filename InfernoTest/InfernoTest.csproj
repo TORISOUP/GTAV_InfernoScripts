@@ -57,11 +57,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="mscorlib" />
-        <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-          <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-        </Reference>
         <Reference Include="System" />
-        <Reference Include="System.Numerics" />
         <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
           <HintPath>..\packages\xunit.abstractions.2.0.3\lib\net35\xunit.abstractions.dll</HintPath>
         </Reference>
@@ -89,12 +85,6 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Inferno\Inferno.csproj">
-            <Project>{66b723b1-4776-448b-947a-1f0792e77f7f}</Project>
-            <Name>Inferno</Name>
-        </ProjectReference>
-    </ItemGroup>
-    <ItemGroup>
         <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
@@ -111,6 +101,12 @@
       <Content Include="ChaosModeSettingLoader\TestData\WrongType.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Inferno\Inferno.csproj">
+        <Project>{66b723b1-4776-448b-947a-1f0792e77f7f}</Project>
+        <Name>Inferno</Name>
+      </ProjectReference>
     </ItemGroup>
     <Choose>
         <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

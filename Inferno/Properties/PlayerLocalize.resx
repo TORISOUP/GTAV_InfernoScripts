@@ -24,4 +24,7 @@
     <data name="WarpDescription" xml:space="preserve">
         <value>Teleports the player to the location marked on the map. It is sometimes buried in the ground, but it is normal.</value>
     </data>
+    <data name="WarpAction" xml:space="preserve">
+        <value>Teleport to</value>
+    </data>
 </root>

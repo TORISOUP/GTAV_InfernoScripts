@@ -69,7 +69,7 @@ namespace Inferno.InfernoScripts.Player
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {
             menu.AddButton(
-                PlayerLocalize.WarpTitle,
+                PlayerLocalize.WarpAction,
                 PlayerLocalize.WarpDescription,
                 _ => WarpTo()
             );

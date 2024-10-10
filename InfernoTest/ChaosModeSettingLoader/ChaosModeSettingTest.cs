@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Inferno;
 using Inferno.ChaosMode;
@@ -47,7 +48,7 @@ namespace InfernoTest
             {
             }
 
-            public Weapon[] TestEnableWeaponListFilter(string[] WeaponList)
+            public HashSet<Weapon> TestEnableWeaponListFilter(string[] WeaponList)
             {
                 return EnableWeaponListFilter(WeaponList);
             }
@@ -67,7 +68,7 @@ namespace InfernoTest
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数が同じ
-            Assert.Equal(testData.Length, resutl.Length);
+            Assert.Equal(testData.Length, resutl.Count);
             //要素も同じ
             Assert.True(resutl.All(x => testData.Contains(x.ToString())));
         }
@@ -80,7 +81,7 @@ namespace InfernoTest
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は2
-            Assert.Equal(2, resutl.Length);
+            Assert.Equal(2, resutl.Count);
             //UNARMEDとPISTOLのみのはず
             Assert.Contains(Weapon.Unarmed, resutl);
             Assert.Contains(Weapon.Pistol, resutl);
@@ -114,7 +115,7 @@ namespace InfernoTest
             var resutl = testSetting.TestEnableWeaponListFilter(testData);
 
             //数は全ての武器数と同じ
-            Assert.Equal(allWeapons.Length, resutl.Length);
+            Assert.Equal(allWeapons.Length, resutl.Count);
             //同じ配列になるはず
             Assert.True(allWeapons.SequenceEqual(resutl.OrderBy(x => x.ToString())));
         }

@@ -12,7 +12,7 @@ namespace Inferno.Utilities
     {
         private readonly Encoding _encoding = Encoding.UTF8;
         private readonly string _baseFilePath = @"./scripts/confs/";
-        private IDebugLogger _debugLogger => DebugLogger.Instance;
+        protected virtual IDebugLogger DebugLogger => Inferno.DebugLogger.Instance;
         
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                DebugLogger.Log(e.Message);
+                DebugLogger.Log(e.StackTrace);
                 //例外発生時はデフォルトの設定ファイルを返す
                 return new T();
             }
@@ -53,8 +53,8 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                DebugLogger.Log(e.Message);
+                DebugLogger.Log(e.StackTrace);
             }
         }
 
@@ -80,8 +80,8 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                DebugLogger.Log(e.Message);
+                DebugLogger.Log(e.StackTrace);
             }
             return readString;
         }
@@ -110,8 +110,8 @@ namespace Inferno.Utilities
             }
             catch (Exception e)
             {
-                _debugLogger.Log(e.Message);
-                _debugLogger.Log(e.StackTrace);
+                DebugLogger.Log(e.Message);
+                DebugLogger.Log(e.StackTrace);
             }
         }
 

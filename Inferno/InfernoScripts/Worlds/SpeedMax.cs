@@ -22,7 +22,7 @@ namespace Inferno.InfernoScripts.World
 
         protected override void Setup()
         {
-            CreateInputKeywordAsObservable("SpeedMax","snax")
+            CreateInputKeywordAsObservable("SpeedMax", "snax")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -74,16 +74,6 @@ namespace Inferno.InfernoScripts.World
                         }
                     }
                 });
-            var nextType = _currentSpeedType;
-            OnKeyDownAsObservable
-                .Where(x => IsActive && x.KeyCode == Keys.F6)
-                .Do(_ =>
-                {
-                    nextType = GetNextSpeedType(nextType);
-                    DrawText($"SpeedMax:[Type:{nextType}]*", 1.0f);
-                })
-                .Throttle(TimeSpan.FromSeconds(1))
-                .Subscribe(_ => { ChangeSpeedType(nextType); });
 
             OnKeyDownAsObservable
                 .Where(x => IsActive && x.KeyCode == Keys.F5)
@@ -115,7 +105,6 @@ namespace Inferno.InfernoScripts.World
         private void ChangeSpeedType(SpeedType nextType)
         {
             _currentSpeedType = nextType;
-            DrawText($"SpeedMax:[Type:{_currentSpeedType}]", 2.0f);
             _vehicleHashSet.Clear();
         }
 
@@ -208,7 +197,9 @@ namespace Inferno.InfernoScripts.World
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "スピードマックス" : "All vehicles super-accelerated";
+        public override string DisplayName => SpeedMaxLocalize.Title;
+
+        public override string Description => SpeedMaxLocalize.Description;
 
         public override bool CanChangeActive => true;
 
@@ -218,7 +209,8 @@ namespace Inferno.InfernoScripts.World
         {
             // スピードタイプ
             {
-                subMenu.AddEnumSlider($"Type: {_currentSpeedType.ToString()}", "", SpeedType.Max,
+                subMenu.AddEnumSlider($"Type: {_currentSpeedType.ToString()}", SpeedMaxLocalize.SpeedTypeDescription,
+                    SpeedType.Max,
                     x =>
                     {
                         x.Title = $"Type: {_currentSpeedType.ToString()}";
@@ -230,7 +222,16 @@ namespace Inferno.InfernoScripts.World
                         x.Title = $"Type: {_currentSpeedType.ToString()}";
                     });
             }
-            
+
+            // ミッション車両の除外
+            {
+                subMenu.AddCheckbox(SpeedMaxLocalize.ExcludeMissionVehicles, "",
+                    item => { item.Checked = _excludeMissionVehicle; }, x =>
+                    {
+                        _excludeMissionVehicle = x;
+                        _vehicleHashSet.Clear();
+                    });
+            }
         }
 
         #endregion

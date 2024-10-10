@@ -17,4 +17,7 @@
     <data name="WarpDescription" xml:space="preserve">
         <value>地図上でマークした場所にワープします。よく地面に埋まります。</value>
     </data>
+    <data name="WarpAction" xml:space="preserve">
+        <value>ワープする</value>
+    </data>
 </root>

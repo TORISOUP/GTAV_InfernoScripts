@@ -83,8 +83,8 @@ namespace InfernoTest
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
 
             // リストは少なくとも1つ以上の値がある
-            Assert.True(result.WeaponList.Length > 0);
-            Assert.True(result.WeaponListForDriveBy.Length > 0);
+            Assert.True(result.WeaponList.Count > 0);
+            Assert.True(result.WeaponListForDriveBy.Count > 0);
         }
 
         [Theory]
@@ -109,8 +109,8 @@ namespace InfernoTest
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
 
             // リストは少なくとも1つ以上の値がある
-            Assert.True(result.WeaponList.Length > 0);
-            Assert.True(result.WeaponListForDriveBy.Length > 0);
+            Assert.True(result.WeaponList.Count > 0);
+            Assert.True(result.WeaponListForDriveBy.Count > 0);
         }
 
         [Fact]
@@ -134,8 +134,8 @@ namespace InfernoTest
             Assert.Equal(settingDefault.ForceExplosiveWeaponProbability, result.ForceExplosiveWeaponProbability);
 
             // リストは少なくとも1つ以上の値がある
-            Assert.True(result.WeaponList.Length > 0);
-            Assert.True(result.WeaponListForDriveBy.Length > 0);
+            Assert.True(result.WeaponList.Count > 0);
+            Assert.True(result.WeaponListForDriveBy.Count > 0);
         }
 
         /// <summary>

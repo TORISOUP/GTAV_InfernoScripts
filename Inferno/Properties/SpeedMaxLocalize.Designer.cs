@@ -58,5 +58,46 @@ namespace Inferno.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vehicles move forward at high speed..
+        /// </summary>
+        internal static string Description {
+            get {
+                return ResourceManager.GetString("Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exclude mission vehicles.
+        /// </summary>
+        internal static string ExcludeMissionVehicles {
+            get {
+                return ResourceManager.GetString("ExcludeMissionVehicles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Acceleration behavior can be changed.
+        ///- Max : Always maximum speed
+        ///- High : Fastest
+        ///- Middle : Moderate speed
+        ///- Low : Fairly fast
+        ///- Random : Randomly accelerate at high speed.
+        /// </summary>
+        internal static string SpeedTypeDescription {
+            get {
+                return ResourceManager.GetString("SpeedTypeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum vehicle speed.
+        /// </summary>
+        internal static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
     }
 }
