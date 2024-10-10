@@ -256,6 +256,11 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>InfernoCommon.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\PlayerLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PlayerLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\WorldModLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -338,6 +343,13 @@
       <EmbeddedResource Include="Properties\InfernoCommon.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>InfernoCommon.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerLocalize.ja.resx">
+        <DependentUpon>PlayerLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlayerLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\WorldModLocalize.ja.resx">
         <DependentUpon>WorldModLocalize.resx</DependentUpon>
