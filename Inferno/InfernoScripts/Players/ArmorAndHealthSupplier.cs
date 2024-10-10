@@ -3,6 +3,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GTA;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 
 namespace Inferno
@@ -56,5 +58,18 @@ namespace Inferno
 
             Game.Player.RefillSpecialAbility();
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.SupplierTitle;
+        
+        public override string Description => PlayerLocalize.SupplierDescription;
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        
+        #endregion
     }
 }

@@ -60,6 +60,51 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to After a while of not having taken any damage, it gradually recovers its strength and armor to the maximum value..
+        /// </summary>
+        internal static string AutoHealDescription {
+            get {
+                return ResourceManager.GetString("AutoHealDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-recovery.
+        /// </summary>
+        internal static string AutoHealTitle {
+            get {
+                return ResourceManager.GetString("AutoHealTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simultaneously pressing “Aim” and “Fire” while in the “ Unarmed” state will fire missiles from the vehicle..
+        /// </summary>
+        internal static string BondCarDescription {
+            get {
+                return ResourceManager.GetString("BondCarDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cool time..
+        /// </summary>
+        internal static string BondCardInterval {
+            get {
+                return ResourceManager.GetString("BondCardInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bond car.
+        /// </summary>
+        internal static string BondCarTitle {
+            get {
+                return ResourceManager.GetString("BondCarTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kill.
         /// </summary>
         internal static string KillMeAction {
@@ -110,6 +155,24 @@ namespace Inferno.Properties {
         internal static string RagdollTitle {
             get {
                 return ResourceManager.GetString("RagdollTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When the player is resurrected after death or at the start of a mission, “Armor,” “ Health,” and “Special Ability Gauge” are all restored..
+        /// </summary>
+        internal static string SupplierDescription {
+            get {
+                return ResourceManager.GetString("SupplierDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full recovery.
+        /// </summary>
+        internal static string SupplierTitle {
+            get {
+                return ResourceManager.GetString("SupplierTitle", resourceCulture);
             }
         }
         

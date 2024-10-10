@@ -2,6 +2,8 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 
 
@@ -89,5 +91,18 @@ namespace Inferno.InfernoScripts.Player
                 await DelaySecondsAsync(1, ct);
             }
         }
+        
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.AutoHealTitle;
+        
+        public override string Description => PlayerLocalize.AutoHealDescription;
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        
+        #endregion
     }
 }

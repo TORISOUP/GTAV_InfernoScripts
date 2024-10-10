@@ -45,4 +45,25 @@
     <data name="KillMeTitle" xml:space="preserve">
         <value>Suicide</value>
     </data>
+    <data name="SupplierTitle" xml:space="preserve">
+        <value>Full recovery</value>
+    </data>
+    <data name="SupplierDescription" xml:space="preserve">
+        <value>When the player is resurrected after death or at the start of a mission, “Armor,” “ Health,” and “Special Ability Gauge” are all restored.</value>
+    </data>
+    <data name="AutoHealTitle" xml:space="preserve">
+        <value>Auto-recovery</value>
+    </data>
+    <data name="AutoHealDescription" xml:space="preserve">
+        <value>After a while of not having taken any damage, it gradually recovers its strength and armor to the maximum value.</value>
+    </data>
+    <data name="BondCarTitle" xml:space="preserve">
+        <value>Bond car</value>
+    </data>
+    <data name="BondCarDescription" xml:space="preserve">
+        <value>Simultaneously pressing “Aim” and “Fire” while in the “ Unarmed” state will fire missiles from the vehicle.</value>
+    </data>
+    <data name="BondCardInterval" xml:space="preserve">
+        <value>Cool time.</value>
+    </data>
 </root>

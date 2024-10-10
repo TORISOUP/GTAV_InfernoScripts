@@ -62,7 +62,7 @@ namespace Inferno.ChaosMode
 
         private IWeaponProvider CurrentWeaponProvider => _singleWeaponProvider ?? _defaultWeaponProvider;
         private IWeaponProvider DefaultWeaponProvider => _defaultWeaponProvider;
-        
+
         private ChaosModeSettingReadWriter _chaosSettingLoader = new();
 
         protected override void Setup()
@@ -91,12 +91,6 @@ namespace Inferno.ChaosMode
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    chaosedPedList.Clear();
-
-                    _localCts?.Cancel();
-                    _localCts?.Dispose();
-                    _localCts = null;
-                    _linkedCts = null;
 
                     if (IsActive)
                     {
@@ -105,10 +99,22 @@ namespace Inferno.ChaosMode
                     else
                     {
                         DrawText("ChaosMode:Off");
-                        _chaosChecker.AvoidAttackEntities = Array.Empty<Entity>();
                     }
                 })
                 .AddTo(CompositeDisposable);
+
+            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+
+
+            IsActiveRP.Subscribe(_ =>
+            {
+                chaosedPedList.Clear();
+                _localCts?.Cancel();
+                _localCts?.Dispose();
+                _localCts = null;
+                _linkedCts = null;
+                _chaosChecker.AvoidAttackEntities = Array.Empty<Entity>();
+            });
 
 
             _nextTreatType = _currentTreatType;
@@ -447,12 +453,10 @@ namespace Inferno.ChaosMode
                             break;
                         }
 
-                        foreach (var t in targets.Where(x=>x.IsSafeExist() && x.IsAlive))
+                        foreach (var t in targets.Where(x => x.IsSafeExist() && x.IsAlive))
                         {
                             ped.Task.FightAgainst(t);
                         }
-                        
-                        
                     }
 
                     await YieldAsync(ct);
@@ -698,20 +702,19 @@ namespace Inferno.ChaosMode
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             _uiBuilder.OnUiMenuConstruct(pool, subMenu);
-            
-            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+
+            subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
             {
                 _chaosModeSetting.OverrideDto(_chaosSettingLoader.CreateDefaultChaosModeSetting);
                 subMenu.Visible = false;
                 subMenu.Visible = true;
             });
 
-            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            subMenu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
             {
                 _chaosSettingLoader.SaveSettingFile(@"ChaosMode.conf", _chaosModeSetting.ToDto());
                 DrawText($"Saved to ChaosMode.conf");
             });
-            
         }
 
         #endregion

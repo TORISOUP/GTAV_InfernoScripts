@@ -155,7 +155,6 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 builder.IsActiveRP.Subscribe(x =>
                     {
                         item.Checked = x;
-                        item.Draw();
                     })
                     .AddTo(_compositeDisposable);
             }

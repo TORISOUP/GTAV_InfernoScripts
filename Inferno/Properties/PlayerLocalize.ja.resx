@@ -38,4 +38,25 @@
     <data name="KillMeAction" xml:space="preserve">
         <value>死</value>
     </data>
+    <data name="SupplierTitle" xml:space="preserve">
+        <value>復活時全回復</value>
+    </data>
+    <data name="SupplierDescription" xml:space="preserve">
+        <value>死亡後復活時またはミッション開始時に「アーマー」「体力」「スキルゲージ」を全回復します。</value>
+    </data>
+    <data name="AutoHealTitle" xml:space="preserve">
+        <value>自動回復</value>
+    </data>
+    <data name="AutoHealDescription" xml:space="preserve">
+        <value>しばらくダメージを受けないでいると体力とアーマーを徐々に最大値まで回復します。</value>
+    </data>
+    <data name="BondCarTitle" xml:space="preserve">
+        <value>ボンドカー</value>
+    </data>
+    <data name="BondCarDescription" xml:space="preserve">
+        <value>「素手」状態のときに「エイム」「射撃」を同時押しすると車両からミサイルを発射します。</value>
+    </data>
+    <data name="BondCardInterval" xml:space="preserve">
+        <value>クールタイム</value>
+    </data>
 </root>
