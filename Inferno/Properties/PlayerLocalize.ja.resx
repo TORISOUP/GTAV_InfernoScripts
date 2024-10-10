@@ -20,4 +20,13 @@
     <data name="WarpAction" xml:space="preserve">
         <value>ワープする</value>
     </data>
+    <data name="RagdollTitle" xml:space="preserve">
+        <value>脱力</value>
+    </data>
+    <data name="RagdollAction" xml:space="preserve">
+        <value>脱力する</value>
+    </data>
+    <data name="RagdollDescription" xml:space="preserve">
+        <value>しゃがみ + ジャンプ を入力するとプレイヤーを脱力状態にします。</value>
+    </data>
 </root>

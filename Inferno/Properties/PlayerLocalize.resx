@@ -27,4 +27,13 @@
     <data name="WarpAction" xml:space="preserve">
         <value>Teleport to</value>
     </data>
+    <data name="RagdollAction" xml:space="preserve">
+        <value>Ragdoll</value>
+    </data>
+    <data name="RagdollTitle" xml:space="preserve">
+        <value>Players ragdoll</value>
+    </data>
+    <data name="RagdollDescription" xml:space="preserve">
+        <value>"Duck" + "Jump" will deactivate the player.</value>
+    </data>
 </root>

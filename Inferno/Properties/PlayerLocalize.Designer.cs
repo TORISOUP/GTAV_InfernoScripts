@@ -60,6 +60,33 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ragdoll.
+        /// </summary>
+        internal static string RagdollAction {
+            get {
+                return ResourceManager.GetString("RagdollAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;Duck&quot; + &quot;Jump&quot; will deactivate the player..
+        /// </summary>
+        internal static string RagdollDescription {
+            get {
+                return ResourceManager.GetString("RagdollDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Players ragdoll.
+        /// </summary>
+        internal static string RagdollTitle {
+            get {
+                return ResourceManager.GetString("RagdollTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Teleport to.
         /// </summary>
         internal static string WarpAction {
