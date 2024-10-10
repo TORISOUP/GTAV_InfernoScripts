@@ -29,4 +29,13 @@
     <data name="RagdollDescription" xml:space="preserve">
         <value>しゃがみ + ジャンプ を入力するとプレイヤーを脱力状態にします。</value>
     </data>
+    <data name="KillMeTitle" xml:space="preserve">
+        <value>自殺</value>
+    </data>
+    <data name="KillMeDescription" xml:space="preserve">
+        <value>プレイヤーを殺します。</value>
+    </data>
+    <data name="KillMeAction" xml:space="preserve">
+        <value>死</value>
+    </data>
 </root>

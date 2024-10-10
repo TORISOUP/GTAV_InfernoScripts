@@ -60,6 +60,33 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Kill.
+        /// </summary>
+        internal static string KillMeAction {
+            get {
+                return ResourceManager.GetString("KillMeAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kills the player..
+        /// </summary>
+        internal static string KillMeDescription {
+            get {
+                return ResourceManager.GetString("KillMeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suicide.
+        /// </summary>
+        internal static string KillMeTitle {
+            get {
+                return ResourceManager.GetString("KillMeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ragdoll.
         /// </summary>
         internal static string RagdollAction {

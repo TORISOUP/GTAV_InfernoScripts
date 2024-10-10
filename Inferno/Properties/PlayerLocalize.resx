@@ -36,4 +36,13 @@
     <data name="RagdollDescription" xml:space="preserve">
         <value>"Duck" + "Jump" will deactivate the player.</value>
     </data>
+    <data name="KillMeAction" xml:space="preserve">
+        <value>Kill</value>
+    </data>
+    <data name="KillMeDescription" xml:space="preserve">
+        <value>Kills the player.</value>
+    </data>
+    <data name="KillMeTitle" xml:space="preserve">
+        <value>Suicide</value>
+    </data>
 </root>
