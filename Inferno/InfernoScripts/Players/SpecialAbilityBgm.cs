@@ -4,6 +4,10 @@ using System.Linq;
 using System.Media;
 using System.Reactive.Linq;
 using GTA;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
+using LemonUI;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -23,7 +27,7 @@ namespace Inferno
 
             soundPlayer = new SoundPlayer { SoundLocation = filePaths[Random.Next(filePaths.Length)] };
 
-            CreateInputKeywordAsObservable("SpecialAbilityBgm", "sbmg")
+            CreateInputKeywordAsObservable("SpecialAbilityBgm", "sbgm")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -64,5 +68,14 @@ namespace Inferno
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
+        
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.BgmTitle;
+        
+        public override string Description => PlayerLocalize.BgmDescription;
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
+
     }
 }

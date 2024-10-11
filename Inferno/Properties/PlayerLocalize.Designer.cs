@@ -78,6 +78,26 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Play background music during the activation of Trevor&apos;s ability.
+        ///Play background music while Trevor&apos;s ability is activated.
+        ///Place the BGM you wish to play as a wav file in “scripts/SpecialAbilityBgm”..
+        /// </summary>
+        internal static string BgmDescription {
+            get {
+                return ResourceManager.GetString("BgmDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trevor Music.
+        /// </summary>
+        internal static string BgmTitle {
+            get {
+                return ResourceManager.GetString("BgmTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Simultaneously pressing “Aim” and “Fire” while in the “ Unarmed” state will fire missiles from the vehicle..
         /// </summary>
         internal static string BondCarDescription {
@@ -101,6 +121,25 @@ namespace Inferno.Properties {
         internal static string BondCarTitle {
             get {
                 return ResourceManager.GetString("BondCarTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play sound effects when the player dies.
+        ///Place the sound effects you wish to play as wav files in “scripts/Pichun”..
+        /// </summary>
+        internal static string DeathSfxDescription {
+            get {
+                return ResourceManager.GetString("DeathSfxDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Death sound effect.
+        /// </summary>
+        internal static string DeathSfxTitle {
+            get {
+                return ResourceManager.GetString("DeathSfxTitle", resourceCulture);
             }
         }
         
@@ -173,6 +212,29 @@ namespace Inferno.Properties {
         internal static string SupplierTitle {
             get {
                 return ResourceManager.GetString("SupplierTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Displays the vehicle&apos;s endurance value on the screen.
+        ///
+        ///Red: Fuel tank
+        ///Blue: body of the vehicle
+        ///Green: Engine
+        ///Yellow: Time remaining before explosion.
+        /// </summary>
+        internal static string VehicleHUDDescription {
+            get {
+                return ResourceManager.GetString("VehicleHUDDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vehicle&apos;s HUD.
+        /// </summary>
+        internal static string VehicleHUDTitle {
+            get {
+                return ResourceManager.GetString("VehicleHUDTitle", resourceCulture);
             }
         }
         

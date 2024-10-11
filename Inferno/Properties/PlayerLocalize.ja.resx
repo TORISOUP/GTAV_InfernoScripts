@@ -59,4 +59,29 @@
     <data name="BondCardInterval" xml:space="preserve">
         <value>クールタイム</value>
     </data>
+    <data name="BgmTitle" xml:space="preserve">
+        <value>トレバーBGM</value>
+    </data>
+    <data name="BgmDescription" xml:space="preserve">
+        <value>トレバーのスキル発動中にBGMを再生します。
+再生したいBGMは「scripts/SpecialAbilityBgm」にwavファイルとして配置してください。</value>
+    </data>
+    <data name="DeathSfxTitle" xml:space="preserve">
+        <value>死亡時効果音</value>
+    </data>
+    <data name="DeathSfxDescription" xml:space="preserve">
+        <value>プレイヤー死亡時に効果音を再生します。
+再生したい効果音は「scripts/Pichun」にwavファイルで配置してください。</value>
+    </data>
+    <data name="VehicleHUDTitle" xml:space="preserve">
+        <value>車両耐久値表示</value>
+    </data>
+    <data name="VehicleHUDDescription" xml:space="preserve">
+        <value>車両の耐久値を画面に表示します。
+
+赤：燃料タンク
+青：車体
+緑：エンジン
+黄：爆発までの残り時間</value>
+    </data>
 </root>

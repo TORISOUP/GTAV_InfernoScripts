@@ -66,4 +66,30 @@
     <data name="BondCardInterval" xml:space="preserve">
         <value>Cool time.</value>
     </data>
+    <data name="BgmTitle" xml:space="preserve">
+        <value>Trevor Music</value>
+    </data>
+    <data name="BgmDescription" xml:space="preserve">
+        <value>Play background music during the activation of Trevor's ability.
+Play background music while Trevor's ability is activated.
+Place the BGM you wish to play as a wav file in “scripts/SpecialAbilityBgm”.</value>
+    </data>
+    <data name="DeathSfxTitle" xml:space="preserve">
+        <value>Death sound effect</value>
+    </data>
+    <data name="DeathSfxDescription" xml:space="preserve">
+        <value>Play sound effects when the player dies.
+Place the sound effects you wish to play as wav files in “scripts/Pichun”.</value>
+    </data>
+    <data name="VehicleHUDTitle" xml:space="preserve">
+        <value>Vehicle's HUD</value>
+    </data>
+    <data name="VehicleHUDDescription" xml:space="preserve">
+        <value>Displays the vehicle's endurance value on the screen.
+
+Red: Fuel tank
+Blue: body of the vehicle
+Green: Engine
+Yellow: Time remaining before explosion</value>
+    </data>
 </root>

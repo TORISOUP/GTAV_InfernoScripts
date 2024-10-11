@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Drawing;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Native;
 using GTA.UI;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -23,15 +28,24 @@ namespace Inferno
             _screenWidth = (int)screenResolution.X;
             _mContainer = new ContainerElement(new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
-            OnDrawingTickAsObservable
-                .Where(_ => this.GetPlayerVehicle().IsSafeExist() && PlayerPed.IsAlive)
-                .Subscribe(_ =>
+            IsActiveRP.Where(x => x).Subscribe(_ => DrawAsync(ActivationCancellationToken).Forget());
+        }
+
+        private async ValueTask DrawAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested && IsActive)
+            {
+                if (this.GetPlayerVehicle().IsSafeExist() && PlayerPed.IsAlive)
                 {
                     _mContainer.Items.Clear();
                     GetVehicleHealth();
                     _mContainer.Draw();
-                });
+                }
+
+                await YieldAsync(ct);
+            }
         }
+
 
         /// <summary>
         /// 乗り物の体力を取得する
@@ -107,5 +121,13 @@ namespace Inferno
                 new Size(width + margin * 2, height + margin * 2), backGroundColor));
             _mContainer.Items.Add(new UIRectangle(barPosition, barSize, foreGroundColor));
         }
+
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.VehicleHUDTitle;
+
+        public override string Description => PlayerLocalize.VehicleHUDDescription;
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
     }
 }
