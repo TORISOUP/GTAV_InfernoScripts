@@ -92,4 +92,13 @@ Blue: body of the vehicle
 Green: Engine
 Yellow: Time remaining before explosion</value>
     </data>
+    <data name="EmergencyEscapeTitle" xml:space="preserve">
+        <value>Emergency escape</value>
+    </data>
+    <data name="EmergencyEscapeDescription" xml:space="preserve">
+        <value>Getting out of the car while honking the horn activates the emergency ejection.</value>
+    </data>
+    <data name="EmergencyEscapePower" xml:space="preserve">
+        <value>Ejection power.</value>
+    </data>
 </root>

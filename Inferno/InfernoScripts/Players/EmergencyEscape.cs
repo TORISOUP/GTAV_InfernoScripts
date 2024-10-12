@@ -5,7 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
+using LemonUI;
+using LemonUI.Menus;
 
 namespace Inferno
 {
@@ -15,16 +19,33 @@ namespace Inferno
     public class EmergencyEscape : InfernoScript
     {
         private EmergencyEscapeConf conf;
-        private float EscapePower => conf?.EscapePower ?? 60.0f;
+        private float EscapePower => conf?.Power ?? 60.0f;
         protected override string ConfigFileName { get; } = "EmergencyEscape.conf";
 
         protected override void Setup()
         {
             conf = LoadConfig<EmergencyEscapeConf>();
 
-            OnThinnedTickAsObservable
-                .Where(_ => Game.IsControlPressed(Control.VehicleHorn) && Game.IsControlPressed(Control.VehicleExit))
-                .Subscribe(_ => EscapeVehicle());
+            IsActiveRP.Subscribe(x =>
+            {
+                if (x)
+                {
+                    ObservePlayerInputAsync(ActivationCancellationToken).Forget();
+                }
+            });
+        }
+
+        private async ValueTask ObservePlayerInputAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested && IsActive)
+            {
+                if (Game.IsControlPressed(Control.VehicleHorn) && Game.IsControlPressed(Control.VehicleExit))
+                {
+                    EscapeVehicle();
+                }
+
+                await YieldAsync(ct);
+            }
         }
 
         //車に乗ってたら緊急脱出する
@@ -42,7 +63,7 @@ namespace Inferno
                 return;
             }
 
-            DelayParachuteAsync(PlayerPed, playerVec, DestroyCancellationToken).Forget();
+            DelayParachuteAsync(PlayerPed, playerVec, ActivationCancellationToken).Forget();
         }
 
         private async ValueTask DelayParachuteAsync(Ped player, Vehicle vec, CancellationToken ct)
@@ -83,12 +104,62 @@ namespace Inferno
         [Serializable]
         private class EmergencyEscapeConf : InfernoConfig
         {
-            public float EscapePower = 60.0f;
+            private int _power = 60;
+
+            public int Power
+            {
+                get => _power;
+                set => _power = value.Clamp(0, 100);
+            }
 
             public override bool Validate()
             {
                 return true;
             }
+        }
+
+        #endregion
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.EmergencyEscapeTitle;
+
+        public override string Description => PlayerLocalize.EmergencyEscapeDescription;
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
+            subMenu.AddSlider(
+                $"Ejection power: {conf.Power}",
+                PlayerLocalize.EmergencyEscapePower,
+                conf.Power,
+                100,
+                x =>
+                {
+                    x.Value = conf.Power;
+                    x.Multiplier = 5;
+                }, item =>
+                {
+                    conf.Power = item.Value;
+                    item.Title = $"Ejection power: {conf.Power}";
+                });
+
+
+            subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
+            {
+                conf = LoadDefaultConfig<EmergencyEscapeConf>();
+                subMenu.Visible = false;
+                subMenu.Visible = true;
+            });
+
+            subMenu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
+            {
+                SaveConfig(conf);
+                DrawText($"Saved to {ConfigFileName}");
+            });
         }
 
         #endregion

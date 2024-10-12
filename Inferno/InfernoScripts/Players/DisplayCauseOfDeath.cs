@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Drawing;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using GTA;
 using GTA.Math;
 using GTA.UI;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
+using Inferno.Utilities;
 
 namespace Inferno
 {
@@ -16,6 +20,7 @@ namespace Inferno
         private ContainerElement _mContainer;
         private int _screenHeight;
         private int _screenWidth;
+        private CompositeDisposable _activityDisposables;
 
         protected override void Setup()
         {
@@ -26,55 +31,81 @@ namespace Inferno
             _mContainer = new ContainerElement(
                 new Point(0, 0), new Size(_screenWidth, _screenHeight));
 
-            OnDrawingTickAsObservable
-                .Where(_ => _mContainer.Items.Count > 0)
-                .Subscribe(_ => _mContainer.Draw());
+            IsActiveRP.Subscribe(x =>
+            {
+                _activityDisposables?.Dispose();
 
-            CreateTickAsObservable(TimeSpan.FromSeconds(0.5f))
-                .Where(_ => PlayerPed.IsSafeExist())
-                .Select(x => PlayerPed.IsAlive)
-                .DistinctUntilChanged()
-                .Subscribe(isAlive =>
+                if (!x)
                 {
-                    _mContainer.Items.Clear();
-                    if (isAlive)
+                    return;
+                }
+
+                _activityDisposables = new CompositeDisposable();
+
+                OnDrawingTickAsObservable
+                    .Where(_ => _mContainer.Items.Count > 0)
+                    .Subscribe(_ => _mContainer.Draw())
+                    .AddTo(_activityDisposables);
+
+                CreateTickAsObservable(TimeSpan.FromSeconds(0.5f))
+                    .Where(_ => PlayerPed.IsSafeExist())
+                    .Select(x => PlayerPed.IsAlive)
+                    .DistinctUntilChanged()
+                    .Subscribe(isAlive =>
                     {
-                        return;
-                    }
+                        _mContainer.Items.Clear();
+                        if (isAlive)
+                        {
+                            return;
+                        }
 
-                    //死んでいたら死因を出す
-                    var damageWeapon = PlayerPed.GetCauseOfDeath();
-                    if (damageWeapon == 0)
-                    {
-                        return;
-                    }
+                        //死んでいたら死因を出す
+                        var damageWeapon = PlayerPed.GetCauseOfDeath();
+                        if (damageWeapon == 0)
+                        {
+                            return;
+                        }
 
-                    string damageName = null;
+                        string damageName = null;
 
-                    // damageWeaponがWeapon内に定義されているか
-                    if (Enum.IsDefined(typeof(Weapon), damageWeapon))
-                    {
-                        damageName = damageWeapon.ToString();
-                    }
-                    else
-                    {
-                        //定義されていない場合はWeaponHashとして表示
-                        damageName = ((WeaponHash)damageWeapon).ToString();
-                    }
+                        // damageWeaponがWeapon内に定義されているか
+                        if (Enum.IsDefined(typeof(Weapon), damageWeapon))
+                        {
+                            damageName = damageWeapon.ToString();
+                        }
+                        else
+                        {
+                            //定義されていない場合はWeaponHashとして表示
+                            damageName = ((WeaponHash)damageWeapon).ToString();
+                        }
 
 
-                    if (PlayerPed.Killer == PlayerPed)
-                    {
-                        damageName += "(SUICIDE)";
-                    }
+                        if (PlayerPed.Killer == PlayerPed)
+                        {
+                            damageName += "(SUICIDE)";
+                        }
 
-                    var text = new TextElement(damageName,
-                        new Point((int)(_screenWidth * _textPositionScale.X),
-                            (int)(_screenHeight * _textPositionScale.Y)),
-                        1.0f, Color.White, 0, Alignment.Center, false, true);
+                        var text = new TextElement(damageName,
+                            new Point((int)(_screenWidth * _textPositionScale.X),
+                                (int)(_screenHeight * _textPositionScale.Y)),
+                            1.0f, Color.White, 0, Alignment.Center, false, true);
 
-                    _mContainer.Items.Add(text);
-                });
+                        _mContainer.Items.Add(text);
+                    })
+                    .AddTo(_activityDisposables);
+            });
         }
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => MiscLocalization.DisplayCoDTitle;
+
+        public override string Description => MiscLocalization.DisplayCoDDescription;
+
+        public override bool CanChangeActive => true;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
+
+        #endregion
     }
 }

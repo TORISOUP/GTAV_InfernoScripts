@@ -84,4 +84,13 @@
 緑：エンジン
 黄：爆発までの残り時間</value>
     </data>
+    <data name="EmergencyEscapeTitle" xml:space="preserve">
+        <value>緊急脱出</value>
+    </data>
+    <data name="EmergencyEscapeDescription" xml:space="preserve">
+        <value>クラクションを鳴らしながら車から降りようとすると緊急脱出します。</value>
+    </data>
+    <data name="EmergencyEscapePower" xml:space="preserve">
+        <value>射出力。</value>
+    </data>
 </root>

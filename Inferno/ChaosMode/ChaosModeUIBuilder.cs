@@ -27,8 +27,7 @@ namespace Inferno.ChaosMode
         public void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             subMenu.Width = 780;
-
-
+            
             // Radius
             subMenu.AddSlider(
                 $"Radius:{_chaosModeSetting.Radius}[m]",

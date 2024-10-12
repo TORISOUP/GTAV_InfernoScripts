@@ -252,6 +252,16 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>InfernoCommon.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\MenuLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MenuLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\MiscLocalization.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MiscLocalization.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\PlayerLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -339,6 +349,20 @@
       <EmbeddedResource Include="Properties\InfernoCommon.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>InfernoCommon.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MenuLocalize.ja.resx">
+        <DependentUpon>MenuLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MenuLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MenuLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MiscLocalization.ja.resx">
+        <DependentUpon>MiscLocalization.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MiscLocalization.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MiscLocalization.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\PlayerLocalize.ja.resx">
         <DependentUpon>PlayerLocalize.resx</DependentUpon>

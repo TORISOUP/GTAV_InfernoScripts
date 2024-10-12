@@ -1,3 +1,5 @@
+using System;
+using Inferno.Properties;
 using LemonUI;
 using LemonUI.Menus;
 using Reactive.Bindings;
@@ -24,7 +26,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         bool IsActive { get; set; }
         IReadOnlyReactiveProperty<bool> IsActiveRP { get; }
-        
+
         string Description { get; }
     }
 
@@ -35,5 +37,22 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         Player,
         Entities,
         Misc,
+    }
+
+    public static class MenuIndexExt
+    {
+        public static string ToLocalizedString(this MenuIndex index)
+        {
+            return index switch
+            {
+                MenuIndex.Root => "",
+                MenuIndex.World => MenuLocalize.IndexWorld,
+                MenuIndex.Player => MenuLocalize.IndexPlayer,
+                MenuIndex.Entities => MenuLocalize.IndexEntities,
+                MenuIndex.Misc => MenuLocalize.IndexMisc,
+                _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+            };
+        }
+        
     }
 }

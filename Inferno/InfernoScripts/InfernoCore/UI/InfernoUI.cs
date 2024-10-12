@@ -7,6 +7,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 using GTA;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -19,14 +20,16 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
 
         private readonly ObjectPool _objectPool = new();
         private readonly CompositeDisposable _compositeDisposable = new();
+
         readonly NativeMenu _rootMenu = new("Inferno MOD", "MOD Menu")
         {
             Visible = false
         };
+
         private readonly List<IScriptUiBuilder> _builders = new();
 
         private readonly Dictionary<MenuIndex, NativeMenu> _manuIndex = new();
-        
+
         private bool _isTickStarted;
 
         public InfernoUi()
@@ -63,7 +66,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                     .Subscribe(_ =>
                     {
                         var menus = _objectPool.OfType<NativeMenu>().ToArray();
-                        if (menus.Any(x=>x.Visible))
+                        if (menus.Any(x => x.Visible))
                         {
                             foreach (var m in menus)
                             {
@@ -84,14 +87,14 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                     .AddTo(_compositeDisposable);
 
                 Aborted += (_, _) => { _compositeDisposable.Dispose(); };
-                
+
                 _manuIndex.Add(MenuIndex.Root, _rootMenu);
 
                 #endregion
 
 
                 // 全部一斉ON
-                var allOnItem = new NativeItem("All ON", "All ON");
+                var allOnItem = new NativeItem("[All ON]", MenuLocalize.AllOn);
                 allOnItem.Activated += (_, __) =>
                 {
                     foreach (var builder in _builders)
@@ -108,13 +111,12 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 var allManu = Enum.GetValues(typeof(MenuIndex)).Cast<MenuIndex>();
                 foreach (var m in allManu.Where(x => x != MenuIndex.Root))
                 {
-                    var menu = new NativeMenu(m.ToString(), m.ToString())
+                    var menu = new NativeMenu(m.ToLocalizedString(), m.ToLocalizedString())
                     {
-                        Visible = false
+                        Visible = false,
                     };
                     _rootMenu.AddSubMenu(menu);
                     _objectPool.Add(menu);
-
                     _manuIndex.Add(m, menu);
                 }
             }
@@ -152,10 +154,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 item.Description = builder.Description;
                 item.CheckboxChanged += (_, e) => builder.IsActive = item.Checked;
                 subMenu.Add(item);
-                builder.IsActiveRP.Subscribe(x =>
-                    {
-                        item.Checked = x;
-                    })
+                builder.IsActiveRP.Subscribe(x => { item.Checked = x; })
                     .AddTo(_compositeDisposable);
             }
 
@@ -168,6 +167,6 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             subMenu.BannerText.Scale = 0.5f;
             subMenu.BannerText.Recalculate();
         }
-        
+
     }
 }

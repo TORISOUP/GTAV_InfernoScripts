@@ -144,6 +144,33 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Getting out of the car while honking the horn activates the emergency ejection..
+        /// </summary>
+        internal static string EmergencyEscapeDescription {
+            get {
+                return ResourceManager.GetString("EmergencyEscapeDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ejection power..
+        /// </summary>
+        internal static string EmergencyEscapePower {
+            get {
+                return ResourceManager.GetString("EmergencyEscapePower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Emergency escape.
+        /// </summary>
+        internal static string EmergencyEscapeTitle {
+            get {
+                return ResourceManager.GetString("EmergencyEscapeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kill.
         /// </summary>
         internal static string KillMeAction {
