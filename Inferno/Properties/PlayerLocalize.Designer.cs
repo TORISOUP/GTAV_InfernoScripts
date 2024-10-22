@@ -171,6 +171,24 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Holding down jump and sprint at the same time causes the player to fluff up and jump up..
+        /// </summary>
+        internal static string FloatingDescription {
+            get {
+                return ResourceManager.GetString("FloatingDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fluffy Jump.
+        /// </summary>
+        internal static string FloatingTitle {
+            get {
+                return ResourceManager.GetString("FloatingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Kill.
         /// </summary>
         internal static string KillMeAction {

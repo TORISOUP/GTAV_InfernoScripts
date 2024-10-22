@@ -101,4 +101,10 @@ Yellow: Time remaining before explosion</value>
     <data name="EmergencyEscapePower" xml:space="preserve">
         <value>Ejection power.</value>
     </data>
+    <data name="FloatingDescription" xml:space="preserve">
+        <value>Holding down jump and sprint at the same time causes the player to fluff up and jump up.</value>
+    </data>
+    <data name="FloatingTitle" xml:space="preserve">
+        <value>Fluffy Jump</value>
+    </data>
 </root>

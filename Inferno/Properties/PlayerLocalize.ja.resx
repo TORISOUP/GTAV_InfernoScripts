@@ -93,4 +93,10 @@
     <data name="EmergencyEscapePower" xml:space="preserve">
         <value>射出力。</value>
     </data>
+    <data name="FloatingTitle" xml:space="preserve">
+        <value>ふわふわジャンプ</value>
+    </data>
+    <data name="FloatingDescription" xml:space="preserve">
+        <value>ジャンプとスプリントを同時に押し続けるとふわふわ飛び上がります。</value>
+    </data>
 </root>
