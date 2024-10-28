@@ -9,4 +9,10 @@ namespace Inferno.InfernoScripts.Conf
     {
         public Dictionary<string, string> CommandList = new();
     }
+    
+    [Serializable]
+    public class InfernoAllOnConfig
+    {
+        public Dictionary<string, bool> AllOn = new();
+    }
 }

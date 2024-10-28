@@ -111,6 +111,7 @@
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
         <Compile Include="InfernoScripts\Conf\InfernoCommandConfig.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\InfernoAllOnProvider.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoCommandProvider.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoHttpServer.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />

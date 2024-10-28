@@ -39,6 +39,11 @@ namespace Inferno
         private InfernoSynchronizationContext _infernoSynchronizationContext;
         private InfernoScheduler _infernoScheduler;
 
+        public bool IsAllOnEnable =>
+            InfernoAllOnProvider.Instance.GetOrCreateAllOnEnable(this.GetType().Name, DefaultAllOnEnable);
+
+        protected bool DefaultAllOnEnable => true;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -85,7 +90,8 @@ namespace Inferno
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon");
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon")
+                .Where(_ => IsAllOnEnable);
 
             //スケジューラなどの定期実行系
             OnTickAsObservable.Subscribe(_ =>
@@ -210,6 +216,13 @@ namespace Inferno
                 {
                     try
                     {
+                        if (CanChangeActive)
+                        {
+                            // Activeが切り替え可能な場合はAllOnのConfigを一度読み取る
+                            // 存在しない場合は新しいものが生成される
+                            InfernoAllOnProvider.Instance.GetOrCreateAllOnEnable(GetType().Name, DefaultAllOnEnable);
+                        }
+
                         // SynchronizationContextはこのタイミングで設定しないといけない
                         SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
                         Setup();
@@ -710,7 +723,21 @@ namespace Inferno
         bool IScriptUiBuilder.IsActive
         {
             get => IsActive;
-            set { _infernoSynchronizationContext.Post(_ => { IsActive = value; }, null); }
+            set
+            {
+                _infernoSynchronizationContext.Post(_ =>
+                {
+                    if (IsAllOnEnable)
+                    {
+                        if (this.GetType().Name == "Meteor")
+                        {
+                            DrawText($"{IsAllOnEnable}");
+                        }
+
+                        IsActive = value;
+                    }
+                }, null);
+            }
         }
 
         public virtual string Description => GetType().Name;
