@@ -107,4 +107,16 @@ Yellow: Time remaining before explosion</value>
     <data name="FloatingTitle" xml:space="preserve">
         <value>Fluffy Jump</value>
     </data>
+    <data name="NoWantedTitle" xml:space="preserve">
+        <value>Suppress wanted level</value>
+    </data>
+    <data name="NoWantedDescription" xml:space="preserve">
+        <value>Prevent wanted level from increasing.</value>
+    </data>
+    <data name="NoWantedLevel" xml:space="preserve">
+        <value>Disable Wanted level below this value.</value>
+    </data>
+    <data name="NoWantedAction" xml:space="preserve">
+        <value>Set Wanted Level to 0.</value>
+    </data>
 </root>

@@ -77,9 +77,6 @@ namespace Inferno.InfernoScripts.World
                     DrawText("ChaosHeli:" + (IsActive ? "ON" : "OFF"));
                 });
 
-            OnAllOnCommandObservable
-                .Subscribe(_ => IsActive = true);
-
             IsActiveRP.Subscribe(_ =>
             {
                 _heliCts?.Cancel();

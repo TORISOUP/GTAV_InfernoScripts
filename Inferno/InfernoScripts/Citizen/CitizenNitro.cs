@@ -36,7 +36,7 @@ namespace Inferno
                     DrawText("CitizenNitro:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             //interval間隔で実行
             CreateTickAsObservable(TimeSpan.FromSeconds(3))

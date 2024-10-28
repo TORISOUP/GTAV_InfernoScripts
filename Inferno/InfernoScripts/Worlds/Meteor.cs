@@ -43,7 +43,7 @@ namespace Inferno
                     DebugLoopAsync(ActivationCancellationToken).Forget();
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
         }
 
         private async ValueTask MeteorLoopAsync(CancellationToken ct)
@@ -219,9 +219,9 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => WorldModLocalize.DisplayName;
+        public override string DisplayName => MeteorLocalize.DisplayName;
 
-        public override string Description => WorldModLocalize.Description;
+        public override string Description => MeteorLocalize.Description;
 
         public override bool CanChangeActive => true;
 
@@ -232,7 +232,7 @@ namespace Inferno
             // 落下範囲
             subMenu.AddSlider(
                 $"Range {_config.Radius}[m]",
-                WorldModLocalize.Range,
+                MeteorLocalize.Range,
                 _config.Radius,
                 100,
                 x =>
@@ -249,7 +249,7 @@ namespace Inferno
             // 落下間隔
             subMenu.AddSlider(
                 $"Duration {_config.DurationMillSeconds}[ms]",
-                WorldModLocalize.Duration,
+                MeteorLocalize.Duration,
                 _config.DurationMillSeconds,
                 10000,
                 x =>
@@ -266,7 +266,7 @@ namespace Inferno
             // 落下確率
             subMenu.AddSlider(
                 $"Probability {_config.Probability}[%]",
-                WorldModLocalize.Probability,
+                MeteorLocalize.Probability,
                 _config.Probability,
                 100,
                 x =>

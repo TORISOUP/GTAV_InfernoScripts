@@ -20,8 +20,7 @@ namespace Inferno
                     DrawText("SupplyArmorAndHealth:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
+            
             //ミッションが始まった時
             OnThinnedTickAsObservable
                 .Where(_ => IsActive)

@@ -42,7 +42,7 @@ namespace Inferno
         public bool IsAllOnEnable =>
             InfernoAllOnProvider.Instance.GetOrCreateAllOnEnable(this.GetType().Name, DefaultAllOnEnable);
 
-        protected bool DefaultAllOnEnable => true;
+        protected virtual bool DefaultAllOnEnable => true;
 
         /// <summary>
         /// コンストラクタ
@@ -90,8 +90,7 @@ namespace Inferno
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon")
-                .Where(_ => IsAllOnEnable);
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon");
 
             //スケジューラなどの定期実行系
             OnTickAsObservable.Subscribe(_ =>
@@ -220,7 +219,15 @@ namespace Inferno
                         {
                             // Activeが切り替え可能な場合はAllOnのConfigを一度読み取る
                             // 存在しない場合は新しいものが生成される
-                            InfernoAllOnProvider.Instance.GetOrCreateAllOnEnable(GetType().Name, DefaultAllOnEnable);
+                            if (IsAllOnEnable)
+                            {
+                                // AllOnの登録
+                               OnAllOnCommandObservable
+                                    .Subscribe(_ =>
+                                    {
+                                        IsActive = true;
+                                    });
+                            }
                         }
 
                         // SynchronizationContextはこのタイミングで設定しないといけない
@@ -581,7 +588,7 @@ namespace Inferno
             }
         }
 
-        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+        protected IObservable<Unit> OnAllOnCommandObservable { get; set; }
 
         /// <summary>
         /// InfernoEvent
@@ -729,11 +736,6 @@ namespace Inferno
                 {
                     if (IsAllOnEnable)
                     {
-                        if (this.GetType().Name == "Meteor")
-                        {
-                            DrawText($"{IsAllOnEnable}");
-                        }
-
                         IsActive = value;
                     }
                 }, null);

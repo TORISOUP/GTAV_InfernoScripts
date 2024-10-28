@@ -30,7 +30,7 @@ namespace Inferno
                     DrawText("SpawnParachuteCitizenArmy:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             CreateTickAsObservable(TimeSpan.FromSeconds(SpawnDurationSeconds))
                 .Where(_ => IsActive)

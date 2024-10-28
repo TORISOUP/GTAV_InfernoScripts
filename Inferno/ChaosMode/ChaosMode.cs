@@ -103,7 +103,7 @@ namespace Inferno.ChaosMode
                 })
                 .AddTo(CompositeDisposable);
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
 
             IsActiveRP.Subscribe(_ =>

@@ -27,9 +27,7 @@ namespace Inferno.InfernoScripts.Player
                     IsActive = !IsActive;
                     DrawText("BondCar:" + IsActive);
                 });
-
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
+            
             IsActiveRP.Subscribe(x =>
             {
                 _invincibleMillSeconds = 0;

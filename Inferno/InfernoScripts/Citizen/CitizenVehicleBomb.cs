@@ -26,7 +26,7 @@ namespace Inferno
                     DrawText("VehicleBomb:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             CreateTickAsObservable(TimeSpan.FromSeconds(5))
                 .Where(_ => IsActive)

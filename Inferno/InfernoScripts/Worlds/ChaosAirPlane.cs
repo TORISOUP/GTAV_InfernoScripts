@@ -66,10 +66,7 @@ namespace Inferno
                     IsActive = !IsActive;
                     DrawText("ChaosPlane:" + IsActive);
                 });
-
-            OnAllOnCommandObservable
-                .Subscribe(_ => { IsActive = true; });
-
+            
             IsActiveRP
                 .Where(x => x)
                 .Subscribe(_ => StartChaosPlanesAsync(ActivationCancellationToken).Forget());

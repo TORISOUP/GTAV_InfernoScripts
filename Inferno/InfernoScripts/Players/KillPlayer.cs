@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Linq;
 using GTA;
 using GTA.Math;
 using Inferno.InfernoScripts.InfernoCore.UI;
@@ -16,7 +17,13 @@ namespace Inferno
         protected override void Setup()
         {
             CreateInputKeywordAsObservable("KillPlayer", "killme")
-                .Subscribe(_ => Kill());
+                .Subscribe(_ =>
+                {
+                    if (IsActive)
+                    {
+                        Kill();
+                    }
+                });
         }
 
         private void Kill()
@@ -40,6 +47,8 @@ namespace Inferno
 
         public override string Description => PlayerLocalize.KillMeDescription;
         public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        public override bool CanChangeActive => true;
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {

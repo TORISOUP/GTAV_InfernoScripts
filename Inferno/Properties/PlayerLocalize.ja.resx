@@ -99,4 +99,16 @@
     <data name="FloatingDescription" xml:space="preserve">
         <value>ジャンプとスプリントを同時に押し続けるとふわふわ飛び上がります。</value>
     </data>
+    <data name="NoWantedTitle" xml:space="preserve">
+        <value>手配度抑制</value>
+    </data>
+    <data name="NoWantedLevel" xml:space="preserve">
+        <value>これ以下の手配度を無効化します。</value>
+    </data>
+    <data name="NoWantedDescription" xml:space="preserve">
+        <value>手配度が付くのを防止します。</value>
+    </data>
+    <data name="NoWantedAction" xml:space="preserve">
+        <value>手配度を0にする。</value>
+    </data>
 </root>

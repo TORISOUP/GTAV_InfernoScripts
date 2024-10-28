@@ -34,7 +34,7 @@ namespace Inferno
                     DrawText("SpecialAbilityBGM:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             OnThinnedTickAsObservable
                 .Where(_ => IsActive && (uint)PlayerPed.Model.Hash == (uint)PedHash.Trevor)

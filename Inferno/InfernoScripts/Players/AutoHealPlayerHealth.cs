@@ -22,9 +22,7 @@ namespace Inferno.InfernoScripts.Player
                     IsActive = !IsActive;
                     DrawText("AutoHealPlayerHealth:" + IsActive);
                 });
-
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
-
+            
             IsActiveRP.Where(x => x)
                 .Subscribe(_ =>
                 {

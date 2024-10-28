@@ -23,7 +23,7 @@ namespace Inferno
                     DrawText("CitizenCrazyDriving:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             CreateTickAsObservable(TimeSpan.FromSeconds(3))
                 .Where(_ => IsActive)

@@ -55,7 +55,7 @@ namespace Inferno
                     DrawText("Fulton:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => IsActive = true);
+           
 
             IsActiveRP.Where(x => x)
                 .Subscribe(_ =>

@@ -120,7 +120,7 @@
         <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
         <Compile Include="InfernoScripts\Players\AutoHealPlayerHealth.cs" />
-        <Compile Include="InfernoScripts\Players\NoWanted.cs" />
+        <Compile Include="InfernoScripts\Players\SuppressWanted.cs" />
         <Compile Include="InfernoScripts\Players\PlayerInvincible.cs" />
         <Compile Include="InfernoScripts\Worlds\BombBat.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
@@ -268,20 +268,15 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>PlayerLocalize.resx</DependentUpon>
         </Compile>
-        <Compile Include="Properties\WorldModLocalize.Designer.cs">
+        <Compile Include="Properties\MeteorLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
-          <DependentUpon>WorldModLocalize.resx</DependentUpon>
+          <DependentUpon>MeteorLocalize.resx</DependentUpon>
         </Compile>
         <Compile Include="Properties\ParupunteLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>ParupunteLocalize.resx</DependentUpon>
-        </Compile>
-        <Compile Include="Properties\PlayerVehicleNitroLocalize.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>PlayerVehicleNitroLocalize.resx</DependentUpon>
         </Compile>
         <Compile Include="Properties\SpeedMaxLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
@@ -372,12 +367,12 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>PlayerLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-      <EmbeddedResource Include="Properties\WorldModLocalize.ja.resx">
-        <DependentUpon>WorldModLocalize.resx</DependentUpon>
+      <EmbeddedResource Include="Properties\MeteorLocalize.ja.resx">
+        <DependentUpon>MeteorLocalize.resx</DependentUpon>
       </EmbeddedResource>
-      <EmbeddedResource Include="Properties\WorldModLocalize.resx">
+      <EmbeddedResource Include="Properties\MeteorLocalize.resx">
         <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>WorldModLocalize.Designer.cs</LastGenOutput>
+        <LastGenOutput>MeteorLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\ParupunteLocalize.ja.resx">
         <DependentUpon>ParupunteLocalize.resx</DependentUpon>
@@ -385,13 +380,6 @@
       <EmbeddedResource Include="Properties\ParupunteLocalize.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ParupunteLocalize.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Properties\PlayerVehicleNitroLocalize.ja.resx">
-        <DependentUpon>PlayerVehicleNitroLocalize.resx</DependentUpon>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Properties\PlayerVehicleNitroLocalize.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>PlayerVehicleNitroLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\SpeedMaxLocalize.ja.resx">
         <DependentUpon>SpeedMaxLocalize.resx</DependentUpon>

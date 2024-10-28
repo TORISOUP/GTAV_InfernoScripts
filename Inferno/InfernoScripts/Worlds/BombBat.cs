@@ -30,8 +30,6 @@ namespace Inferno.InfernoScripts.World
                     DrawText("BombBat:" + IsActive);
                 });
 
-            OnAllOnCommandObservable.Subscribe(_ => { IsActive = true; });
-
             IsActiveRP.Subscribe(_ => _startedPeds.Clear());
 
             CreateTickAsObservable(TimeSpan.FromSeconds(1))

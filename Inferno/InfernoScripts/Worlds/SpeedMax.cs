@@ -18,7 +18,7 @@ namespace Inferno.InfernoScripts.World
     {
         private readonly HashSet<int> _vehicleHashSet = new();
         private SpeedType _currentSpeedType = SpeedType.Random;
-        private bool _excludeMissionVehicle;
+        private bool _excludeMissionVehicle = true;
 
         protected override void Setup()
         {
@@ -30,13 +30,10 @@ namespace Inferno.InfernoScripts.World
                 });
 
             IsActiveRP
-                .Subscribe(x => { _vehicleHashSet.Clear(); });
-
-            OnAllOnCommandObservable.Subscribe(_ =>
-            {
-                _excludeMissionVehicle = true;
-                IsActive = true;
-            });
+                .Subscribe(x =>
+                {
+                    _vehicleHashSet.Clear();
+                });
 
             //ミッション開始直後に一瞬動作を止めるフラグ
             var suspednFlag = false;
@@ -74,16 +71,7 @@ namespace Inferno.InfernoScripts.World
                         }
                     }
                 });
-
-            OnKeyDownAsObservable
-                .Where(x => IsActive && x.KeyCode == Keys.F5)
-                .Subscribe(_ =>
-                {
-                    _excludeMissionVehicle = !_excludeMissionVehicle;
-                    _vehicleHashSet.Clear();
-                    DrawText($"SpeedMax:ExcludeMissionVehicles[{_excludeMissionVehicle}]");
-                });
-
+            
             OnThinnedTickAsObservable
                 .Where(_ => IsActive)
                 .Select(_ => PlayerPed.IsAlive)

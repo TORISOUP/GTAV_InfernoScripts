@@ -216,6 +216,42 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Wanted Level to 0..
+        /// </summary>
+        internal static string NoWantedAction {
+            get {
+                return ResourceManager.GetString("NoWantedAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prevent wanted level from increasing..
+        /// </summary>
+        internal static string NoWantedDescription {
+            get {
+                return ResourceManager.GetString("NoWantedDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable Wanted level below this value..
+        /// </summary>
+        internal static string NoWantedLevel {
+            get {
+                return ResourceManager.GetString("NoWantedLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suppress wanted level.
+        /// </summary>
+        internal static string NoWantedTitle {
+            get {
+                return ResourceManager.GetString("NoWantedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ragdoll.
         /// </summary>
         internal static string RagdollAction {
