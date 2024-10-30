@@ -123,4 +123,10 @@
     <data name="PlayerInvincibleEffect" xml:space="preserve">
         <value>無敵のエフェクトを表示するか。</value>
     </data>
+    <data name="AlertHealthTitle" xml:space="preserve">
+        <value>体力低下警告</value>
+    </data>
+    <data name="AlertHealthDescription" xml:space="preserve">
+        <value>体力が一定値以下のときに画面を赤くして警告します。</value>
+    </data>
 </root>

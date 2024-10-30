@@ -60,6 +60,24 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The screen turns red to warn when the player&apos;s health is below a certain value..
+        /// </summary>
+        internal static string AlertHealthDescription {
+            get {
+                return ResourceManager.GetString("AlertHealthDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Low health warning.
+        /// </summary>
+        internal static string AlertHealthTitle {
+            get {
+                return ResourceManager.GetString("AlertHealthTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to After a while of not having taken any damage, it gradually recovers its strength and armor to the maximum value..
         /// </summary>
         internal static string AutoHealDescription {

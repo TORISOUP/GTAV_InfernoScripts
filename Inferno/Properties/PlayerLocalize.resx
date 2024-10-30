@@ -131,4 +131,10 @@ Yellow: Time remaining before explosion</value>
     <data name="PlayerInvincibleEffect" xml:space="preserve">
         <value>Display invincibility effect.</value>
     </data>
+    <data name="AlertHealthTitle" xml:space="preserve">
+        <value>Low health warning</value>
+    </data>
+    <data name="AlertHealthDescription" xml:space="preserve">
+        <value>The screen turns red to warn when the player's health is below a certain value.</value>
+    </data>
 </root>
