@@ -252,6 +252,42 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The player is temporarily invincible when resurrected after death or at the start of a mission..
+        /// </summary>
+        internal static string PlayerInvincibleDescription {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display invincibility effect..
+        /// </summary>
+        internal static string PlayerInvincibleEffect {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleEffect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invincible time..
+        /// </summary>
+        internal static string PlayerInvincibleTime {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invincible.
+        /// </summary>
+        internal static string PlayerInvincibleTitle {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ragdoll.
         /// </summary>
         internal static string RagdollAction {

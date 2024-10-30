@@ -4,7 +4,11 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GTA;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
+using LemonUI;
+using LemonUI.Menus;
 
 
 namespace Inferno.InfernoScripts.Player
@@ -12,9 +16,14 @@ namespace Inferno.InfernoScripts.Player
     public sealed class PlayerInvincible : InfernoScript
     {
         private CancellationTokenSource _lastCts;
+        protected override bool DefaultAllOnEnable => false;
+
+        private IDisposable _disposable;
 
         protected override void Setup()
         {
+            config = LoadConfig<PlayerInvincibleConfig>();
+
             CreateInputKeywordAsObservable("PlayerInvincible", "ainc")
                 .Subscribe(_ =>
                 {
@@ -22,21 +31,29 @@ namespace Inferno.InfernoScripts.Player
                     DrawText("Players Start Invincible:" + IsActive);
                 });
 
-            OnThinnedTickAsObservable
-                .Where(_ => IsActive && PlayerPed.IsSafeExist())
-                .Select(_ => (Game.IsMissionActive, PlayerPed.IsAlive))
-                .DistinctUntilChanged()
-                .Where(x => x.Item1 || x.Item2)
-                .Subscribe(_ =>
+            IsActiveRP.Subscribe(x =>
+            {
+                _disposable?.Dispose();
+                if (x)
                 {
-                    _lastCts?.Cancel();
-                    _lastCts?.Dispose();
-                    _lastCts = new CancellationTokenSource();
-                    var token = CancellationTokenSource
-                        .CreateLinkedTokenSource(_lastCts.Token, ActivationCancellationToken)
-                        .Token;
-                    PlayerInvincibleAsync(token).Forget();
-                });
+                    _disposable = OnThinnedTickAsObservable
+                        .Where(_ => PlayerPed.IsSafeExist())
+                        .Select(_ => (Game.IsMissionActive, PlayerPed.IsAlive))
+                        .DistinctUntilChanged()
+                        .Skip(1)
+                        .Where(s => s.Item1 || s.Item2)
+                        .Subscribe(_ =>
+                        {
+                            _lastCts?.Cancel();
+                            _lastCts?.Dispose();
+                            _lastCts = new CancellationTokenSource();
+                            var token = CancellationTokenSource
+                                .CreateLinkedTokenSource(_lastCts.Token, ActivationCancellationToken)
+                                .Token;
+                            PlayerInvincibleAsync(token).Forget();
+                        });
+                }
+            });
         }
 
         private async ValueTask PlayerInvincibleAsync(CancellationToken ct)
@@ -52,20 +69,20 @@ namespace Inferno.InfernoScripts.Player
                 player.IsOnlyDamagedByPlayer = true;
 
                 var startTime = ElapsedTime;
-                while (!ct.IsCancellationRequested && ElapsedTime - startTime < 10f)
+                var invincibleSeconds = InvincibleSeconds;
+                while (!ct.IsCancellationRequested && ElapsedTime - startTime < invincibleSeconds && IsActive)
                 {
-                    var deltaTime = ElapsedTime - startTime;
-
-                    var color = FromHsv(deltaTime * 360f / 0.5f, 1, 1);
-
-                    var rate = ((10f - deltaTime) / 10f);
-
-                    NativeFunctions.CreateLight(
-                        player.Bones[Bone.SkelHead].Position + player.UpVector * 0.3f,
-                        color.R, color.G, color.B, 4 * rate, 100f * rate + 50);
+                    if (EnableEffect)
+                    {
+                        var deltaTime = ElapsedTime - startTime;
+                        var color = FromHsv(deltaTime * 360f / 0.5f, 1, 1);
+                        var rate = ((invincibleSeconds - deltaTime) / invincibleSeconds);
+                        NativeFunctions.CreateLight(
+                            player.Bones[Bone.SkelHead].Position + player.UpVector * 0.3f,
+                            color.R, color.G, color.B, 4 * rate, 100f * rate + 50);
+                    }
 
                     player.IsInvincible = true;
-
 
                     await YieldAsync(ct);
                 }
@@ -120,5 +137,88 @@ namespace Inferno.InfernoScripts.Player
 
             return Color.FromArgb(255, vInt, pInt, qInt);
         }
+
+        #region config
+
+        [Serializable]
+        private class PlayerInvincibleConfig : InfernoConfig
+        {
+            private int _invincibleSeconds = 10;
+            private bool _enableEffect = true;
+
+            public int InvincibleSeconds
+            {
+                get => _invincibleSeconds;
+                set => _invincibleSeconds = value.Clamp(1, 1000);
+            }
+
+            public bool EnableEffect
+            {
+                get => _enableEffect;
+                set => _enableEffect = value;
+            }
+
+            public override bool Validate()
+            {
+                return InvincibleSeconds >= 0;
+            }
+        }
+
+        protected override string ConfigFileName { get; } = "PlayerInvincible.conf";
+        private PlayerInvincibleConfig config;
+        private int InvincibleSeconds => config?.InvincibleSeconds ?? 10;
+        private bool EnableEffect => config?.EnableEffect ?? true;
+
+        #endregion
+
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => PlayerLocalize.PlayerInvincibleTitle;
+        public override string Description => PlayerLocalize.PlayerInvincibleDescription;
+        public override bool CanChangeActive => true;
+
+        public override MenuIndex MenuIndex => MenuIndex.Player;
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
+            subMenu.AddSlider(
+                $"Invincible time: {config.InvincibleSeconds}[s]",
+                PlayerLocalize.PlayerInvincibleTime,
+                config.InvincibleSeconds,
+                1000,
+                x =>
+                {
+                    x.Value = config.InvincibleSeconds;
+                    x.Multiplier = 1;
+                }, item =>
+                {
+                    config.InvincibleSeconds = item.Value;
+                    item.Title = $"Invincible time: {config.InvincibleSeconds}[s]";
+                });
+
+            subMenu.AddCheckbox(
+                "Enable Effect",
+                PlayerLocalize.PlayerInvincibleEffect,
+                b => b.Checked = config.EnableEffect,
+                b => config.EnableEffect = b);
+
+
+            subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
+            {
+                config = LoadDefaultConfig<PlayerInvincibleConfig>();
+                subMenu.Visible = false;
+                subMenu.Visible = true;
+            });
+
+            subMenu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
+            {
+                SaveConfig(config);
+                DrawText($"Saved to {ConfigFileName}");
+            });
+        }
+
+        #endregion
     }
 }

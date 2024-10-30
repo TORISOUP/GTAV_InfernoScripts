@@ -99,7 +99,7 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
                 {
                     foreach (var builder in _builders)
                     {
-                        if (builder.CanChangeActive)
+                        if (builder.CanChangeActive && builder.IsAllOnEnable)
                         {
                             builder.IsActive = true;
                         }
@@ -167,6 +167,5 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
             subMenu.BannerText.Scale = 0.5f;
             subMenu.BannerText.Recalculate();
         }
-
     }
 }

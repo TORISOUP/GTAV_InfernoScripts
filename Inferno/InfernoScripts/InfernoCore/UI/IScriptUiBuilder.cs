@@ -25,6 +25,9 @@ namespace Inferno.InfernoScripts.InfernoCore.UI
         void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu);
 
         bool IsActive { get; set; }
+        
+        bool IsAllOnEnable { get; }
+        
         IReadOnlyReactiveProperty<bool> IsActiveRP { get; }
 
         string Description { get; }

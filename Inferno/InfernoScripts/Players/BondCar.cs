@@ -172,7 +172,6 @@ namespace Inferno.InfernoScripts.Player
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
-            // 戦闘機の数
             subMenu.AddSlider(
                 $"Cool time: {config.DownMillSeconds}",
                 PlayerLocalize.BondCardInterval,

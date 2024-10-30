@@ -222,11 +222,8 @@ namespace Inferno
                             if (IsAllOnEnable)
                             {
                                 // AllOnの登録
-                               OnAllOnCommandObservable
-                                    .Subscribe(_ =>
-                                    {
-                                        IsActive = true;
-                                    });
+                                OnAllOnCommandObservable
+                                    .Subscribe(_ => { IsActive = true; });
                             }
                         }
 
@@ -730,16 +727,7 @@ namespace Inferno
         bool IScriptUiBuilder.IsActive
         {
             get => IsActive;
-            set
-            {
-                _infernoSynchronizationContext.Post(_ =>
-                {
-                    if (IsAllOnEnable)
-                    {
-                        IsActive = value;
-                    }
-                }, null);
-            }
+            set { _infernoSynchronizationContext.Post(_ => { IsActive = value; }, null); }
         }
 
         public virtual string Description => GetType().Name;

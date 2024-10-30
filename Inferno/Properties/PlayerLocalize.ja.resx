@@ -111,4 +111,16 @@
     <data name="NoWantedAction" xml:space="preserve">
         <value>手配度を0にする。</value>
     </data>
+    <data name="PlayerInvincibleTitle" xml:space="preserve">
+        <value>復活時無敵</value>
+    </data>
+    <data name="PlayerInvincibleDescription" xml:space="preserve">
+        <value>死亡後復活時またはミッション開始時に一時的にプレイヤーを無敵にします。</value>
+    </data>
+    <data name="PlayerInvincibleTime" xml:space="preserve">
+        <value>無敵時間。</value>
+    </data>
+    <data name="PlayerInvincibleEffect" xml:space="preserve">
+        <value>無敵のエフェクトを表示するか。</value>
+    </data>
 </root>

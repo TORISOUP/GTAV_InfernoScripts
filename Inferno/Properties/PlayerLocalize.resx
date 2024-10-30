@@ -119,4 +119,16 @@ Yellow: Time remaining before explosion</value>
     <data name="NoWantedAction" xml:space="preserve">
         <value>Set Wanted Level to 0.</value>
     </data>
+    <data name="PlayerInvincibleTitle" xml:space="preserve">
+        <value>Invincible</value>
+    </data>
+    <data name="PlayerInvincibleDescription" xml:space="preserve">
+        <value>The player is temporarily invincible when resurrected after death or at the start of a mission.</value>
+    </data>
+    <data name="PlayerInvincibleTime" xml:space="preserve">
+        <value>Invincible time.</value>
+    </data>
+    <data name="PlayerInvincibleEffect" xml:space="preserve">
+        <value>Display invincibility effect.</value>
+    </data>
 </root>
