@@ -234,6 +234,52 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cool time..
+        /// </summary>
+        internal static string NitroCoolDown {
+            get {
+                return ResourceManager.GetString("NitroCoolDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Instantly accelerates the player&apos;s vehicle. 
+        ///Used to “hand brake”, “accelerate”, and “hide” while in the vehicle. Left stick up/down to change angle..
+        /// </summary>
+        internal static string NitroDescription {
+            get {
+                return ResourceManager.GetString("NitroDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Instantaneous velocity applied (when changing angle).
+        /// </summary>
+        internal static string NitroJumpVelocity {
+            get {
+                return ResourceManager.GetString("NitroJumpVelocity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Instantaneous velocity applied (when NOT changing angle).
+        /// </summary>
+        internal static string NitroStraightVelocity {
+            get {
+                return ResourceManager.GetString("NitroStraightVelocity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rocket acceleration.
+        /// </summary>
+        internal static string NitroTitle {
+            get {
+                return ResourceManager.GetString("NitroTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set Wanted Level to 0..
         /// </summary>
         internal static string NoWantedAction {

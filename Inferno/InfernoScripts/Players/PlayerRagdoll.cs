@@ -35,7 +35,7 @@ namespace Inferno
         public override string Description => PlayerLocalize.RagdollDescription;
 
         public override bool CanChangeActive => true;
-        public override MenuIndex MenuIndex => MenuIndex.Player;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
         {

@@ -137,4 +137,20 @@ Yellow: Time remaining before explosion</value>
     <data name="AlertHealthDescription" xml:space="preserve">
         <value>The screen turns red to warn when the player's health is below a certain value.</value>
     </data>
+    <data name="NitroTitle" xml:space="preserve">
+        <value>Rocket acceleration</value>
+    </data>
+    <data name="NitroDescription" xml:space="preserve">
+        <value>Instantly accelerates the player's vehicle. 
+Used to “hand brake”, “accelerate”, and “hide” while in the vehicle. Left stick up/down to change angle.</value>
+    </data>
+    <data name="NitroStraightVelocity" xml:space="preserve">
+        <value>Instantaneous velocity applied (when NOT changing angle)</value>
+    </data>
+    <data name="NitroJumpVelocity" xml:space="preserve">
+        <value>Instantaneous velocity applied (when changing angle)</value>
+    </data>
+    <data name="NitroCoolDown" xml:space="preserve">
+        <value>Cool time.</value>
+    </data>
 </root>

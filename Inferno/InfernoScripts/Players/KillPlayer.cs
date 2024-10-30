@@ -46,7 +46,7 @@ namespace Inferno
         public override string DisplayName => PlayerLocalize.KillMeTitle;
 
         public override string Description => PlayerLocalize.KillMeDescription;
-        public override MenuIndex MenuIndex => MenuIndex.Player;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
 
         public override bool CanChangeActive => true;
 

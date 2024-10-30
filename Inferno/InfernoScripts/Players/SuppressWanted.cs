@@ -51,7 +51,7 @@ namespace Inferno.InfernoScripts.Player
         public override string Description => PlayerLocalize.NoWantedDescription;
 
         public override bool CanChangeActive => true;
-        public override MenuIndex MenuIndex => MenuIndex.Player;
+        public override MenuIndex MenuIndex => MenuIndex.Misc;
 
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)

@@ -129,4 +129,20 @@
     <data name="AlertHealthDescription" xml:space="preserve">
         <value>体力が一定値以下のときに画面を赤くして警告します。</value>
     </data>
+    <data name="NitroTitle" xml:space="preserve">
+        <value>ニトロ</value>
+    </data>
+    <data name="NitroDescription" xml:space="preserve">
+        <value>プレイヤーの車両を瞬間的に加速します。
+乗車中に「ハンドブレーキ」「アクセル」「隠れる」で発動。左スティック上下で角度変更。</value>
+    </data>
+    <data name="NitroCoolDown" xml:space="preserve">
+        <value>クールタイム。</value>
+    </data>
+    <data name="NitroStraightVelocity" xml:space="preserve">
+        <value>瞬間的に加わる速度（角度変更しないとき）</value>
+    </data>
+    <data name="NitroJumpVelocity" xml:space="preserve">
+        <value>瞬間的に加わる速度（角度変更したとき）</value>
+    </data>
 </root>

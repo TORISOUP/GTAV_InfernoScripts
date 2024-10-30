@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
 using System.Threading;
@@ -8,6 +7,7 @@ using GTA;
 using GTA.Math;
 using GTA.Native;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -21,9 +21,9 @@ namespace Inferno
     {
         private bool _isNitroOk = true;
 
-        private PlayerNitroConf conf;
+        private PlayerNitrousConf conf;
 
-        protected override string ConfigFileName { get; } = "PlayerNitro.conf";
+        protected override string ConfigFileName { get; } = "PlayerNitrous.conf";
 
         private float StraightAccelerationSpeed => conf?.StraightAccelerationSpeed ?? 50;
         private float JumpAccelerationSpeed => conf?.JumpAccelerationSpeed ?? 20;
@@ -31,8 +31,8 @@ namespace Inferno
 
         protected override void Setup()
         {
-            conf = LoadConfig<PlayerNitroConf>();
-            IsActive = true;
+            conf = LoadConfig<PlayerNitrousConf>();
+
             CreateTickAsObservable(TimeSpan.FromMilliseconds(50))
                 .Where(
                     _ =>
@@ -140,11 +140,11 @@ namespace Inferno
 
             counter.Finish();
             _isNitroOk = true;
-            DrawText("Nitro:OK", 2.0f);
+            DrawText("Nitrous:OK", 2.0f);
         }
 
         [Serializable]
-        private class PlayerNitroConf : InfernoConfig
+        private class PlayerNitrousConf : InfernoConfig
         {
             public float StraightAccelerationSpeed = 50;
             public float JumpAccelerationSpeed = 20;
@@ -164,7 +164,9 @@ namespace Inferno
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "ニトロ" : "Players Vehicle NOS";
+        public override string DisplayName => PlayerLocalize.NitroTitle;
+
+        public override string Description => PlayerLocalize.NitroDescription;
 
         public override bool CanChangeActive => true;
 
@@ -175,9 +177,7 @@ namespace Inferno
             // 直線上の加速
             menu.AddSlider(
                 $"Straight: {conf.StraightAccelerationSpeed}[ms]",
-                IsLangJpn
-                    ? "直線での加速量"
-                    : "Amount of acceleration in a straight line",
+                PlayerLocalize.NitroStraightVelocity,
                 (int)conf.StraightAccelerationSpeed,
                 150,
                 x => x.Multiplier = 10, item =>
@@ -189,9 +189,7 @@ namespace Inferno
             // ジャンプ時の加速
             menu.AddSlider(
                 $"Jump: {conf.JumpAccelerationSpeed}[ms]",
-                IsLangJpn
-                    ? "ジャンプ時の加速量"
-                    : "Amount of acceleration when jumping",
+                PlayerLocalize.NitroJumpVelocity,
                 (int)conf.JumpAccelerationSpeed,
                 150,
                 x => x.Multiplier = 10, item =>
@@ -203,9 +201,7 @@ namespace Inferno
             // クールダウン時間
             menu.AddSlider(
                 $"CoolDown: {conf.CoolDownSeconds}[s]",
-                IsLangJpn
-                    ? "クールダウン時間"
-                    : "Cool down time",
+                PlayerLocalize.NitroCoolDown,
                 (int)conf.CoolDownSeconds,
                 60,
                 x => x.Multiplier = 1, item =>
@@ -213,6 +209,19 @@ namespace Inferno
                     conf.CoolDownSeconds = item.Value;
                     item.Title = $"CoolDown: {conf.CoolDownSeconds}[s]";
                 });
+            
+            menu.AddButton(InfernoCommon.DefaultValue, "", _ =>
+            {
+                conf = LoadDefaultConfig<PlayerNitrousConf>();
+                menu.Visible = false;
+                menu.Visible = true;
+            });
+
+            menu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
+            {
+                SaveConfig(conf);
+                DrawText($"Saved to {ConfigFileName}");
+            });
         }
 
         #endregion

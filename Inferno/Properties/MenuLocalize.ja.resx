@@ -21,7 +21,7 @@
         <value>ワールド関係</value>
     </data>
     <data name="IndexEntities" xml:space="preserve">
-        <value>市民や車両関係</value>
+        <value>周囲の市民や車両関係</value>
     </data>
     <data name="AllOn" xml:space="preserve">
         <value>全ての機能を有効にする。</value>
