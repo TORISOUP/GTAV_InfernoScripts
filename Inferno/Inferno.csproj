@@ -123,7 +123,7 @@
         <Compile Include="InfernoScripts\Players\SuppressWanted.cs" />
         <Compile Include="InfernoScripts\Players\PlayerInvincible.cs" />
         <Compile Include="InfernoScripts\Worlds\BombBat.cs" />
-        <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
+        <Compile Include="InfernoScripts\Citizen\CitizenRashDriving.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
@@ -243,6 +243,11 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\EntitiesLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>EntitiesLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\FultonLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -331,6 +336,13 @@
       <EmbeddedResource Include="Properties\ChaosModeLocalize.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ChaosModeLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\EntitiesLocalize.ja.resx">
+        <DependentUpon>EntitiesLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\EntitiesLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>EntitiesLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\FultonLocalize.ja.resx">
         <DependentUpon>FultonLocalize.resx</DependentUpon>

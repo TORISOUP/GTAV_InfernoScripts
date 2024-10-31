@@ -11,19 +11,10 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="IndexMisc" xml:space="preserve">
-        <value>その他</value>
+    <data name="CrazyDrivingTitle" xml:space="preserve">
+        <value>暴走運転</value>
     </data>
-    <data name="IndexPlayer" xml:space="preserve">
-        <value>プレイヤー関係</value>
-    </data>
-    <data name="IndexWorld" xml:space="preserve">
-        <value>ワールド関係</value>
-    </data>
-    <data name="IndexEntities" xml:space="preserve">
-        <value>市民・車関係</value>
-    </data>
-    <data name="AllOn" xml:space="preserve">
-        <value>全ての機能を有効にする。</value>
+    <data name="CrazyDrivingDescription" xml:space="preserve">
+        <value>市民の運転が荒くなります。</value>
     </data>
 </root>
