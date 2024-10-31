@@ -24,4 +24,16 @@
     <data name="CrazyDrivingDescription" xml:space="preserve">
         <value>Citizens drive rougher.</value>
     </data>
+    <data name="CitizenNitroTitle" xml:space="preserve">
+        <value>Rocket acceleration (Around vehicles)</value>
+    </data>
+    <data name="CitizenNitroDescription" xml:space="preserve">
+        <value>The vehicles in which the citizen rides suddenly accelerate.</value>
+    </data>
+    <data name="CitizenNitroInterval" xml:space="preserve">
+        <value>Check frequency.</value>
+    </data>
+    <data name="CitizenNitroProbability" xml:space="preserve">
+        <value>Probability of triggering.</value>
+    </data>
 </root>

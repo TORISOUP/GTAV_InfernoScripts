@@ -60,6 +60,42 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The vehicles in which the citizen rides suddenly accelerate..
+        /// </summary>
+        internal static string CitizenNitroDescription {
+            get {
+                return ResourceManager.GetString("CitizenNitroDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check frequency..
+        /// </summary>
+        internal static string CitizenNitroInterval {
+            get {
+                return ResourceManager.GetString("CitizenNitroInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probability of triggering..
+        /// </summary>
+        internal static string CitizenNitroProbability {
+            get {
+                return ResourceManager.GetString("CitizenNitroProbability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rocket acceleration (Around vehicles).
+        /// </summary>
+        internal static string CitizenNitroTitle {
+            get {
+                return ResourceManager.GetString("CitizenNitroTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Citizens drive rougher..
         /// </summary>
         internal static string CrazyDrivingDescription {

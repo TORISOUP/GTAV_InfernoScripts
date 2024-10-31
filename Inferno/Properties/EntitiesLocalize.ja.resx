@@ -17,4 +17,16 @@
     <data name="CrazyDrivingDescription" xml:space="preserve">
         <value>市民の運転が荒くなります。</value>
     </data>
+    <data name="CitizenNitroTitle" xml:space="preserve">
+        <value>ニトロ（市民）</value>
+    </data>
+    <data name="CitizenNitroDescription" xml:space="preserve">
+        <value>市民の乗る車が突然加速します。</value>
+    </data>
+    <data name="CitizenNitroInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenNitroProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
 </root>
