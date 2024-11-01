@@ -87,11 +87,65 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Range of effects..
+        /// </summary>
+        internal static string CitizenNitroRange {
+            get {
+                return ResourceManager.GetString("CitizenNitroRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rocket acceleration (Around vehicles).
         /// </summary>
         internal static string CitizenNitroTitle {
             get {
                 return ResourceManager.GetString("CitizenNitroTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vehicles in and around the area where the driver is riding will go on fire..
+        /// </summary>
+        internal static string CitizenVehicleBombDescription {
+            get {
+                return ResourceManager.GetString("CitizenVehicleBombDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check frequency..
+        /// </summary>
+        internal static string CitizenVehicleBombInterval {
+            get {
+                return ResourceManager.GetString("CitizenVehicleBombInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probability of triggering..
+        /// </summary>
+        internal static string CitizenVehicleBombProbability {
+            get {
+                return ResourceManager.GetString("CitizenVehicleBombProbability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Range of effects..
+        /// </summary>
+        internal static string CitizenVehicleBombRange {
+            get {
+                return ResourceManager.GetString("CitizenVehicleBombRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vehicle bombing..
+        /// </summary>
+        internal static string CitizenVehicleBombTitle {
+            get {
+                return ResourceManager.GetString("CitizenVehicleBombTitle", resourceCulture);
             }
         }
         
@@ -110,6 +164,51 @@ namespace Inferno.Properties {
         internal static string CrazyDrivingTitle {
             get {
                 return ResourceManager.GetString("CrazyDrivingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Citizens rob vehicles in the vicinity..
+        /// </summary>
+        internal static string RobberDescription {
+            get {
+                return ResourceManager.GetString("RobberDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check frequency..
+        /// </summary>
+        internal static string RobberInterval {
+            get {
+                return ResourceManager.GetString("RobberInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probability of triggering..
+        /// </summary>
+        internal static string RobberProbability {
+            get {
+                return ResourceManager.GetString("RobberProbability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Range of effects..
+        /// </summary>
+        internal static string RobberRange {
+            get {
+                return ResourceManager.GetString("RobberRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Citizen vehicle robbery.
+        /// </summary>
+        internal static string RobberTitle {
+            get {
+                return ResourceManager.GetString("RobberTitle", resourceCulture);
             }
         }
     }

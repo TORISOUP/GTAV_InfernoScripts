@@ -30,7 +30,7 @@ namespace Inferno
 
         protected override void Setup()
         {
-            config = LoadConfig<CitizenNitroConfig>();
+            config ??= LoadConfig<CitizenNitroConfig>();
 
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable("CitizenNitrous", Keyword)
@@ -241,9 +241,11 @@ namespace Inferno
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
+            config ??= LoadConfig<CitizenNitroConfig>();
+
             subMenu.AddSlider(
                 $"Range: {config.Range}[m]",
-                EntitiesLocalize.CitizenNitroProbability,
+                EntitiesLocalize.CitizenNitroRange,
                 config.Range,
                 1000,
                 x =>

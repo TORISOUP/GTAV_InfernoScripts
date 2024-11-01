@@ -58,6 +58,8 @@ namespace Inferno
                     driver.MaxDrivingSpeed = 200.0f;
                     Function.Call(Hash.SET_DRIVE_TASK_DRIVING_STYLE, driver,
                         64 | 256 | 512 | 2048 | 262144 | 16777216 | 1073741824 | 524288);
+                    // 歩道に乗り上げて運転する
+                    driver.SetCombatAttributes(70, true);
                     _affectPeds.Add(driver);
                 }
                 catch (Exception e)

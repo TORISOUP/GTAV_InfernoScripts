@@ -29,4 +29,37 @@
     <data name="CitizenNitroProbability" xml:space="preserve">
         <value>発動確率。</value>
     </data>
+    <data name="RobberTitle" xml:space="preserve">
+        <value>市民車両強盗</value>
+    </data>
+    <data name="RobberDescription" xml:space="preserve">
+        <value>市民が周辺車両を強盗します。</value>
+    </data>
+    <data name="RobberProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
+    <data name="RobberInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenNitroRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="RobberRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="CitizenVehicleBombProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
+    <data name="CitizenVehicleBombInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenVehicleBombRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="CitizenVehicleBombTitle" xml:space="preserve">
+        <value>車両爆雷化</value>
+    </data>
+    <data name="CitizenVehicleBombDescription" xml:space="preserve">
+        <value>市民が乗った周辺車両が突然発火します。</value>
+    </data>
 </root>

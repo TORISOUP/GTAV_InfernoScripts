@@ -36,4 +36,37 @@
     <data name="CitizenNitroProbability" xml:space="preserve">
         <value>Probability of triggering.</value>
     </data>
+    <data name="RobberTitle" xml:space="preserve">
+        <value>Citizen vehicle robbery</value>
+    </data>
+    <data name="RobberDescription" xml:space="preserve">
+        <value>Citizens rob vehicles in the vicinity.</value>
+    </data>
+    <data name="RobberProbability" xml:space="preserve">
+        <value>Probability of triggering.</value>
+    </data>
+    <data name="RobberRange" xml:space="preserve">
+        <value>Range of effects.</value>
+    </data>
+    <data name="RobberInterval" xml:space="preserve">
+        <value>Check frequency.</value>
+    </data>
+    <data name="CitizenNitroRange" xml:space="preserve">
+        <value>Range of effects.</value>
+    </data>
+    <data name="CitizenVehicleBombTitle" xml:space="preserve">
+        <value>Vehicle bombing.</value>
+    </data>
+    <data name="CitizenVehicleBombDescription" xml:space="preserve">
+        <value>Vehicles in and around the area where the driver is riding will go on fire.</value>
+    </data>
+    <data name="CitizenVehicleBombRange" xml:space="preserve">
+        <value>Range of effects.</value>
+    </data>
+    <data name="CitizenVehicleBombInterval" xml:space="preserve">
+        <value>Check frequency.</value>
+    </data>
+    <data name="CitizenVehicleBombProbability" xml:space="preserve">
+        <value>Probability of triggering.</value>
+    </data>
 </root>
