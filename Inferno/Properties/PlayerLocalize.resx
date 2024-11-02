@@ -153,4 +153,10 @@ Used to “hand brake”, “accelerate”, and “hide” while in the vehicle.
     <data name="NitroCoolDown" xml:space="preserve">
         <value>Cool time.</value>
     </data>
+    <data name="PlayerInvincibleAdd" xml:space="preserve">
+        <value>Gives the player invincibility. No effects.</value>
+    </data>
+    <data name="PlayerInvincibleRemove" xml:space="preserve">
+        <value>Removes the player's invincibility.</value>
+    </data>
 </root>

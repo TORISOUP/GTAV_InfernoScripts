@@ -204,6 +204,42 @@ namespace Inferno.InfernoScripts.Player
                 b => b.Checked = config.EnableEffect,
                 b => config.EnableEffect = b);
 
+            subMenu.AddButton(
+                "[DEBUG] Add invincibility",
+                PlayerLocalize.PlayerInvincibleAdd,
+                _ =>
+                {
+                    if (PlayerPed.IsSafeExist())
+                    {
+                        PlayerPed.IsInvincible = true;
+                        PlayerPed.IsBulletProof = true;
+                        PlayerPed.IsFireProof = true;
+                        PlayerPed.IsExplosionProof = true;
+                        PlayerPed.IsMeleeProof = true;
+                        PlayerPed.IsCollisionProof = true;
+                        PlayerPed.IsOnlyDamagedByPlayer = true;
+                        DrawText("Invincible");
+                    }
+                });
+            
+            subMenu.AddButton(
+                "[DEBUG] Remove invincibility",
+                PlayerLocalize.PlayerInvincibleRemove,
+                _ =>
+                {
+                    if (PlayerPed.IsSafeExist())
+                    {
+                        PlayerPed.IsInvincible = false;
+                        PlayerPed.IsBulletProof = false;
+                        PlayerPed.IsFireProof = false;
+                        PlayerPed.IsExplosionProof = false;
+                        PlayerPed.IsMeleeProof = false;
+                        PlayerPed.IsCollisionProof = false;
+                        PlayerPed.IsOnlyDamagedByPlayer = false;
+                        DrawText("Not Invincible");
+                    }
+                });
+
 
             subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
             {

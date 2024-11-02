@@ -69,4 +69,13 @@
     <data name="CitizenVehicleBombProbability" xml:space="preserve">
         <value>Probability of triggering.</value>
     </data>
+    <data name="ParachuteTitle" xml:space="preserve">
+        <value>Airborne citizen force</value>
+    </data>
+    <data name="ParachuteDescription" xml:space="preserve">
+        <value>Citizens paratroop down near the player.</value>
+    </data>
+    <data name="ParachuteIntterval" xml:space="preserve">
+        <value>Citizen generation interval.</value>
+    </data>
 </root>

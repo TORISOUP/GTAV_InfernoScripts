@@ -168,6 +168,33 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Citizens paratroop down near the player..
+        /// </summary>
+        internal static string ParachuteDescription {
+            get {
+                return ResourceManager.GetString("ParachuteDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Citizen generation interval..
+        /// </summary>
+        internal static string ParachuteIntterval {
+            get {
+                return ResourceManager.GetString("ParachuteIntterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Airborne citizen force.
+        /// </summary>
+        internal static string ParachuteTitle {
+            get {
+                return ResourceManager.GetString("ParachuteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Citizens rob vehicles in the vicinity..
         /// </summary>
         internal static string RobberDescription {

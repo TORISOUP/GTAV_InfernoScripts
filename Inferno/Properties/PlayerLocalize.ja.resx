@@ -145,4 +145,10 @@
     <data name="NitroJumpVelocity" xml:space="preserve">
         <value>瞬間的に加わる速度（角度変更したとき）</value>
     </data>
+    <data name="PlayerInvincibleAdd" xml:space="preserve">
+        <value>プレイヤーに無敵を付与します。エフェクトはありません。</value>
+    </data>
+    <data name="PlayerInvincibleRemove" xml:space="preserve">
+        <value>プレイヤーの無敵状態を解除します。</value>
+    </data>
 </root>

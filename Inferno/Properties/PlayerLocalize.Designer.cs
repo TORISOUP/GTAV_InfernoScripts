@@ -316,6 +316,15 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gives the player invincibility. No effects..
+        /// </summary>
+        internal static string PlayerInvincibleAdd {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The player is temporarily invincible when resurrected after death or at the start of a mission..
         /// </summary>
         internal static string PlayerInvincibleDescription {
@@ -330,6 +339,15 @@ namespace Inferno.Properties {
         internal static string PlayerInvincibleEffect {
             get {
                 return ResourceManager.GetString("PlayerInvincibleEffect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removes the player&apos;s invincibility..
+        /// </summary>
+        internal static string PlayerInvincibleRemove {
+            get {
+                return ResourceManager.GetString("PlayerInvincibleRemove", resourceCulture);
             }
         }
         

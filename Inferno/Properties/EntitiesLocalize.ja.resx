@@ -62,4 +62,13 @@
     <data name="CitizenVehicleBombDescription" xml:space="preserve">
         <value>市民が乗った周辺車両が突然発火します。</value>
     </data>
+    <data name="ParachuteTitle" xml:space="preserve">
+        <value>空挺市民兵</value>
+    </data>
+    <data name="ParachuteDescription" xml:space="preserve">
+        <value>近くに市民がパラシュート落下してきます。</value>
+    </data>
+    <data name="ParachuteIntterval" xml:space="preserve">
+        <value>市民の生成間隔。</value>
+    </data>
 </root>
