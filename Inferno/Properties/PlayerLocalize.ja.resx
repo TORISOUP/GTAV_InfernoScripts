@@ -1,0 +1,154 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="WarpTitle" xml:space="preserve">
+        <value>ワープ</value>
+    </data>
+    <data name="WarpDescription" xml:space="preserve">
+        <value>地図上でマークした場所にワープします。よく地面に埋まります。</value>
+    </data>
+    <data name="WarpAction" xml:space="preserve">
+        <value>ワープする</value>
+    </data>
+    <data name="RagdollTitle" xml:space="preserve">
+        <value>脱力</value>
+    </data>
+    <data name="RagdollAction" xml:space="preserve">
+        <value>脱力する</value>
+    </data>
+    <data name="RagdollDescription" xml:space="preserve">
+        <value>しゃがみ + ジャンプ を入力するとプレイヤーを脱力状態にします。</value>
+    </data>
+    <data name="KillMeTitle" xml:space="preserve">
+        <value>自殺</value>
+    </data>
+    <data name="KillMeDescription" xml:space="preserve">
+        <value>プレイヤーを殺します。</value>
+    </data>
+    <data name="KillMeAction" xml:space="preserve">
+        <value>死</value>
+    </data>
+    <data name="SupplierTitle" xml:space="preserve">
+        <value>復活時全回復</value>
+    </data>
+    <data name="SupplierDescription" xml:space="preserve">
+        <value>死亡後復活時またはミッション開始時に「アーマー」「体力」「スキルゲージ」を全回復します。</value>
+    </data>
+    <data name="AutoHealTitle" xml:space="preserve">
+        <value>自動回復</value>
+    </data>
+    <data name="AutoHealDescription" xml:space="preserve">
+        <value>しばらくダメージを受けないでいると体力とアーマーを徐々に最大値まで回復します。</value>
+    </data>
+    <data name="BondCarTitle" xml:space="preserve">
+        <value>ボンドカー</value>
+    </data>
+    <data name="BondCarDescription" xml:space="preserve">
+        <value>「素手」状態のときに「エイム」「射撃」を同時押しすると車両からミサイルを発射します。</value>
+    </data>
+    <data name="BondCardInterval" xml:space="preserve">
+        <value>クールタイム</value>
+    </data>
+    <data name="BgmTitle" xml:space="preserve">
+        <value>トレバーBGM</value>
+    </data>
+    <data name="BgmDescription" xml:space="preserve">
+        <value>トレバーのスキル発動中にBGMを再生します。
+再生したいBGMは「scripts/SpecialAbilityBgm」にwavファイルとして配置してください。</value>
+    </data>
+    <data name="DeathSfxTitle" xml:space="preserve">
+        <value>死亡時効果音</value>
+    </data>
+    <data name="DeathSfxDescription" xml:space="preserve">
+        <value>プレイヤー死亡時に効果音を再生します。
+再生したい効果音は「scripts/Pichun」にwavファイルで配置してください。</value>
+    </data>
+    <data name="VehicleHUDTitle" xml:space="preserve">
+        <value>車両耐久値表示</value>
+    </data>
+    <data name="VehicleHUDDescription" xml:space="preserve">
+        <value>車両の耐久値を画面に表示します。
+
+赤：燃料タンク
+青：車体
+緑：エンジン
+黄：爆発までの残り時間</value>
+    </data>
+    <data name="EmergencyEscapeTitle" xml:space="preserve">
+        <value>緊急脱出</value>
+    </data>
+    <data name="EmergencyEscapeDescription" xml:space="preserve">
+        <value>クラクションを鳴らしながら車から降りようとすると緊急脱出します。</value>
+    </data>
+    <data name="EmergencyEscapePower" xml:space="preserve">
+        <value>射出力。</value>
+    </data>
+    <data name="FloatingTitle" xml:space="preserve">
+        <value>ふわふわジャンプ</value>
+    </data>
+    <data name="FloatingDescription" xml:space="preserve">
+        <value>ジャンプとスプリントを同時に押し続けるとふわふわ飛び上がります。</value>
+    </data>
+    <data name="NoWantedTitle" xml:space="preserve">
+        <value>手配度抑制</value>
+    </data>
+    <data name="NoWantedLevel" xml:space="preserve">
+        <value>これ以下の手配度を無効化します。</value>
+    </data>
+    <data name="NoWantedDescription" xml:space="preserve">
+        <value>手配度が付くのを防止します。</value>
+    </data>
+    <data name="NoWantedAction" xml:space="preserve">
+        <value>手配度を0にする。</value>
+    </data>
+    <data name="PlayerInvincibleTitle" xml:space="preserve">
+        <value>復活時無敵</value>
+    </data>
+    <data name="PlayerInvincibleDescription" xml:space="preserve">
+        <value>死亡後復活時またはミッション開始時に一時的にプレイヤーを無敵にします。</value>
+    </data>
+    <data name="PlayerInvincibleTime" xml:space="preserve">
+        <value>無敵時間。</value>
+    </data>
+    <data name="PlayerInvincibleEffect" xml:space="preserve">
+        <value>無敵のエフェクトを表示するか。</value>
+    </data>
+    <data name="AlertHealthTitle" xml:space="preserve">
+        <value>体力低下警告</value>
+    </data>
+    <data name="AlertHealthDescription" xml:space="preserve">
+        <value>体力が一定値以下のときに画面を赤くして警告します。</value>
+    </data>
+    <data name="NitroTitle" xml:space="preserve">
+        <value>ニトロ</value>
+    </data>
+    <data name="NitroDescription" xml:space="preserve">
+        <value>プレイヤーの車両を瞬間的に加速します。
+乗車中に「ハンドブレーキ」「アクセル」「隠れる」で発動。左スティック上下で角度変更。</value>
+    </data>
+    <data name="NitroCoolDown" xml:space="preserve">
+        <value>クールタイム。</value>
+    </data>
+    <data name="NitroStraightVelocity" xml:space="preserve">
+        <value>瞬間的に加わる速度（角度変更しないとき）</value>
+    </data>
+    <data name="NitroJumpVelocity" xml:space="preserve">
+        <value>瞬間的に加わる速度（角度変更したとき）</value>
+    </data>
+    <data name="PlayerInvincibleAdd" xml:space="preserve">
+        <value>プレイヤーに無敵を付与します。エフェクトはありません。</value>
+    </data>
+    <data name="PlayerInvincibleRemove" xml:space="preserve">
+        <value>プレイヤーの無敵状態を解除します。</value>
+    </data>
+</root>

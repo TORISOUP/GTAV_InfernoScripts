@@ -58,6 +58,9 @@
         <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="LemonUI.SHVDN3, Version=2.1.2.0, Culture=neutral, processorArchitecture=Amd64">
+          <HintPath>..\packages\LemonUI.SHVDN3.2.1.2\lib\net48\LemonUI.SHVDN3.dll</HintPath>
+        </Reference>
         <Reference Include="mscorlib"/>
         <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
             <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -79,9 +82,6 @@
         <Reference Include="System.Reactive, Version=6.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
             <HintPath>..\packages\System.Reactive.6.0.1\lib\net472\System.Reactive.dll</HintPath>
         </Reference>
-        <Reference Include="System.Reactive.Linq, Version=3.0.6000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-            <HintPath>..\packages\System.Reactive.Linq.6.0.1\lib\net472\System.Reactive.Linq.dll</HintPath>
-        </Reference>
         <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
             <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
         </Reference>
@@ -89,7 +89,6 @@
         <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
             <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
         </Reference>
-        <Reference Include="System.Web.Extensions"/>
         <Reference Include="System.Windows"/>
         <Reference Include="System.Windows.Forms"/>
         <Reference Include="System.Xaml"/>
@@ -98,9 +97,10 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ChaosMode\ChaosMode.cs"/>
+        <Compile Include="ChaosMode\ChaosModeUIBuilder.cs" />
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSetting.cs"/>
         <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingDTO.cs"/>
-        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingLoader.cs"/>
+        <Compile Include="ChaosMode\ChaosSettingLoader\ChaosModeSettingReadWriter.cs" />
         <Compile Include="ChaosMode\ChaosSettingLoader\ExstensionsMethods.cs"/>
         <Compile Include="ChaosMode\IWeaponProvider.cs"/>
         <Compile Include="ChaosMode\PedChaosChecker\CharacterChaosChecker.cs"/>
@@ -109,18 +109,22 @@
         <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
         <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
-        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs"/>
+        <Compile Include="InfernoScripts\Conf\InfernoCommandConfig.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\InfernoAllOnProvider.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\InfernoCommandProvider.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoHttpServer.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Isono\IsonoManager.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
+        <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
-        <Compile Include="InfernoScripts\Player\AutoHealPlayerHealth.cs" />
-        <Compile Include="InfernoScripts\Player\NoWanted.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerInvincible.cs" />
-        <Compile Include="InfernoScripts\World\BombBat.cs" />
-        <Compile Include="InfernoScripts\CitizenAttachVehicle.cs" />
-        <Compile Include="InfernoScripts\Citizen\CitizenCrazyDriving.cs" />
+        <Compile Include="InfernoScripts\Players\AutoHealPlayerHealth.cs" />
+        <Compile Include="InfernoScripts\Players\SuppressWanted.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerInvincible.cs" />
+        <Compile Include="InfernoScripts\Worlds\BombBat.cs" />
+        <Compile Include="InfernoScripts\Citizen\CitizenRashDriving.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenNitro.cs" />
-        <Compile Include="InfernoScripts\Citizen\CitizenRagdoll.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenRobberVehicle.cs" />
         <Compile Include="InfernoScripts\Citizen\CitizenVehicleBomb.cs" />
         <Compile Include="InfernoScripts\Citizen\SpawnParachuteCitizenArmy.cs" />
@@ -192,41 +196,112 @@
         <Compile Include="InfernoScripts\Parupunte\Scripts\FloatingCar.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\VehiclePetrolTanksGetFire.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\Volga.cs" />
-        <Compile Include="InfernoScripts\Player\ArmorAndHealthSupplier.cs" />
-        <Compile Include="InfernoScripts\Player\BondCar.cs" />
-        <Compile Include="InfernoScripts\Player\DeathSoundEffect.cs" />
+        <Compile Include="InfernoScripts\Players\ArmorAndHealthSupplier.cs" />
+        <Compile Include="InfernoScripts\Players\BondCar.cs" />
+        <Compile Include="InfernoScripts\Players\DeathSoundEffect.cs" />
         <Compile Include="ExtensionMethods\ExtensionMethods.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Debug\DebugLogger.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Enums\Enums.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoCore.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoScript.cs" />
-        <Compile Include="InfernoScripts\Player\DisplayCauseOfDeath.cs" />
-        <Compile Include="InfernoScripts\Player\EmergencyEscape.cs" />
-        <Compile Include="InfernoScripts\Player\Floating.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerGripVehicle.cs" />
-        <Compile Include="InfernoScripts\Player\HUDVehicleHealth.cs" />
-        <Compile Include="InfernoScripts\Player\KillPlayer.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerHealthAlert.cs" />
-        <Compile Include="InfernoScripts\Player\PlayerRagdoll.cs">
+        <Compile Include="InfernoScripts\Players\DisplayCauseOfDeath.cs" />
+        <Compile Include="InfernoScripts\Players\EmergencyEscape.cs" />
+        <Compile Include="InfernoScripts\Players\Floating.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerGripVehicle.cs" />
+        <Compile Include="InfernoScripts\Players\HUDVehicleHealth.cs" />
+        <Compile Include="InfernoScripts\Players\KillPlayer.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerHealthAlert.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerRagdoll.cs">
             <SubType>Code</SubType>
         </Compile>
-        <Compile Include="InfernoScripts\Player\PlayerVehicleNitro.cs" />
-        <Compile Include="InfernoScripts\Player\SpecialAbilityBgm.cs" />
-        <Compile Include="InfernoScripts\Player\Warp.cs" />
-        <Compile Include="InfernoScripts\World\ChaosAirPlane.cs" />
-        <Compile Include="InfernoScripts\World\ChaosHeli.cs" />
-        <Compile Include="InfernoScripts\World\Fulton.cs" />
-        <Compile Include="InfernoScripts\World\Meteor.cs" />
-        <Compile Include="InfernoScripts\World\SpeedMax.cs" />
+        <Compile Include="InfernoScripts\Players\PlayerVehicleNitro.cs" />
+        <Compile Include="InfernoScripts\Players\SpecialAbilityBgm.cs" />
+        <Compile Include="InfernoScripts\Players\Warp.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaosAirPlane.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaosHeli.cs" />
+        <Compile Include="InfernoScripts\Worlds\Fulton.cs" />
+        <Compile Include="InfernoScripts\Worlds\Meteor.cs" />
+        <Compile Include="InfernoScripts\Worlds\SpeedMax.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Properties\BombBatLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>BombBatLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\ChaosAirPlaneLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ChaosAirPlaneLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\ChaosHeliLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ChaosHeliLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\ChaosModeLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\EntitiesLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>EntitiesLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\FultonLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FultonLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\InfernoCommon.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>InfernoCommon.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\IsonoLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>IsonoLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\MenuLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MenuLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\MiscLocalization.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MiscLocalization.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\PlayerLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>PlayerLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\MeteorLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MeteorLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\ParupunteLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>ParupunteLocalize.resx</DependentUpon>
+        </Compile>
+        <Compile Include="Properties\SpeedMaxLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>SpeedMaxLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Utilities\Awaiters\TimeAwaiter.cs" />
         <Compile Include="Utilities\Awaiters\StepAwaiter.cs" />
         <Compile Include="Utilities\Http\SimpleJsonHttpServer.cs" />
         <Compile Include="Utilities\InfernoConfig.cs" />
-        <Compile Include="Utilities\InfernoConfigLoader.cs" />
+        <Compile Include="Utilities\InfernoConfigReadWriter.cs" />
         <Compile Include="Utilities\InfernoScheduler.cs" />
         <Compile Include="Utilities\InfernoSynchronizationContext.cs" />
         <Compile Include="Utilities\InfernoUtilities.cs" />
+        <Compile Include="Utilities\MathI.cs" />
         <Compile Include="Utilities\PriorityQueue.cs" />
         <Compile Include="Utilities\RequestDataPackage.cs" />
         <Compile Include="Utilities\SingleThreadSynchronizationContext.cs" />
@@ -237,6 +312,106 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="packages.config" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Properties\BombBatLocalize.ja.resx">
+        <DependentUpon>BombBatLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\BombBatLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>BombBatLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosAirPlaneLocalize.ja.resx">
+        <DependentUpon>ChaosAirPlaneLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosAirPlaneLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ChaosAirPlaneLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosHeliLocalize.ja.resx">
+        <DependentUpon>ChaosHeliLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosHeliLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ChaosHeliLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosModeLocalize.ja.resx">
+        <DependentUpon>ChaosModeLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ChaosModeLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ChaosModeLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\EntitiesLocalize.ja.resx">
+        <DependentUpon>EntitiesLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\EntitiesLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>EntitiesLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\FultonLocalize.ja.resx">
+        <DependentUpon>FultonLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\FultonLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>FultonLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\InfernoCommon.ja.resx">
+        <DependentUpon>InfernoCommon.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\InfernoCommon.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>InfernoCommon.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\IsonoLocalize.ja.resx">
+        <DependentUpon>IsonoLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\IsonoLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>IsonoLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MenuLocalize.ja.resx">
+        <DependentUpon>MenuLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MenuLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MenuLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MiscLocalization.ja.resx">
+        <DependentUpon>MiscLocalization.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MiscLocalization.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MiscLocalization.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerLocalize.ja.resx">
+        <DependentUpon>PlayerLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\PlayerLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>PlayerLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MeteorLocalize.ja.resx">
+        <DependentUpon>MeteorLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\MeteorLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>MeteorLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ParupunteLocalize.ja.resx">
+        <DependentUpon>ParupunteLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\ParupunteLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>ParupunteLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\SpeedMaxLocalize.ja.resx">
+        <DependentUpon>SpeedMaxLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\SpeedMaxLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>SpeedMaxLocalize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

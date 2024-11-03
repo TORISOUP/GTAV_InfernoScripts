@@ -23,6 +23,11 @@ namespace Inferno.ChaosMode.WeaponProvider
         public CustomWeaponProvider(IEnumerable<Weapon> weaponList, IEnumerable<Weapon> weaponListForDriveBy)
         {
             _random = new Random();
+            SetUp(weaponList, weaponListForDriveBy);
+        }
+
+        public void SetUp(IEnumerable<Weapon> weaponList, IEnumerable<Weapon> weaponListForDriveBy)
+        {
             //渡された武器リストから有効な武器のみにフィルタリング
             var weaponArray = weaponList as Weapon[] ?? weaponList.ToArray();
             AllWeapons = weaponArray;
@@ -34,10 +39,9 @@ namespace Inferno.ChaosMode.WeaponProvider
             CustomExcludeClosedWeapons = CustomShootWeapons.Concat(CustomProjectileWeapons)
                 .Concat(CustomClosedWeapons)
                 .ToArray();
-            
         }
 
-        public Weapon GetRandomCloseWeapons()
+        public Weapon GetRandomMeleeWeapons()
         {
             return CustomClosedWeapons.Length == 0
                 ? Weapon.Unarmed

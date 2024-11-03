@@ -13,7 +13,11 @@ using GTA;
 using GTA.Math;
 using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
+using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
+using LemonUI;
+using LemonUI.Menus;
 
 namespace Inferno.InfernoScripts.Parupunte
 {
@@ -32,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// デバッグ用
         /// </summary>
-        private Type[] _debugParuputeScripts;
+        private readonly Type[] _debugParuputeScripts;
 
         /// <summary>
         /// いその用パルプンテ
@@ -46,7 +50,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテスクリプト一覧
         /// </summary>
-        private Type[] _parupunteScritpts;
+        private readonly Type[] _parupunteScritpts;
 
         private int _screenHeight;
         private int _screenWidth;
@@ -74,14 +78,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
         private TimeSpan Time => _stopWatch.Elapsed;
 
-        protected override void Setup()
+        public ParupunteCore()
         {
-            Interval = 0;
-            IsActive = false;
-            timerText = new TimerUiTextManager(this);
-
-            #region ParunteScripts
-
             //RefrectionでParupunteScriptを継承しているクラスをすべて取得する
             _parupunteScritpts =
                 Assembly.GetExecutingAssembly()
@@ -100,8 +98,14 @@ namespace Inferno.InfernoScripts.Parupunte
                     return attribute != null && attribute.IsDebug;
                 })
                 .ToArray();
+        }
 
-            #endregion ParunteScripts
+        protected override void Setup()
+        {
+            Interval = 0;
+            IsActive = false;
+            timerText = new TimerUiTextManager(this);
+
 
             #region Config
 
@@ -111,17 +115,18 @@ namespace Inferno.InfernoScripts.Parupunte
 
             #region EventHook
 
-            CreateInputKeywordAsObservable("rnt")
+            CreateInputKeywordAsObservable("StartParupunte", "rnt")
                 .Where(_ => !IsActive)
                 .Subscribe(_ => { ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken); });
 
-            CreateInputKeywordAsObservable("snt")
+            CreateInputKeywordAsObservable("StopParupunte", "snt")
                 .Where(_ => IsActive)
                 .Subscribe(_ => ParupunteStop());
-            
+
+            var shortcutKey = InfernoCommandProvider.Instance.GetCommand("StartParupunte_shortcut", "Next");
 
             OnKeyDownAsObservable
-                .Where(x => x.KeyCode is Keys.NumPad0 or Keys.PageDown)
+                .Where(x => x.KeyCode.ToString() == shortcutKey)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f), base.InfernoScheduler)
                 .Subscribe(_ =>
                 {
@@ -136,7 +141,7 @@ namespace Inferno.InfernoScripts.Parupunte
                 });
 
             //パルプンテが停止したタイミングで開放
-            IsActiveAsObservable
+            IsActiveRP
                 .Where(x => !x)
                 .Subscribe(_ =>
                 {
@@ -299,7 +304,6 @@ namespace Inferno.InfernoScripts.Parupunte
             try
             {
                 // スクリプトのインスタンスを生成
-                // スレッドプール上で呼び出すことで、メインスレッドをブロックしない
                 _currentScript = Activator.CreateInstance(script, this, conf) as ParupunteScript;
                 ParupunteCoreLoopAsync(_currentScript, ct).Forget();
             }
@@ -490,7 +494,7 @@ namespace Inferno.InfernoScripts.Parupunte
                     return hash.ToString();
             }
         }
-        
+
         public void AddProgressBar(ReduceCounter reduceCounter)
         {
             var prgoressbarData = new ProgressBarData(reduceCounter,
@@ -552,6 +556,53 @@ namespace Inferno.InfernoScripts.Parupunte
         public new ValueTask DelayRandomSecondsAsync(float min, float max, CancellationToken ct)
         {
             return base.DelayRandomSecondsAsync(min, max, ct);
+        }
+
+        #endregion
+
+        #region UI
+
+        public override bool UseUI => true;
+        public override string DisplayName => ParupunteLocalize.Title;
+
+        public override string Description => ParupunteLocalize.Description;
+
+        public override bool CanChangeActive => false;
+
+        public override MenuIndex MenuIndex => MenuIndex.Root;
+
+        public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
+        {
+            var context = InfernoSynchronizationContext;
+
+            // パルプンテのランダム実行
+            subMenu.AddButton("Start", ParupunteLocalize.Start,
+                _ => { context.Post(_ => ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken), null); });
+
+            // パルプンテの停止
+            subMenu.AddButton("Stop", ParupunteLocalize.Stop,
+                _ => { context.Post(_ => ParupunteStop(), null); });
+
+            // リスト一覧作成
+            var listMenu = new NativeMenu("Effect list", "Effect list")
+            {
+                Visible = false
+            };
+            {
+                foreach (var parupunteScritpt in _parupunteScritpts)
+                {
+                    var script = parupunteScritpt;
+                    var name = script.Name;
+                    var item = new NativeItem(name);
+                    item.Activated += (_, _) =>
+                    {
+                        context.Post(_ => { ParupunteStart(script, DestroyCancellationToken); }, null);
+                    };
+                    listMenu.Add(item);
+                }
+            }
+            subMenu.AddSubMenu(listMenu);
+            pool.Add(listMenu);
         }
 
         #endregion

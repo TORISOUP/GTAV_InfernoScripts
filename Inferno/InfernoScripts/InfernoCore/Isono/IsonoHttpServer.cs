@@ -36,6 +36,7 @@ namespace Inferno
         public void Dispose()
         {
             _listener?.Dispose();
+            _subject?.OnCompleted();
             _subject?.Dispose();
         }
     }

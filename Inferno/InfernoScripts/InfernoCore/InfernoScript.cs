@@ -10,9 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GTA;
+using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Event;
+using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Utilities;
 using Inferno.Utilities.Awaiters;
+using LemonUI;
+using LemonUI.Menus;
 using Reactive.Bindings;
 
 namespace Inferno
@@ -20,7 +24,7 @@ namespace Inferno
     /// <summary>
     /// インフェルノスクリプトの基底
     /// </summary>
-    public abstract class InfernoScript : Script
+    public abstract class InfernoScript : Script, IScriptUiBuilder
     {
         private readonly AsyncSubject<Unit> _disposeSubject = new();
         private readonly ReactiveProperty<bool> _isActiveReactiveProperty = new(false);
@@ -33,7 +37,12 @@ namespace Inferno
         private CancellationTokenSource _linkedCancellationTokenSource;
 
         private InfernoSynchronizationContext _infernoSynchronizationContext;
-        private InfernoScheduler infernoScheduler;
+        private InfernoScheduler _infernoScheduler;
+
+        public bool IsAllOnEnable =>
+            InfernoAllOnProvider.Instance.GetOrCreateAllOnEnable(this.GetType().Name, DefaultAllOnEnable);
+
+        protected virtual bool DefaultAllOnEnable => true;
 
         /// <summary>
         /// コンストラクタ
@@ -81,7 +90,7 @@ namespace Inferno
 
             OnDrawingTickAsObservable = DrawingCore.OnDrawingTickAsObservable;
 
-            OnAllOnCommandObservable = CreateInputKeywordAsObservable("allon");
+            OnAllOnCommandObservable = CreateInputKeywordAsObservable("AllOn", "allon");
 
             //スケジューラなどの定期実行系
             OnTickAsObservable.Subscribe(_ =>
@@ -111,7 +120,7 @@ namespace Inferno
 
                     try
                     {
-                        infernoScheduler?.Run();
+                        _infernoScheduler?.Run();
                     }
                     catch
                     {
@@ -180,7 +189,7 @@ namespace Inferno
                     }
                 })
                 .AddTo(CompositeDisposable);
-            
+
             OnAbortAsync.Subscribe(_ =>
                 {
                     Destroy();
@@ -206,6 +215,18 @@ namespace Inferno
                 {
                     try
                     {
+                        if (CanChangeActive)
+                        {
+                            // Activeが切り替え可能な場合はAllOnのConfigを一度読み取る
+                            // 存在しない場合は新しいものが生成される
+                            if (IsAllOnEnable)
+                            {
+                                // AllOnの登録
+                                OnAllOnCommandObservable
+                                    .Subscribe(_ => { IsActive = true; });
+                            }
+                        }
+
                         // SynchronizationContextはこのタイミングで設定しないといけない
                         SynchronizationContext.SetSynchronizationContext(InfernoSynchronizationContext);
                         Setup();
@@ -213,6 +234,19 @@ namespace Inferno
                     catch (Exception e)
                     {
                         LogWrite(e.ToString());
+                    }
+
+                    try
+                    {
+                        // UIの構築
+                        if (UseUI)
+                        {
+                            InfernoUi.Instance.RegisterInfernoBuilder(this);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LogWrite($"[{this.GetType()}] " + e.ToString());
                     }
                 })
                 .AddTo(CompositeDisposable);
@@ -227,11 +261,12 @@ namespace Inferno
 
         public float DeltaTime { get; private set; }
 
-        private InfernoSynchronizationContext InfernoSynchronizationContext
+        protected InfernoSynchronizationContext InfernoSynchronizationContext
             => _infernoSynchronizationContext ??= new InfernoSynchronizationContext();
 
         public IScheduler InfernoScheduler
-            => infernoScheduler ??= new InfernoScheduler();
+            => _infernoScheduler ??= new InfernoScheduler();
+
 
         /// <summary>
         /// スクリプトが動作中であるか
@@ -262,11 +297,11 @@ namespace Inferno
             }
         }
 
+
         /// <summary>
         /// IsActiveが変化したことを通知する
         /// </summary>
-        protected IObservable<bool> IsActiveAsObservable =>
-            _isActiveReactiveProperty.AsObservable().DistinctUntilChanged();
+        public IReadOnlyReactiveProperty<bool> IsActiveRP => _isActiveReactiveProperty;
 
         /// <summary>
         /// 設定ファイルをロードする
@@ -278,11 +313,28 @@ namespace Inferno
                 throw new Exception("設定ファイル名が設定されていません");
             }
 
-            var loader = new InfernoConfigLoader<T>();
+            var loader = new InfernoConfigReadWriter<T>();
             var dto = loader.LoadSettingFile(ConfigFileName);
             //バリデーションに引っかかったらデフォルト値を返す
             return dto.Validate() ? dto : new T();
         }
+
+        protected T LoadDefaultConfig<T>() where T : InfernoConfig, new()
+        {
+            return new T();
+        }
+
+        protected void SaveConfig<T>(T setting) where T : InfernoConfig, new()
+        {
+            if (string.IsNullOrEmpty(ConfigFileName))
+            {
+                throw new Exception("設定ファイル名が設定されていません");
+            }
+
+            var loader = new InfernoConfigReadWriter<T>();
+            loader.SaveSettingFile(ConfigFileName, setting);
+        }
+
 
         /// <summary>
         /// 初期化処理はここに書く
@@ -302,6 +354,7 @@ namespace Inferno
                 _activationCancellationTokenSource?.Cancel();
                 _activationCancellationTokenSource?.Dispose();
                 _activationCancellationTokenSource = null;
+                _isActiveReactiveProperty.Dispose();
                 lock (_stepAwaiters)
                 {
                     foreach (var stepAwaiter in _stepAwaiters)
@@ -532,7 +585,7 @@ namespace Inferno
             }
         }
 
-        public IObservable<Unit> OnAllOnCommandObservable { get; private set; }
+        protected IObservable<Unit> OnAllOnCommandObservable { get; set; }
 
         /// <summary>
         /// InfernoEvent
@@ -545,18 +598,23 @@ namespace Inferno
         /// </summary>
         /// <param name="keyword"></param>
         /// <returns></returns>
-        protected IObservable<Unit> CreateInputKeywordAsObservable(string keyword)
+        protected IObservable<Unit> CreateInputKeywordAsObservable(string commandName, string defaultValue)
         {
-            if (string.IsNullOrEmpty(keyword))
+            var command = InfernoCommandProvider.Instance.GetCommand(commandName, defaultValue);
+
+            if (string.IsNullOrEmpty(command))
             {
-                throw new Exception("Keyword is empty.");
+                return Observable.Empty<Unit>();
             }
+
+            var upper = command.ToUpper();
 
             return OnKeyDownAsObservable
                 .Select(e => e.KeyCode.ToString())
-                .Buffer(keyword.Length, 1)
-                .Select(x => x.Aggregate((p, c) => p + c))
-                .Where(x => x == keyword.ToUpper()) //入力文字列を比較
+                .SelectMany(e => e)
+                .Buffer(command.Length, 1)
+                .Select(x => string.Join("", x))
+                .Where(x => x == upper) //入力文字列を比較
                 .Select(_ => Unit.Default)
                 .Take(1)
                 .Repeat() //1回動作したらBufferをクリア
@@ -621,10 +679,10 @@ namespace Inferno
         {
             ToastTextDrawing.Instance.DrawDebugText(text, time);
         }
-        
-        public void DrawText(object text, float time = 3.0f)
+
+        public void DrawTextL(object text, float time = 3.0f)
         {
-            ToastTextDrawing.Instance.DrawDebugText(text.ToString(), time);
+            ToastTextDrawing.Instance.DrawTextLowPriority(text.ToString(), time);
         }
 
         /// <summary>
@@ -651,5 +709,29 @@ namespace Inferno
         }
 
         #endregion forTimer
+
+        #region UI
+
+        protected bool IsLangJpn => Game.Language == Language.Japanese;
+
+        public virtual bool UseUI => false;
+        public virtual string DisplayName => GetType().Name;
+        public virtual MenuIndex MenuIndex => MenuIndex.Root;
+
+        public virtual bool CanChangeActive => false;
+
+        public virtual void OnUiMenuConstruct(ObjectPool pool, NativeMenu menu)
+        {
+        }
+
+        bool IScriptUiBuilder.IsActive
+        {
+            get => IsActive;
+            set { _infernoSynchronizationContext.Post(_ => { IsActive = value; }, null); }
+        }
+
+        public virtual string Description => GetType().Name;
+
+        #endregion
     }
 }

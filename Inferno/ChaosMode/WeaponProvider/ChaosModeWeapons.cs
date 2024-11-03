@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using GTA;
 
 namespace Inferno.ChaosMode.WeaponProvider
 {
@@ -47,7 +48,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.SniperRifle,
                 Weapon.StunGun,
                 Weapon.PetrolCan,
-               // Weapon.RailGun,
+                Weapon.RailGun,
                 Weapon.FlareGun,
                 Weapon.MarksmanPistol,
                 Weapon.MachinePistol,
@@ -77,9 +78,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.RPG,
                 Weapon.HomingLauncher,
                 Weapon.Firework,
-             //   Weapon.RailGun,
                 Weapon.CompactLauncher,
-                Weapon.Widowmaker,
                 Weapon.Grenade,
                 Weapon.Molotov,
                 Weapon.StickyBomb,
@@ -89,6 +88,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 Weapon.FLARE,
                 Weapon.SmokeGrenade,
                 Weapon.PetrolCan,
+                Weapon.RailGun
             };
 
             //近距離系
@@ -156,7 +156,7 @@ namespace Inferno.ChaosMode.WeaponProvider
                 .Concat(ProjectileWeapons)
                 .Distinct()
                 .ToArray();
-            
+
             ExcludeClosedWeapons = ShootWeapons.Concat(ProjectileWeapons).Distinct().ToArray();
         }
 
@@ -172,6 +172,11 @@ namespace Inferno.ChaosMode.WeaponProvider
         public static Weapon GetRandomWeapon()
         {
             return AllWeapons[random.Next(0, AllWeapons.Length)];
+        }
+
+        public static bool IsPedEquippedWithMeleeWeapon(this Ped ped)
+        {
+            return ClosedWeapons.Contains((Weapon)ped.Weapons.Current.Hash);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Inferno.ChaosMode
 {
     public class CharacterChaosChecker
     {
-        public CharacterChaosChecker(MissionCharacterTreatmentType missionCharacterTreatment,
+        public CharacterChaosChecker(MissionCharacterBehaviour missionCharacterTreatment,
             bool isChangeMissonCharacterWeapon)
         {
             MissionCharacterTreatment = missionCharacterTreatment;
@@ -20,7 +20,7 @@ namespace Inferno.ChaosMode
         /// <summary>
         /// ミッションキャラのカオス化
         /// </summary>
-        public MissionCharacterTreatmentType MissionCharacterTreatment { get; set; }
+        public MissionCharacterBehaviour MissionCharacterTreatment { get; set; }
 
         /// <summary>
         /// 攻撃を避けるべき対象群
@@ -98,10 +98,10 @@ namespace Inferno.ChaosMode
 
             switch (MissionCharacterTreatment)
             {
-                case MissionCharacterTreatmentType.AffectAllCharacter:
+                case MissionCharacterBehaviour.AffectAllCharacter:
                     return true;
 
-                case MissionCharacterTreatmentType.ExcludeUniqueCharacter:
+                case MissionCharacterBehaviour.ExcludeUniqueCharacter:
                 {
                     if (!IsUniqueCharacter((uint)entity.Model.Hash))
                     {
@@ -115,7 +115,7 @@ namespace Inferno.ChaosMode
 
                     return false;
                 }
-                case MissionCharacterTreatmentType.ExcludeAllMissionCharacter:
+                case MissionCharacterBehaviour.ExcludeAllMissionCharacter:
                     return false;
 
                 default:

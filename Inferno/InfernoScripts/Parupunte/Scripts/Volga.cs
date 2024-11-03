@@ -45,7 +45,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Tuple<Vehicle, Ped> SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Velum2);
-            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
+            var plane = GTA.Worlds.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
             if (!plane.IsSafeExist())
             {
                 return null;

@@ -9,7 +9,7 @@
 
         private Weapon current { get; }
 
-        public Weapon GetRandomCloseWeapons()
+        public Weapon GetRandomMeleeWeapons()
         {
             return current;
         }

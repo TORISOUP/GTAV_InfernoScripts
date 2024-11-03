@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Reactive.Linq;
 using System.Threading;
@@ -18,6 +17,7 @@ namespace Inferno
 
         public static ToastTextDrawing Instance { get; private set; }
         private CancellationTokenSource _cts;
+        private DrawType _currentDrawType = DrawType.None;
 
         protected override void Setup()
         {
@@ -53,7 +53,26 @@ namespace Inferno
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
             _container.Items.Clear();
+            _currentDrawType = DrawType.Normal;
+            DrawTextAsync(text, time, _cts.Token).Forget();
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DrawTextLowPriority(string text, float time)
+        {
+            if (_currentDrawType == DrawType.Normal)
+            {
+                return;
+            }
+
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            _container.Items.Clear();
+            
+            _currentDrawType = DrawType.LowPriority;
             DrawTextAsync(text, time, _cts.Token).Forget();
         }
 
@@ -69,9 +88,22 @@ namespace Inferno
                 false,
                 true));
 
+            try
+            {
+                await DelaySecondsAsync(time, ct);
+            }
+            finally
+            {
+                _container.Items.Clear();
+                _currentDrawType = DrawType.None;
+            }
+        }
 
-            await DelaySecondsAsync(time, ct);
-            _container.Items.Clear();
+        private enum DrawType
+        {
+            None,
+            Normal,
+            LowPriority
         }
     }
 }

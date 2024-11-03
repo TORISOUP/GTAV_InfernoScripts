@@ -90,6 +90,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 if (ped == core.PlayerPed)
                 {
+                    await DelayFrameAsync(5, ct);
                     continue;
                 }
                 
@@ -116,7 +117,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     0, 0, 0);
                 StartFire(ped);
 
-                await DelayFrameAsync(3, ct);
+                await DelayFrameAsync(5, ct);
             }
         }
 
