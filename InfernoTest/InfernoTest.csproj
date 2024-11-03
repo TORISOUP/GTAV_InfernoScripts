@@ -80,8 +80,8 @@
         <Otherwise />
     </Choose>
     <ItemGroup>
-        <Compile Include="ChaosModeSettingLoader\ChaosModeSettingReadWriterTest.cs" />
-        <Compile Include="ChaosModeSettingLoader\ChaosModeSettingTest.cs" />
+        <Compile Include="ChaosModeSettingReadWriter\ChaosModeSettingReadWriterTest.cs" />
+        <Compile Include="ChaosModeSettingReadWriter\ChaosModeSettingTest.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
@@ -92,13 +92,13 @@
       <Analyzer Include="..\packages\xunit.analyzers.1.15.0\analyzers\dotnet\cs\xunit.analyzers.fixes.dll" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="ChaosModeSettingLoader\TestData\CorrectConf.json">
+      <Content Include="ChaosModeSettingReadWriter\TestData\CorrectConf.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="ChaosModeSettingLoader\TestData\PartialConf.json">
+      <Content Include="ChaosModeSettingReadWriter\TestData\PartialConf.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
-      <Content Include="ChaosModeSettingLoader\TestData\WrongType.json">
+      <Content Include="ChaosModeSettingReadWriter\TestData\WrongType.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

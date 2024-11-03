@@ -26,12 +26,15 @@ namespace InfernoTest
                 result.MissionCharacterBehaviour);
             Assert.False(result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(100, result.AttackPlayerCorrectionProbability);
-            Assert.Equal(new[] { Weapon.AdvancedRifle }, result.WeaponList);
-            Assert.Equal(new[] { Weapon.Pistol, Weapon.SMGMk2 }, result.WeaponListForDriveBy);
+            Assert.Equal(new[] { Weapon.AssaultSMG }, result.WeaponList);
+            Assert.Equal(new[] { Weapon.AutoShotgun, Weapon.MicroSMG }, result.WeaponListForDriveBy);
             Assert.Equal(50, result.StupidShootingRate);
             Assert.Equal(10, result.ShootAccuracy);
             Assert.Equal(100, result.WeaponChangeProbability);
             Assert.Equal(30, result.ForceExplosiveWeaponProbability);
+            Assert.False(result.MeleeWeaponOnly);
+            Assert.Equal(30, result.WeaponDropProbability);
+
         }
 
         [Theory]
@@ -42,7 +45,7 @@ namespace InfernoTest
             var result = testLoader.LoadSettingFile("");
 
             // 存在する
-            Assert.Equal(100, result.Radius);
+            Assert.Equal(500, result.Radius);
             Assert.False(result.OverrideMissionCharacterWeapon);
             Assert.True(result.IsAttackPlayerCorrectionEnabled);
             Assert.Equal(10, result.AttackPlayerCorrectionProbability);
