@@ -11,7 +11,7 @@ namespace Inferno.Utilities
     public class InfernoConfigReadWriter<T> where T : new()
     {
         private readonly Encoding _encoding = Encoding.UTF8;
-        private readonly string _baseFilePath = @"./scripts/confs/";
+        private readonly string _baseFilePath = @"./scripts/inferno_configs/";
         protected virtual IDebugLogger DebugLogger => Inferno.DebugLogger.Instance;
         
 

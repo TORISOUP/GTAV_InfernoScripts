@@ -12,15 +12,12 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="Title" xml:space="preserve">
-        <value>パルプンテ</value>
-    </data>
-    <data name="Start" xml:space="preserve">
-        <value>ランダムに実行</value>
-    </data>
-    <data name="Stop" xml:space="preserve">
-        <value>実行中のパルプンテを停止</value>
+        <value>いその（コメント連携)</value>
     </data>
     <data name="Description" xml:space="preserve">
-        <value>なにがおこるかわからない。</value>
+        <value>生放送コメントがMODに影響を与えます。要コメントビューワーとプラグイン。</value>
+    </data>
+    <data name="Port" xml:space="preserve">
+        <value>コメント受信用HTTPサーバの待ち受けポート。</value>
     </data>
 </root>

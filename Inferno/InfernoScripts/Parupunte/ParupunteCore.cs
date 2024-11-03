@@ -14,6 +14,7 @@ using GTA.Math;
 using GTA.UI;
 using Inferno.InfernoScripts.Event.Isono;
 using Inferno.InfernoScripts.InfernoCore.UI;
+using Inferno.Properties;
 using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
@@ -35,7 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// デバッグ用
         /// </summary>
-        private Type[] _debugParuputeScripts;
+        private readonly Type[] _debugParuputeScripts;
 
         /// <summary>
         /// いその用パルプンテ
@@ -49,7 +50,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// パルプンテスクリプト一覧
         /// </summary>
-        private Type[] _parupunteScritpts;
+        private readonly Type[] _parupunteScritpts;
 
         private int _screenHeight;
         private int _screenWidth;
@@ -77,14 +78,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
         private TimeSpan Time => _stopWatch.Elapsed;
 
-        protected override void Setup()
+        public ParupunteCore()
         {
-            Interval = 0;
-            IsActive = false;
-            timerText = new TimerUiTextManager(this);
-
-            #region ParunteScripts
-
             //RefrectionでParupunteScriptを継承しているクラスをすべて取得する
             _parupunteScritpts =
                 Assembly.GetExecutingAssembly()
@@ -103,8 +98,14 @@ namespace Inferno.InfernoScripts.Parupunte
                     return attribute != null && attribute.IsDebug;
                 })
                 .ToArray();
+        }
 
-            #endregion ParunteScripts
+        protected override void Setup()
+        {
+            Interval = 0;
+            IsActive = false;
+            timerText = new TimerUiTextManager(this);
+
 
             #region Config
 
@@ -562,7 +563,9 @@ namespace Inferno.InfernoScripts.Parupunte
         #region UI
 
         public override bool UseUI => true;
-        public override string DisplayName => IsLangJpn ? "パルプンテ" : "Parupunte";
+        public override string DisplayName => ParupunteLocalize.Title;
+
+        public override string Description => ParupunteLocalize.Description;
 
         public override bool CanChangeActive => false;
 
@@ -573,11 +576,11 @@ namespace Inferno.InfernoScripts.Parupunte
             var context = InfernoSynchronizationContext;
 
             // パルプンテのランダム実行
-            subMenu.AddButton("Start", IsLangJpn ? "ランダムに実行" : "Start random",
+            subMenu.AddButton("Start", ParupunteLocalize.Start,
                 _ => { context.Post(_ => ParupunteStart(ChooseParupounteScript(), DestroyCancellationToken), null); });
 
             // パルプンテの停止
-            subMenu.AddButton("Stop", IsLangJpn ? "実行中のパルプンテを停止" : "Stop the running parupunte",
+            subMenu.AddButton("Stop", ParupunteLocalize.Stop,
                 _ => { context.Post(_ => ParupunteStop(), null); });
 
             // リスト一覧作成

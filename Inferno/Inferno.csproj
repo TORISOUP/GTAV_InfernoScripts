@@ -258,6 +258,11 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>InfernoCommon.resx</DependentUpon>
         </Compile>
+        <Compile Include="Properties\IsonoLocalize.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>IsonoLocalize.resx</DependentUpon>
+        </Compile>
         <Compile Include="Properties\MenuLocalize.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -357,6 +362,13 @@
       <EmbeddedResource Include="Properties\InfernoCommon.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>InfernoCommon.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\IsonoLocalize.ja.resx">
+        <DependentUpon>IsonoLocalize.resx</DependentUpon>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Properties\IsonoLocalize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>IsonoLocalize.Designer.cs</LastGenOutput>
       </EmbeddedResource>
       <EmbeddedResource Include="Properties\MenuLocalize.ja.resx">
         <DependentUpon>MenuLocalize.resx</DependentUpon>

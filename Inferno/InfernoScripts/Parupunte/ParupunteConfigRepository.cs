@@ -15,7 +15,7 @@ namespace Inferno.InfernoScripts
     {
         protected readonly Encoding _encoding = Encoding.UTF8;
         protected DebugLogger _debugLogger;
-        protected string _filePath = @"./scripts/confs/Parupunte.conf";
+        protected string _filePath = @"./scripts/inferno_configs/Parupunte.conf";
 
         protected virtual DebugLogger DebugLogger
         {
