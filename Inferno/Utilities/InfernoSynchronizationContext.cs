@@ -1,12 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
 
-
 namespace Inferno
 {
     public class InfernoSynchronizationContext : SynchronizationContext
     {
-        readonly ConcurrentQueue<TaskItem> _continuations = new ConcurrentQueue<TaskItem>();
+        private readonly ConcurrentQueue<TaskItem> _continuations = new();
 
         public override void Send(SendOrPostCallback d, object state)
         {
@@ -19,7 +18,7 @@ namespace Inferno
         }
 
         public void Update()
-        {    
+        {
             while (_continuations.TryDequeue(out var i))
             {
                 i.d(i.state);

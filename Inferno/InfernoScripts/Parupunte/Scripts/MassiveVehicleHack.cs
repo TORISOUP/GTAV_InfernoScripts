@@ -1,26 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using UniRx;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("大量車両ハッキング")]
     [ParupunteIsono("はっきんぐ")]
-    class MassiveVehicleHack : ParupunteScript
+    internal class MassiveVehicleHack : ParupunteScript
     {
+        //演出用の線を引くリスト
+        private readonly List<(Entity, Entity)> drawLineList = new();
+
+        //ハック済み車両
+        private List<Vehicle> _hacksList = new();
+
         public MassiveVehicleHack(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-
-        //ハック済み車両
-        private List<Vehicle> hacksList = new List<Vehicle>();
-
-        //演出用の線を引くリスト
-        private List<System.Tuple<Entity, Entity>> drawLineList = new List<System.Tuple<Entity, Entity>>();
 
         public override void OnStart()
         {
@@ -28,94 +31,110 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             AddProgressBar(ReduceCounter);
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                hacksList = null;
+                _hacksList = null;
                 ParupunteEnd();
             });
 
-            core.OnDrawingTickAsObservable
-                .TakeUntil(OnFinishedAsObservable)
-                .Subscribe(_ =>
-                {
-                    foreach (var tuple in drawLineList)
-                    {
-                        var t1 = tuple.Item1;
-                        var t2 = tuple.Item2;
-                        if (!t1.IsSafeExist() || !t2.IsSafeExist()) continue;
-                        DrawLine(t1.Position, t2.Position, Color.White);
-                    }
-                });
+            DrawLineLoopAsync(ActiveCancellationToken).Forget();
 
             if (core.PlayerPed.IsInVehicle())
             {
-                hacksList.Add(core.PlayerPed.CurrentVehicle);
+                _hacksList.Add(core.PlayerPed.CurrentVehicle);
             }
-            StartCoroutine(HackCoroutine(core.PlayerPed));
-            StartCoroutine(HackCoroutine(core.PlayerPed));
-            StartCoroutine(HackCoroutine(core.PlayerPed));
+
+            RootAsync(ActiveCancellationToken).Forget();
         }
 
-        IEnumerable<object> HackCoroutine(Entity root)
+        private async ValueTask RootAsync(CancellationToken ct)
         {
-            if (!root.IsSafeExist()) yield break;
+            while (!ct.IsCancellationRequested)
+            {
+                HackAsync(core.PlayerPed, ct).Forget();
+                await DelaySecondsAsync(1, ct);
+            }
+        }
+
+        private async ValueTask DrawLineLoopAsync(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                foreach (var tuple in drawLineList)
+                {
+                    var t1 = tuple.Item1;
+                    var t2 = tuple.Item2;
+                    if (!t1.IsSafeExist() || !t2.IsSafeExist())
+                    {
+                        continue;
+                    }
+
+                    DrawLine(t1.Position, t2.Position, Color.White);
+                }
+
+                await YieldAsync(ct);
+            }
+        }
+
+        private async ValueTask HackAsync(Entity root, CancellationToken ct)
+        {
+            await DelayRandomFrameAsync(1, 5, ct);
+
+            if (!root.IsSafeExist())
+            {
+                return;
+            }
 
             //プレイヤから離れすぎてたら対象外
-            if (!root.IsInRangeOf(core.PlayerPed.Position, 40)) yield break;
+            if (!root.IsInRangeOf(core.PlayerPed.Position, 100))
+            {
+                return;
+            }
 
             //ターゲットを探す
-            var targetsList = core.CachedVehicles
+            var target = core.CachedVehicles
                 .Where(x => x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(root.Position, 25))
-                .Except(hacksList).ToArray();
+                .Except(_hacksList)
+                .OrderBy(x => x.Position.DistanceTo(root.Position))
+                .FirstOrDefault();
 
-            Vehicle target = null;
-
-            if (targetsList.Length == 1)
+            if (target == null)
             {
-                target = targetsList.FirstOrDefault();
-            }
-            else if (targetsList.Length > 1)
-            {
-                var rootPos = root.Position;
-                target = targetsList.Aggregate((p, c) =>
-                    p.Position.DistanceTo(rootPos) > c.Position.DistanceTo(rootPos) ? c : p);
+                return;
             }
 
-            if (target == null) yield break;
-
-            hacksList.Add(target);
+            _hacksList.Add(target);
 
             //追加
-            drawLineList.Add(new System.Tuple<Entity, Entity>(root, target));
-            StartCoroutine(ControlleCoroutine(target));
+            drawLineList.Add((root, target));
+            ControlAsync(target, ct).Forget();
 
             //伝播させる
             for (var i = 0; i < 10; i++)
             {
-                StartCoroutine(HackCoroutine(target));
-                yield return WaitForSeconds(0.5f);
+                HackAsync(target, ct).Forget();
+                await DelaySecondsAsync(0.5f, ct);
             }
         }
 
         //車両を暴走させるコルーチン
-        IEnumerable<object> ControlleCoroutine(Vehicle target)
+        private async ValueTask ControlAsync(Vehicle target, CancellationToken ct)
         {
             var isBack = Random.Next(0, 100) < 30;
+            
+            target.ForwardSpeed = isBack ? -20 : 20;
 
-            if (target.IsOnAllWheels && !isBack)
-            {
-                target.Speed *= 2.5f;
-            }
-
-            target.EngineRunning = true;
-
+            
             while (target.IsSafeExist() && target.IsAlive)
             {
                 target.CanWheelsBreak = false;
-                target.HandbrakeOn = false;
+                target.IsHandbrakeForcedOn = false;
+                target.IsEngineRunning = true;
                 if (target.IsOnAllWheels)
                 {
-                    target.ApplyForce(target.ForwardVector * 4.0f * (isBack ? -1 : 1));
+                    target.ThrottlePower = 100.0f;
+                    target.BrakePower = 0;
                 }
-                yield return null;
+
+                await YieldAsync(ct);
             }
         }
 

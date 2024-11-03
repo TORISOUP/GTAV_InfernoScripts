@@ -1,8 +1,11 @@
-﻿using GTA;
-using GTA.Math;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -10,7 +13,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("とよす")]
     internal class Toyosu : ParupunteScript
     {
-        private HashSet<Vehicle> vehicleList = new HashSet<Vehicle>();
+        private readonly HashSet<Vehicle> vehicleList = new();
 
         public Toyosu(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -26,46 +29,58 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnUpdate()
         {
             var player = core.PlayerPed;
-            var playerViecle = player.CurrentVehicle;
             var targets = core.CachedVehicles
                 .Where(x => x.IsSafeExist()
                             && x.IsInRangeOf(player.Position, 30.0f)
-                            && x != playerViecle
                 );
 
             foreach (var v in targets)
             {
-                if (!vehicleList.Contains(v))
+                if (vehicleList.Add(v))
                 {
-                    vehicleList.Add(v);
-                    StartCoroutine(VehiclePyonPyon(v));
+                    ToyosuAsync(v, ActiveCancellationToken).Forget();
                 }
             }
         }
 
-        private IEnumerable<object> VehiclePyonPyon(Vehicle v)
+        private async ValueTask ToyosuAsync(Vehicle v, CancellationToken ct)
         {
-            yield return core.CreateRadomWait();
-            while (!ReduceCounter.IsCompleted && v.IsSafeExist())
+            await DelayRandomFrameAsync(1, 10, ct);
+            var count = 0;
+            while (!ReduceCounter.IsCompleted && v.IsSafeExist() && !ct.IsCancellationRequested)
             {
-                if (!v.IsSafeExist() || !v.IsAlive) yield break;
+                if (!v.IsSafeExist() || !v.IsAlive)
+                {
+                    return;
+                }
+
+                if (v == core.PlayerPed.CurrentVehicle)
+                {
+                    await Delay100MsAsync(ct);
+                    continue;
+                }
+
                 if (!v.IsInRangeOf(core.PlayerPed.Position, 30.0f))
                 {
-                    yield return null;
+                    await Delay100MsAsync(ct);
                     continue;
                 }
 
                 var toPlayer = core.PlayerPed.Position - v.Position;
                 toPlayer.Normalize();
                 var power = v.IsInRangeOf(core.PlayerPed.Position, 7) ? 0 : 2;
-                v.ApplyForce(Vector3.WorldUp * 10 + toPlayer * power, Vector3.RandomXYZ() * 10);
 
-                foreach (var w in WaitForSeconds(0.4f))
+                if (count++ % 2 == 0)
                 {
-                    v.ApplyForce(Vector3.WorldDown * 5);
-
-                    yield return null;
+                    v.ApplyForce(Vector3.WorldDown * 15);
+                    await DelaySecondsAsync(0.2f, ct);
                 }
+                else
+                {
+                    v.ApplyForce(Vector3.WorldUp * 10 + toPlayer * power, Vector3.RandomXYZ() * 10);
+                    await DelaySecondsAsync(0.1f, ct);
+                }
+
             }
         }
     }

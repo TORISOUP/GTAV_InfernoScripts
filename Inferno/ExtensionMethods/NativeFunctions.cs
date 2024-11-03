@@ -1,17 +1,15 @@
-﻿using GTA;
+﻿using System;
+using System.Drawing;
+using GTA;
 using GTA.Math;
 using GTA.Native;
+using GTA.UI;
 using Hash = GTA.Native.Hash;
 
 namespace Inferno
 {
     public static class NativeFunctions
     {
-        public static bool IsGamePadPressed(this Script script, GameKey gameKey)
-        {
-            return Function.Call<bool>(Hash.IS_CONTROL_PRESSED, 0, (int)gameKey);
-        }
-
         /// <summary>
         /// スティックの入力状態の取得
         /// </summary>
@@ -89,7 +87,10 @@ namespace Inferno
         /// <param name="toggle">固定するか</param>
         public static void SetPedKeepTask(this Ped ped, bool toggle)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_KEEP_TASK, toggle);
         }
@@ -102,7 +103,10 @@ namespace Inferno
         /// <param name="duration">攻撃時間[ms]</param>
         public static void TaskShootAtCoord(this Ped ped, Vector3 position, int duration)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.TASK_SHOOT_AT_COORD, ped, position.X, position.Y, position.Z, duration);
         }
@@ -123,7 +127,10 @@ namespace Inferno
         /// <param name="pattern">パターン（ハッシュ値）</param>
         public static void SetPedFiringPattern(this Ped ped, int pattern)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_FIRING_PATTERN, ped, pattern);
         }
@@ -150,7 +157,10 @@ namespace Inferno
 
         public static void SetPedShootRate(this Ped ped, int shootRate)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_SHOOT_RATE, ped, shootRate);
         }
@@ -162,7 +172,10 @@ namespace Inferno
         /// <param name="target">目標地点</param>
         public static void ParachuteTo(this Ped ped, Vector3 target)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.TASK_PARACHUTE_TO_TARGET, ped, target.X, target.Y, target.Z);
         }
@@ -175,7 +188,11 @@ namespace Inferno
         /// <param name="vehicle"></param>
         public static void TaskDriveBy(this Ped ped, Ped target, FiringPattern firingPattern)
         {
-            if (!ped.IsSafeExist() || !target.IsSafeExist()) return;
+            if (!ped.IsSafeExist() || !target.IsSafeExist())
+            {
+                return;
+            }
+
             var p = target.Position;
             Function.Call(Hash.TASK_DRIVE_BY, ped, 0, 0, p.X, p.Y, p.Z, 10000.0, 0, 0, (int)firingPattern);
         }
@@ -189,7 +206,11 @@ namespace Inferno
         /// <param name="vehicleSeat">座席</param>
         public static void TaskEnterVehicle(this Ped ped, Vehicle vehicle, int timeout, VehicleSeat vehicleSeat)
         {
-            if (!ped.IsSafeExist() || !vehicle.IsSafeExist()) return;
+            if (!ped.IsSafeExist() || !vehicle.IsSafeExist())
+            {
+                return;
+            }
+
             Function.Call(Hash.TASK_ENTER_VEHICLE, ped, vehicle, timeout, (int)vehicleSeat, 1, 1, 0);
         }
 
@@ -200,10 +221,19 @@ namespace Inferno
         /// <param name="ped"></param>
         /// <param name="waypoint"></param>
         /// <param name="speed"></param>
-        public static void DriveTo(this Vehicle vehicle, Ped ped, Vector3 waypoint, float speed, DrivingStyle drivingStyle)
+        public static void DriveTo(this Vehicle vehicle,
+            Ped ped,
+            Vector3 waypoint,
+            float speed,
+            DrivingStyle drivingStyle)
         {
-            if (!vehicle.IsSafeExist() || !ped.IsSafeExist()) return;
-            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1, vehicle.Model.Hash, 1, (int)drivingStyle, -1);
+            if (!vehicle.IsSafeExist() || !ped.IsSafeExist())
+            {
+                return;
+            }
+
+            Function.Call(Hash.TASK_VEHICLE_DRIVE_TO_COORD, ped, vehicle, waypoint.X, waypoint.Y, waypoint.Z, speed, 1,
+                vehicle.Model.Hash, 1, (int)drivingStyle, -1);
         }
 
         /// <summary>
@@ -222,7 +252,11 @@ namespace Inferno
         /// <param name="ped"></param>
         public static void TaskRappelFromHeli(this Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             Function.Call(Hash.TASK_RAPPEL_FROM_HELI, ped, 10.0f);
         }
 
@@ -259,9 +293,18 @@ namespace Inferno
         /// <param name="unk1">不明</param>
         /// <param name="unk2">不明</param>
         /// <param name="unk3">不明</param>
-        public static void SetProofs(this Entity entity, bool bulletProof, bool fireProof, bool explosionProof, bool collisionProof, bool meleeProof, bool unk1, bool unk2, bool unk3)
+        public static void SetProofs(this Entity entity,
+            bool bulletProof,
+            bool fireProof,
+            bool explosionProof,
+            bool collisionProof,
+            bool meleeProof,
+            bool unk1,
+            bool unk2,
+            bool unk3)
         {
-            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof, meleeProof, unk1, unk2, unk3);
+            Function.Call(Hash.SET_ENTITY_PROOFS, entity, bulletProof, fireProof, explosionProof, collisionProof,
+                meleeProof, unk1, unk2, unk3);
         }
 
         /// <summary>
@@ -271,7 +314,10 @@ namespace Inferno
         /// <param name="alertness"></param>
         public static void SetAlertness(this Ped ped, int alertness)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_ALERTNESS, ped, alertness);
         }
@@ -283,7 +329,10 @@ namespace Inferno
         /// <param name="ability"></param>
         public static void SetCombatAbility(this Ped ped, int ability)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_COMBAT_ABILITY, ped, ability);
         }
@@ -295,31 +344,25 @@ namespace Inferno
         /// <param name="range"></param>
         public static void SetCombatRange(this Ped ped, int range)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_COMBAT_RANGE, ped, range);
         }
 
         /// <summary>
-        /// 攻撃してきた対象を攻撃する？
-        /// </summary>
-        /// <param name="ped"></param>
-        /// <param name="range"></param>
-        public static void RegisterHatedTargetsAroundPed(this Ped ped, int range)
-        {
-            if (!ped.IsSafeExist()) return;
-
-            Function.Call(Hash.REGISTER_HATED_TARGETS_AROUND_PED, ped, range);
-        }
-
-        /// <summary>
-        ///　警官とし設定する
+        /// 警官とし設定する
         /// </summary>
         /// <param name="ped"></param>
         /// <param name="isPed"></param>
         public static void SetAsCop(this Ped ped, bool isPed)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.SET_PED_AS_COP, ped, isPed);
         }
@@ -333,7 +376,10 @@ namespace Inferno
         /// <param name="unk2"></param>
         public static void TaskCombat(this Ped ped, Ped target, bool unk1, bool unk2)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
 
             Function.Call(Hash.TASK_COMBAT_PED, ped, target, unk1, unk2);
         }
@@ -381,13 +427,17 @@ namespace Inferno
                 red,
                 green,
                 blue,
-                5.0f,
-                100.0f);
+                radius,
+                intensity);
         }
 
         public static void ThrowProjectile(this Ped ped, Vector3 vector3)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             Function.Call(Hash.TASK_THROW_PROJECTILE, ped, vector3.X, vector3.Y, vector3.Z);
         }
 
@@ -408,7 +458,7 @@ namespace Inferno
 
         public static bool HasBeenDamagedBy(this Entity entity, Weapon weapon)
         {
-            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int)weapon, -1);
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_WEAPON, entity, (int)weapon, 0);
         }
 
         public static bool HasBeenDamagedByPed(this Entity entity, Ped target)
@@ -416,9 +466,24 @@ namespace Inferno
             return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ENTITY, entity, target, true);
         }
 
+        public static bool HasEntityBeenDamagedByAnyPed(this Entity entity)
+        {
+            return Function.Call<bool>(Hash.HAS_ENTITY_BEEN_DAMAGED_BY_ANY_PED, entity);
+        }
+
+        public static bool ClearEntityLastDamageEntity(this Entity entity)
+        {
+            return Function.Call<bool>(Hash.CLEAR_ENTITY_LAST_DAMAGE_ENTITY, entity);
+        }
+
         public static Weapon GetCauseOfDeath(this Ped ped)
         {
             return (Weapon)Function.Call<int>(Hash.GET_PED_CAUSE_OF_DEATH, ped);
+        }
+
+        public static float GetFrameTime()
+        {
+            return Function.Call<float>(Hash.GET_FRAME_TIME);
         }
 
         /// <summary>
@@ -516,9 +581,9 @@ namespace Inferno
         public static void AddTextString(this Script script, string str)
         {
             //文字の種類?
-            Function.Call(Hash._SET_TEXT_ENTRY, new InputArgument[] { "STRING" });
+            Function.Call(Hash.BEGIN_TEXT_COMMAND_DISPLAY_TEXT, new InputArgument[] { "STRING" });
             //テキストとして表示する文字列
-            Function.Call(Hash._ADD_TEXT_COMPONENT_STRING, new InputArgument[] { str });
+            Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, new InputArgument[] { str });
         }
 
         /// <summary>
@@ -529,16 +594,16 @@ namespace Inferno
         /// <param name="y"></param>
         public static void DrawTextInSetPosition(this Script script, float x, float y)
         {
-            Function.Call(Hash._DRAW_TEXT, new InputArgument[]
+            Function.Call(Hash.END_TEXT_COMMAND_DISPLAY_TEXT, new InputArgument[]
             {
                 x,
                 y
             });
         }
 
-        public static unsafe Vector2 GetScreenResolution()
+        public static Vector2 GetScreenResolution()
         {
-            return new Vector2(UI.WIDTH, UI.HEIGHT);
+            return new Vector2(Screen.Width, Screen.Height);
         }
 
         /// <summary>
@@ -584,6 +649,20 @@ namespace Inferno
             return Function.Call<bool>(Hash.IS_PED_GROUP_MEMBER, ped, groupId);
         }
 
+        public static bool IsPedEnemy(this Ped ped)
+        {
+            var playerPed = Game.Player.Character;
+            var playerPedGroup = playerPed.RelationshipGroup;
+            var relationship = ped.RelationshipGroup.GetRelationshipBetweenGroups(playerPedGroup);
+            if (relationship is Relationship.Hate or Relationship.Dislike)
+            {
+                return true;
+            }
+
+            var target = Function.Call<Entity>(Hash.GET_PED_TARGET_FROM_COMBAT_PED, ped, 1);
+            return target == ped;
+        }
+
         /// <summary>
         /// 市民をグループから除外する
         /// </summary>
@@ -603,11 +682,14 @@ namespace Inferno
             Function.Call(Hash.REQUEST_COLLISION_AT_COORD, p.X, p.Y, p.Z);
         }
 
-        public static void ShootSingleBulletBetweenCoords(Vector3 start, Vector3 end, int damage, WeaponHash weapon,
-            Ped owner, float speed)
+        public static void ShootSingleBulletBetweenCoords(Vector3 start,
+            Vector3 end,
+            int damage,
+            WeaponHash weapon,
+            Ped owner,
+            float speed)
         {
             Function.Call(Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
-
                 start.X, start.Y, start.Z,
                 end.X, end.Y, end.Z,
                 damage, 1,
@@ -617,9 +699,45 @@ namespace Inferno
             );
         }
 
+        public static void ShootSingleBulletBetweenCoords(Vector3 start,
+            Vector3 end,
+            int damage,
+            Weapon weapon,
+            Ped owner,
+            float speed)
+        {
+            World.ShootBullet(start, end, owner, new WeaponAsset((int)weapon), damage, speed);
+        }
+
         public static Vector3 GetOffsetFromEntityInWorldCoords(this Entity entity, float right, float forward, float up)
         {
             return Function.Call<Vector3>(Hash.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS, entity, right, forward, up);
+        }
+
+        public static void AddOwnedExplosion(Ped ped,
+            Vector3 position,
+            ExplosionType type,
+            float radius,
+            float cameraShake)
+        {
+            Function.Call(Hash.ADD_OWNED_EXPLOSION, ped.Handle, position.X, position.Y, position.Z, (int)type, radius,
+                true, false, cameraShake);
+        }
+
+        public static string GetGXTEntry(string entry)
+        {
+            return Function.Call<string>(Hash.GET_FILENAME_FOR_AUDIO_CONVERSATION, entry);
+        }
+
+        public static void DrawSphere(Vector3 position, float radius, Color color)
+        {
+            Function.Call(Hash.DRAW_MARKER_SPHERE,
+                position.X, position.Y, position.Z,
+                radius,
+                (int)color.R,
+                (int)color.G,
+                (int)color.B,
+                color.A / 255f);
         }
     }
 }

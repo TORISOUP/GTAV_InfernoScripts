@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("おなら")]
-    class Fart : ParupunteScript
+    internal class Fart : ParupunteScript
     {
         public Fart(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -25,18 +25,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
             }
 
-            StartCoroutine(FartCoroutine());
+            FartAsync(ActiveCancellationToken).Forget();
         }
 
-        IEnumerable<object> FartCoroutine()
+        private async ValueTask FartAsync(CancellationToken ct)
         {
             core.DrawParupunteText("3", 1.0f);
-
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             core.DrawParupunteText("2", 1.0f);
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             core.DrawParupunteText("1", 1.0f);
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
 
             core.DrawParupunteText("発射！", 3.0f);
             GasExplosion();
@@ -44,7 +43,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             if (core.PlayerPed.IsInVehicle())
             {
-                core.PlayerPed.CurrentVehicle.Speed = 300;
+                core.PlayerPed.CurrentVehicle.SetForwardSpeed(300);
             }
 
             core.PlayerPed.SetToRagdoll(10);
@@ -56,7 +55,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private void GasExplosion()
         {
             var playerPos = core.PlayerPed.Position;
-            var targets = core.CachedPeds.Cast<Entity>().Concat(core.CachedVehicles)
+            var targets = core.CachedPeds.Cast<Entity>()
+                .Concat(core.CachedVehicles)
                 .Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 400));
 
 
@@ -81,13 +81,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelPelvis, scale, 0,
+                0, 0);
         }
     }
 }

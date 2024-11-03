@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="WarpTitle" xml:space="preserve">
+        <value>Teleport</value>
+    </data>
+    <data name="WarpDescription" xml:space="preserve">
+        <value>Teleports the player to the location marked on the map. It is sometimes buried in the ground, but it is normal.</value>
+    </data>
+    <data name="WarpAction" xml:space="preserve">
+        <value>Teleport to</value>
+    </data>
+    <data name="RagdollAction" xml:space="preserve">
+        <value>Ragdoll</value>
+    </data>
+    <data name="RagdollTitle" xml:space="preserve">
+        <value>Players ragdoll</value>
+    </data>
+    <data name="RagdollDescription" xml:space="preserve">
+        <value>"Duck" + "Jump" will deactivate the player.</value>
+    </data>
+    <data name="KillMeAction" xml:space="preserve">
+        <value>Kill</value>
+    </data>
+    <data name="KillMeDescription" xml:space="preserve">
+        <value>Kills the player.</value>
+    </data>
+    <data name="KillMeTitle" xml:space="preserve">
+        <value>Suicide</value>
+    </data>
+    <data name="SupplierTitle" xml:space="preserve">
+        <value>Full recovery</value>
+    </data>
+    <data name="SupplierDescription" xml:space="preserve">
+        <value>When the player is resurrected after death or at the start of a mission, “Armor,” “ Health,” and “Special Ability Gauge” are all restored.</value>
+    </data>
+    <data name="AutoHealTitle" xml:space="preserve">
+        <value>Auto-recovery</value>
+    </data>
+    <data name="AutoHealDescription" xml:space="preserve">
+        <value>After a while of not having taken any damage, it gradually recovers its strength and armor to the maximum value.</value>
+    </data>
+    <data name="BondCarTitle" xml:space="preserve">
+        <value>Bond car</value>
+    </data>
+    <data name="BondCarDescription" xml:space="preserve">
+        <value>Simultaneously pressing “Aim” and “Fire” while in the “ Unarmed” state will fire missiles from the vehicle.</value>
+    </data>
+    <data name="BondCardInterval" xml:space="preserve">
+        <value>Cool time.</value>
+    </data>
+    <data name="BgmTitle" xml:space="preserve">
+        <value>Trevor Music</value>
+    </data>
+    <data name="BgmDescription" xml:space="preserve">
+        <value>Play background music during the activation of Trevor's ability.
+Play background music while Trevor's ability is activated.
+Place the BGM you wish to play as a wav file in “scripts/SpecialAbilityBgm”.</value>
+    </data>
+    <data name="DeathSfxTitle" xml:space="preserve">
+        <value>Death sound effect</value>
+    </data>
+    <data name="DeathSfxDescription" xml:space="preserve">
+        <value>Play sound effects when the player dies.
+Place the sound effects you wish to play as wav files in “scripts/Pichun”.</value>
+    </data>
+    <data name="VehicleHUDTitle" xml:space="preserve">
+        <value>Vehicle's HUD</value>
+    </data>
+    <data name="VehicleHUDDescription" xml:space="preserve">
+        <value>Displays the vehicle's endurance value on the screen.
+
+Red: Fuel tank
+Blue: body of the vehicle
+Green: Engine
+Yellow: Time remaining before explosion</value>
+    </data>
+    <data name="EmergencyEscapeTitle" xml:space="preserve">
+        <value>Emergency escape</value>
+    </data>
+    <data name="EmergencyEscapeDescription" xml:space="preserve">
+        <value>Getting out of the car while honking the horn activates the emergency ejection.</value>
+    </data>
+    <data name="EmergencyEscapePower" xml:space="preserve">
+        <value>Ejection power.</value>
+    </data>
+    <data name="FloatingDescription" xml:space="preserve">
+        <value>Holding down jump and sprint at the same time causes the player to fluff up and jump up.</value>
+    </data>
+    <data name="FloatingTitle" xml:space="preserve">
+        <value>Fluffy Jump</value>
+    </data>
+    <data name="NoWantedTitle" xml:space="preserve">
+        <value>Suppress wanted level</value>
+    </data>
+    <data name="NoWantedDescription" xml:space="preserve">
+        <value>Prevent wanted level from increasing.</value>
+    </data>
+    <data name="NoWantedLevel" xml:space="preserve">
+        <value>Disable Wanted level below this value.</value>
+    </data>
+    <data name="NoWantedAction" xml:space="preserve">
+        <value>Set Wanted Level to 0.</value>
+    </data>
+    <data name="PlayerInvincibleTitle" xml:space="preserve">
+        <value>Invincible</value>
+    </data>
+    <data name="PlayerInvincibleDescription" xml:space="preserve">
+        <value>The player is temporarily invincible when resurrected after death or at the start of a mission.</value>
+    </data>
+    <data name="PlayerInvincibleTime" xml:space="preserve">
+        <value>Invincible time.</value>
+    </data>
+    <data name="PlayerInvincibleEffect" xml:space="preserve">
+        <value>Display invincibility effect.</value>
+    </data>
+    <data name="AlertHealthTitle" xml:space="preserve">
+        <value>Low health warning</value>
+    </data>
+    <data name="AlertHealthDescription" xml:space="preserve">
+        <value>The screen turns red to warn when the player's health is below a certain value.</value>
+    </data>
+    <data name="NitroTitle" xml:space="preserve">
+        <value>Rocket acceleration</value>
+    </data>
+    <data name="NitroDescription" xml:space="preserve">
+        <value>Instantly accelerates the player's vehicle. 
+Used to “hand brake”, “accelerate”, and “hide” while in the vehicle. Left stick up/down to change angle.</value>
+    </data>
+    <data name="NitroStraightVelocity" xml:space="preserve">
+        <value>Instantaneous velocity applied (when NOT changing angle)</value>
+    </data>
+    <data name="NitroJumpVelocity" xml:space="preserve">
+        <value>Instantaneous velocity applied (when changing angle)</value>
+    </data>
+    <data name="NitroCoolDown" xml:space="preserve">
+        <value>Cool time.</value>
+    </data>
+    <data name="PlayerInvincibleAdd" xml:space="preserve">
+        <value>Gives the player invincibility. No effects.</value>
+    </data>
+    <data name="PlayerInvincibleRemove" xml:space="preserve">
+        <value>Removes the player's invincibility.</value>
+    </data>
+</root>

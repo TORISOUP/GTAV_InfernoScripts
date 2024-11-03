@@ -1,0 +1,20 @@
+{
+  "Radius": 500,
+  "OverrideMissionCharacterWeapon": true,
+  "MissionCharacterBehaviour": 1,
+  "IsAttackPlayerCorrectionEnabled": false,
+  "AttackPlayerCorrectionProbability": 100,
+  "WeaponList": [
+    "AssaultSMG"
+  ],
+  "WeaponListForDriveBy": [
+    "AutoShotgun",
+    "MicroSMG"
+  ],
+  "StupidShootingRate": 50,
+  "ShootAccuracy": 10,
+  "WeaponChangeProbability": 100,
+  "ForceExplosiveWeaponProbability": 30,
+  "WeaponDropProbability": 30,
+  "MeleeWeaponOnly": false
+}

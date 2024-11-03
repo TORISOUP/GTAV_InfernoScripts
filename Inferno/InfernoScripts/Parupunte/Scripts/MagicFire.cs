@@ -1,7 +1,9 @@
-﻿using GTA;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using GTA;
 using GTA.Math;
 using GTA.Native;
-using System.Collections.Generic;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -16,8 +18,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        private uint coroutineId = 0;
-
         public override void OnSetUp()
         {
         }
@@ -26,18 +26,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             ReduceCounter = new ReduceCounter(20000);
             AddProgressBar(ReduceCounter);
-            //コルーチン起動
-            coroutineId = StartCoroutine(MagicFireCoroutine());
+            MagicFireAsync(ActiveCancellationToken).Forget();
         }
 
         protected override void OnFinished()
         {
-            StopCoroutine(coroutineId);
             //終了時に炎耐性解除
             core.PlayerPed.IsFireProof = false;
         }
 
-        private IEnumerable<object> MagicFireCoroutine()
+        private async ValueTask MagicFireAsync(CancellationToken ct)
         {
             var ptfxName = "core";
 
@@ -45,31 +43,33 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
             }
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
+
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
 
             while (!ReduceCounter.IsCompleted)
             {
                 core.PlayerPed.IsFireProof = true;
                 StartFire();
-                yield return WaitForSeconds(1);
+                await DelaySecondsAsync(1, ct);
             }
 
             //まだ炎が残っているのでロスタイム
-            yield return WaitForSeconds(3);
+            await DelaySecondsAsync(3, ct);
 
             ParupunteEnd();
         }
 
-        private int StartFire()
+        private void StartFire()
         {
             var player = core.PlayerPed;
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
 
-            return Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_flame",
-                    player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+            Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_flame",
+                player, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelPelvis, scale,
+                0, 0, 0);
         }
     }
 }

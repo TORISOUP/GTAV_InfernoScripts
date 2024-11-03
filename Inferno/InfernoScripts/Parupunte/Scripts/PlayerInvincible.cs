@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UniRx;
+﻿using System;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -20,29 +19,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter = new ReduceCounter(15000);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
-            StartCoroutine(Coroutine());
-        }
-
-        private IEnumerable<object> Coroutine()
-        {
-            while (!ReduceCounter.IsCompleted)
-            {
-                if (!core.PlayerPed.IsInvincible)
-                {
-                    core.PlayerPed.IsInvincible = true;
-                }
-                yield return WaitForSeconds(1);
-            }
         }
 
         protected override void OnFinished()
         {
-            core.PlayerPed.IsInvincible = false;
+            var p = core.PlayerPed;
+            if (p.IsSafeExist())
+            {
+                p.IsInvincible = false;
+            }
         }
 
         protected override void OnUpdate()
         {
-            core.PlayerPed.IsInvincible = true;
+            var p = core.PlayerPed;
+            if (p.IsSafeExist())
+            {
+                p.IsInvincible = true;
+            }
         }
     }
 }

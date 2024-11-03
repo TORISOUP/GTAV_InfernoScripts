@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Inferno.ChaosMode.WeaponProvider
+﻿namespace Inferno.ChaosMode.WeaponProvider
 {
     public class SingleWeaponProvider : IWeaponProvider
     {
-        private Weapon current { get; set; }
-
         public SingleWeaponProvider(Weapon weapon)
         {
             current = weapon;
         }
 
-        public Weapon GetRandomCloseWeapons()
+        private Weapon current { get; }
+
+        public Weapon GetRandomMeleeWeapons()
         {
             return current;
         }
@@ -26,6 +20,11 @@ namespace Inferno.ChaosMode.WeaponProvider
         }
 
         public Weapon GetRandomWeaponExcludeClosedWeapon()
+        {
+            return current;
+        }
+
+        public Weapon GetExplosiveWeapon()
         {
             return current;
         }

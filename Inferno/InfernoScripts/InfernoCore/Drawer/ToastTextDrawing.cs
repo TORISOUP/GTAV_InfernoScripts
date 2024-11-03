@@ -1,37 +1,45 @@
-﻿using GTA;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
-using UniRx;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA.UI;
+using Inferno.Utilities;
 
 namespace Inferno
 {
     /// <summary>
     /// 画面左上の表示を管理する
     /// </summary>
-    public class ToastTextDrawing : InfernoScript
+    public sealed class ToastTextDrawing : InfernoScript
     {
-        private UIContainer _mContainer = null;
-        private int _coroutineId = -1;
-
-        //画面表示を消すまでの残りCoroutineループ回数
-        private int _currentTickCounter = 0;
+        private ContainerElement _container;
 
         public static ToastTextDrawing Instance { get; private set; }
+        private CancellationTokenSource _cts;
+        private DrawType _currentDrawType = DrawType.None;
 
         protected override void Setup()
         {
             Instance = this;
             //描画エリア
-            _mContainer = new UIContainer(new Point(0, 0), new Size(500, 20));
+            _container = new ContainerElement(new Point(0, 0), new Size(500, 20));
 
             //テキストが設定されていれば一定時間だけ描画
-            this.OnDrawingTickAsObservable
-                .Where(_ => _mContainer.Items.Count > 0)
-                .Subscribe(_ => _mContainer.Draw());
+            OnDrawingTickAsObservable
+                .Where(_ => _container.Items.Count > 0)
+                .Subscribe(_ => _container.Draw());
 
-            this.OnAllOnCommandObservable
-                .Subscribe(_ => DrawText("Inferno:AllOn", 3.0f));
+            OnAllOnCommandObservable
+                .Subscribe(_ => DrawText("Inferno:AllOn"));
+
+            OnAbortAsync.Subscribe(_ =>
+            {
+                _cts?.Cancel();
+                _cts?.Dispose();
+                _cts = null;
+                _container.Items.Clear();
+            });
         }
 
         /// <summary>
@@ -41,26 +49,61 @@ namespace Inferno
         /// <param name="time">時間</param>
         public void DrawDebugText(string text, float time)
         {
-            if (_coroutineId >= 0)
-            {
-                //既に実行中のがあれば止める
-                StopCoroutine((uint)_coroutineId);
-            }
-            _coroutineId = (int)StartCoroutine(DrawTextEnumerator(text, time));
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            _container.Items.Clear();
+            _currentDrawType = DrawType.Normal;
+            DrawTextAsync(text, time, _cts.Token).Forget();
         }
 
-        private IEnumerable<Object> DrawTextEnumerator(string text, float time)
+        /// <summary>
+        /// 
+        /// </summary>
+        public void DrawTextLowPriority(string text, float time)
         {
-            _mContainer.Items.Clear();
-            _currentTickCounter = (int)(time * 10);
-            _mContainer.Items.Add(new UIText(text, new Point(0, 0), 0.5f, Color.White, 0, false, false, true));
-
-            while (--_currentTickCounter > 0)
+            if (_currentDrawType == DrawType.Normal)
             {
-                yield return _currentTickCounter;
+                return;
             }
 
-            _mContainer.Items.Clear();
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = new CancellationTokenSource();
+            _container.Items.Clear();
+            
+            _currentDrawType = DrawType.LowPriority;
+            DrawTextAsync(text, time, _cts.Token).Forget();
+        }
+
+        private async ValueTask DrawTextAsync(string text, float time, CancellationToken ct)
+        {
+            _container.Items.Add(new TextElement(
+                text,
+                new Point(0, 0),
+                0.5f,
+                Color.White,
+                0,
+                Alignment.Left,
+                false,
+                true));
+
+            try
+            {
+                await DelaySecondsAsync(time, ct);
+            }
+            finally
+            {
+                _container.Items.Clear();
+                _currentDrawType = DrawType.None;
+            }
+        }
+
+        private enum DrawType
+        {
+            None,
+            Normal,
+            LowPriority
         }
     }
 }

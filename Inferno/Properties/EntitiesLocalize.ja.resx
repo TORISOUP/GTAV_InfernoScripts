@@ -1,0 +1,74 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CrazyDrivingTitle" xml:space="preserve">
+        <value>暴走運転</value>
+    </data>
+    <data name="CrazyDrivingDescription" xml:space="preserve">
+        <value>市民の運転が荒くなります。</value>
+    </data>
+    <data name="CitizenNitroTitle" xml:space="preserve">
+        <value>ニトロ（市民）</value>
+    </data>
+    <data name="CitizenNitroDescription" xml:space="preserve">
+        <value>市民の乗る車が突然加速します。</value>
+    </data>
+    <data name="CitizenNitroInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenNitroProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
+    <data name="RobberTitle" xml:space="preserve">
+        <value>市民車両強盗</value>
+    </data>
+    <data name="RobberDescription" xml:space="preserve">
+        <value>市民が周辺車両を強盗します。</value>
+    </data>
+    <data name="RobberProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
+    <data name="RobberInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenNitroRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="RobberRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="CitizenVehicleBombProbability" xml:space="preserve">
+        <value>発動確率。</value>
+    </data>
+    <data name="CitizenVehicleBombInterval" xml:space="preserve">
+        <value>何秒おきに判定するか。</value>
+    </data>
+    <data name="CitizenVehicleBombRange" xml:space="preserve">
+        <value>影響範囲。</value>
+    </data>
+    <data name="CitizenVehicleBombTitle" xml:space="preserve">
+        <value>車両爆雷化</value>
+    </data>
+    <data name="CitizenVehicleBombDescription" xml:space="preserve">
+        <value>市民が乗った周辺車両が突然発火します。</value>
+    </data>
+    <data name="ParachuteTitle" xml:space="preserve">
+        <value>空挺市民兵</value>
+    </data>
+    <data name="ParachuteDescription" xml:space="preserve">
+        <value>近くに市民がパラシュート落下してきます。</value>
+    </data>
+    <data name="ParachuteIntterval" xml:space="preserve">
+        <value>市民の生成間隔。</value>
+    </data>
+</root>

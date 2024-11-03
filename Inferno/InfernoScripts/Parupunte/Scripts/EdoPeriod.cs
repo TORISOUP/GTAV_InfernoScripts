@@ -1,10 +1,12 @@
-﻿using GTA;
-using GTA.Math;
-using GTA.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -12,14 +14,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("えどじだい")]
     internal class EdoPeriod : ParupunteScript
     {
-        private Random random = new Random();
-        private HashSet<int> ninjas = new HashSet<int>();
-        private List<Ped> pedList = new List<Ped>();
+        private readonly HashSet<int> ninjas = new();
+        private readonly List<Ped> pedList = new();
+        private readonly Random random = new();
 
         public EdoPeriod(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
-        
+
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(20000);
@@ -31,14 +33,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 Function.Call(Hash.REQUEST_NAMED_PTFX_ASSET, ptfxName);
             }
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, ptfxName);
 
-            foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 100) && x.IsAlive))
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, ptfxName);
+
+            foreach (var ped in core.CachedPeds.Where(x =>
+                         x.IsSafeExist() && x.IsInRangeOf(core.PlayerPed.Position, 100) && x.IsAlive))
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
                 ped.Task.ClearAllImmediately();
-                StartCoroutine(DashCoroutine(ped));
+                DashLoopAsync(ped, ActiveCancellationToken).Forget();
             }
 
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
@@ -59,13 +63,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnUpdate()
         {
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive
-                                                           && x.IsInRangeOf(core.PlayerPed.Position, 100) &&
-                                                           !ninjas.Contains(x.Handle)))
+                                                                           && x.IsInRangeOf(core.PlayerPed.Position,
+                                                                               100) &&
+                                                                           !ninjas.Contains(x.Handle)))
             {
                 pedList.Add(ped);
                 ninjas.Add(ped.Handle);
                 ped.Task.ClearAllImmediately();
-                StartCoroutine(DashCoroutine(ped));
+                DashLoopAsync(ped, ActiveCancellationToken).Forget();
             }
         }
 
@@ -74,20 +79,31 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             Function.Call(Hash.SET_ANIM_RATE, ped, (double)rate, 0.0, 0.0);
         }
 
-        private IEnumerable<object> DashCoroutine(Ped ped)
+        private async ValueTask DashLoopAsync(Ped ped, CancellationToken ct)
         {
-            while (!ReduceCounter.IsCompleted)
+            while (!ct.IsCancellationRequested)
             {
-                if (!ped.IsSafeExist()) yield break;
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+
+                if (ped == core.PlayerPed)
+                {
+                    await DelayFrameAsync(5, ct);
+                    continue;
+                }
+                
                 if (ped.IsDead)
                 {
                     GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 1.0f, 1.0f);
-                    yield break;
+                    return;
                 }
 
                 if (random.Next(100) < 10)
                 {
-                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) * ped.Quaternion;
+                    ped.Quaternion = Quaternion.RotationAxis(ped.UpVector, (float)(random.NextDouble() - 0.5)) *
+                                     ped.Quaternion;
                 }
 
                 SetAnimRate(ped, 5.0f);
@@ -101,7 +117,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     0, 0, 0);
                 StartFire(ped);
 
-                yield return null;
+                await DelayFrameAsync(5, ct);
             }
         }
 
@@ -111,14 +127,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var rotation = new Vector3(0.0f, 0.0f, 0.0f);
             var scale = 2.0f;
 
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_sht_electrical_box",
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_L_Toe0, scale,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelLeftToe0, scale,
                 0, 0, 0);
 
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, "ent_dst_elec_fire",
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_R_Toe0, scale,
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelRightToe0, scale,
                 0, 0, 0);
         }
     }

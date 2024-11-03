@@ -1,24 +1,17 @@
-﻿using UniRx;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace Inferno
 {
     /// <summary>
     /// 減算カウンタ
     /// </summary>
-    public class ReduceCounter : ICounter, IProgressBar
+    public class ReduceCounter : ICounter, IProgressBar, IDisposable
     {
         private readonly int _max;
-        private readonly Subject<Unit> _onFinishedSubject;
-
-        /// <summary>
-        /// カウンタが正常にカウント終了した時にOnNextを発行する
-        /// 強制終了時はOnCompletedのみ通知
-        /// </summary>
-        public UniRx.IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
-
-        public int Current { get; private set; }
-        public float Rate => (float)Current / (float)_max;
-        public bool IsCompleted { get; private set; }
+        private readonly AsyncSubject<Unit> _onFinishedSubject;
 
         /// <summary>
         /// カウント回数を指定する
@@ -28,27 +21,54 @@ namespace Inferno
         {
             _max = count;
             Current = _max;
-            _onFinishedSubject = new Subject<Unit>();
+            _onFinishedSubject = new AsyncSubject<Unit>();
             IsCompleted = false;
         }
 
+        /// <summary>
+        /// カウンタが正常にカウント終了した時にOnNextを発行する
+        /// 強制終了時はOnCompletedのみ通知
+        /// </summary>
+        public IObservable<Unit> OnFinishedAsync => _onFinishedSubject.AsObservable();
+
+        public int Current { get; private set; }
+        public float Rate => Current / (float)_max;
+        public bool IsCompleted { get; private set; }
+
         public void Update(int countValue)
         {
-            if (IsCompleted) return;
+            if (IsCompleted)
+            {
+                return;
+            }
 
             Current = Current > countValue ? Current - countValue : 0;
 
-            if (Current != 0) return;
+            if (Current != 0)
+            {
+                return;
+            }
 
             IsCompleted = true;
-            _onFinishedSubject.OnNext(Unit.Default);
-            _onFinishedSubject.OnCompleted();
+            if (!_onFinishedSubject.IsCompleted)
+            {
+                _onFinishedSubject.OnNext(Unit.Default);
+                _onFinishedSubject.OnCompleted();
+            }
         }
 
         public void Finish()
         {
-            IsCompleted = true;
-            _onFinishedSubject.OnCompleted();
+            if (!_onFinishedSubject.IsCompleted)
+            {
+                IsCompleted = true;
+                _onFinishedSubject.OnCompleted();
+            }
+        }
+
+        public void Dispose()
+        {
+            _onFinishedSubject?.Dispose();
         }
     }
 }

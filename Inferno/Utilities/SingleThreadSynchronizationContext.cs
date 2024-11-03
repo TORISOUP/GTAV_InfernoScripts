@@ -12,8 +12,7 @@ namespace Inferno.Utilities
     {
         private readonly
             ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>
-            _mQueue =
-                new ConcurrentQueue<KeyValuePair<SendOrPostCallback, object>>();
+            _mQueue = new();
 
         public override void Post(SendOrPostCallback d, object state)
         {
@@ -23,10 +22,16 @@ namespace Inferno.Utilities
 
         public void RunOnCurrentThread()
         {
-            if (_mQueue.Count == 0) return;
+            if (_mQueue.Count == 0)
+            {
+                return;
+            }
+
             KeyValuePair<SendOrPostCallback, object> workItem;
             while (_mQueue.TryDequeue(out workItem))
+            {
                 workItem.Key(workItem.Value);
+            }
         }
 
         public void Complete()

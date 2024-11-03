@@ -1,8 +1,11 @@
-using GTA;
-using GTA.Native;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -26,30 +29,37 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
             explodedPedHandles = new HashSet<int>();
+
+            UpdateAsync(ActiveCancellationToken).Forget();
         }
 
-        protected override void OnUpdate()
+        private async ValueTask UpdateAsync(CancellationToken ct)
         {
-            explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x));//後の誤判定防止のため;
-
-            var player = core.PlayerPed;
-            var peds = core.CachedPeds.Where(x => x.IsSafeExist()
-                                                && !x.IsSameEntity(core.PlayerPed)
-                                                && x.IsDead
-                                                && !explodedPedHandles.Contains(x.Handle));
-
-            foreach (var ped in peds)
+            while (!ct.IsCancellationRequested)
             {
-                var killer = ped.GetKiller();
-                if (killer.IsSafeExist() && killer is Ped)//殺害者がいたらそいつが起こした扱いの爆発を生成
+                explodedPedHandles.RemoveWhere(x => !Function.Call<bool>(Hash.DOES_ENTITY_EXIST, x)); //後の誤判定防止のため;
+
+                var peds = core.CachedPeds.Where(x => x.IsSafeExist()
+                                                      && !x.IsSameEntity(core.PlayerPed)
+                                                      && x.IsDead
+                                                      && !explodedPedHandles.Contains(x.Handle));
+
+                foreach (var ped in peds)
                 {
-                    GTA.World.AddOwnedExplosion((Ped)killer, ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
+                    var killer = ped.Killer;
+                    if (killer.IsSafeExist() && killer is Ped) //殺害者がいたらそいつが起こした扱いの爆発を生成
+                    {
+                        NativeFunctions.AddOwnedExplosion((Ped)killer, ped.Position, ExplosionType.ROCKET, 8.0f, 2.5f);
+                    }
+                    else
+                    {
+                        GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
+                    }
+
+                    explodedPedHandles.Add(ped.Handle); //同一人物が2回以上爆発するのを防止するため
                 }
-                else
-                {
-                    GTA.World.AddExplosion(ped.Position, GTA.ExplosionType.Rocket, 8.0f, 2.5f);
-                }
-                explodedPedHandles.Add(ped.Handle);//同一人物が2回以上爆発するのを防止するため
+
+                await Delay100MsAsync(ct);
             }
         }
     }

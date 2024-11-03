@@ -4,91 +4,97 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using UniRx;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("ctOS 停電", "ctOS 復旧")]
     [ParupunteIsono("ていでん")]
-    class BlackOut : ParupunteScript
+    internal class BlackOut : ParupunteScript
     {
-        private SoundPlayer soundPlayerStart;
-        private SoundPlayer soundPlayerEnd;
-
         private IDisposable drawingDisposable;
+        private SoundPlayer soundPlayerEnd;
+        private SoundPlayer soundPlayerStart;
 
         public BlackOut(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
             SetUpSound();
         }
-        
+
         public override void OnStart()
         {
             ReduceCounter = new ReduceCounter(20 * 1000);
             AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ =>
-            {
-                StartCoroutine(BlackOutEnd());
-            });
-
-            StartCoroutine(BlackOutStart());
-            this.OnFinishedAsObservable
-                .Subscribe(_ =>
-                {
-                    GTA.World.SetBlackout(false);
-                    soundPlayerStart = null;
-                    soundPlayerEnd = null;
-                    drawingDisposable?.Dispose();
-                });
-
-            //周辺車両をエンストさせる
-            this.OnUpdateAsObservable
-                .Subscribe(_ =>
-                {
-                    var playerPos = core.PlayerPed.Position;
-                    var playerVehicle = core.GetPlayerVehicle();
-                    foreach (var v in core.CachedVehicles.Where(
-                        x => x.IsSafeExist()
-                        && x.IsInRangeOf(playerPos, 1000)
-                        && x.IsAlive
-                        && x != playerVehicle))
-                    {
-                        v.EngineRunning = false;
-                        v.EnginePowerMultiplier = 0.0f;
-                        v.EngineTorqueMultiplier = 0.0f;
-
-                    }
-                });
+            ReduceCounter.OnFinishedAsync
+                .Subscribe(_ => BlackOutEndAsync(ActiveCancellationToken).Forget());
+            
+            BlackOutStartAsync(ActiveCancellationToken).Forget();
         }
 
-
-        private IEnumerable<object> BlackOutStart()
+        protected override void OnUpdate()
         {
-            StartCoroutine(DrawBlackOutLine());
+            //周辺車両をエンストさせる
+            if (!core.PlayerPed.IsSafeExist()) return;
+
+            var playerPos = core.PlayerPed.Position;
+            var playerVehicle = core.GetPlayerVehicle();
+            foreach (var v in core.CachedVehicles.Where(
+                         x => x.IsSafeExist()
+                              && x.IsInRangeOf(playerPos, 1000)
+                              && x.IsAlive
+                              && x != playerVehicle))
+            {
+                if (!v.IsEngineRunning)
+                {
+                    continue;
+                }
+
+                v.IsEngineRunning = false;
+                v.EnginePowerMultiplier = 0.0f;
+                v.EngineTorqueMultiplier = 0.0f;
+            }
+        }
+
+        protected override void OnFinished()
+        {
+            SetArtificialLights(false);
+            soundPlayerStart = null;
+            soundPlayerEnd = null;
+            drawingDisposable?.Dispose();
+        }
+
+        private async ValueTask BlackOutStartAsync(CancellationToken ct)
+        {
+            DrawBlackOutLineAsync(ct).Forget();
 
             //効果音に合わせてチカチカさせる
             soundPlayerStart?.Play();
-            yield return WaitForSeconds(1.5f);
+            await DelaySecondsAsync(1.5f, ct);
             var current = false;
             for (var i = 0; i < 10; i++)
             {
-                GTA.World.SetBlackout(current);
+                SetArtificialLights(current);
                 if (Random.Next(0, 2) % 2 == 0)
                 {
                     current = !current;
                 }
-                yield return null;
+
+                await Delay100MsAsync(ct);
             }
-            GTA.World.SetBlackout(true);
+
+            SetArtificialLights(true);
         }
 
-        private IEnumerable<object> BlackOutEnd()
+        private async ValueTask BlackOutEndAsync(CancellationToken ct)
         {
             soundPlayerEnd?.Play();
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
             ParupunteEnd();
         }
 
@@ -96,20 +102,20 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             return core.CachedPeds
                 .Concat<Entity>(core.CachedVehicles)
-                .Concat<Entity>(GTA.World.GetAllProps())
+                .Concat(GTA.World.GetAllProps())
                 .Where(x => x.IsSafeExist() && x.IsInRangeOf(root, distance))
                 .Select(x => x.Position)
                 .OrderBy(_ => Guid.NewGuid())
-                .Take(n).ToArray();
-
+                .Take(n)
+                .ToArray();
         }
 
-        private IEnumerable<object> DrawBlackOutLine()
+        private async ValueTask DrawBlackOutLineAsync(CancellationToken ct)
         {
             var targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
 
             drawingDisposable = core.OnDrawingTickAsObservable
-                .TakeUntil(this.OnFinishedAsObservable)
+                .TakeUntil(OnFinishedAsObservable)
                 .Subscribe(_ =>
                 {
                     var p = core.PlayerPed.Position;
@@ -119,12 +125,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     }
                 });
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                yield return WaitForSeconds(0.35f);
+                await DelaySecondsAsync(0.35f, ct);
                 targets = GetAroundObjectPosition(core.PlayerPed.Position, 50, 15);
-
             }
+
             drawingDisposable?.Dispose();
         }
 
@@ -160,6 +166,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private void DrawLine(Vector3 from, Vector3 to, Color col)
         {
             Function.Call(Hash.DRAW_LINE, from.X, from.Y, from.Z, to.X, to.Y, to.Z, col.R, col.G, col.B, col.A);
+        }
+
+        private static void SetArtificialLights(bool isOn)
+        {
+            Function.Call(Hash.SET_ARTIFICIAL_LIGHTS_STATE, isOn);
         }
     }
 }

@@ -1,11 +1,10 @@
-﻿using GTA;
+﻿using System.Linq;
+using GTA;
 using GTA.Native;
-using System.Linq;
-using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
-    [ParupunteConfigAttribute("周辺の人&車両回復", "")]
+    [ParupunteConfigAttribute("周辺の人&車両回復")]
     internal class FixPedsAndVehicles : ParupunteScript
     {
         public FixPedsAndVehicles(ParupunteCore core, ParupunteConfigElement element) : base(core, element)

@@ -1,18 +1,41 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Inferno.Utilities;
 
 namespace Inferno
 {
-    public class DebugLogger
+    public interface IDebugLogger : IDisposable
     {
-        private readonly string _logPath;
-        private readonly Encoding _encoding;
+        public void Log(string message);
+    }
 
-        public DebugLogger(string logPath)
+    public class DebugLogger : IDebugLogger
+    {
+        private readonly Encoding _encoding;
+        private readonly string _logPath;
+        private readonly SemaphoreSlim _semaphore = new(1);
+
+        public static DebugLogger Instance { get; } = new DebugLogger(@"Inferno.log");
+
+        private DebugLogger(string logPath)
         {
-            this._logPath = logPath;
+            _logPath = logPath;
             _encoding = Encoding.GetEncoding("UTF-8");
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                _semaphore?.Dispose();
+            }
+            catch
+            {
+                //
+            }
         }
 
         /// <summary>
@@ -21,15 +44,28 @@ namespace Inferno
         /// <param name="message"></param>
         private void WriteToText(string message)
         {
+            WriteToTextAsync(message).Forget();
+        }
+
+        private async ValueTask WriteToTextAsync(string message)
+        {
             try
             {
-                using (var w = new StreamWriter(_logPath, true, _encoding))
-                {
-                    w.WriteLineAsync(message);
-                }
+                await _semaphore.WaitAsync();
+                using var writer = new StreamWriter(_logPath, true, _encoding);
+                await writer.WriteLineAsync(message).ConfigureAwait(false);
+                await writer.FlushAsync();
             }
-            catch (Exception)
+            finally
             {
+                try
+                {
+                    _semaphore.Release(1);
+                }
+                catch
+                {
+                    //
+                }
             }
         }
 

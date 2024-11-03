@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
-using UniRx;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -11,9 +14,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("おさかなてんごく")]
     internal class FishHeaven : ParupunteScript
     {
-        private HashSet<int> vehicles = new HashSet<int>();
-        private Model fishModel = new Model(PedHash.TigerShark);
-        private List<Ped> createdFishList = new List<Ped>();
+        private readonly List<Ped> createdFishList = new();
+        private readonly Model fishModel = new(PedHash.TigerShark);
+        private readonly HashSet<int> vehicles = new();
 
         public FishHeaven(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -32,7 +35,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
             //プレイヤ監視
-            StartCoroutine(ObservePlayer());
+            ObservePlayerAsync(ActiveCancellationToken).Forget();
+            UpdateAsync(ActiveCancellationToken).Forget();
         }
 
         protected override void OnFinished()
@@ -43,87 +47,120 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
-        protected override void OnUpdate()
+        private async ValueTask UpdateAsync(CancellationToken ct)
         {
-            //周辺車両を監視
-            var playerPos = core.PlayerPed.Position;
-            foreach (var v in core.CachedVehicles.Where(
-                x => x.IsSafeExist()
-                && !vehicles.Contains(x.Handle)
-                && x.IsAlive
-                && x.IsInRangeOf(playerPos, 50)
-                && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist()
-                ))
+            while (!ct.IsCancellationRequested)
             {
-                vehicles.Add(v.Handle);
-                StartCoroutine(CitizenVehicleCoroutine(v));
+                //周辺車両を監視
+                var playerPos = core.PlayerPed.Position;
+                foreach (var v in core.CachedVehicles.Where(
+                             x => x.IsSafeExist()
+                                  && !vehicles.Contains(x.Handle)
+                                  && x.IsAlive
+                                  && x.IsInRangeOf(playerPos, 50)
+                         ))
+                {
+                    var driver = v.Driver;
+                    if (!driver.IsSafeExist() || driver.IsPlayer)
+                    {
+                        continue;
+                    }
+
+                    vehicles.Add(v.Handle);
+                    CitizenVehicleAsync(v, ct).Forget();
+                }
+
+                await Delay100MsAsync(ct);
             }
         }
 
         /// <summary>
         /// 周辺車両に魚の載せてしばらくたったら発射する
         /// </summary>
-        private IEnumerable<object> CitizenVehicleCoroutine(Vehicle veh)
+        private async ValueTask CitizenVehicleAsync(Vehicle veh, CancellationToken ct)
         {
-            yield return null;
-            if (!veh.IsSafeExist()) yield break;
-            var f = SpawnFish(veh);
-            if (!f.IsSafeExist()) yield break;
-
-            //しばらくたったら発射する
-            foreach (var s in WaitForSeconds(Random.Next(1, 10)))
+            await YieldAsync(ct);
+            if (!veh.IsSafeExist())
             {
+                return;
+            }
+
+            var f = SpawnFish(veh);
+            if (!f.IsSafeExist())
+            {
+                return;
+            }
+
+            float targetTime = Random.Next(1, 10);
+            while (targetTime > 0 && !ct.IsCancellationRequested)
+            {
+                targetTime -= core.DeltaTime;
+
                 //プレイヤが途中で乗り込んだら直ちに発射
                 if (veh.IsSafeExist() && veh == core.PlayerPed.CurrentVehicle)
                 {
-                    StartCoroutine(ShootFish(veh, f));
-                    yield break;
+                    break;
                 }
-                yield return null;
+
+                await Delay100MsAsync(ct);
             }
+
 
             if (veh.IsSafeExist())
             {
-                StartCoroutine(ShootFish(veh, f));
+                ShootFishAsync(veh, f, ct).Forget();
             }
         }
 
         /// <summary>
         /// プレイヤが車に乗ったか監視する
         /// </summary>
-        private IEnumerable<object> ObservePlayer()
+        private async ValueTask ObservePlayerAsync(CancellationToken ct)
         {
-            while (IsActive)
+            while (IsActive && !ct.IsCancellationRequested)
             {
+                var playerVehicle = core.GetPlayerVehicle();
                 //プレイヤが車に乗ったか監視
-                while (!core.GetPlayerVehicle().IsSafeExist()) yield return null;
+                while (!playerVehicle.IsSafeExist())
+                {
+                    await Delay100MsAsync(ct);
+                }
+
                 //発射したら1秒まってもう一度まつ
-                yield return PlayerVehicleCoroutine(core.GetPlayerVehicle());
-                yield return WaitForSeconds(1);
+                await PlayerVehicleAsync(playerVehicle, ct);
+                await DelaySecondsAsync(1, ct);
             }
         }
 
-        private IEnumerable<object> PlayerVehicleCoroutine(Vehicle playerVehicle)
+        private async ValueTask PlayerVehicleAsync(Vehicle playerVehicle, CancellationToken ct)
         {
             //車に乗ったら魚生成
             var p = SpawnFish(playerVehicle);
-            if (!p.IsSafeExist()) yield break;
+            if (!p.IsSafeExist())
+            {
+                return;
+            }
 
             //キー入力待機
-            while (!core.IsGamePadPressed(GameKey.VehicleHorn))
+            while (!Game.IsControlPressed(Control.VehicleHorn))
             {
                 //途中で車を降りたら発射
                 if (!core.PlayerPed.IsInVehicle())
                 {
-                    StartCoroutine(ShootFish(core.PlayerPed.CurrentVehicle, p));
-                    yield break;
+                    ShootFishAsync(core.PlayerPed.CurrentVehicle, p, ct).Forget();
+                    return;
                 }
 
-                if (!IsActive) yield break;
-                yield return null;
+                if (!IsActive)
+                {
+                    return;
+                }
+
+                await Delay100MsAsync(ct);
             }
+
             //魚発射
-            StartCoroutine(ShootFish(core.PlayerPed.CurrentVehicle, p));
+            await ShootFishAsync(core.PlayerPed.CurrentVehicle, p, ct);
         }
 
         /// <summary>
@@ -132,9 +169,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private Ped SpawnFish(Vehicle target)
         {
             var f = GTA.World.CreatePed(fishModel, target.Position + Vector3.WorldUp * 10);
-            if (!f.IsSafeExist() || !target.IsSafeExist()) return null;
+            if (!f.IsSafeExist() || !target.IsSafeExist())
+            {
+                return null;
+            }
+
             f.MarkAsNoLongerNeeded();
-            f.AttachTo(target, 0, Vector3.WorldUp * 1.5f, target.ForwardVector);
+            f.AttachTo(target.Bones.Core, Vector3.WorldUp * 1.5f, target.ForwardVector);
             f.IsInvincible = true;
             f.Health = 100;
             createdFishList.Add(f);
@@ -144,20 +185,25 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <summary>
         /// 魚を発射してしばらくしたら爆破する
         /// </summary>
-        private IEnumerable<object> ShootFish(Vehicle veh, Ped fish)
+        private async ValueTask ShootFishAsync(Vehicle veh, Ped fish, CancellationToken ct)
         {
             if (!fish.IsSafeExist())
             {
-                if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
-                yield break;
+                if (veh.IsSafeExist())
+                {
+                    vehicles.Remove(veh.Handle);
+                }
+
+                return;
             }
+
             fish.Detach();
             fish.IsInvincible = false;
             fish.RequestCollision();
-            fish.FreezePosition = false;
+            fish.FreezePosition(false);
             CreateEffect(fish, "ent_sht_electrical_box");
 
-            yield return null;
+            await YieldAsync(ct);
 
             if (fish.IsSafeExist())
             {
@@ -165,34 +211,54 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //速度が一定以下になったら爆発
-            foreach (var x in WaitForSeconds(10))
+            var targetTime = core.ElapsedTime + 10;
+            while (core.ElapsedTime < targetTime && !ct.IsCancellationRequested)
             {
                 if (!fish.IsSafeExist())
                 {
-                    if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
-                    yield break;
+                    if (veh.IsSafeExist())
+                    {
+                        vehicles.Remove(veh.Handle);
+                    }
+
+                    return;
                 }
-                if (fish.Velocity.Length() < 6) break;
-                yield return null;
+
+                if (fish.Velocity.Length() < 6)
+                {
+                    break;
+                }
+
+                await YieldAsync(ct);
             }
 
-            if (veh.IsSafeExist()) vehicles.Remove(veh.Handle);
+            if (veh.IsSafeExist())
+            {
+                vehicles.Remove(veh.Handle);
+            }
+
             if (!fish.IsSafeExist())
             {
-                yield break;
+                return;
             }
+
             GTA.World.AddExplosion(fish.Position, GTA.ExplosionType.Grenade, 1.0f, 1.0f);
         }
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SkelPelvis, scale, 0,
+                0, 0);
         }
     }
 }

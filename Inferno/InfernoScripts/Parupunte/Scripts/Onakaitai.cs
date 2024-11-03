@@ -1,10 +1,12 @@
-﻿using GTA;
-using GTA.Math;
-using GTA.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using GTA.Native;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -13,9 +15,9 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     {
         private readonly string petroEffect = "ent_sht_petrol";
 
-        private bool AffectAllPed = false;
+        private bool AffectAllPed;
 
-        private List<Ped> targetPeds = new List<Ped>();
+        private List<Ped> targetPeds = new();
 
         public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -50,44 +52,55 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
             }
+
             targetPeds.Add(core.PlayerPed);
 
             //コルーチン起動
             foreach (var ped in targetPeds)
             {
-                StartCoroutine(OilCoroutine(ped));
+                OilAsync(ped, ActiveCancellationToken).Forget();
             }
 
-            //終わったら着火する
             ReduceCounter.OnFinishedAsync.Subscribe(_ =>
             {
-                foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
-                {
-                    Ignition(ped);
-                }
-
                 ParupunteEnd();
             });
         }
 
-        private IEnumerable<object> OilCoroutine(Ped ped)
+        protected override void OnFinished()
         {
-            while (!ReduceCounter.IsCompleted)
+            //終わったら着火する
+            foreach (var ped in targetPeds.Where(x => x.IsSafeExist() && x.IsAlive))
+            {
+                Ignition(ped);
+            }
+            targetPeds.Clear();
+        }
+
+        private async ValueTask OilAsync(Ped ped, CancellationToken ct)
+        {
+            while (!ReduceCounter.IsCompleted && !ct.IsCancellationRequested)
             {
                 CreateEffect(ped, petroEffect);
-                yield return WaitForSeconds(1);
+                await DelaySecondsAsync(1, ct);
             }
         }
 
         private void CreateEffect(Ped ped, string effect)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var offset = new Vector3(0.2f, 0.0f, 0.0f);
             var rotation = new Vector3(80.0f, 10.0f, 0.0f);
             var scale = 3.0f;
-            Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
+            Function.Call(Hash.USE_PARTICLE_FX_ASSET, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z,
+                (int)Bone.SkelPelvis, scale, 0,
+                0, 0);
         }
 
         /// <summary>
@@ -95,9 +108,13 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// </summary>
         private void Ignition(Ped ped)
         {
-            if (!ped.IsSafeExist()) return;
+            if (!ped.IsSafeExist())
+            {
+                return;
+            }
+
             var pos = ped.Position;
-            GTA.World.AddOwnedExplosion(ped, pos, GTA.ExplosionType.Bullet, 0.0f, 0.0f);
+            NativeFunctions.AddOwnedExplosion(ped, pos, ExplosionType.BULLET, 0.0f, 0.0f);
         }
     }
 }

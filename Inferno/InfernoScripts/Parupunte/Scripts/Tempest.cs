@@ -1,8 +1,11 @@
-﻿using GTA;
-using GTA.Math;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UniRx;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -10,7 +13,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
     [ParupunteIsono("てんぺすと")]
     internal class Tempest : ParupunteScript
     {
-        private HashSet<Entity> entityList = new HashSet<Entity>();
+        private readonly HashSet<Entity> _entityList = new();
 
         public Tempest(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
@@ -23,6 +26,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         protected override void OnFinished()
         {
             GTA.World.Weather = Weather.Clear;
+            _entityList.Clear();
         }
 
         public override void OnStart()
@@ -37,39 +41,47 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var playerPos = core.PlayerPed.Position;
             foreach (var ped in core.CachedPeds.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
-            && !entityList.Contains(x)
-            && !x.IsCutsceneOnlyPed()))
+                                                           && x.IsInRangeOf(playerPos, 50)
+                                                           && !_entityList.Contains(x)
+                                                           && !x.IsCutsceneOnlyPed()))
             {
-
-                entityList.Add(ped);
-                StartCoroutine(TemepenstCoroutine(ped));
-
+                _entityList.Add(ped);
+                TempestAsync(ped, ActiveCancellationToken).Forget();
             }
+
             foreach (var veh in core.CachedVehicles.Where(x => x.IsSafeExist()
-            && x.IsInRangeOf(playerPos, 20)
-            && !entityList.Contains(x)
-            ))
+                                                               && x.IsInRangeOf(playerPos, 50)
+                                                               && !_entityList.Contains(x)
+                     ))
             {
-                if (!entityList.Contains(veh))
+                if (_entityList.Add(veh))
                 {
-                    entityList.Add(veh);
-                    StartCoroutine(TemepenstCoroutine(veh));
+                    TempestAsync(veh, ActiveCancellationToken).Forget();
                 }
             }
         }
 
-        private IEnumerable<object> TemepenstCoroutine(Entity entity)
+        private async ValueTask TempestAsync(Entity entity, CancellationToken ct)
         {
-            while (!ReduceCounter.IsCompleted)
+            while (!ReduceCounter.IsCompleted && !ct.IsCancellationRequested)
             {
-                if (!entity.IsSafeExist()) yield break;
-                if (!entity.IsInRangeOf(core.PlayerPed.Position, 30)) yield return null;
-                if (entity is Ped)
+                if (!entity.IsSafeExist())
                 {
-                    var p = entity as Ped;
-                    if (p.IsDead) yield break;
+                    return;
+                }
+
+
+                if (entity is Ped p)
+                {
                     p.SetToRagdoll();
+                }
+                else if (entity is Vehicle v)
+                {
+                    if (core.PlayerPed.CurrentVehicle == v)
+                    {
+                        await Delay100MsAsync(ct);
+                        continue;
+                    }
                 }
 
                 var playerPos = core.PlayerPed.Position;
@@ -82,11 +94,12 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 var rotatedVector = Quaternion.RotationAxis(Vector3.WorldUp, angle)
                     .ApplyVector(gotoPlayerVector);
 
-                var mainPower = entity is Ped ? 5 : 2;
-                var upPower = entity is Ped ? 3 : 1.2f;
-                entity.ApplyForce(rotatedVector * mainPower + Vector3.WorldUp * upPower);
+                var mainPower = entity is Ped ? 8 : 5;
+                var upPower = entity is Ped ? 1 : 1f;
+                var toPlayer = lenght < 10 ? 0 : 4.0f;
+                entity.ApplyForce(rotatedVector * mainPower + Vector3.WorldUp * upPower + gotoPlayerVector * toPlayer);
 
-                yield return null;
+                await YieldAsync(ct);
             }
         }
     }

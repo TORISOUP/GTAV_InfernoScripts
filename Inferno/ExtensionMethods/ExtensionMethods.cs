@@ -1,8 +1,8 @@
-﻿using GTA;
-using GTA.Math;
-using System;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
+using GTA;
+using GTA.Math;
+using GTA.Native;
 using Inferno.ChaosMode.WeaponProvider;
 
 namespace Inferno
@@ -11,10 +11,7 @@ namespace Inferno
     {
         private static Random _random;
 
-        private static Random Random
-        {
-            get { return _random ?? (_random = new Random()); }
-        }
+        private static Random Random => _random ?? (_random = new Random());
 
         public static Vehicle GetPlayerVehicle(this Script script)
         {
@@ -24,7 +21,7 @@ namespace Inferno
 
         public static bool IsSafeExist(this Entity entity)
         {
-            return entity != null && Entity.Exists(entity);
+            return entity != null && entity.Exists();
         }
 
         /// <summary>
@@ -47,7 +44,11 @@ namespace Inferno
         /// </summary>
         public static bool IsSameEntity(this Entity x, Entity y)
         {
-            if (!x.IsSafeExist() || !y.IsSafeExist()) return false;
+            if (!x.IsSafeExist() || !y.IsSafeExist())
+            {
+                return false;
+            }
+
             return x.Handle == y.Handle;
         }
 
@@ -90,6 +91,49 @@ namespace Inferno
             return Enum.IsDefined(typeof(CutSceneOnlyPedHash), (CutSceneOnlyPedHash)ped.Model.Hash);
         }
 
+        public static Vector3 GetBonePosition(this Ped ped, Bone boneIndex)
+        {
+            return Function.Call<Vector3>(Hash.GET_ENTITY_BONE_POSTION, ped.Handle, (int)boneIndex);
+        }
+
+        public static void FreezePosition(this Entity entity, bool freeze)
+        {
+            Function.Call(Hash.FREEZE_ENTITY_POSITION, entity.Handle, freeze);
+        }
+
+        public static bool IsFloating(this Entity entity, float thresholdFromGround = 0.5f)
+        {
+            var groundZ = World.GetGroundHeight(entity.Position);
+            var offset = entity is Ped ? 1.0f : 0f;
+            return entity.Position.Z - offset - groundZ > thresholdFromGround;
+        }
+
+        public static bool IsInRangeOf(this Entity entity, Vector3 position, float distance)
+        {
+            return entity.Position.DistanceTo(position) < distance;
+        }
+
+        public static bool IsInRangeOfIgnoreZ(this Entity entity, Vector3 position, float distance)
+        {
+            var e = new Vector3(entity.Position.X, entity.Position.Y, 0);
+            var p = new Vector3(position.X, position.Y, 0);
+
+            return e.DistanceTo(p) < distance;
+        }
+
+        public static void SetForwardSpeed(this Vehicle v, float value)
+        {
+            if (v.Model.IsTrain)
+            {
+                Function.Call(Hash.SET_TRAIN_SPEED, v.Handle, value);
+                Function.Call(Hash.SET_TRAIN_CRUISE_SPEED, v.Handle, value);
+            }
+            else
+            {
+                Function.Call(Hash.SET_VEHICLE_FORWARD_SPEED, v.Handle, value);
+            }
+        }
+
         public static Vector3 ApplyVector(this Quaternion q, Vector3 v)
         {
             var w = -q.X * v.X - q.Y * v.Y - q.Z * v.Z;
@@ -112,9 +156,9 @@ namespace Inferno
         {
             forward.Normalize();
 
-            Vector3 vector = Vector3.Normalize(forward);
-            Vector3 vector2 = Vector3.Normalize(Vector3.Cross(up, vector));
-            Vector3 vector3 = Vector3.Cross(vector, vector2);
+            var vector = Vector3.Normalize(forward);
+            var vector2 = Vector3.Normalize(Vector3.Cross(up, vector));
+            var vector3 = Vector3.Cross(vector, vector2);
             var m00 = vector2.X;
             var m01 = vector2.Y;
             var m02 = vector2.Z;
@@ -125,7 +169,7 @@ namespace Inferno
             var m21 = vector.Y;
             var m22 = vector.Z;
 
-            float num8 = (m00 + m11) + m22;
+            var num8 = m00 + m11 + m22;
             var quaternion = new Quaternion();
             if (num8 > 0f)
             {
@@ -138,9 +182,9 @@ namespace Inferno
                 return quaternion;
             }
 
-            if ((m00 >= m11) && (m00 >= m22))
+            if (m00 >= m11 && m00 >= m22)
             {
-                var num7 = (float)Math.Sqrt(((1f + m00) - m11) - m22);
+                var num7 = (float)Math.Sqrt(1f + m00 - m11 - m22);
                 var num4 = 0.5f / num7;
                 quaternion.X = 0.5f * num7;
                 quaternion.Y = (m01 + m10) * num4;
@@ -151,7 +195,7 @@ namespace Inferno
 
             if (m11 > m22)
             {
-                var num6 = (float)Math.Sqrt(((1f + m11) - m00) - m22);
+                var num6 = (float)Math.Sqrt(1f + m11 - m00 - m22);
                 var num3 = 0.5f / num6;
                 quaternion.X = (m10 + m01) * num3;
                 quaternion.Y = 0.5f * num6;
@@ -160,7 +204,7 @@ namespace Inferno
                 return quaternion;
             }
 
-            var num5 = (float)Math.Sqrt(((1f + m22) - m00) - m11);
+            var num5 = (float)Math.Sqrt(1f + m22 - m00 - m11);
             var num2 = 0.5f / num5;
             quaternion.X = (m20 + m02) * num2;
             quaternion.Y = (m21 + m12) * num2;
@@ -169,6 +213,40 @@ namespace Inferno
             return quaternion;
         }
 
+        public static PedType GetPedType(this Ped p)
+        {
+            return Function.Call<PedType>(Hash.GET_PED_TYPE, p.Handle);
+        }
+
+        /// <summary>
+        /// 敵対すると手配度がつくPed一覧
+        /// </summary>
+        private static readonly PedHash[] CopPedHas =
+        {
+            PedHash.Cop01SFY, PedHash.Snowcop01SMM, PedHash.PrologueSec02, PedHash.Highsec02SMM, PedHash.ChemSec01SMM,
+            PedHash.Sheriff01SFY, PedHash.JackHowitzerCutscene, PedHash.Prisguard01SMM, PedHash.Marine02SMY,
+            PedHash.FibSec01, PedHash.Cop01SMY, PedHash.CiaSec01SMM, PedHash.Armymech01SMY, PedHash.Armoured02SMM,
+            PedHash.Marine01SMY, PedHash.PrologueSec01, PedHash.Marine03SMY, PedHash.Hwaycop01SMY,
+            PedHash.FibSec01SMM, PedHash.PrologueSec01Cutscene, PedHash.Swat01SMY, PedHash.Armoured01SMM,
+            PedHash.Devinsec01SMY, PedHash.Sheriff01SMY, PedHash.Autopsy01SMY, PedHash.Uscg01SMY, PedHash.Security01SMM,
+            PedHash.SecuroGuardMale01, PedHash.Ranger01SMY, PedHash.Marine02SMM, PedHash.Highsec01SMM,
+            PedHash.Marine01SMM
+        };
+
+        /// <summary>
+        /// 敵対すると手配度がつくPedであるかどうか
+        /// </summary>
+        /// <param name="ped"></param>
+        public static bool IsCop(this Ped ped)
+        {
+            return ped.GetPedType() switch
+            {
+                PedType.PED_TYPE_COP => true,
+                PedType.PED_TYPE_SWAT => true,
+                PedType.PED_TYPE_ARMY => true,
+                _ => CopPedHas.Contains((PedHash)ped.Model.Hash)
+            };
+        }
 
         #region Weapon
 
@@ -203,6 +281,5 @@ namespace Inferno
         }
 
         #endregion
-
     }
 }

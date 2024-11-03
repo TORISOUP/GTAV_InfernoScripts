@@ -1,16 +1,16 @@
-﻿using GTA;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GTA;
 using GTA.Math;
-using GTA.Native;
-using Inferno.ChaosMode;
-using System;
-using System.Collections.Generic;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     /// <summary>
     /// 上空からソロモンを落として大爆発させる
     /// </summary>
-    [ParupunteConfigAttribute("頭の中に爆弾が!")]
+    [ParupunteConfigAttribute("ボルガ博士！お許し下さい!")]
     [ParupunteIsono("ぼるが")]
     internal class Volga : ParupunteScript
     {
@@ -18,25 +18,49 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
+        private Blip _blip;
+
         public override void OnStart()
         {
-            StartCoroutine(AirPlaneCoroutine());
+            var playerPos = core.PlayerPed.Position;
+            var around = playerPos.Around(70);
+            var spawnPoint = around + Vector3.WorldUp * 200f;
+
+            // 簡略化
+            VolgaAsync(spawnPoint, Vector3.Zero, ActiveCancellationToken).Forget();
         }
 
+        protected override void OnFinished()
+        {
+            if (_blip.Exists())
+            {
+                _blip.Delete();
+            }
+        }
+
+        /*
         /// <summary>
         /// 飛行機を召喚する
         /// </summary>
         private Tuple<Vehicle, Ped> SpawnAirPlane()
         {
             var model = new Model(VehicleHash.Velum2);
-            var plane = GTA.World.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
-            if (!plane.IsSafeExist()) return null;
+            var plane = GTA.Worlds.CreateVehicle(model, core.PlayerPed.Position + new Vector3(0, -400, 150));
+            if (!plane.IsSafeExist())
+            {
+                return null;
+            }
+
             plane.PetrolTankHealth = 100;
-            plane.Speed = 50;
+            plane.SetForwardSpeed(500);
 
             //パイロットのラマー召喚
             var ped = plane.CreatePedOnSeat(VehicleSeat.Driver, new Model(PedHash.LamarDavis));
-            if (!ped.IsSafeExist()) return null;
+            if (!ped.IsSafeExist())
+            {
+                return null;
+            }
+
             ped.SetNotChaosPed(true);
 
             return new Tuple<Vehicle, Ped>(plane, ped);
@@ -53,6 +77,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 ParupunteEnd();
                 yield break;
             }
+
             var ped = tuple.Item2;
             var plane = tuple.Item1;
 
@@ -70,13 +95,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     ParupunteEnd();
                     yield break;
                 }
+
                 SetPlaneTask(plane, ped, core.PlayerPed);
                 var delta = plane.Position - core.PlayerPed.Position;
                 delta.Z = 0;
                 var length = delta.Length();
 
                 //プレイヤとの平面上の距離が80m以内になったら投棄
-                if (length < 80) break;
+                if (length < 80)
+                {
+                    break;
+                }
 
                 yield return null;
             }
@@ -91,55 +120,78 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 StartCoroutine(VolgaCoroutine(plane.Position + new Vector3(0, 0, -2), plane.Velocity));
             }
 
-            if (ped.IsSafeExist()) ped.MarkAsNoLongerNeeded();
+            if (ped.IsSafeExist())
+            {
+                ped.MarkAsNoLongerNeeded();
+            }
         }
 
         private void SetPlaneTask(Vehicle plane, Ped ped, Entity target)
         {
             var tarPos = target.Position + new Vector3(0, 0, 50);
-            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 100.0, -1.0, -1.0, 100, 100);
+            Function.Call(Hash.TASK_PLANE_MISSION, ped, plane, 0, 0, tarPos.X, tarPos.Y, tarPos.Z, 4, 100.0, -1.0, -1.0,
+                100, 100);
         }
 
-        private IEnumerable<object> VolgaCoroutine(Vector3 createPosition, Vector3 forward)
+        */
+
+        private async ValueTask VolgaAsync(Vector3 createPosition, Vector3 forward, CancellationToken ct)
         {
             var volga = GTA.World.CreatePed(new Model(PedHash.Solomon), createPosition);
             if (!volga.IsSafeExist())
             {
                 ParupunteEnd();
-                yield break;
+                return;
             }
 
-            core.DrawParupunteText("ボルガ博士！お許し下さい！", 3.0f);
 
             volga.Task.ClearAllImmediately();
-            volga.FreezePosition = false;
-            volga.Health = 30;
+            volga.FreezePosition(false);
+            volga.Health = 100;
             volga.IsCollisionProof = false;
             volga.IsInvincible = false;
             volga.Velocity = forward;
-            yield return WaitForSeconds(1);
+            volga.IsPersistent = true;
+            _blip = volga.AddBlip();
+            if (_blip.Exists())
+            {
+                _blip.Color = BlipColor.Yellow2;
+            }
 
-            foreach (var w in WaitForSeconds(10))
+            AutoReleaseOnParupunteEnd(volga);
+            await DelaySecondsAsync(1, ct);
+
+            var targetTime = core.ElapsedTime + 10;
+            while (core.ElapsedTime < targetTime && !ct.IsCancellationRequested)
             {
                 if (!volga.IsSafeExist())
                 {
                     ParupunteEnd();
-                    yield break;
+                    return;
                 }
+
                 //着地するまで
-                if (!volga.IsInAir) break;
-                yield return null;
+                if (!volga.IsInAir)
+                {
+                    break;
+                }
+
+                await YieldAsync(ct);
             }
+
             if (!volga.IsSafeExist())
             {
                 ParupunteEnd();
-                yield break;
+                return;
             }
 
             //着死したら大爆発する
             volga.MarkAsNoLongerNeeded();
             GTA.World.AddExplosion(volga.Position, GTA.ExplosionType.Rocket, 10.0f, 2.0f);
+            GTA.World.AddExplosion(volga.Position, GTA.ExplosionType.RayGun, 10.0f, 2.0f);
+
             BlowOff(volga.Position);
+
             ParupunteEnd();
         }
 
@@ -148,36 +200,74 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// </summary>
         private void BlowOff(Vector3 centerPos)
         {
-            var peds = GTA.World.GetNearbyPeds(centerPos, 150);
-            var vehicles = GTA.World.GetNearbyVehicles(centerPos, 150);
+            var peds = core.CachedPeds.Concat(new[] { core.PlayerPed });
+            var vehicles = core.CachedVehicles;
 
             foreach (var p in peds)
             {
-                if (!p.IsSafeExist()) continue;
-                if (p.IsCutsceneOnlyPed()) continue;
+                if (!p.IsSafeExist())
+                {
+                    continue;
+                }
 
-                var dir = p.Position - centerPos;
+                if (p.IsCutsceneOnlyPed())
+                {
+                    continue;
+                }
+
+                if (!p.IsInRangeOf(centerPos, 150))
+                {
+                    continue;
+                }
+
+                var dir = p.Position + Vector3.WorldUp * 10 - centerPos;
                 var lenght = dir.Length();
                 dir.Normalize();
                 p.CanRagdoll = true;
-                p.SetToRagdoll(100);
+                p.SetToRagdoll();
 
                 float power = 50;
-                if (lenght <= 30) power = 200;
-                if (30 < lenght && lenght <= 70) power = 100;
+                if (lenght <= 30)
+                {
+                    power = 200;
+                }
+
+                if (30 < lenght && lenght <= 70)
+                {
+                    power = 100;
+                }
+
                 p.ApplyForce(dir * power);
             }
 
             foreach (var w in vehicles)
             {
-                if (!w.IsSafeExist()) continue;
-                var dir = w.Position - centerPos;
+                if (!w.IsSafeExist())
+                {
+                    continue;
+                }
+
+                if (!w.IsInRangeOf(centerPos, 150))
+                {
+                    continue;
+                }
+
+
+                var dir = w.Position + Vector3.WorldUp * 15 - centerPos;
                 var lenght = dir.Length();
                 dir.Normalize();
 
                 float power = 30;
-                if (lenght <= 30) power = 70;
-                if (30 < lenght && lenght <= 70) power = 50;
+                if (lenght <= 30)
+                {
+                    power = 70;
+                }
+
+                if (30 < lenght && lenght <= 70)
+                {
+                    power = 50;
+                }
+
                 w.ApplyForce(dir * power, Vector3.RandomXYZ() * 10.0f);
             }
         }

@@ -11,7 +11,6 @@ namespace Inferno.Utilities
         private static long _count = long.MinValue;
 
         private IndexedItem[] _items;
-        private int _size;
 
         public PriorityQueue()
             : this(16)
@@ -21,8 +20,10 @@ namespace Inferno.Utilities
         public PriorityQueue(int capacity)
         {
             _items = new IndexedItem[capacity];
-            _size = 0;
+            Count = 0;
         }
+
+        public int Count { get; private set; }
 
         private bool IsHigherPriority(int left, int right)
         {
@@ -31,17 +32,20 @@ namespace Inferno.Utilities
 
         private void Percolate(int index)
         {
-            if (index >= _size || index < 0)
+            if (index >= Count || index < 0)
+            {
                 return;
+            }
+
             var parent = (index - 1) / 2;
             if (parent < 0 || parent == index)
+            {
                 return;
+            }
 
             if (IsHigherPriority(index, parent))
             {
-                var temp = _items[index];
-                _items[index] = _items[parent];
-                _items[parent] = temp;
+                (_items[index], _items[parent]) = (_items[parent], _items[index]);
                 Percolate(parent);
             }
         }
@@ -53,46 +57,52 @@ namespace Inferno.Utilities
 
         private void Heapify(int index)
         {
-            if (index >= _size || index < 0)
+            if (index >= Count || index < 0)
+            {
                 return;
+            }
 
             var left = 2 * index + 1;
             var right = 2 * index + 2;
             var first = index;
 
-            if (left < _size && IsHigherPriority(left, first))
+            if (left < Count && IsHigherPriority(left, first))
+            {
                 first = left;
-            if (right < _size && IsHigherPriority(right, first))
+            }
+
+            if (right < Count && IsHigherPriority(right, first))
+            {
                 first = right;
+            }
+
             if (first != index)
             {
-                var temp = _items[index];
-                _items[index] = _items[first];
-                _items[first] = temp;
+                (_items[index], _items[first]) = (_items[first], _items[index]);
                 Heapify(first);
             }
         }
 
-        public int Count { get { return _size; } }
-
         public T Peek()
         {
-            if (_size == 0)
+            if (Count == 0)
+            {
                 throw new InvalidOperationException("HEAP is Empty");
+            }
 
             return _items[0].Value;
         }
 
         private void RemoveAt(int index)
         {
-            _items[index] = _items[--_size];
-            _items[_size] = default(IndexedItem);
+            _items[index] = _items[--Count];
+            _items[Count] = default;
             Heapify();
-            if (_size < _items.Length / 4)
+            if (Count < _items.Length / 4)
             {
                 var temp = _items;
                 _items = new IndexedItem[_items.Length / 2];
-                Array.Copy(temp, 0, _items, 0, _size);
+                Array.Copy(temp, 0, _items, 0, Count);
             }
         }
 
@@ -105,21 +115,21 @@ namespace Inferno.Utilities
 
         public void Enqueue(T item)
         {
-            if (_size >= _items.Length)
+            if (Count >= _items.Length)
             {
                 var temp = _items;
                 _items = new IndexedItem[_items.Length * 2];
                 Array.Copy(temp, _items, temp.Length);
             }
 
-            var index = _size++;
+            var index = Count++;
             _items[index] = new IndexedItem { Value = item, Id = Interlocked.Increment(ref _count) };
             Percolate(index);
         }
 
         public bool Remove(T item)
         {
-            for (var i = 0; i < _size; ++i)
+            for (var i = 0; i < Count; ++i)
             {
                 if (EqualityComparer<T>.Default.Equals(_items[i].Value, item))
                 {
@@ -131,7 +141,7 @@ namespace Inferno.Utilities
             return false;
         }
 
-        struct IndexedItem : IComparable<IndexedItem>
+        private struct IndexedItem : IComparable<IndexedItem>
         {
             public T Value;
             public long Id;
@@ -140,7 +150,10 @@ namespace Inferno.Utilities
             {
                 var c = Value.CompareTo(other.Value);
                 if (c == 0)
+                {
                     c = Id.CompareTo(other.Id);
+                }
+
                 return c;
             }
         }

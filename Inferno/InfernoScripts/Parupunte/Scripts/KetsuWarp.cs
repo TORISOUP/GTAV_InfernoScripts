@@ -1,98 +1,140 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
+using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("行き先を選べ!")]
     [ParupunteIsono("けつるーら")]
-    class KetsuWarp : ParupunteScript
+    internal class KetsuWarp : ParupunteScript
     {
         public KetsuWarp(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
 
+        private Vehicle _playerVehicle;
+
         public override void OnStart()
         {
-            StartCoroutine(IdleCoroutine());
+            IdleAsync(ActiveCancellationToken).Forget();
         }
 
-        private IEnumerable<object> IdleCoroutine()
+        private async ValueTask IdleAsync(CancellationToken ct)
         {
-            foreach (var w in WaitForSeconds(10))
+            var time = 0f;
+            while (IsActive && !ct.IsCancellationRequested && time < 10)
             {
-                var blip = GTA.World.GetActiveBlips()
-                    .FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                time += core.DeltaTime;
 
-                if (blip != null)
+                var blip = GTA.World.WaypointBlip;
+                if (blip != null && blip.Exists())
                 {
-                    StartCoroutine(MoveToCoroutine());
-                    yield break;
+                    MoveToAsync(ct).Forget();
+                    return;
                 }
-                yield return null;
+
+                await YieldAsync(ct);
+            }
+
+            ParupunteEnd();
+        }
+
+        protected override void OnFinished()
+        {
+            if (_playerVehicle != null && _playerVehicle.IsSafeExist())
+            {
+                _playerVehicle.IsInvincible = false;
+            }
+
+            if (core.PlayerPed.IsSafeExist())
+            {
+                core.PlayerPed.IsInvincible = false;
             }
         }
 
-        private IEnumerable<object> MoveToCoroutine()
+        private async ValueTask MoveToAsync(CancellationToken ct)
         {
             core.DrawParupunteText("いってらっしゃい！", 3);
 
-            var target = core.PlayerPed.IsInVehicle() ? (Entity)core.PlayerPed.CurrentVehicle : (Entity)core.PlayerPed;
+            Entity target;
+            if (core.PlayerPed.IsInVehicle())
+            {
+                _playerVehicle = core.PlayerPed.CurrentVehicle;
+                target = _playerVehicle;
+            }
+            else
+            {
+                target = core.PlayerPed;
+            }
+
             target.IsInvincible = true;
 
             target.ApplyForce(Vector3.WorldUp * 300.0f);
-            GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
+            GTA.World.AddExplosion(
+                target.Position,
+                GTA.ExplosionType.Grenade,
+                0.5f,
+                0.5f,
+                core.PlayerPed,
+                false);
 
-            if (target is Ped)
+            if (target is Ped ped)
             {
-                var p = (Ped)target;
-                p.Task.Skydive();
+                ped.Task.Skydive();
             }
 
 
-            yield return WaitForSeconds(1);
+            await DelaySecondsAsync(1, ct);
 
 
-            while (target.IsSafeExist())
+            while (target.IsSafeExist() && !ct.IsCancellationRequested)
             {
-                var targetBlip = GTA.World.GetActiveBlips().FirstOrDefault(x => x.Exists() && x.Sprite == BlipSprite.Waypoint);
+                if (target.Model.IsVehicle && !core.PlayerPed.IsInVehicle())
+                {
+                    if (target.IsSafeExist())
+                    {
+                        target.IsInvincible = false;
+                    }
+
+                    target = core.PlayerPed;
+                    target.IsInvincible = true;
+                    core.PlayerPed.Task.ClearAllImmediately();
+                    core.PlayerPed.Task.Skydive();
+                    await DelaySecondsAsync(2, ct);
+                }
+
+                var targetBlip = GTA.World.WaypointBlip;
                 if (targetBlip == null || !targetBlip.Exists())
                 {
                     if (target.IsSafeExist())
                     {
                         target.IsInvincible = false;
-                        if (target is Ped)
+                        if (target is Ped ped1)
                         {
-                            var p = (Ped)target;
-                            p.ParachuteTo(p.Position);
+                            ped1.ParachuteTo(ped1.Position);
                         }
                     }
+
                     ParupunteEnd();
                     core.DrawParupunteText("おわり", 3);
-                    yield break;
+                    return;
                 }
 
-                if (target is Ped)
+                if (target is Ped { IsInParachuteFreeFall: false } p2)
                 {
-                    if (!((Ped)target).IsInParachuteFreeFall)
-                    {
-                        target.IsInvincible = false;
-                        ParupunteEnd();
-                        core.DrawParupunteText("おわり", 3);
-                        yield break;
-                    }
-
+                    p2.IsInvincible = false;
+                    ParupunteEnd();
+                    core.DrawParupunteText("おわり", 3);
+                    return;
                 }
 
                 var goal = targetBlip.Position;
                 var current = target.Position;
                 var dir = (goal - current).Normalized;
 
-                var toVector = (goal - current);
+                var toVector = goal - current;
                 var horizontalLength = new Vector3(toVector.X, toVector.Y, 0).Length();
 
 
@@ -101,15 +143,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     if (target.IsSafeExist())
                     {
                         target.IsInvincible = false;
-                        if (target is Ped)
+                        if (target is Ped ped1)
                         {
-                            var p = (Ped)target;
-                            p.ParachuteTo(p.Position);
+                            ped1.ParachuteTo(ped1.Position);
                         }
                     }
+
                     core.DrawParupunteText("ついたぞ", 3);
                     ParupunteEnd();
-                    yield break;
+                    return;
                 }
 
 
@@ -120,19 +162,24 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 else
                 {
                     target.ApplyForce((dir + Vector3.WorldUp * 0.5f) * 250.0f);
-                    GTA.World.AddExplosion(target.Position, GTA.ExplosionType.Grenade, 0.5f, 0.5f, true, false);
+                    GTA.World.AddExplosion(
+                        target.Position,
+                        GTA.ExplosionType.Grenade,
+                        3.5f,
+                        0.1f,
+                        core.PlayerPed);
                 }
 
 
-                yield return WaitForSeconds(0.5f);
+                await DelaySecondsAsync(0.2f, ct);
             }
+
             if (target.IsSafeExist())
             {
                 target.IsInvincible = false;
             }
 
             ParupunteEnd();
-
         }
     }
 }

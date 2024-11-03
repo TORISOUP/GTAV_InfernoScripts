@@ -1,8 +1,13 @@
-﻿using GTA;
-using System;
+﻿using System;
+using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Forms;
+using GTA;
+using Inferno.InfernoScripts;
 using Inferno.InfernoScripts.Event;
-using UniRx;
+using Reactive.Bindings;
 
 namespace Inferno
 {
@@ -11,15 +16,106 @@ namespace Inferno
     /// </summary>
     public sealed class InfernoCore : Script
     {
-        private DebugLogger _debugLogger;
+        private static readonly Subject<Unit> OnTickSubject = new();
+        private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new();
+        private static readonly Subject<IEventMessage> EventMessageSubject = new();
+        private readonly DebugLogger _debugLogger;
+
+        private readonly AsyncSubject<Unit> _disposeSubject = new();
+
+        private readonly ReactiveProperty<Entity[]> _missionEntity = new(Array.Empty<Entity>());
+
+        private readonly ReactiveProperty<Entity[]> _nearEntities = new(Array.Empty<Entity>());
+
+        private readonly ReactiveProperty<Ped[]> _nearPeds = new(Array.Empty<Ped>());
+
+        private readonly ReactiveProperty<Vehicle[]> _nearVehicles = new(Array.Empty<Vehicle>());
+
+        private readonly ReactiveProperty<Ped> _playerPed = new();
+
+        private readonly ReactiveProperty<Vehicle> _playerVehicle = new();
+
+        private DateTimeOffset _lastUpdate;
+
+        public InfernoCore()
+        {
+            Instance = this;
+
+            _debugLogger = DebugLogger.Instance;
+
+            _lastUpdate = DateTimeOffset.Now;
+
+            //100ms周期でイベントを飛ばす
+            Interval = 100;
+            Observable
+                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
+                .Select(_ => Unit.Default)
+                .TakeUntil(_disposeSubject)
+                .Multicast(OnTickSubject)
+                .Connect();
+
+            //キー入力
+            Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
+                    h => KeyDown -= h)
+                .Select(e => e.EventArgs)
+                .TakeUntil(_disposeSubject)
+                .Multicast(OnKeyDownSubject)
+                .Connect();
+
+            //市民と車両の更新
+            OnTickAsObservable
+                .Subscribe(_ => UpdatePedsAndVehiclesList());
+
+            Aborted += (_, _) => Destroy();
+        }
 
         public static InfernoCore Instance { get; private set; }
 
-        private static readonly Subject<Unit> OnTickSubject = new Subject<Unit>();
-        private static readonly Subject<KeyEventArgs> OnKeyDownSubject = new Subject<KeyEventArgs>();
-        private static readonly Subject<IEventMessage> EventMessageSubject = new Subject<IEventMessage>();
+        /// <summary>
+        /// 発行されたイベントメッセージ
+        /// </summary>
+        public static IObservable<IEventMessage> OnReceivedEventMessage => EventMessageSubject;
 
-        private DateTimeOffset _lastUpdate;
+        /// <summary>
+        /// 周辺市民
+        /// </summary>
+        public IReadOnlyReactiveProperty<Ped[]> PedsNearPlayer => _nearPeds;
+
+        /// <summary>
+        /// 周辺車両
+        /// </summary>
+        public IReadOnlyReactiveProperty<Vehicle[]> VehiclesNearPlayer => _nearVehicles;
+
+        /// <summary>
+        /// 周辺Entity
+        /// </summary>
+        public IReadOnlyReactiveProperty<Entity[]> EntitiesNearPlayer => _nearEntities;
+
+        /// <summary>
+        /// ミッションEntity
+        /// </summary>
+        public IReadOnlyReactiveProperty<Entity[]> MissionEntities => _missionEntity;
+
+        /// <summary>
+        /// プレイヤ
+        /// </summary>
+        public IReadOnlyReactiveProperty<Ped> PlayerPed => _playerPed;
+
+
+        /// <summary>
+        /// プレイヤの乗ってる車両
+        /// </summary>
+        public IReadOnlyReactiveProperty<Vehicle> PlayerVehicle => _playerVehicle;
+
+        /// <summary>
+        /// 25ms周期のTick
+        /// </summary>
+        public static IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
+
+        /// <summary>
+        /// キー入力
+        /// </summary>
+        public static IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
 
         /// <summary>
         /// イベントメッセージを発行する
@@ -31,106 +127,83 @@ namespace Inferno
         }
 
         /// <summary>
-        /// 発行されたイベントメッセージ
-        /// </summary>
-        public static UniRx.IObservable<IEventMessage> OnRecievedEventMessage => EventMessageSubject;
-
-        /// <summary>
-        /// 周辺市民
-        /// </summary>
-        public IReadOnlyReactiveProperty<Ped[]> PedsNearPlayer => _nearPeds;
-
-        private readonly ReactiveProperty<Ped[]> _nearPeds = new ReactiveProperty<Ped[]>();
-
-        /// <summary>
-        /// 周辺車両
-        /// </summary>
-        public IReadOnlyReactiveProperty<Vehicle[]> VehicleNearPlayer => _nearVehicle;
-
-        private readonly ReactiveProperty<Vehicle[]> _nearVehicle = new ReactiveProperty<Vehicle[]>();
-
-
-        /// <summary>
-        /// プレイヤ
-        /// </summary>
-        public IReadOnlyReactiveProperty<Ped> PlayerPed => _playerPed;
-
-        private readonly ReactiveProperty<Ped> _playerPed = new ReactiveProperty<Ped>();
-
-
-        /// <summary>
-        /// プレイヤの乗ってる車両
-        /// </summary>
-        public IReadOnlyReactiveProperty<Vehicle> PlayerVehicle => _playerVehicle;
-
-        private readonly ReactiveProperty<Vehicle> _playerVehicle = new ReactiveProperty<Vehicle>();
-
-        /// <summary>
-        /// 25ms周期のTick
-        /// </summary>
-        public static UniRx.IObservable<Unit> OnTickAsObservable => OnTickSubject.AsObservable();
-
-        /// <summary>
-        /// キー入力
-        /// </summary>
-        public static UniRx.IObservable<KeyEventArgs> OnKeyDownAsObservable => OnKeyDownSubject.AsObservable();
-
-        public InfernoCore()
-        {
-            Instance = this;
-
-            _debugLogger = new DebugLogger(@"InfernoScript.log");
-
-            _lastUpdate = DateTimeOffset.Now;
-
-            //100ms周期でイベントを飛ばす
-            Interval = 100;
-            Observable
-                .FromEventPattern<EventHandler, EventArgs>(h => h.Invoke, h => Tick += h, h => Tick -= h)
-                .Select(_ => Unit.Default)
-                .Multicast(OnTickSubject)
-                .Connect();
-
-            //キー入力
-            Observable.FromEventPattern<KeyEventHandler, KeyEventArgs>(h => h.Invoke, h => KeyDown += h,
-                    h => KeyDown -= h)
-                .Select(e => e.EventArgs)
-                .Multicast(OnKeyDownSubject)
-                .Connect();
-
-            //市民と車両の更新
-            OnTickAsObservable
-                .Subscribe(_ => UpdatePedsAndVehiclesList());
-        }
-
-        /// <summary>
         /// 市民と車両のキャッシュ
         /// </summary>
         private void UpdatePedsAndVehiclesList()
         {
             // 1秒おきにキャッシュ更新
-            if (DateTimeOffset.Now - _lastUpdate < TimeSpan.FromMilliseconds(1000)) return;
+            if (DateTimeOffset.Now - _lastUpdate < TimeSpan.FromMilliseconds(1000))
+            {
+                return;
+            }
+
             _lastUpdate = DateTimeOffset.Now;
 
             try
             {
                 var player = Game.Player;
                 var ped = player?.Character;
-                if (!ped.IsSafeExist()) return;
+                if (!ped.IsSafeExist())
+                {
+                    return;
+                }
+
                 _playerPed.Value = ped;
-                _nearPeds.Value = World.GetNearbyPeds(ped, 500) ?? Array.Empty<Ped>();
-                _nearVehicle.Value = World.GetNearbyVehicles(ped, 500) ?? Array.Empty<Vehicle>();
+                _nearEntities.Value = World.GetNearbyEntities(ped.Position, 500)?.Where(x => x != ped).ToArray() ??
+                                      Array.Empty<Entity>();
+
+                _nearPeds.Value = _nearEntities.Value.OfType<Ped>().ToArray();
+                _nearVehicles.Value = _nearEntities.Value.OfType<Vehicle>().ToArray();
                 _playerVehicle.Value = ped?.CurrentVehicle;
+
+                if (_nearEntities.Value.Any(x => x.IsRequiredForMission()))
+                {
+                    _missionEntity.Value =
+                        _nearEntities.Value.Where(x => x.IsRequiredForMission() && x != ped).ToArray();
+                }
+                else
+                {
+                    if (_missionEntity.Value == null || _missionEntity.Value.Length > 0)
+                    {
+                        _missionEntity.Value = Array.Empty<Entity>();
+                    }
+                }
             }
             catch (Exception e)
             {
-                LogWrite(e.Message + "\n" + e.StackTrace);
+                LogWrite(e.ToString());
             }
         }
 
         public void LogWrite(string message)
         {
-            _debugLogger.Log(message);
+            lock (_debugLogger)
+            {
+                _debugLogger.Log(message);
+            }
+        }
+
+        private void Destroy()
+        {
+            try
+            {
+                _debugLogger.Dispose();
+                _nearPeds.Dispose();
+                _nearVehicles.Dispose();
+                _nearEntities.Dispose();
+                _missionEntity.Dispose();
+                _playerPed.Dispose();
+                _playerVehicle.Dispose();
+                _disposeSubject.OnNext(Unit.Default);
+                _disposeSubject.OnCompleted();
+                _disposeSubject.Dispose();
+                
+                InfernoCommandProvider.Instance.Dispose();
+            }
+            catch
+            {
+                //
+            }
         }
     }
 }

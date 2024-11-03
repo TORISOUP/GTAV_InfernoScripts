@@ -1,13 +1,14 @@
-﻿using GTA.Math;
-using System;
+﻿using System;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using GTA.Math;
 
 namespace Inferno.Utilities
 {
     //便利関数群
     public static class InfernoUtilities
     {
-        private static Random random;
+        private static readonly Random random;
 
         static InfernoUtilities()
         {
@@ -28,6 +29,15 @@ namespace Inferno.Utilities
         }
     }
 
+    public static class ObservableExtension
+    {
+        public static IDisposable AddTo(this IDisposable disposable, CompositeDisposable compositeDisposable)
+        {
+            compositeDisposable.Add(disposable);
+            return disposable;
+        }
+    }
+
     public static class TaskExtension
     {
         public static async void Forget(this Task task)
@@ -36,9 +46,30 @@ namespace Inferno.Utilities
             {
                 await task;
             }
-            catch (Exception)
+            catch (OperationCanceledException)
             {
                 // ignore
+            }
+            catch (Exception e)
+            {
+                InfernoCore.Instance.LogWrite(e.ToString());
+                InfernoCore.Instance.LogWrite(e.StackTrace);
+            }
+        }
+
+        public static async void Forget(this ValueTask task)
+        {
+            try
+            {
+                await task;
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore
+            }
+            catch (Exception e)
+            {
+                InfernoCore.Instance.LogWrite($"{e}\n{e.StackTrace}");
             }
         }
     }

@@ -36,8 +36,9 @@
         RStickRight = 6,
         VehicleAccelerateKey = 232,
         VehicleForwardTiltKey = 209,
-        VehicleBackwardTiltKey = 224
-    };
+        VehicleBackwardTiltKey = 224,
+        PadDown = 19,
+    }
 
     public enum FiringPattern
     {
@@ -59,62 +60,61 @@
         BurstFireTank = -490063247
     }
 
-    
 
     public enum Weapon
     {
-        UNARMED = -1569615261,
+        Unarmed = -1569615261,
         ANIMAL = -100946242,
         COUGAR = 148160082,
-        KNIFE = -1716189206,
-        NIGHTSTICK = 1737195953,
-        HAMMER = 1317494643,
-        BAT = -1786099057,
-        GOLFCLUB = 1141786504,
-        CROWBAR = -2067956739,
-        PISTOL = 453432689,
-        COMBATPISTOL = 1593441988,
-        APPISTOL = 584646201,
-        PISTOL50 = -1716589765,
-        MICROSMG = 324215364,
+        Knife = -1716189206,
+        NightStick = 1737195953,
+        Hammer = 1317494643,
+        Bat = -1786099057,
+        GolfClub = 1141786504,
+        Crowbar = -2067956739,
+        Pistol = 453432689,
+        CombatPistol = 1593441988,
+        APPistol = 584646201,
+        Pistol50 = -1716589765,
+        MicroSMG = 324215364,
         SMG = 736523883,
-        ASSAULTSMG = -270015777,
-        ASSAULTRIFLE = -1074790547,
-        CARBINERIFLE = -2084633992,
-        ADVANCEDRIFLE = -1357824103,
+        AssaultSMG = -270015777,
+        AssaultRifle = -1074790547,
+        CarbineRifle = -2084633992,
+        AdvancedRifle = -1357824103,
         MG = -1660422300,
-        COMBATMG = 2144741730,
-        PUMPSHOTGUN = 487013001,
-        SAWNOFFSHOTGUN = 2017895192,
-        ASSAULTSHOTGUN = -494615257,
-        BULLPUPSHOTGUN = -1654528753,
-        BULLPURIFLE = 2132975508,
-        STUNGUN = 911657153,
-        SNIPERRIFLE = 100416529,
-        HEAVYSNIPER = 205991906,
-        HEAVYPISTOL = -771403250,
-        HEAVYSHOTGUN = 984333226,
-        REMOTESNIPER = 856002082,
-        GRENADELAUNCHER = -1568386805,
-        GRENADELAUNCHER_SMOKE = 1305664598,
+        CombatMG = 2144741730,
+        PumpShotgun = 487013001,
+        SawedOffShotgun = 2017895192,
+        AssaultShotgun = -494615257,
+        BullpupShotgun = -1654528753,
+        BullpupRifle = 2132975508,
+        StunGun = 911657153,
+        SniperRifle = 100416529,
+        HeavySniper = 205991906,
+        HeavyPistol = -771403250,
+        HeavyShotgun = 984333226,
+        RemoteSniper = 856002082,
+        GrenadeLauncher = -1568386805,
+        GrenadeLauncherSmoke = 1305664598,
         RPG = -1312131151,
         PASSENGER_ROCKET = 375527679,
         AIRSTRIKE_ROCKET = 324506233,
-        STINGER = 1752584910,
-        MINIGUN = 1119849093,
-        GRENADE = -1813897027,
-        STICKYBOMB = 741814745,
-        SMOKEGRENADE = -37975472,
-        BZGAS = -1600701090,
-        MOLOTOV = 615608432,
-        FIREEXTINGUISHER = 101631238,
-        FIREWORK = 2138347493,
-        PROXIMITYMINE = -1420407917,
-        PETROLCAN = 883325847,
+        Stinger = 1752584910,
+        MiniGun = 1119849093,
+        Grenade = -1813897027,
+        StickyBomb = 741814745,
+        SmokeGrenade = -37975472,
+        BZGas = -1600701090,
+        Molotov = 615608432,
+        FireExtinguisher = 101631238,
+        Firework = 2138347493,
+        ProximityMine = -1420407917,
+        PetrolCan = 883325847,
         DIGISCANNER = -38085395,
         BRIEFCASE = -2000187721,
         BRIEFCASE_02 = 28811031,
-        BALL = 600439132,
+        Ball = 600439132,
         FLARE = 1233104067,
         VEHICLE_ROCKET = -1090665087,
         BARBED_WIRE = 1223143800,
@@ -124,28 +124,28 @@
         ELECTRIC_FENCE = -1833087301,
         EXPLOSION = 539292904,
         FALL = -842959696,
-        EXHAUSTION = 910830060,
+        Exhaustion = 910830060,
         HIT_BY_WATER_CANNON = -868994466,
         RAMMED_BY_CAR = 133987706,
         RUN_OVER_BY_CAR = -1553120962,
         MOW_OVER_BY_AIRCRAFT = -1323279794,
-        HELI_CRASH = 341774354,
-        FIRE = -544306709,
-        MUSCKET = -1466123874,
-        MARKSMANRIFLE = -952879014,
-        RAILGUN = 1834241177,
-        FLAREGUN = 1198879012,
-        MARKSMANPISTOL = -598887786,
-        MACHINEPISTOL = -619010992,
-        GUSENBERG = 1627465347,
-        TANK = 1945616459,
-        REVOLVER = -1045183535,
-        COMPACTRIFLE = 1649403952,
-        DOUBLEBARRELSHOTGUN = -275439685,
-        MINISMG = -1121678507,
-        AUTOSHOTGUN = 317205821,
-        COMPACTLAUNCHER = 125959754,
-        PIPEBOMB = -1169823560,
+        HeliCrash = 341774354,
+        Fire = -544306709,
+        Musket = -1466123874,
+        MarksmanRifle = -952879014,
+        RailGun = 1834241177,
+        FlareGun = 1198879012,
+        MarksmanPistol = -598887786,
+        MachinePistol = -619010992,
+        Gusenberg = 1627465347,
+        Tank = 1945616459,
+        Revolver = -1045183535,
+        CompactRifle = 1649403952,
+        DoubleBarrelShotgun = -275439685,
+        MiniSMG = -1121678507,
+        AutoShotgun = 317205821,
+        CompactLauncher = 125959754,
+        PipeBomb = -1169823560,
         Bottle = -102323637,
         Dagger = -1834847097,
         Hatchet = -102973651,
@@ -162,7 +162,10 @@
         AssaultRifleMk2 = 961495388,
         CarbineRifleMk2 = -86904375,
         HeavySniperMk2 = 177293209,
-        HomingLauncher = 1672152130
+        HomingLauncher = 1672152130,
+        Widowmaker = -1238556825,
+        Raycarbine = 1198256469,
+        Raypistol = -1355376991
     }
 
     public enum VehicleWeapon
@@ -177,7 +180,7 @@
         PLAYER_HUNTER = -1625648674,
         ENEMY_LASER = 1566990507,
         SEARCHLIGHT = -844344963,
-        RADAR = -764006018,
+        RADAR = -764006018
     }
 
     public enum ExplosionType
@@ -204,13 +207,13 @@
         SMOKEGRENADELAUNCHER = -1014218325,
         SMOKEGRENADE = -1832600771,
         BZGAS = -515713583,
-        FLARE = -1330848211,
+        FLARE = -1330848211
     }
 
     /// <summary>
     /// ミッションキャラの扱い
     /// </summary>
-    public enum MissionCharacterTreatmentType
+    public enum MissionCharacterBehaviour
     {
         AffectAllCharacter = 0,
         ExcludeUniqueCharacter = 1,
@@ -219,7 +222,7 @@
 
     public enum PedTaskAction
     {
-        FALL_WITH_PARACHUTE = 334,
+        FALL_WITH_PARACHUTE = 334
     }
 
     public enum CutSceneOnlyPedHash : uint
@@ -342,6 +345,87 @@
         TrafficWardenCutscene = 0xDE2937F3,
         WadeCutscene = 0xD266D9D6,
         WeiChengCutscene = 0x30DB9D7B,
-        ZimborCutscene = 0xEAACAAF0,
+        ZimborCutscene = 0xEAACAAF0
     }
+
+    public enum RelationGroupShipHash
+    {
+        PLAYER = 1861676789,
+        CIVMALE = 45694720,
+        CIVFEMALE = 1190180096,
+        COP = -1528616804,
+        SECURITY_GUARD = -185552329,
+        PRIVATE_SECURITY = -1469563699,
+        FIREMAN = -64849945,
+        GANG_1 = 1126260106,
+        GANG_2 = 300760188,
+        GANG_9 = -1913396701,
+        GANG_10 = 229697329,
+        AMBIENT_GANG_LOST = -1860479392,
+        AMBIENT_GANG_MEXICAN = 296027235,
+        AMBIENT_GANG_FAMILY = 1163742528,
+        AMBIENT_GANG_BALLAS = -1034030518,
+        AMBIENT_GANG_MARABUNTE = 2036200253,
+        AMBIENT_GANG_CULT = 2019180648,
+        AMBIENT_GANG_SALVA = -1827817989,
+        AMBIENT_GANG_WEICHENG = 1782472070,
+        AMBIENT_GANG_HILLBILLY = -1280581860,
+        DEALER = -2100417730,
+        HATES_PLAYER = -2067874611,
+        HEN = -1074405639,
+        WILD_ANIMAL = 2078686231,
+        SHARK = 580500552,
+        COUGAR = -835418904,
+        NO_RELATIONSHIP = -88008701,
+        SPECIAL = -643503687,
+        MISSION2 = -2143213416,
+        MISSION3 = 1228624951,
+        MISSION4 = 1530235776,
+        MISSION5 = 654648186,
+        MISSION6 = 959938878,
+        MISSION7 = 38714245,
+        MISSION8 = 348701179,
+        ARMY = -47570861,
+        GUARD_DOG = 1376401226,
+        AGGRESSIVE_INVESTIGATE = -342488448,
+        MEDIC = -1331584544,
+        PRISONER = 2122675954,
+        DOMESTIC_ANIMAL = 1929645294,
+        DEER = 837469328
+    }
+
+    public enum PedType
+    {
+        PED_TYPE_PLAYER_0,
+        PED_TYPE_PLAYER_1,
+        PED_TYPE_NETWORK_PLAYER,
+        PED_TYPE_PLAYER_2,
+        PED_TYPE_CIVMALE,
+        PED_TYPE_CIVFEMALE,
+        PED_TYPE_COP,
+        PED_TYPE_GANG_ALBANIAN,
+        PED_TYPE_GANG_BIKER_1,
+        PED_TYPE_GANG_BIKER_2,
+        PED_TYPE_GANG_ITALIAN,
+        PED_TYPE_GANG_RUSSIAN,
+        PED_TYPE_GANG_RUSSIAN_2,
+        PED_TYPE_GANG_IRISH,
+        PED_TYPE_GANG_JAMAICAN,
+        PED_TYPE_GANG_AFRICAN_AMERICAN,
+        PED_TYPE_GANG_KOREAN,
+        PED_TYPE_GANG_CHINESE_JAPANESE,
+        PED_TYPE_GANG_PUERTO_RICAN,
+        PED_TYPE_DEALER,
+        PED_TYPE_MEDIC,
+        PED_TYPE_FIREMAN,
+        PED_TYPE_CRIMINAL,
+        PED_TYPE_BUM,
+        PED_TYPE_PROSTITUTE,
+        PED_TYPE_SPECIAL,
+        PED_TYPE_MISSION,
+        PED_TYPE_SWAT,
+        PED_TYPE_ANIMAL,
+        PED_TYPE_ARMY
+    };
+    
 }

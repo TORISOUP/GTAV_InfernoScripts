@@ -28,7 +28,7 @@ namespace Inferno.ChaosMode
         /// <returns>trueでカオス化"したくない"市民</returns>
         public static bool IsNotChaosPed(this Ped ped)
         {
-            return ped.GetPedMoney() == 555;
+            return ped.Money == 555;
         }
     }
 }

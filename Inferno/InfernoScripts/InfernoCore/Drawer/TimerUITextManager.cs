@@ -1,33 +1,41 @@
-﻿using GTA;
-using UniRx;
+﻿using System;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using GTA.UI;
 
 namespace Inferno
 {
     /// <summary>
-    ///　時限式テキスト
+    /// 時限式テキスト
     /// </summary>
     internal class TimerUiTextManager
     {
-        private InfernoScript parent;
+        private readonly InfernoScript parent;
+        private readonly Subject<Unit> setTextSubject = new();
         private ReduceCounter reduceCounter;
-        private UIText uiText;
-        private Subject<Unit> setTextSubject = new Subject<Unit>();
-        public UniRx.IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
+        private TextElement textElement;
 
         public TimerUiTextManager(InfernoScript parent)
         {
             this.parent = parent;
         }
 
+        public IObservable<Unit> OnSetTextAsObservable => setTextSubject.AsObservable();
+
         /// <summary>
         /// 描画テキスト
         /// </summary>
-        public UIText Text
+        public TextElement Text
         {
             get
             {
-                if (reduceCounter == null || uiText == null) return null;
-                return !reduceCounter.IsCompleted ? uiText : null;
+                if (reduceCounter == null || textElement == null)
+                {
+                    return null;
+                }
+
+                return !reduceCounter.IsCompleted ? textElement : null;
             }
         }
 
@@ -36,9 +44,9 @@ namespace Inferno
         /// </summary>
         public bool IsEnabled => reduceCounter != null && !reduceCounter.IsCompleted;
 
-        public void Set(UIText text, float expireSeconds)
+        public void Set(TextElement text, float expireSeconds)
         {
-            uiText = text;
+            textElement = text;
             reduceCounter = new ReduceCounter((int)(1000 * expireSeconds));
             parent.RegisterCounter(reduceCounter);
             setTextSubject.OnNext(Unit.Default);

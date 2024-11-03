@@ -11,18 +11,22 @@ namespace Inferno.InfernoScripts
     /// <summary>
     /// ParupunteConfigElementの管理
     /// </summary>
-    class ParupunteConfigRepository
+    internal class ParupunteConfigRepository
     {
         protected readonly Encoding _encoding = Encoding.UTF8;
         protected DebugLogger _debugLogger;
-        protected string _filePath = @"./scripts/confs/Parupunte.conf";
+        protected string _filePath = @"./scripts/inferno_configs/Parupunte.conf";
 
         protected virtual DebugLogger DebugLogger
         {
             get
             {
-                if (_debugLogger != null) return _debugLogger;
-                _debugLogger = new DebugLogger(@"Inferno.log");
+                if (_debugLogger != null)
+                {
+                    return _debugLogger;
+                }
+
+                _debugLogger = DebugLogger.Instance;
                 return _debugLogger;
             }
         }
@@ -32,7 +36,6 @@ namespace Inferno.InfernoScripts
         /// </summary>
         public Dictionary<string, ParupunteConfigElement> LoadSettingFile()
         {
-
             if (!File.Exists(_filePath))
             {
                 return new Dictionary<string, ParupunteConfigElement>();
@@ -56,7 +59,7 @@ namespace Inferno.InfernoScripts
             try
             {
                 var dto = JsonConvert.DeserializeObject<Dictionary<string, ParupunteConfigDto>>(readString);
-                return dto.Select(x => new { Key = x.Key, Value = x.Value.ToDomain() })
+                return dto.Select(x => new { x.Key, Value = x.Value.ToDomain() })
                     .ToDictionary(x => x.Key, x => x.Value);
             }
             catch (Exception e)
@@ -67,7 +70,7 @@ namespace Inferno.InfernoScripts
             }
         }
 
-        public async Task SaveSettings(Dictionary<string, ParupunteConfigElement> configs)
+        public async ValueTask SaveSettings(Dictionary<string, ParupunteConfigElement> configs)
         {
             var directoryPath = Path.GetDirectoryName(_filePath);
             //存在しないならディレクトリを作る
@@ -96,6 +99,5 @@ namespace Inferno.InfernoScripts
                 DebugLogger.Log(e.StackTrace);
             }
         }
-
     }
 }
