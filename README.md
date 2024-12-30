@@ -6,9 +6,13 @@ MIT Licenseで公開します。
 
 
 [MODダウンロード](https://github.com/TORISOUP/GTAV_InfernoScripts/wiki/MOD%E6%A6%82%E8%A6%81)  
-[wiki](https://github.com/TORISOUP/GTAV_InfernoScripts/wiki)
 
-## 開発者向け情報
+
+## 導入方法 / How to install
+
+[wiki](https://github.com/TORISOUP/GTAV_InfernoScripts/wiki)を参照して下さい。
+
+## 開発者向け情報 / for Developer
 
  * .NET Framework 4.8
  * C# 9.0
