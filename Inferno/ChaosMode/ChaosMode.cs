@@ -103,8 +103,6 @@ namespace Inferno.ChaosMode
                 })
                 .AddTo(CompositeDisposable);
 
-           
-
 
             IsActiveRP.Subscribe(_ =>
             {
@@ -119,9 +117,9 @@ namespace Inferno.ChaosMode
 
             _nextTreatType = _currentTreatType;
 
-            //F7でキャラカオスの切り替え（暫定
-            OnKeyDownAsObservable
-                .Where(x => IsActive && x.KeyCode == Keys.F7)
+            //キャラカオスの切り替え
+            CreateInputKeywordAsObservable("ChaosMode_MissionCharacterBehaviour", "F7")
+                .Where(_ => IsActive)
                 .Do(_ =>
                 {
                     _nextTreatType = (MissionCharacterBehaviour)(((int)_nextTreatType + 1) % 3);

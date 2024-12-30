@@ -12,8 +12,8 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="OverrideMissionCharacterWeapon" xml:space="preserve">
-        <value>ミッション関連キャラクターの武器を上書きするかどうか。M
-issionCharacterBehaviourの設定とは独立して機能します。</value>
+        <value>ミッション関連キャラクターの武器を上書きするかどうか。
+MissionCharacterBehaviourの設定とは独立して機能します。</value>
     </data>
     <data name="AttackPlayerCorrection" xml:space="preserve">
         <value>プレイヤーの狙われやすさを補正するか。

@@ -20,7 +20,7 @@ namespace Inferno
     [Serializable]
     internal class ChaosAirPlaneConfig : InfernoConfig
     {
-        public int _airPlaneCount = 2;
+        private int _airPlaneCount = 2;
 
         [JsonProperty("AirPlaneCount")]
         public int AirPlaneCount
