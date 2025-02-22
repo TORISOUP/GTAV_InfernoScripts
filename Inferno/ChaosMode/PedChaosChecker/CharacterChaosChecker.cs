@@ -5,22 +5,22 @@ namespace Inferno.ChaosMode
 {
     public class CharacterChaosChecker
     {
-        public CharacterChaosChecker(MissionCharacterBehaviour missionCharacterTreatment,
-            bool isChangeMissonCharacterWeapon)
+        private readonly ChaosModeSetting _chaosModeSetting;
+
+        public CharacterChaosChecker(ChaosModeSetting chaosModeSetting)
         {
-            MissionCharacterTreatment = missionCharacterTreatment;
-            IsChangeMissonCharacterWeapon = isChangeMissonCharacterWeapon;
+            _chaosModeSetting = chaosModeSetting;
         }
 
         /// <summary>
         /// ミッションキャラの武器を変更するか
         /// </summary>
-        public bool IsChangeMissonCharacterWeapon { get; set; }
+        private bool IsChangeMissionCharacterWeapon => _chaosModeSetting.OverrideMissionCharacterWeapon;
 
         /// <summary>
         /// ミッションキャラのカオス化
         /// </summary>
-        public MissionCharacterBehaviour MissionCharacterTreatment { get; set; }
+        private MissionCharacterBehaviour MissionCharacterTreatment => _chaosModeSetting.MissionCharacterBehaviour;
 
         /// <summary>
         /// 攻撃を避けるべき対象群
@@ -65,7 +65,7 @@ namespace Inferno.ChaosMode
         public bool IsPedChangebalWeapon(Ped ped)
         {
             return ped.IsSafeExist() && ped.IsAlive && !ped.IsPlayer
-                   && (!ped.IsRequiredForMission() || IsChangeMissonCharacterWeapon);
+                   && (!ped.IsRequiredForMission() || IsChangeMissionCharacterWeapon);
         }
 
         /// <summary>
