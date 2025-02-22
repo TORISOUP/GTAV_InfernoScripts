@@ -69,10 +69,8 @@ namespace Inferno.ChaosMode
         {
             _chaosSettingLoader = new ChaosModeSettingReadWriter();
             _chaosModeSetting = _chaosSettingLoader.LoadSettingFile(@"ChaosMode.conf");
-
-
-            _chaosChecker = new CharacterChaosChecker(_chaosModeSetting.MissionCharacterBehaviour,
-                _chaosModeSetting.OverrideMissionCharacterWeapon);
+            
+            _chaosChecker = new CharacterChaosChecker(_chaosModeSetting);
 
             var customWeaponProvider =
                 new CustomWeaponProvider(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
@@ -84,8 +82,7 @@ namespace Inferno.ChaosMode
             {
                 customWeaponProvider.SetUp(_chaosModeSetting.WeaponList, _chaosModeSetting.WeaponListForDriveBy);
             };
-
-
+            
             //キーワードが入力されたらON／OFFを切り替える
             CreateInputKeywordAsObservable("ChaosMode_Activate", Keyword)
                 .Subscribe(_ =>
@@ -129,7 +126,7 @@ namespace Inferno.ChaosMode
                 .Subscribe(_ =>
                 {
                     _currentTreatType = _nextTreatType;
-                    _chaosChecker.MissionCharacterTreatment = _nextTreatType;
+                    _chaosModeSetting.MissionCharacterBehaviour= _nextTreatType;
                     DrawText("CharacterChaos:" + _currentTreatType + "[OK]");
                     chaosedPedList.Clear();
                     _localCts?.Cancel();
