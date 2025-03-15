@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Media;
 using System.Reflection;
 using System.Windows.Forms;
 using GTA;
@@ -34,6 +36,9 @@ namespace Inferno.InfernoScripts.Parupunte
         /// いその用パルプンテ
         /// </summary>
         private Dictionary<string, Type> _isonoParupunteScripts;
+
+        
+        private SoundPlayer _soundPlayer;
 
         private Dictionary<string, Type> IsonoParupunteScripts
         {
@@ -71,6 +76,8 @@ namespace Inferno.InfernoScripts.Parupunte
             IsActive = false;
             timerText = new TimerUiTextManager(this);
 
+            SetUpSound();
+            
             #region ParunteScripts
 
             //RefrectionでParupunteScriptを継承しているクラスをすべて取得する
@@ -332,6 +339,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
             //名前を出してスタート
             StartCoroutine(ParupunteDrawCoroutine(GetPlayerName() + "はパルプンテを唱えた!", script.Name));
+            _soundPlayer?.Play();
+
             yield return WaitForSeconds(2);
 
             try
@@ -503,5 +512,29 @@ namespace Inferno.InfernoScripts.Parupunte
         {
             base.AutoReleaseOnGameEnd(entity);
         }
+        
+        /// <summary>
+        /// 効果音のロード
+        /// </summary>
+        private void SetUpSound()
+        {
+            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains("parupunte.wav"));
+            if (setupWav != null)
+            {
+                _soundPlayer = new SoundPlayer(setupWav);
+            }
+        }
+
+        private string[] LoadWavFiles(string targetPath)
+        {
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
+
+            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
+        }
+
     }
 }

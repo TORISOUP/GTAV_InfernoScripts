@@ -18,7 +18,7 @@ namespace Inferno
         private UIContainer _mContainer;
         private int ScreenHeight;
         private int ScreenWidth;
-        private int alertHelthValue = 25;
+        private int alertHelthValue = 125;
 
         protected override void Setup()
         {
