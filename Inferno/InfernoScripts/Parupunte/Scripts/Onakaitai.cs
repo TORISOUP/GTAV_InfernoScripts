@@ -18,9 +18,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private bool AffectAllPed = false;
 
         private List<Ped> targetPeds = new List<Ped>();
-
-        private SoundPlayer _soundPlayer;
-
+        
         public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
         }
@@ -38,10 +36,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             //たまに全員に対して発動させる
             AffectAllPed = r.Next() % 10 == 0;
 
-            if (_soundPlayer == null)
-            {
-                SetUpSound();
-            }
+            SetUpSound("onakaitai.wav");
         }
 
         public override void OnStart()
@@ -59,6 +54,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 targetPeds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsAlive).ToList();
             }
+
             targetPeds.Add(core.PlayerPed);
 
             //コルーチン起動
@@ -77,8 +73,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
-            
-            _soundPlayer?.Play();
+
+            PlaySound();
         }
 
         private IEnumerable<object> OilCoroutine(Ped ped)
@@ -98,7 +94,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var scale = 3.0f;
             Function.Call(Hash._SET_PTFX_ASSET_NEXT_CALL, "core");
             Function.Call<int>(Hash.START_PARTICLE_FX_NON_LOOPED_ON_PED_BONE, effect,
-                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0, 0, 0);
+                ped, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, (int)Bone.SKEL_Pelvis, scale, 0,
+                0, 0);
         }
 
         /// <summary>
@@ -109,29 +106,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (!ped.IsSafeExist()) return;
             var pos = ped.Position;
             GTA.World.AddOwnedExplosion(ped, pos, GTA.ExplosionType.Bullet, 0.0f, 0.0f);
-        }
-        
-        /// <summary>
-        /// 効果音のロード
-        /// </summary>
-        private void SetUpSound()
-        {
-            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
-            var setupWav = filePaths.FirstOrDefault(x => x.Contains("onakaitai.wav"));
-            if (setupWav != null)
-            {
-                _soundPlayer = new SoundPlayer(setupWav);
-            }
-        }
-
-        private string[] LoadWavFiles(string targetPath)
-        {
-            if (!Directory.Exists(targetPath))
-            {
-                return Array.Empty<string>();
-            }
-
-            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
     }
 }

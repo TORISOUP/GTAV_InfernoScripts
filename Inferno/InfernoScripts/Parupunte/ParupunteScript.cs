@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Media;
 using System.Reflection;
 using GTA;
 using Inferno.InfernoScripts.Event;
@@ -42,7 +45,9 @@ namespace Inferno.InfernoScripts.Parupunte
         public string DefaultSubMessage = "";
         public string DefaultEndMessage = "";
 
-        public ParupunteConfigAttribute(string defaultStartMessage = "", string defaultEndMessage = "", string defaultSubMessage = "")
+        public ParupunteConfigAttribute(string defaultStartMessage = "",
+            string defaultEndMessage = "",
+            string defaultSubMessage = "")
         {
             DefaultStartMessage = defaultStartMessage;
             DefaultEndMessage = defaultEndMessage;
@@ -102,6 +107,8 @@ namespace Inferno.InfernoScripts.Parupunte
 
         protected readonly ParupunteConfigElement Config;
 
+        private SoundPlayer _soundPlayer;
+
         protected ParupunteScript(ParupunteCore core, ParupunteConfigElement element)
         {
             this.core = core;
@@ -111,7 +118,6 @@ namespace Inferno.InfernoScripts.Parupunte
             Random = new Random();
 
             Config = element;
-
         }
 
         /// <summary>
@@ -128,7 +134,10 @@ namespace Inferno.InfernoScripts.Parupunte
         /// パルプンテの名前が出るより前に1回だけ実行される
         /// コンストラクタでの初期化の代わりにこっちを使う
         /// </summary>
-        public virtual void OnSetUp() {; }
+        public virtual void OnSetUp()
+        {
+            ;
+        }
 
         /// <summary>
         /// パルプンテの名前が出たあとに1回だけ実行される
@@ -171,6 +180,7 @@ namespace Inferno.InfernoScripts.Parupunte
             {
                 StopCoroutine(id);
             }
+
             coroutineIds.Clear();
 
             var endMessage = EndMessage();
@@ -248,5 +258,35 @@ namespace Inferno.InfernoScripts.Parupunte
             core.AutoReleaseOnGameEnd(entity);
         }
 
+
+        /// <summary>
+        /// 効果音のロード
+        /// </summary>
+        protected void SetUpSound(string wav)
+        {
+            if (_soundPlayer != null) return;
+
+            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains(wav));
+            if (setupWav != null)
+            {
+                _soundPlayer = new SoundPlayer(setupWav);
+            }
+        }
+
+        private string[] LoadWavFiles(string targetPath)
+        {
+            if (!Directory.Exists(targetPath))
+            {
+                return Array.Empty<string>();
+            }
+
+            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
+        }
+
+        protected void PlaySound()
+        {
+            _soundPlayer?.Play();
+        }
     }
 }

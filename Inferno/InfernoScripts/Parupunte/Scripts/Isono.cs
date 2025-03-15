@@ -16,11 +16,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnSetUp()
         {
+            SetUpSound("isono.wav");
+
         }
 
         public override void OnStart()
         {
             StartCoroutine(IsonoCoroutine());
+            PlaySound();
         }
 
         private IEnumerable<object> IsonoCoroutine()
