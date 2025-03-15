@@ -23,7 +23,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
-            SetUpSound();
         }
 
         public override void OnSetNames()
@@ -38,6 +37,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //たまに全員に対して発動させる
             AffectAllPed = r.Next() % 10 == 0;
+
+            if (_soundPlayer == null)
+            {
+                SetUpSound();
+            }
         }
 
         public override void OnStart()
@@ -124,7 +128,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             if (!Directory.Exists(targetPath))
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
