@@ -3,7 +3,9 @@ using GTA.Math;
 using GTA.Native;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Media;
 using UniRx;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
@@ -17,8 +19,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private List<Ped> targetPeds = new List<Ped>();
 
+        private SoundPlayer _soundPlayer;
+
         public Onakaitai(ParupunteCore core, ParupunteConfigElement element) : base(core, element)
         {
+            SetUpSound();
         }
 
         public override void OnSetNames()
@@ -68,6 +73,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
+            
+            _soundPlayer?.Play();
         }
 
         private IEnumerable<object> OilCoroutine(Ped ped)
@@ -98,6 +105,29 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (!ped.IsSafeExist()) return;
             var pos = ped.Position;
             GTA.World.AddOwnedExplosion(ped, pos, GTA.ExplosionType.Bullet, 0.0f, 0.0f);
+        }
+        
+        /// <summary>
+        /// 効果音のロード
+        /// </summary>
+        private void SetUpSound()
+        {
+            var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains("onakaitai.wav"));
+            if (setupWav != null)
+            {
+                _soundPlayer = new SoundPlayer(setupWav);
+            }
+        }
+
+        private string[] LoadWavFiles(string targetPath)
+        {
+            if (!Directory.Exists(targetPath))
+            {
+                return new string[0];
+            }
+
+            return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
     }
 }
