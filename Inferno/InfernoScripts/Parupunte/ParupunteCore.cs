@@ -328,6 +328,7 @@ namespace Inferno.InfernoScripts.Parupunte
             {
                 script.OnSetUp();
                 script.OnSetNames();
+                script.SetUpSound();
             }
             catch (Exception e)
             {
@@ -346,6 +347,7 @@ namespace Inferno.InfernoScripts.Parupunte
             try
             {
                 script.OnStart();
+                script.PlaySound();
             }
             catch (Exception e)
             {
@@ -382,6 +384,7 @@ namespace Inferno.InfernoScripts.Parupunte
 
             try
             {
+                script.StopSound();
                 script.OnFinishedCore();
             }
             catch (Exception e)

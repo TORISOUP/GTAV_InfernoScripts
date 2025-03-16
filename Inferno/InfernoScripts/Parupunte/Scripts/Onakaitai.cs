@@ -35,8 +35,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             //たまに全員に対して発動させる
             AffectAllPed = r.Next() % 10 == 0;
-
-            SetUpSound("onakaitai.wav");
         }
 
         public override void OnStart()
@@ -73,8 +71,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                 ParupunteEnd();
             });
-
-            PlaySound();
         }
 
         private IEnumerable<object> OilCoroutine(Ped ped)

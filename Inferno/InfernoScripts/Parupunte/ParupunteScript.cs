@@ -262,12 +262,12 @@ namespace Inferno.InfernoScripts.Parupunte
         /// <summary>
         /// 効果音のロード
         /// </summary>
-        protected void SetUpSound(string wav)
+        public void SetUpSound()
         {
             if (_soundPlayer != null) return;
 
             var filePaths = LoadWavFiles(@"scripts/InfernoSEs");
-            var setupWav = filePaths.FirstOrDefault(x => x.Contains(wav));
+            var setupWav = filePaths.FirstOrDefault(x => x.Contains($"{GetClassName()}.wav"));
             if (setupWav != null)
             {
                 _soundPlayer = new SoundPlayer(setupWav);
@@ -284,9 +284,19 @@ namespace Inferno.InfernoScripts.Parupunte
             return Directory.GetFiles(targetPath).Where(x => Path.GetExtension(x) == ".wav").ToArray();
         }
 
-        protected void PlaySound()
+        public void PlaySound()
         {
             _soundPlayer?.Play();
+        }
+        
+        public virtual void StopSound()
+        {
+            _soundPlayer?.Stop();
+        }
+        
+        public string GetClassName()
+        {
+            return this.GetType().Name;
         }
     }
 }
