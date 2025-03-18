@@ -72,9 +72,17 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     return;
                 }
 
-                var playerPos = core.PlayerPed.Position;
+                var playerPed = core.PlayerPed;
 
-                if (entity is Ped p)
+                if (entity is Vehicle v)
+                {
+                    if (playerPed.CurrentVehicle == v)
+                    {
+                        await DelaySecondsAsync(1, ct);
+                        continue;
+                    }
+                }
+                else if (entity is Ped p)
                 {
                     if (p.IsDead)
                     {
@@ -83,6 +91,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
                     p.SetToRagdoll();
                 }
+
+                var playerPos = playerPed.Position;
 
                 //プレイヤに向かうベクトル
                 var gotoPlayerVector = playerPos - entity.Position;
