@@ -4,7 +4,6 @@ using GTA;
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("けいさつ")]
-    [ParupunteDebug(true)]
     internal class ChangeWantedLevel : ParupunteScript
     {
         private readonly int wantedLevelThreshold = 1;
