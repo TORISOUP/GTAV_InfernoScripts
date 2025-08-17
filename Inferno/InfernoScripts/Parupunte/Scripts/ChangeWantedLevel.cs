@@ -1,8 +1,10 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteIsono("けいさつ")]
+    [ParupunteDebug(true)]
     internal class ChangeWantedLevel : ParupunteScript
     {
         private readonly int wantedLevelThreshold = 1;
@@ -29,28 +31,28 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (wantedLevel >= wantedLevelThreshold)
             {
                 Game.Player.WantedLevel = 0;
+                ParupunteEnd();
             }
             else
             {
                 IncreasePlayerWantedLevel();
-            }
+                ReduceCounter = new ReduceCounter(30 * 1000);
+                AddProgressBar(ReduceCounter);
+                ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            ParupunteEnd();
+                OnFinishedAsObservable.Subscribe(_ =>
+                {
+                    Game.Player.WantedLevel = 0;
+                    core.DrawParupunteText("無罪放免", 1.0f);
+                });
+            }
         }
+
 
         private void IncreasePlayerWantedLevel()
         {
             var playerChar = Game.Player;
-            var MaxWantedLevel = Game.MaxWantedLevel;
-
-            if (MaxWantedLevel < playerChar.WantedLevel + 4)
-            {
-                playerChar.WantedLevel = MaxWantedLevel;
-            }
-            else
-            {
-                playerChar.WantedLevel = playerChar.WantedLevel + 4;
-            }
+            playerChar.WantedLevel = Game.MaxWantedLevel;
         }
     }
 }

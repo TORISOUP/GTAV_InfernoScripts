@@ -19,7 +19,7 @@ namespace Inferno
     public class EmergencyEscape : InfernoScript
     {
         private EmergencyEscapeConf conf;
-        private float EscapePower => conf?.Power ?? 60.0f;
+        private float EscapeVelocity => conf?.Velocity ?? 25.0f;
         protected override string ConfigFileName { get; } = "EmergencyEscape.conf";
 
         protected override void Setup()
@@ -74,12 +74,14 @@ namespace Inferno
                 player.CanRagdoll = true;
 
                 player.Task.LeaveVehicle(vec, LeaveVehicleFlags.WarpOut);
-                await YieldAsync(ct);
                 player.Position += new Vector3(0, 0, 1.0f);
+                await DelaySecondsAsync(0.1f, ct);
+
                 var shootPos = player.Position;
                 player.SetToRagdoll();
-                player.ApplyForce(new Vector3(0, 0, EscapePower) + vec.Velocity,
-                    Vector3.Zero, ForceType.MaxForceRot);
+                await YieldAsync(ct);
+                
+                player.Velocity = new Vector3(0, 0, EscapeVelocity) + vec.Velocity;
 
                 player.IsInvincible = true;
                 await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
@@ -104,12 +106,12 @@ namespace Inferno
         [Serializable]
         private class EmergencyEscapeConf : InfernoConfig
         {
-            private int _power = 60;
+            private int _velocity = 15;
 
-            public int Power
+            public int Velocity
             {
-                get => _power;
-                set => _power = value.Clamp(0, 100);
+                get => _velocity;
+                set => _velocity = value.Clamp(0, 100);
             }
 
             public override bool Validate()
@@ -133,18 +135,18 @@ namespace Inferno
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {
             subMenu.AddSlider(
-                $"Ejection power: {conf.Power}",
+                $"Ejection velocity: {conf.Velocity}",
                 PlayerLocalize.EmergencyEscapePower,
-                conf.Power,
+                conf.Velocity,
                 100,
                 x =>
                 {
-                    x.Value = conf.Power;
-                    x.Multiplier = 5;
+                    x.Value = conf.Velocity;
+                    x.Multiplier = 1;
                 }, item =>
                 {
-                    conf.Power = item.Value;
-                    item.Title = $"Ejection power: {conf.Power}";
+                    conf.Velocity = item.Value;
+                    item.Title = $"Ejection velocity: {conf.Velocity}";
                 });
 
 
