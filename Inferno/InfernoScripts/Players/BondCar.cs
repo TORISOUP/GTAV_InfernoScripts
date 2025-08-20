@@ -33,6 +33,9 @@ namespace Inferno.InfernoScripts.Player
                 _invincibleMillSeconds = 0;
                 if (x)
                 {
+                    // AssetLoad
+                    Function.Call(Hash.REQUEST_WEAPON_ASSET, Weapon.VEHICLE_ROCKET, 31, 0);
+                    
                     InputLoopAsync(ActivationCancellationToken).Forget();
                     InvincibleVehicleAsync(ActivationCancellationToken).Forget();
                 }
@@ -83,7 +86,6 @@ namespace Inferno.InfernoScripts.Player
         {
             var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 0, 0.2f);
             var target = vehicle.GetOffsetFromEntityInWorldCoords(0, 1000, 0.2f);
-
             Function.Call(
                 Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
                 startPosition.X,
@@ -141,7 +143,7 @@ namespace Inferno.InfernoScripts.Player
                                 current.IsExplosionProof = false;
                             }
                         }
-                        
+
                         await DelaySecondsAsync(0.1f, ct);
                     }
                 }

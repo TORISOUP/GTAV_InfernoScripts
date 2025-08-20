@@ -11,8 +11,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
     [ParupunteConfigAttribute("あっちこっち", "おわり")]
     [ParupunteIsono("あっちこっち")]
-    // クラッシュするので封印
-    [ParupunteDebug(isIgnore: true)]
     internal class PositionShuffle : ParupunteScript
     {
         private readonly Random random = new();
@@ -40,7 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     SwapPedPositionAsync(p1, p2, ct).Forget();
                 }
 
-                await DelaySecondsAsync(1.5f, ct);
+                await DelaySecondsAsync(1f, ct);
             }
         }
 
@@ -78,7 +76,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var isP2InVehicle = p2.IsInVehicle();
             var p2Pos = p2.Position;
             var v2 = p2.CurrentVehicle;
-            var v2seat = p1.SeatIndex;
+            var v2seat = p2.SeatIndex;
             var p2Requried = p2.IsRequiredForMission();
 
             #region P2を退避

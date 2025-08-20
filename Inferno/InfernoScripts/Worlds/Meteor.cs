@@ -37,8 +37,7 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ =>
                 {
-                    var m = new Model(WeaponHash.RPG);
-                    m.Request();
+                    Function.Call(Hash.REQUEST_WEAPON_ASSET, WeaponHash.RPG, 31, 0);
                     MeteorLoopAsync(ActivationCancellationToken).Forget();
                     DebugLoopAsync(ActivationCancellationToken).Forget();
                 });
