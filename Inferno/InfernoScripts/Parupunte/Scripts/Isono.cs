@@ -16,14 +16,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
         }
 
-        bool _initPlayerCollisionProof;
-        bool _initVehicleCollisionProof;
+        bool _initPlayerInvincible;
+        bool _initVehicleInvincible;
         private Dictionary<Entity, bool> _persistentEntities = new();
 
         public override void OnSetUp()
         {
-            _initPlayerCollisionProof = core.PlayerPed.IsCollisionProof;
-            _initVehicleCollisionProof = core.PlayerPed.IsInVehicle() && core.PlayerPed.CurrentVehicle.IsCollisionProof;
+            _initPlayerInvincible = core.PlayerPed.IsInvincible;
+            _initVehicleInvincible = core.PlayerPed.IsInVehicle() && core.PlayerPed.CurrentVehicle.IsInvincible;
         }
 
         public override void OnStart()
@@ -35,16 +35,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             var player = core.PlayerPed;
 
-            player.IsCollisionProof = _initPlayerCollisionProof;
+            player.IsInvincible = _initPlayerInvincible;
 
             if (player.IsInVehicle())
             {
-                player.CurrentVehicle.IsCollisionProof = _initVehicleCollisionProof;
+                player.CurrentVehicle.IsInvincible = _initVehicleInvincible;
             }
 
             foreach (var pe in _persistentEntities)
             {
-                if (pe.Key.IsSafeExist())
+                if (pe.Key.IsSafeExist() && pe.Key.IsPersistent)
                 {
                     pe.Key.IsPersistent = pe.Value;
                 }
@@ -67,11 +67,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             player.CanRagdoll = true;
             player.SetToRagdoll(3000);
-            player.IsCollisionProof = true;
+            player.IsInvincible = true;
 
             if (player.IsInVehicle())
             {
-                player.CurrentVehicle.IsCollisionProof = true;
+                player.CurrentVehicle.IsInvincible = true;
             }
 
             foreach (var e in entities.Where(x => x.IsSafeExist()))
@@ -80,6 +80,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 e.IsPersistent = true;
             }
 
+            // Up
             while (!ct.IsCancellationRequested)
             {
                 var pZ = player.Position.Z;
@@ -120,12 +121,50 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
 
             //着地するまで
-            while (player.IsInVehicle() ? player.CurrentVehicle.IsInAir : player.IsInAir)
+            bool IsInAir()
             {
+                if (player.IsInVehicle())
+                {
+                    return player.CurrentVehicle.IsInAir || player.CurrentVehicle.Velocity.Length() > 10f;
+                }
+
+                return player.IsInAir || player.Velocity.Length() > 10f;
+            }
+
+
+            var targetEntities = entities.Where(x => x.IsSafeExist() && x != player && player.CurrentVehicle != x).ToArray();
+
+            while (IsInAir())
+            {
+                // Playerに向かって飛んでくる
+                foreach (var entity in targetEntities)
+                {
+                    var targetPosition = Vector3.Lerp(player.Position, entity.Position, 0.2f);
+                    var vec = (targetPosition - entity.Position) + Vector3.WorldDown * 20;
+                    var direction = vec.Normalized();
+                    var length = vec.Length();
+                    var power = entity is Ped ? pedForcePower : vehicleForcePower;
+                    entity.ApplyForce(direction * power * length * 0.025f, Vector3.RandomXYZ(), ForceType.MaxForceRot);
+                }
+
                 await YieldAsync(ct);
             }
 
             await DelaySecondsAsync(1, ct);
+
+            // ぜんぶ吹っ飛ばす
+            foreach (var entity in targetEntities)
+            {
+                var vec = -(player.Position - entity.Position);
+                var direction = (vec.Normalized() + Vector3.WorldUp * 5).Normalized;
+                var power = entity is Ped ? pedForcePower : vehicleForcePower;
+                entity.ApplyForce(direction * power * 50, Vector3.RandomXYZ(), ForceType.MaxForceRot);
+            }
+
+            GTA.World.AddExplosion(player.Position, GTA.ExplosionType.Grenade, 100, 1, null, true, false);
+
+            await DelaySecondsAsync(1, ct);
+
 
             ParupunteEnd();
         }

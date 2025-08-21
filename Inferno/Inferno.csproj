@@ -118,6 +118,7 @@
         <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
+        <Compile Include="InfernoScripts\Parupunte\Scripts\EveryoneFart.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
         <Compile Include="InfernoScripts\Players\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\Players\SuppressWanted.cs" />
