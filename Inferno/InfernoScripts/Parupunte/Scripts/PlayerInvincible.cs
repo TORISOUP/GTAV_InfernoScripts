@@ -24,7 +24,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(20000);
+            ReduceCounter = new ReduceCounter(30000);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
             EffectAsync(ActiveCancellationToken).Forget();
@@ -55,51 +55,57 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (!ct.IsCancellationRequested && IsActive)
             {
+                var isCutscene = Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
                 var playerPos = player.Position;
 
                 var pedRange = player.IsInVehicle() ? 6 : 4;
                 foreach (var ped in core.CachedPeds.Where(x =>
                              x.IsSafeExist() && x.IsInRangeOf(playerPos, pedRange) && x.IsAlive))
                 {
-                    ped.SetToRagdoll(10);
+
                     ped.Task.ClearAllImmediately();
-                    ped.Velocity = Vector3.WorldUp * 100f;
+                    ped.SetToRagdoll(500);
 
-                    Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
+                    var speed = ped.IsCutsceneOnlyPed() ? 1f : 100f;
+                    ped.Velocity = Vector3.WorldUp * speed;
+                    if (!isCutscene)
                     {
-                        ped.Position.X,
-                        ped.Position.Y,
-                        ped.Position.Z,
-                        GTA.ExplosionType.Rocket,
-                        0.0f,
-                        true,
-                        false,
-                        0.1f
-                    });
-
-                    await YieldAsync(ct);
+                        Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
+                        {
+                            ped.Position.X,
+                            ped.Position.Y,
+                            ped.Position.Z,
+                            GTA.ExplosionType.RayGun,
+                            0.0f,
+                            true,
+                            false,
+                            0.1f
+                        });
+                    }
                 }
 
                 var veRange = player.IsInVehicle() ? 10 : 8;
 
                 foreach (var ve in core.CachedVehicles.Where(x =>
-                             x.IsSafeExist() && x.IsInRangeOf(playerPos, veRange) && x != player.CurrentVehicle && x.IsAlive))
+                             x.IsSafeExist() && x.IsInRangeOf(playerPos, veRange) && x != player.CurrentVehicle &&
+                             x.IsAlive))
                 {
                     ve.Velocity = Vector3.WorldUp * 100f;
 
-                    Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
+                    if (!isCutscene)
                     {
-                        ve.Position.X,
-                        ve.Position.Y,
-                        ve.Position.Z,
-                        GTA.ExplosionType.Rocket,
-                        0.0f,
-                        true,
-                        false,
-                        0.1f
-                    });
-                    await YieldAsync(ct);
-
+                        Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
+                        {
+                            ve.Position.X,
+                            ve.Position.Y,
+                            ve.Position.Z,
+                            GTA.ExplosionType.RayGun,
+                            0.0f,
+                            true,
+                            false,
+                            0.1f
+                        });
+                    }
                 }
 
                 await YieldAsync(ct);

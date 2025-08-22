@@ -30,33 +30,48 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private async ValueTask FartAsync(CancellationToken ct)
         {
-            core.DrawParupunteText("みんなで 3", 1.0f);
+            core.DrawParupunteText("3", 1.0f);
             await DelaySecondsAsync(1, ct);
-            core.DrawParupunteText("みんなで 2", 1.0f);
+            core.DrawParupunteText("2", 1.0f);
             await DelaySecondsAsync(1, ct);
-            core.DrawParupunteText("みんなで 1", 1.0f);
+            core.DrawParupunteText("1", 1.0f);
             await DelaySecondsAsync(1, ct);
 
             core.DrawParupunteText("みんなで 発射！", 3.0f);
 
             var player = core.PlayerPed;
             var playerPos = player.Position;
-            var peds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 30f))
+            var peds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 100f))
                 .Concat(new[] { player })
                 .ToArray();
 
             foreach (var ped in peds.Where(x => x.IsSafeExist()))
             {
+                if (!ped.IsSafeExist()) continue;
                 GasExplosion(ped);
                 CreateEffect(ped, "ent_sht_steam");
 
-                if (ped.IsInVehicle())
+                if (ped.IsInVehicle() && ped.CurrentVehicle.IsSafeExist())
                 {
-                    ped.CurrentVehicle.SetForwardSpeed(300);
+                    if (ped != core.PlayerPed)
+                    {
+                        ped.Task.LeaveVehicle(ped.CurrentVehicle, LeaveVehicleFlags.WarpOut);
+                        ped.Position += new Vector3(0, 0, 2.0f);
+                    }
+                    else
+                    {
+                        ped.CurrentVehicle.SetForwardSpeed(100);
+                    }
                 }
 
-                ped.SetToRagdoll(10);
+                if (!ped.IsCutsceneOnlyPed())
+                {
+                    ped.Task.ClearAllImmediately();
+                    ped.SetToRagdoll(500);
+                }
                 ped.ApplyForce(Vector3.WorldUp * 30.0f);
+
+                await DelaySecondsAsync(0.1f, ct);
             }
 
 
@@ -68,14 +83,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var playerPos = shotPed.Position;
             var targets = core.CachedPeds.Cast<Entity>()
                 .Concat(core.CachedVehicles)
-                .Where(x => x.IsSafeExist() && x.IsInRangeOf(shotPed.Position, 400));
+                .Concat(new[] { core.PlayerPed })
+                .Where(x => x.IsSafeExist() && x.IsInRangeOf(shotPed.Position, 30));
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
                 playerPos.X,
                 playerPos.Y,
                 playerPos.Z,
-                -1,
+                0,
                 0.5f,
                 true,
                 false,
@@ -85,7 +101,18 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             foreach (var e in targets)
             {
                 if (e == shotPed) continue;
+                if (!e.IsSafeExist()) continue;
                 var dir = (e.Position - shotPed.Position).Normalized;
+
+                if (e is Ped ped)
+                {
+                    if (ped.IsCutsceneOnlyPed())
+                    {
+                        ped.Task.ClearAllImmediately();
+                        ped.SetToRagdoll(500);
+                    }
+                }
+
                 e.ApplyForce(dir * 1000.0f, Vector3.Zero, ForceType.MaxForceRot);
             }
         }

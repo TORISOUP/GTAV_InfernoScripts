@@ -35,7 +35,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             else
             {
                 IncreasePlayerWantedLevel();
-                ReduceCounter = new ReduceCounter(30 * 1000);
+                ReduceCounter = new ReduceCounter(20 * 1000);
                 AddProgressBar(ReduceCounter);
                 ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
