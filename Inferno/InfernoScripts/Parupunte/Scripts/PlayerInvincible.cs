@@ -55,6 +55,15 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             while (!ct.IsCancellationRequested && IsActive)
             {
+                // 画面が暗転してるか？
+                var fadedIn = Function.Call<bool>(Hash.IS_SCREEN_FADED_IN);
+                if (!fadedIn)
+                {
+                    // 画面が暗転している間は何もしない
+                    await DelaySecondsAsync(1, ct);
+                    continue;
+                }
+                
                 var isCutscene = Function.Call<bool>(Hash.IS_CUTSCENE_ACTIVE);
                 var playerPos = player.Position;
 
@@ -62,6 +71,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 foreach (var ped in core.CachedPeds.Where(x =>
                              x.IsSafeExist() && x.IsInRangeOf(playerPos, pedRange) && x.IsAlive))
                 {
+                    if (ped.MayBeFriend()) continue;
 
                     ped.Task.ClearAllImmediately();
                     ped.SetToRagdoll(500);
