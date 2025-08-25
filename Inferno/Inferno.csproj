@@ -109,6 +109,7 @@
         <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
         <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenForceRide.cs" />
         <Compile Include="InfernoScripts\Conf\InfernoCommandConfig.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoAllOnProvider.cs" />

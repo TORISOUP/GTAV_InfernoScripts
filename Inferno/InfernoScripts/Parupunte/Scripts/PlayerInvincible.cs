@@ -51,10 +51,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private async ValueTask AttackAsync(CancellationToken ct)
         {
-            var player = core.PlayerPed;
-
             while (!ct.IsCancellationRequested && IsActive)
             {
+                var player = core.PlayerPed;
+
                 // 画面が暗転してるか？
                 var fadedIn = Function.Call<bool>(Hash.IS_SCREEN_FADED_IN);
                 if (!fadedIn)

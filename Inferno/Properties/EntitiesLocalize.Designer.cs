@@ -168,6 +168,51 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Execute immediately.
+        /// </summary>
+        internal static string ForceRideAction {
+            get {
+                return ResourceManager.GetString("ForceRideAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When a player repeatedly sounds the horn while driving, nearby citizens are forced to get into your car..
+        /// </summary>
+        internal static string ForceRideDescription {
+            get {
+                return ResourceManager.GetString("ForceRideDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required number of hits..
+        /// </summary>
+        internal static string ForceRideInputCount {
+            get {
+                return ResourceManager.GetString("ForceRideInputCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input grace period for repeated honking..
+        /// </summary>
+        internal static string ForceRideInputTimeout {
+            get {
+                return ResourceManager.GetString("ForceRideInputTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forced entry.
+        /// </summary>
+        internal static string ForceRideTitle {
+            get {
+                return ResourceManager.GetString("ForceRideTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Citizens paratroop down near the player..
         /// </summary>
         internal static string ParachuteDescription {

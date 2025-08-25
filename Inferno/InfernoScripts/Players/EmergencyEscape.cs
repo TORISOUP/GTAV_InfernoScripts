@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Properties;
 using Inferno.Utilities;
@@ -63,40 +64,77 @@ namespace Inferno
                 return;
             }
 
+            Game.Player.CanControlRagdoll = true;
             DelayParachuteAsync(PlayerPed, playerVec, ActivationCancellationToken).Forget();
+
+            {
+                var ped = playerVec.GetPedOnSeat(VehicleSeat.Passenger);
+                if (ped.IsSafeExist()) DelayParachuteAsync(ped, playerVec, ActivationCancellationToken).Forget();
+            }
+            {
+                var ped = playerVec.GetPedOnSeat(VehicleSeat.LeftRear);
+                if (ped.IsSafeExist()) DelayParachuteAsync(ped, playerVec, ActivationCancellationToken).Forget();
+            }
+            {
+                var ped = playerVec.GetPedOnSeat(VehicleSeat.RightRear);
+                if (ped.IsSafeExist()) DelayParachuteAsync(ped, playerVec, ActivationCancellationToken).Forget();
+            }
         }
 
-        private async ValueTask DelayParachuteAsync(Ped player, Vehicle vec, CancellationToken ct)
+        private async ValueTask DelayParachuteAsync(Ped ped, Vehicle vec, CancellationToken ct)
         {
+            if (!ped.IsSafeExist()) return;
+            if (!vec.IsSafeExist()) return;
+            var isRequirePersitent = false;
+
             try
             {
-                Game.Player.CanControlRagdoll = true;
-                player.CanRagdoll = true;
+                if (ped == PlayerPed)
+                {
+                    isRequirePersitent = vec.IsPersistent;
+                    vec.IsPersistent = true;
+                }
 
-                player.Task.LeaveVehicle(vec, LeaveVehicleFlags.WarpOut);
-                player.Position += new Vector3(0, 0, 1.0f);
-                await DelaySecondsAsync(0.1f, ct);
+                ped.CanRagdoll = true;
 
-                var shootPos = player.Position;
-                player.SetToRagdoll();
-                await YieldAsync(ct);
-                
-                player.Velocity = new Vector3(0, 0, EscapeVelocity) + vec.Velocity;
+                Function.Call(Hash.SET_ENTITY_COLLISION, ped.Handle, false, true);
 
-                player.IsInvincible = true;
-                await DelayAsync(TimeSpan.FromSeconds(1.5f), ct);
+                var vecVelocity = vec.Velocity;
+                ped.Task.LeaveVehicle(vec, LeaveVehicleFlags.WarpOut);
+
+                ped.PositionNoOffset = ped.Position + vec.UpVector * 0.5f + Vector3.RandomXY();
+                if (!ped.IsSafeExist()) return;
+
+                var shootPos = ped.Position;
+                ped.SetToRagdoll(100);
+                ped.Velocity = vec.UpVector * EscapeVelocity + vecVelocity;
+
+                ped.IsInvincible = true;
+
+                await DelaySecondsAsync(0.5f, ct);
+                if (!ped.IsSafeExist()) return;
+                Function.Call(Hash.SET_ENTITY_COLLISION, ped.Handle, true, true);
+
+                await DelayAsync(TimeSpan.FromSeconds(1.0f), ct);
+                if (!ped.IsSafeExist()) return;
 
                 // 発射位置より高い位置にいる場合はパラシュートを開く
-                if (player.Position.Z > shootPos.Z)
+                if (ped.Position.Z > shootPos.Z)
                 {
-                    player.ParachuteTo(player.Position);
+                    ped.ParachuteTo(ped.Position);
                 }
             }
             finally
             {
-                if (PlayerPed.IsSafeExist())
+                if (ped.IsSafeExist())
                 {
-                    PlayerPed.IsInvincible = false;
+                    ped.IsInvincible = false;
+                    Function.Call(Hash.SET_ENTITY_COLLISION, ped.Handle, true, true);
+                }
+
+                if (ped == PlayerPed)
+                {
+                    vec.IsPersistent = isRequirePersitent;
                 }
             }
         }
@@ -106,7 +144,7 @@ namespace Inferno
         [Serializable]
         private class EmergencyEscapeConf : InfernoConfig
         {
-            private int _velocity = 15;
+            private int _velocity = 35;
 
             public int Velocity
             {

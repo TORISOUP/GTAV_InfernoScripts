@@ -256,7 +256,7 @@ namespace Inferno
                 // 同じグループ
                 return true;
             }
-            
+
             // プレイヤーとの関係（Companion/Respect/Like）
             int rel = Function.Call<int>(Hash.GET_RELATIONSHIP_BETWEEN_PEDS, ped.Handle, player.Handle);
             // SHVDN の Relationship enum: Companion=0, Respect=1, Like=2, Neutral=3, Dislike=4, Hate=5
@@ -310,6 +310,14 @@ namespace Inferno
                 PedType.PED_TYPE_ARMY => true,
                 _ => CopPedHas.Contains((PedHash)ped.Model.Hash)
             };
+        }
+
+        public static IEnumerable<T> Around<T>(this IEnumerable<T> entities, Entity target, float range)
+            where T : Entity
+        {
+            if (!target.IsSafeExist()) return Array.Empty<T>();
+            var pos = target.Position;
+            return entities.Where(x => x.IsSafeExist() && x.IsInRangeOf(pos, range));
         }
 
         #region Weapon
