@@ -125,12 +125,11 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         private async ValueTask EffectAsync(CancellationToken ct)
         {
-            var player = core.PlayerPed;
-
-
             var startTime = core.ElapsedTime;
             while (!ct.IsCancellationRequested && IsActive)
             {
+                var player = core.PlayerPed;
+
                 var deltaTime = core.ElapsedTime - startTime;
                 var color = FromHsv(deltaTime * 360f / 0.5f, 1, 1);
                 NativeFunctions.CreateLight(

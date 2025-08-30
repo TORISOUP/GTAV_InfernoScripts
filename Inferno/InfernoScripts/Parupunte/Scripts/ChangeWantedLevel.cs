@@ -47,6 +47,14 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             }
         }
 
+        protected override void OnUpdate()
+        {
+            if (Game.Player.IsDead)
+            {
+                ParupunteEnd();
+            }
+        }
+
 
         private void IncreasePlayerWantedLevel()
         {

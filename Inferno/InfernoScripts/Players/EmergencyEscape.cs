@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using Inferno.ChaosMode;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Properties;
 using Inferno.Utilities;
@@ -94,6 +95,10 @@ namespace Inferno
                     isRequirePersitent = vec.IsPersistent;
                     vec.IsPersistent = true;
                 }
+                else
+                {
+                    ped.SetNotChaosPed(true);
+                }
 
                 ped.CanRagdoll = true;
 
@@ -135,6 +140,10 @@ namespace Inferno
                 if (ped == PlayerPed)
                 {
                     vec.IsPersistent = isRequirePersitent;
+                }
+                else
+                {
+                    ped.SetNotChaosPed(false);
                 }
             }
         }
