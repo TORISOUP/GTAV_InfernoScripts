@@ -24,4 +24,17 @@
     <data name="DisplayCoDDescription" xml:space="preserve">
         <value>Displays cause of death upon player death.</value>
     </data>
+    <data name="CutSceneTitle" xml:space="preserve">
+        <value>ChaoticCutscene</value>
+    </data>
+    <data name="CutSceneDescription" xml:space="preserve">
+        <value>Characters movements become chaotic during cutscenes.
+Warning: Some cutscenes may cause the game to crash.</value>
+    </data>
+    <data name="CutSceneFrequecy" xml:space="preserve">
+        <value>Chaotic frequency [s]</value>
+    </data>
+    <data name="CutSceneProbabillity" xml:space="preserve">
+        <value>Probability of Chaos [%]</value>
+    </data>
 </root>

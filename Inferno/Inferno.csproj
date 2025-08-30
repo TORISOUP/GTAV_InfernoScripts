@@ -221,6 +221,7 @@
         <Compile Include="InfernoScripts\Players\Warp.cs" />
         <Compile Include="InfernoScripts\Worlds\ChaosAirPlane.cs" />
         <Compile Include="InfernoScripts\Worlds\ChaosHeli.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaoticCutscene.cs" />
         <Compile Include="InfernoScripts\Worlds\Fulton.cs" />
         <Compile Include="InfernoScripts\Worlds\Meteor.cs" />
         <Compile Include="InfernoScripts\Worlds\SpeedMax.cs" />
