@@ -71,4 +71,19 @@
     <data name="ParachuteIntterval" xml:space="preserve">
         <value>市民の生成間隔。</value>
     </data>
+    <data name="ForceRideTitle" xml:space="preserve">
+        <value>強制乗車</value>
+    </data>
+    <data name="ForceRideDescription" xml:space="preserve">
+        <value>乗車中にクラクションを連打することで周辺市民を強制的に自分の車に乗せます。</value>
+    </data>
+    <data name="ForceRideInputTimeout" xml:space="preserve">
+        <value>クラクション連打の入力猶予時間。</value>
+    </data>
+    <data name="ForceRideInputCount" xml:space="preserve">
+        <value>必要連打数。</value>
+    </data>
+    <data name="ForceRideAction" xml:space="preserve">
+        <value>今すぐ実行</value>
+    </data>
 </root>

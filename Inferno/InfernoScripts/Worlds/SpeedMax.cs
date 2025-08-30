@@ -47,6 +47,8 @@ namespace Inferno.InfernoScripts.World
                                      x.IsSafeExist()
                                      && x.IsInRangeOf(PlayerPed.Position, 100.0f)
                                      && !_vehicleHashSet.Contains(x.Handle)
+                                     && x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist()
+                                     && !x.IsPlayerVehicle()
                                      && !(_excludeMissionVehicle && x.IsPersistent)
                                  ))
                     {

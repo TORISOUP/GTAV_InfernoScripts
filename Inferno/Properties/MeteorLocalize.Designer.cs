@@ -60,6 +60,15 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show countdown on marker..
+        /// </summary>
+        internal static string CountDown {
+            get {
+                return ResourceManager.GetString("CountDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RPG bullets will rain down from the sky around the player..
         /// </summary>
         internal static string Description {

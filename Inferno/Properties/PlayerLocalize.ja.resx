@@ -91,7 +91,7 @@
         <value>クラクションを鳴らしながら車から降りようとすると緊急脱出します。</value>
     </data>
     <data name="EmergencyEscapePower" xml:space="preserve">
-        <value>射出力。</value>
+        <value>発射速度。</value>
     </data>
     <data name="FloatingTitle" xml:space="preserve">
         <value>ふわふわジャンプ</value>

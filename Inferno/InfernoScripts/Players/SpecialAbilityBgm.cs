@@ -6,8 +6,6 @@ using System.Reactive.Linq;
 using GTA;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Properties;
-using LemonUI;
-using LemonUI.Menus;
 
 namespace Inferno
 {

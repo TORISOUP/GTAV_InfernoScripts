@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GTA;
 using GTA.Math;
@@ -218,6 +219,69 @@ namespace Inferno
             return Function.Call<PedType>(Hash.GET_PED_TYPE, p.Handle);
         }
 
+        // 追従・同行を示しやすいタスク一覧（必要に応じて拡張）
+        private static readonly HashSet<Hash> FollowishTasks = new HashSet<Hash>
+        {
+            Hash.TASK_FOLLOW_TO_OFFSET_OF_ENTITY,
+            Hash.TASK_GO_TO_ENTITY,
+            Hash.TASK_ENTER_VEHICLE,
+            Hash.TASK_GOTO_ENTITY_OFFSET,
+            Hash.TASK_VEHICLE_ESCORT, // 同行の車列
+        };
+
+        private static bool IsTaskActive(Ped ped, Hash taskHash)
+        {
+            var status = Function.Call<int>(Hash.GET_SCRIPT_TASK_STATUS, ped.Handle, taskHash);
+            // 0: PENDING, 1: IN_PROGRESS, 7: FINISHED（ことが多い）
+            return status == 0 || status == 1;
+        }
+
+
+        public static bool MayBeFriend(this Ped ped)
+        {
+            if (!ped.IsSafeExist()) return false;
+
+            var player = Game.Player;
+
+            var playerPed = Game.Player.Character;
+            // 同乗（プレイヤー運転車に同乗)
+            if (ped.IsInVehicle() && playerPed.IsInVehicle() && ped.CurrentVehicle == playerPed.CurrentVehicle)
+            {
+                return true;
+            }
+
+            var playerGroup = Function.Call<int>(Hash.GET_PLAYER_GROUP, player.Handle);
+            if (Function.Call<bool>(Hash.IS_PED_GROUP_MEMBER, ped.Handle, playerGroup))
+            {
+                // 同じグループ
+                return true;
+            }
+
+            // プレイヤーとの関係（Companion/Respect/Like）
+            int rel = Function.Call<int>(Hash.GET_RELATIONSHIP_BETWEEN_PEDS, ped.Handle, player.Handle);
+            // SHVDN の Relationship enum: Companion=0, Respect=1, Like=2, Neutral=3, Dislike=4, Hate=5
+            if (rel <= 2) return true;
+
+            // 5) ブリップが友好色
+            var blip = ped.AttachedBlip;
+            if (blip != null && blip.Exists())
+            {
+                if (blip.Color != BlipColor.Red && blip.Color != BlipColor.Red2 && blip.Color != BlipColor.Red3 &&
+                    blip.Color != BlipColor.Red4)
+                {
+                    return true;
+                }
+            }
+
+            // 追跡系のタスク実行中か
+            foreach (var t in FollowishTasks)
+            {
+                if (IsTaskActive(ped, t)) return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// 敵対すると手配度がつくPed一覧
         /// </summary>
@@ -246,6 +310,14 @@ namespace Inferno
                 PedType.PED_TYPE_ARMY => true,
                 _ => CopPedHas.Contains((PedHash)ped.Model.Hash)
             };
+        }
+
+        public static IEnumerable<T> Around<T>(this IEnumerable<T> entities, Entity target, float range)
+            where T : Entity
+        {
+            if (!target.IsSafeExist()) return Array.Empty<T>();
+            var pos = target.Position;
+            return entities.Where(x => x.IsSafeExist() && x.IsInRangeOf(pos, range));
         }
 
         #region Weapon

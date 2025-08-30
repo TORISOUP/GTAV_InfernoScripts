@@ -287,6 +287,7 @@ namespace Inferno.InfernoScripts.Parupunte
         /// </summary>
         private void ParupunteStart(Type script, CancellationToken ct)
         {
+            
             lock (_gate)
             {
                 if (IsActive)
@@ -307,8 +308,9 @@ namespace Inferno.InfernoScripts.Parupunte
                 _currentScript = Activator.CreateInstance(script, this, conf) as ParupunteScript;
                 ParupunteCoreLoopAsync(_currentScript, ct).Forget();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LogWrite(e);
                 IsActive = false;
             }
         }
@@ -425,6 +427,10 @@ namespace Inferno.InfernoScripts.Parupunte
                     IsActive = false;
                     _subTextUiContainer.Items.Clear();
                 }
+            }
+            catch (Exception e)
+            {
+                LogWrite(e.ToString());
             }
             finally
             {

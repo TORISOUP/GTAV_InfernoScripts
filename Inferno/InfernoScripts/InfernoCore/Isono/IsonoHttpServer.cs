@@ -11,6 +11,8 @@ namespace Inferno
         private readonly int _port;
         public IObservable<IsonoMessage> OnReceivedMessageAsObservable => _subject;
         private readonly Subject<IsonoMessage> _subject = new();
+        
+        public bool IsDisposed { get; private set; }
 
         public IsonoHttpServer(int port)
         {
@@ -38,6 +40,7 @@ namespace Inferno
             _listener?.Dispose();
             _subject?.OnCompleted();
             _subject?.Dispose();
+            IsDisposed = true;
         }
     }
 }

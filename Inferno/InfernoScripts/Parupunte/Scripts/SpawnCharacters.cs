@@ -27,7 +27,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         {
             random = new Random();
 
-            switch (random.Next(0, 100) % 11)
+            switch (random.Next(0, 100) % 24)
             {
                 case 0:
                     pedModel = new Model(PedHash.LamarDavis);
@@ -83,6 +83,72 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     pedModel = new Model(PedHash.Clown01SMY);
                     name = "らんらんる～";
                     break;
+                
+                case 11:
+                    pedModel = new Model(PedHash.Stretch);
+                    name = "やわらかストレッチ";
+                    break;
+                
+                case 12:
+                    pedModel = new Model(PedHash.DaveNorton);
+                    name = "ウツの会計士よ！";
+                    break;
+                
+                case 13:
+                    pedModel = new Model(PedHash.Denise);
+                    name = "女の威厳を取り戻せ！";
+                    break;
+                
+                case 14:
+                    pedModel = new Model(PedHash.KarenDaniels);
+                    name = "でーと を だいなしにした";
+                    break;
+                
+                case 15:
+                    pedModel = new Model(PedHash.MrK);
+                    name = "ミスターK";
+                    break;
+                
+                case 16:
+                    pedModel = new Model(PedHash.JimmyDisanto);
+                    name = "ジミーを怯えさせた";
+                    break;
+                
+                case 17:
+                    pedModel = new Model(PedHash.TracyDisanto);
+                    name = "パパの愛娘";
+                    break;
+                
+                case 18:
+                    pedModel = new Model(PedHash.TaoCheng);
+                    name = "來來來～";
+                    break;
+                
+                case 19:
+                    pedModel = new Model(PedHash.TaosTranslator);
+                    name = "メガネ";
+                    break;
+                
+                case 20:
+                    pedModel = new Model(PedHash.NervousRon);
+                    name = "やめロン";
+                    break;
+
+                case 21:
+                    pedModel = new Model(PedHash.AmandaTownley);
+                    name = "アマンダをビビらせた";
+                    break;
+                
+                case 22:
+                    pedModel = new Model(PedHash.Solomon);
+                    name = "憧れの男";
+                    break;
+                
+                case 23:
+                    pedModel = new Model(PedHash.Chop);
+                    name = "チョップ";
+                    break;
+                
             }
         }
 
@@ -101,7 +167,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             // Vehicle seatをすべて列挙
             var seats = (VehicleSeat[])Enum.GetValues(typeof(VehicleSeat));
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 50; i++)
             {
                 Ped ped = null;
 
@@ -121,7 +187,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 }
                 else
                 {
-                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(15));
+                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(30) + player.Velocity);
                 }
                 
 
@@ -131,7 +197,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     GiveWeaponTpPed(ped);
                 }
 
-                await Delay100MsAsync(ct);
+                await YieldAsync(ct);
             }
 
             ParupunteEnd();

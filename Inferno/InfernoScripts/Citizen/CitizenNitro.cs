@@ -71,7 +71,8 @@ namespace Inferno
                 var nitroAvailableVehs = CachedVehicles
                     .Where(x => (!playerVehicle.IsSafeExist() || x != playerVehicle) &&
                                 x.IsInRangeOfIgnoreZ(PlayerPed.Position, config.Range) &&
-                                x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent);
+                                x.GetPedOnSeat(VehicleSeat.Driver).IsSafeExist() && !x.IsPersistent &&
+                                x.IsAlive);
 
                 foreach (var veh in nitroAvailableVehs)
                 {

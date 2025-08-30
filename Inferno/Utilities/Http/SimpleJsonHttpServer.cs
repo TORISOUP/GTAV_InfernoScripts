@@ -29,7 +29,7 @@ namespace Inferno.Utilities.Http
             _cts?.Dispose();
             _cts = new CancellationTokenSource();
 
-            _httpListener.Start();
+            Task.Run(() => _httpListener.Start());
             _ = HandleRequestsAsync(_cts.Token);
         }
 

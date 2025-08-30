@@ -109,6 +109,7 @@
         <Compile Include="ChaosMode\WeaponProvider\CustomWeaponProvider.cs"/>
         <Compile Include="ChaosMode\WeaponProvider\SingleWeaponProvider.cs"/>
         <Compile Include="ExtensionMethods\NativeFunctions.cs"/>
+        <Compile Include="InfernoScripts\Citizen\CitizenForceRide.cs" />
         <Compile Include="InfernoScripts\Conf\InfernoCommandConfig.cs" />
         <Compile Include="InfernoScripts\InfernoCore\Drawer\UI\UIRectangle.cs" />
         <Compile Include="InfernoScripts\InfernoCore\InfernoAllOnProvider.cs" />
@@ -118,6 +119,7 @@
         <Compile Include="InfernoScripts\InfernoCore\UI\InfernoUI.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IScriptUiBuilder.cs" />
         <Compile Include="InfernoScripts\InfernoCore\UI\IUiHelper.cs" />
+        <Compile Include="InfernoScripts\Parupunte\Scripts\EveryoneFart.cs" />
         <Compile Include="InfernoScripts\Parupunte\Scripts\RotateSushi.cs" />
         <Compile Include="InfernoScripts\Players\AutoHealPlayerHealth.cs" />
         <Compile Include="InfernoScripts\Players\SuppressWanted.cs" />
@@ -219,6 +221,7 @@
         <Compile Include="InfernoScripts\Players\Warp.cs" />
         <Compile Include="InfernoScripts\Worlds\ChaosAirPlane.cs" />
         <Compile Include="InfernoScripts\Worlds\ChaosHeli.cs" />
+        <Compile Include="InfernoScripts\Worlds\ChaoticCutscene.cs" />
         <Compile Include="InfernoScripts\Worlds\Fulton.cs" />
         <Compile Include="InfernoScripts\Worlds\Meteor.cs" />
         <Compile Include="InfernoScripts\Worlds\SpeedMax.cs" />

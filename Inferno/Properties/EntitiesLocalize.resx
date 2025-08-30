@@ -78,4 +78,19 @@
     <data name="ParachuteIntterval" xml:space="preserve">
         <value>Citizen generation interval.</value>
     </data>
+    <data name="ForceRideTitle" xml:space="preserve">
+        <value>Forced entry</value>
+    </data>
+    <data name="ForceRideDescription" xml:space="preserve">
+        <value>When a player repeatedly sounds the horn while driving, nearby citizens are forced to get into your car.</value>
+    </data>
+    <data name="ForceRideInputTimeout" xml:space="preserve">
+        <value>Input grace period for repeated honking.</value>
+    </data>
+    <data name="ForceRideInputCount" xml:space="preserve">
+        <value>Required number of hits.</value>
+    </data>
+    <data name="ForceRideAction" xml:space="preserve">
+        <value>Execute immediately</value>
+    </data>
 </root>

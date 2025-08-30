@@ -60,6 +60,43 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Characters movements become chaotic during cutscenes.
+        ///Warning: Some cutscenes may cause the game to crash..
+        /// </summary>
+        internal static string CutSceneDescription {
+            get {
+                return ResourceManager.GetString("CutSceneDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaotic frequency [s].
+        /// </summary>
+        internal static string CutSceneFrequecy {
+            get {
+                return ResourceManager.GetString("CutSceneFrequecy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probability of Chaos [%].
+        /// </summary>
+        internal static string CutSceneProbabillity {
+            get {
+                return ResourceManager.GetString("CutSceneProbabillity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ChaoticCutscene.
+        /// </summary>
+        internal static string CutSceneTitle {
+            get {
+                return ResourceManager.GetString("CutSceneTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Displays cause of death upon player death..
         /// </summary>
         internal static string DisplayCoDDescription {

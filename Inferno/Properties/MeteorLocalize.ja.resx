@@ -26,4 +26,7 @@
     <data name="Probability" xml:space="preserve">
         <value>メテオの落下確率。</value>
     </data>
+    <data name="CountDown" xml:space="preserve">
+        <value>マーカーにカウントダウンを表示する。</value>
+    </data>
 </root>

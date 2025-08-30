@@ -39,8 +39,11 @@ namespace Inferno
             {
                 try
                 {
-                    _httpServer?.Stop();
-                    _httpServer?.Dispose();
+                    if(_httpServer is { IsDisposed: false })
+                    {
+                        _httpServer?.Stop();
+                        _httpServer?.Dispose();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -49,7 +52,7 @@ namespace Inferno
 
                 if (x)
                 {
-                    _httpServer = new IsonoHttpServer(112);
+                    _httpServer = new IsonoHttpServer(_conf.Port);
                     _httpServer.OnReceivedMessageAsObservable
                         .ObserveOn(InfernoScheduler)
                         .Subscribe(c => InfernoCore.Publish(c));

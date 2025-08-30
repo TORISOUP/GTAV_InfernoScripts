@@ -53,11 +53,10 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             {
                 //周辺車両を監視
                 var playerPos = core.PlayerPed.Position;
-                foreach (var v in core.CachedVehicles.Where(
-                             x => x.IsSafeExist()
-                                  && !vehicles.Contains(x.Handle)
-                                  && x.IsAlive
-                                  && x.IsInRangeOf(playerPos, 50)
+                foreach (var v in core.CachedVehicles.Where(x => x.IsSafeExist()
+                                                                 && !vehicles.Contains(x.Handle)
+                                                                 && x.IsAlive
+                                                                 && x.IsInRangeOf(playerPos, 50)
                          ))
                 {
                     var driver = v.Driver;
@@ -166,7 +165,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         /// <summary>
         /// 魚を生成する
         /// </summary>
-        private Ped SpawnFish(Vehicle target)
+        private Ped SpawnFish(Entity target)
         {
             var f = GTA.World.CreatePed(fishModel, target.Position + Vector3.WorldUp * 10);
             if (!f.IsSafeExist() || !target.IsSafeExist())
