@@ -47,7 +47,7 @@ namespace Inferno
         protected override string ConfigFileName { get; } = "ChaoticCutscene.conf";
 
         private ChaoticCutsceneConfig _config;
-        
+
         protected override bool DefaultAllOnEnable => false;
 
         protected override void Setup()
@@ -77,7 +77,7 @@ namespace Inferno
         {
             while (!ct.IsCancellationRequested)
             {
-                while (!Game.IsCutsceneActive)
+                while (!Game.IsCutsceneActive || Game.Player.CanControlCharacter)
                 {
                     await DelaySecondsAsync(1, ct);
                 }
@@ -90,7 +90,7 @@ namespace Inferno
         {
             _targets.Clear();
 
-            while (Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            while (Game.IsCutsceneActive && !Game.Player.CanControlCharacter && !ct.IsCancellationRequested)
             {
                 var pedRange = 20;
                 var playerPos = PlayerPed.Position;
@@ -98,7 +98,7 @@ namespace Inferno
                 CutScenePedAsync(PlayerPed, ct).Forget();
 
                 foreach (var ped in CachedPeds.Where(x =>
-                             x.IsSafeExist() && x.IsRequiredForMission() && x.IsInRangeOf(playerPos, pedRange) &&
+                             x.IsSafeExist() && x.IsInRangeOf(playerPos, pedRange) &&
                              x.IsAlive))
                 {
                     CutScenePedAsync(ped, ct).Forget();
@@ -111,65 +111,79 @@ namespace Inferno
         private async ValueTask CutScenePedAsync(Ped ped, CancellationToken ct)
         {
             if (!_targets.Add(ped)) return;
+            if (!ped.IsSafeExist()) return;
 
-            while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            var lastInvincible = !ped.IsPlayer && ped.IsInvincible;
+            try
             {
-                // 抽選
-                while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+                while (ped.IsSafeExist() && Game.IsCutsceneActive && !Game.Player.CanControlCharacter &&
+                       !ct.IsCancellationRequested)
                 {
-                    if (Random.Next(0, 100) < _config.Probability)
+                    // 抽選
+                    while (ped.IsSafeExist() && Game.IsCutsceneActive && !Game.Player.CanControlCharacter &&
+                           !ct.IsCancellationRequested)
                     {
-                        break;
+                        if (Random.Next(0, 100) < _config.Probability)
+                        {
+                            break;
+                        }
+
+                        await DelaySecondsAsync(_config.Frequency, ct);
                     }
 
-                    await DelaySecondsAsync(_config.Frequency, ct);
+
+                    var randomSeconds = Random.Next(5, 10);
+                    var shuffle = Random.Next(0, 7);
+                    switch (shuffle)
+                    {
+                        case 0:
+                            RagdollAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 1:
+                            RotationAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 2:
+                            SlideMoveAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 3:
+                            RagdollAsync(ped, randomSeconds, ct).Forget();
+                            RotationAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 4:
+                            RagdollAsync(ped, randomSeconds, ct).Forget();
+                            SlideMoveAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 5:
+                            RotationAsync(ped, randomSeconds, ct).Forget();
+                            SlideMoveAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        case 6:
+                            ShakeMoveAsync(ped, randomSeconds, ct).Forget();
+                            RagdollAsync(ped, randomSeconds, ct).Forget();
+                            break;
+
+                        default:
+                            RotationAsync(ped, randomSeconds, ct).Forget();
+                            SlideMoveAsync(ped, randomSeconds, ct).Forget();
+                            RagdollAsync(ped, randomSeconds, ct).Forget();
+                            break;
+                    }
+
+                    ped.IsInvincible = true;
+
+                    await DelaySecondsAsync(randomSeconds, ct);
                 }
-
-
-                var randomSeconds = Random.Next(5, 10);
-                var shuffle = Random.Next(0, 7);
-                switch (shuffle)
-                {
-                    case 0:
-                        RagdollAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 1:
-                        RotationAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 2:
-                        SlideMoveAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 3:
-                        RagdollAsync(ped, randomSeconds, ct).Forget();
-                        RotationAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 4:
-                        RagdollAsync(ped, randomSeconds, ct).Forget();
-                        SlideMoveAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 5:
-                        RotationAsync(ped, randomSeconds, ct).Forget();
-                        SlideMoveAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    case 6:
-                        ShakeMoveAsync(ped, randomSeconds, ct).Forget();
-                        RagdollAsync(ped, randomSeconds, ct).Forget();
-                        break;
-
-                    default:
-                        RotationAsync(ped, randomSeconds, ct).Forget();
-                        SlideMoveAsync(ped, randomSeconds, ct).Forget();
-                        RagdollAsync(ped, randomSeconds, ct).Forget();
-                        break;
-                }
-
-                await DelaySecondsAsync(randomSeconds, ct);
+            }
+            finally
+            {
+                ped.IsInvincible = lastInvincible;
+                _targets.Remove(ped);
             }
         }
 
@@ -246,7 +260,7 @@ namespace Inferno
         public override bool CanChangeActive => true;
 
         public override MenuIndex MenuIndex => MenuIndex.Misc;
-        
+
 
         public override void OnUiMenuConstruct(ObjectPool pool, NativeMenu subMenu)
         {

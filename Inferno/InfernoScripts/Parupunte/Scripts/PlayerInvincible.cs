@@ -24,7 +24,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
         public override void OnStart()
         {
-            ReduceCounter = new ReduceCounter(30000);
+            ReduceCounter = new ReduceCounter(20000);
             ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
             AddProgressBar(ReduceCounter);
             EffectAsync(ActiveCancellationToken).Forget();

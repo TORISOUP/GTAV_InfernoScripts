@@ -41,41 +41,51 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
 
             var player = core.PlayerPed;
             var playerPos = player.Position;
-            var peds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 100f))
-                .Concat(new[] { player })
-                .ToArray();
 
-            foreach (var ped in peds.Where(x => x.IsSafeExist()))
+            player.IsCollisionProof = true;
+            try
             {
-                if (!ped.IsSafeExist()) continue;
-                GasExplosion(ped);
-                CreateEffect(ped, "ent_sht_steam");
+                var peds = core.CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(playerPos, 15f))
+                    .Concat(new[] { player })
+                    .ToArray();
 
-                if (ped.IsInVehicle() && ped.CurrentVehicle.IsSafeExist())
+                foreach (var ped in peds.Where(x => x.IsSafeExist()))
                 {
-                    if (ped != core.PlayerPed)
+                    if (!ped.IsSafeExist()) continue;
+                    GasExplosion(ped);
+                    CreateEffect(ped, "ent_sht_steam");
+
+                    if (ped.IsInVehicle() && ped.CurrentVehicle.IsSafeExist())
                     {
-                        ped.Task.LeaveVehicle(ped.CurrentVehicle, LeaveVehicleFlags.WarpOut);
-                        ped.Position += new Vector3(0, 0, 2.0f);
+                        if (ped != core.PlayerPed)
+                        {
+                            ped.Task.LeaveVehicle(ped.CurrentVehicle, LeaveVehicleFlags.WarpOut);
+                            ped.Position += new Vector3(0, 0, 2.0f);
+                        }
+                        else
+                        {
+                            ped.CurrentVehicle.SetForwardSpeed(100);
+                        }
                     }
-                    else
+
+                    if (!ped.IsCutsceneOnlyPed())
                     {
-                        ped.CurrentVehicle.SetForwardSpeed(100);
+                        ped.Task.ClearAllImmediately();
+                        ped.SetToRagdoll(500);
                     }
+
+                    ped.ApplyForce(Vector3.WorldUp * 30.0f);
+
+                    await DelaySecondsAsync(0.05f, ct);
                 }
 
-                if (!ped.IsCutsceneOnlyPed())
-                {
-                    ped.Task.ClearAllImmediately();
-                    ped.SetToRagdoll(500);
-                }
-                ped.ApplyForce(Vector3.WorldUp * 30.0f);
-
-                await DelaySecondsAsync(0.1f, ct);
+                await DelaySecondsAsync(3.0f, ct);
             }
-
-
-            ParupunteEnd();
+            finally
+            {
+                core.PlayerPed.IsCollisionProof = false;
+                ParupunteEnd();
+            }
         }
 
         private void GasExplosion(Ped shotPed)
@@ -84,7 +94,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             var targets = core.CachedPeds.Cast<Entity>()
                 .Concat(core.CachedVehicles)
                 .Concat(new[] { core.PlayerPed })
-                .Where(x => x.IsSafeExist() && x.IsInRangeOf(shotPed.Position, 30));
+                .Where(x => x.IsSafeExist() && x.IsInRangeOf(shotPed.Position, 10));
 
             Function.Call(Hash.ADD_EXPLOSION, new InputArgument[]
             {
