@@ -118,8 +118,8 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                 {
                     if (ped.IsCutsceneOnlyPed())
                     {
-                        ped.Task.ClearAllImmediately();
-                        ped.SetToRagdoll(500);
+                        ped.Task.ClearAll();
+                        ped.SetToRagdoll(16);
                     }
                 }
 

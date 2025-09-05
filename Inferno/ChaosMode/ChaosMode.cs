@@ -223,7 +223,7 @@ namespace Inferno.ChaosMode
 
             //まだ処理をしていない市民を対象とする
             var nearPeds =
-                CachedPeds.Where(x => x.IsSafeExist() && x.IsInRangeOf(PlayerPed.Position, _chaosModeSetting.Radius));
+                CachedPeds.Where(x => x.IsSafeExist() && x.IsHuman && x.IsInRangeOf(PlayerPed.Position, _chaosModeSetting.Radius));
 
             _localCts ??= new CancellationTokenSource();
             _linkedCts ??=

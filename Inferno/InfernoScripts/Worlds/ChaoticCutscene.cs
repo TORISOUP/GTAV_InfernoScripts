@@ -50,15 +50,17 @@ namespace Inferno
 
         protected override bool DefaultAllOnEnable => false;
 
+        private bool IsInCutScene => Game.IsCutsceneActive && !Game.Player.CanControlCharacter;
+
         protected override void Setup()
         {
             _config ??= LoadConfig<ChaoticCutsceneConfig>();
 
-            CreateInputKeywordAsObservable("ChaoticCutscene", "cbreak")
+            CreateInputKeywordAsObservable("ChaoticCutscene", "ccutscene")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
-                    DrawText($"CutScene Breaker:{IsActive}");
+                    DrawText($"ChaoticCutscene:{IsActive}");
                 });
 
             IsActiveRP
@@ -77,7 +79,7 @@ namespace Inferno
         {
             while (!ct.IsCancellationRequested)
             {
-                while (!Game.IsCutsceneActive || Game.Player.CanControlCharacter)
+                while (!IsInCutScene)
                 {
                     await DelaySecondsAsync(1, ct);
                 }
@@ -90,7 +92,7 @@ namespace Inferno
         {
             _targets.Clear();
 
-            while (Game.IsCutsceneActive && !Game.Player.CanControlCharacter && !ct.IsCancellationRequested)
+            while (IsInCutScene && !ct.IsCancellationRequested)
             {
                 var pedRange = 20;
                 var playerPos = PlayerPed.Position;
@@ -116,12 +118,10 @@ namespace Inferno
             var lastInvincible = !ped.IsPlayer && ped.IsInvincible;
             try
             {
-                while (ped.IsSafeExist() && Game.IsCutsceneActive && !Game.Player.CanControlCharacter &&
-                       !ct.IsCancellationRequested)
+                while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
                 {
                     // 抽選
-                    while (ped.IsSafeExist() && Game.IsCutsceneActive && !Game.Player.CanControlCharacter &&
-                           !ct.IsCancellationRequested)
+                    while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
                     {
                         if (Random.Next(0, 100) < _config.Probability)
                         {
@@ -137,7 +137,6 @@ namespace Inferno
                     switch (shuffle)
                     {
                         case 0:
-                            RagdollAsync(ped, randomSeconds, ct).Forget();
                             break;
 
                         case 1:
@@ -191,14 +190,13 @@ namespace Inferno
         private async ValueTask RagdollAsync(Ped ped, float seconds, CancellationToken ct)
         {
             var elapsedTime = 0f;
-            while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
             {
                 elapsedTime += DeltaTime;
                 if (elapsedTime >= seconds) return;
 
-                ped.Task.ClearAllImmediately();
-                ped.SetToRagdoll(500);
-
+                ped.Task.ClearAll();
+                ped.SetToRagdoll((int)(DeltaTime * 1000) + 16);
                 await YieldAsync(ct);
             }
         }
@@ -208,9 +206,9 @@ namespace Inferno
             var elapsedTime = 0f;
 
             var randomXYZ = Vector3.RandomXYZ();
-            var power = (float)Random.NextDouble() * 50f;
+            var power = (float)Random.NextDouble() * 100f;
 
-            while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
             {
                 elapsedTime += DeltaTime;
                 if (elapsedTime >= seconds) return;
@@ -227,7 +225,7 @@ namespace Inferno
             var randomXYZ = Vector3.RandomXYZ();
             var power = (float)Random.NextDouble();
 
-            while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
             {
                 elapsedTime += DeltaTime;
                 if (elapsedTime >= seconds) return;
@@ -241,12 +239,12 @@ namespace Inferno
         {
             var elapsedTime = 0f;
 
-            while (ped.IsSafeExist() && Game.IsCutsceneActive && !ct.IsCancellationRequested)
+            while (ped.IsSafeExist() && IsInCutScene && !ct.IsCancellationRequested)
             {
                 elapsedTime += DeltaTime;
                 if (elapsedTime >= seconds) return;
                 var randomXYZ = Vector3.RandomXYZ();
-                var power = (float)Random.NextDouble() * 5f;
+                var power = (float)Random.NextDouble() * 10f;
                 ped.Velocity = (power * randomXYZ);
                 await YieldAsync(ct);
             }

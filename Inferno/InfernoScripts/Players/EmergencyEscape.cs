@@ -123,6 +123,7 @@ namespace Inferno
                 await DelayAsync(TimeSpan.FromSeconds(1.0f), ct);
                 if (!ped.IsSafeExist()) return;
                 if (ped.IsInVehicle()) return;
+                if (!ped.IsInAir) return;
 
                 // 発射位置より高い位置にいる場合はパラシュートを開く
                 if (ped.Position.Z > shootPos.Z)

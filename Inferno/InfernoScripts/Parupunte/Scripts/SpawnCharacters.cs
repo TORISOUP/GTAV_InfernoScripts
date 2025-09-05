@@ -83,52 +83,52 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     pedModel = new Model(PedHash.Clown01SMY);
                     name = "らんらんる～";
                     break;
-                
+
                 case 11:
                     pedModel = new Model(PedHash.Stretch);
                     name = "やわらかストレッチ";
                     break;
-                
+
                 case 12:
                     pedModel = new Model(PedHash.DaveNorton);
                     name = "ウツの会計士よ！";
                     break;
-                
+
                 case 13:
                     pedModel = new Model(PedHash.Denise);
                     name = "女の威厳を取り戻せ！";
                     break;
-                
+
                 case 14:
                     pedModel = new Model(PedHash.KarenDaniels);
                     name = "でーと を だいなしにした";
                     break;
-                
+
                 case 15:
                     pedModel = new Model(PedHash.MrK);
                     name = "ミスターK";
                     break;
-                
+
                 case 16:
                     pedModel = new Model(PedHash.JimmyDisanto);
                     name = "ジミーを怯えさせた";
                     break;
-                
+
                 case 17:
                     pedModel = new Model(PedHash.TracyDisanto);
                     name = "パパの愛娘";
                     break;
-                
+
                 case 18:
                     pedModel = new Model(PedHash.TaoCheng);
                     name = "來來來～";
                     break;
-                
+
                 case 19:
                     pedModel = new Model(PedHash.TaosTranslator);
                     name = "メガネ";
                     break;
-                
+
                 case 20:
                     pedModel = new Model(PedHash.NervousRon);
                     name = "やめロン";
@@ -138,17 +138,16 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     pedModel = new Model(PedHash.AmandaTownley);
                     name = "アマンダをビビらせた";
                     break;
-                
+
                 case 22:
                     pedModel = new Model(PedHash.Solomon);
                     name = "憧れの男";
                     break;
-                
+
                 case 23:
                     pedModel = new Model(PedHash.Chop);
                     name = "チョップ";
                     break;
-                
             }
         }
 
@@ -160,48 +159,77 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private async ValueTask SpawnCharacterAsync(CancellationToken ct)
         {
             var player = core.PlayerPed;
-            var isInVehicle = player.IsInVehicle();
-            var pv = player.CurrentVehicle;
-            var isSeatFull = false;
 
-            // Vehicle seatをすべて列挙
-            var seats = (VehicleSeat[])Enum.GetValues(typeof(VehicleSeat));
-
-            for (int i = 0; i < 50; i++)
+            var aroundVeh = core.CachedVehicles.Around(core.PlayerPed, 10).ToArray();
+            foreach (var v in aroundVeh)
             {
-                Ped ped = null;
-
-                if (isInVehicle && pv.IsSafeExist() && !isSeatFull)
-                {
-                    for (int s = 0; s < seats.Length; i++)
-                    {
-                        var seat = seats[i];
-                        if (pv.IsSeatFree(seat))
-                        {
-                            ped = pv.CreatePedOnSeat(seat, pedModel);
-                            break;
-                        }
-                    }
-
-                    isSeatFull = true;
-                }
-                else
-                {
-                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(30) + player.Velocity);
-                }
-                
-
-                if (ped.IsSafeExist())
-                {
-                    ped.MarkAsNoLongerNeeded();
-                    GiveWeaponTpPed(ped);
-                }
-
+                CreatePedOnCar(v);
                 await YieldAsync(ct);
+            }
+
+
+            for (int i = 0; i < 30; i++)
+            {
+                try
+                {
+                    Ped ped = null;
+                    ped = GTA.World.CreatePed(pedModel, player.Position.AroundRandom2D(50) + player.Velocity);
+
+                    if (ped.IsSafeExist())
+                    {
+                        GiveWeaponTpPed(ped);
+                        AddProof(ped);
+                        ped.MarkAsNoLongerNeeded();
+                    }
+                }
+                finally
+                {
+                    await YieldAsync(ct);
+                }
             }
 
             ParupunteEnd();
         }
+
+        private readonly VehicleSeat[] Seats = { VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.LeftRear, VehicleSeat.RightRear };
+
+        private void CreatePedOnCar(Vehicle vehicle)
+        {
+            foreach (var s in Seats)
+            {
+                if (vehicle.IsSafeExist() && vehicle.IsSeatFree(s))
+                {
+                    try
+                    {
+                        var ped = vehicle.CreatePedOnSeat(s, pedModel);
+                        if (ped.IsSafeExist())
+                        {
+                            GiveWeaponTpPed(ped);
+                            AddProof(ped);
+                            ped.MarkAsNoLongerNeeded();
+                        }
+                    }
+                    catch
+                    {
+                        // ignore...
+                    }
+                }
+            }
+        }
+
+        private void AddProof(Ped ped)
+        {
+            if(!ped.IsSafeExist()) return;
+            ped.IsBulletProof = true;
+            ped.IsCollisionProof = true;
+            ped.IsExplosionProof = false; // 火に弱い
+            ped.IsFireProof = false; // 火に弱い
+            ped.IsMeleeProof = true;
+            ped.IsSmokeProof = true;
+            ped.IsWaterCannonProof = true;
+            ped.IsSteamProof = true;
+        }
+
 
         /// <summary>
         /// 市民に武器をもたせる
@@ -226,7 +254,6 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             ped.SetDropWeaponWhenDead(false); //武器を落とさない
             ped.GiveWeapon(weaponhash, 1000); //指定武器所持
             ped.EquipWeapon(weaponhash); //武器装備
-            ped.Task.FightAgainst(core.PlayerPed);
         }
     }
 }
