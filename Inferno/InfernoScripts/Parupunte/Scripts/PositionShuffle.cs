@@ -38,7 +38,7 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                     SwapPedPositionAsync(p1, p2, ct).Forget();
                 }
 
-                await DelaySecondsAsync(1f, ct);
+                await DelaySecondsAsync(2f, ct);
             }
         }
 
