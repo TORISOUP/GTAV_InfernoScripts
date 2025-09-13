@@ -27,17 +27,20 @@ namespace Inferno.InfernoScripts.Player
                     IsActive = !IsActive;
                     DrawText("BondCar:" + IsActive);
                 });
-            
+
             IsActiveRP.Subscribe(x =>
             {
                 _invincibleMillSeconds = 0;
                 if (x)
                 {
-                    InvincibleVehicleAsync(ActivationCancellationToken).Forget();
+                    // AssetLoad
+                    Function.Call(Hash.REQUEST_WEAPON_ASSET, Weapon.VEHICLE_ROCKET, 31, 0);
+                    
                     InputLoopAsync(ActivationCancellationToken).Forget();
+                    InvincibleVehicleAsync(ActivationCancellationToken).Forget();
                 }
             });
-            
+
             CreateTickAsObservable(TimeSpan.FromSeconds(1))
                 .Where(_ => IsActive)
                 .Select(_ => PlayerPed.IsInVehicle())
@@ -73,18 +76,16 @@ namespace Inferno.InfernoScripts.Player
                 return;
             }
 
-            //そこら辺の市民のせいにする
-            var ped = CachedPeds.Where(x => x.IsSafeExist()).DefaultIfEmpty(PlayerPed).FirstOrDefault();
             _invincibleMillSeconds = 500;
-            CreateRpgBullet(v, ped, 1.5f);
-            CreateRpgBullet(v, ped, -1.5f);
+            v.IsExplosionProof = true;
+            CreateRpgBullet(v, 1.5f);
+            CreateRpgBullet(v, -1.5f);
         }
 
-        private void CreateRpgBullet(Vehicle vehicle, Ped ped, float rightOffset)
+        private void CreateRpgBullet(Vehicle vehicle, float rightOffset)
         {
             var startPosition = vehicle.GetOffsetFromEntityInWorldCoords(rightOffset, 0, 0.2f);
             var target = vehicle.GetOffsetFromEntityInWorldCoords(0, 1000, 0.2f);
-
             Function.Call(
                 Hash.SHOOT_SINGLE_BULLET_BETWEEN_COORDS,
                 startPosition.X,
@@ -107,26 +108,51 @@ namespace Inferno.InfernoScripts.Player
         {
             while (!ct.IsCancellationRequested && IsActive)
             {
-                var v = PlayerPed.CurrentVehicle;
+                // いま有効な“対象車両”を特定
+                var current = (PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle())
+                    ? PlayerPed.CurrentVehicle
+                    : null;
+
+                if (!current.IsSafeExist())
+                {
+                    await DelaySecondsAsync(0.1f, ct);
+                    continue;
+                }
+
 
                 try
                 {
-                    if (v.IsSafeExist())
+                    // 同じ車に乗っている間だけ処理
+                    while (!ct.IsCancellationRequested && IsActive && current.IsSafeExist())
                     {
+                        // 乗り換え・降車検知
+                        var now = (PlayerPed.IsSafeExist() && PlayerPed.IsInVehicle())
+                            ? PlayerPed.CurrentVehicle
+                            : null;
+
+                        if (!now.IsSafeExist() || now != current)
+                        {
+                            break;
+                        }
+
                         if (_invincibleMillSeconds > 0)
                         {
-                            _invincibleMillSeconds -= 100;
-                            v.IsExplosionProof = !(_invincibleMillSeconds <= 0);
+                            _invincibleMillSeconds = Math.Max(0, _invincibleMillSeconds - 100);
+                            if (_invincibleMillSeconds <= 0)
+                            {
+                                current.IsExplosionProof = false;
+                            }
                         }
-                    }
 
-                    await DelaySecondsAsync(0.1f, ct);
+                        await DelaySecondsAsync(0.1f, ct);
+                    }
                 }
                 finally
                 {
-                    if (v.IsSafeExist())
+                    // 念のため対象車両は必ず解除
+                    if (current.IsSafeExist())
                     {
-                        v.IsExplosionProof = false;
+                        current.IsExplosionProof = false;
                     }
                 }
             }

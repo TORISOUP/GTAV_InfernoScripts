@@ -35,18 +35,23 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
         private async ValueTask SpawnTaxi(CancellationToken ct)
         {
             var player = core.PlayerPed;
+            var driver = new Model(PedHash.LamarDavis);
 
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 20; i++)
             {
-                var pos = core.PlayerPed.Position.Around(5) + (Vector3.WorldUp * (float)Random.NextDouble() * 30.0f);
+                var pos = core.PlayerPed.Position.Around(15) + (Vector3.WorldUp * (float)Random.NextDouble() * 40.0f);
                 var taxi = GTA.World.CreateVehicle(VehicleHash.Taxi, pos,
                     (float)(Random.NextDouble() * 2f * Math.PI));
 
                 if (taxi.IsSafeExist())
                 {
                     taxi.MarkAsNoLongerNeeded();
-                    taxi.ApplyForce(-Vector3.WorldUp * 20.0f);
-                    var ped = taxi.CreateRandomPedAsDriver();
+                    taxi.ApplyForce(-Vector3.WorldUp * 0.0f);
+                    taxi.RotationVelocity = Vector3.RandomXYZ() * 10f;
+                    taxi.IsCollisionProof = true;
+                    taxi.IsMeleeProof = true;
+
+                    var ped = taxi.CreatePedOnSeat(VehicleSeat.Driver, driver);
                     if (ped.IsSafeExist())
                     {
                         ped.MarkAsNoLongerNeeded();

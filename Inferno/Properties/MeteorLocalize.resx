@@ -33,4 +33,7 @@
     <data name="Probability" xml:space="preserve">
         <value>Meteor fall probability.</value>
     </data>
+    <data name="CountDown" xml:space="preserve">
+        <value>Show countdown on marker.</value>
+    </data>
 </root>

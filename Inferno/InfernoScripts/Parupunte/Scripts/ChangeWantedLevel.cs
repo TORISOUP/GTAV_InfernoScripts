@@ -1,4 +1,5 @@
-﻿using GTA;
+﻿using System;
+using GTA;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
 {
@@ -29,28 +30,36 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
             if (wantedLevel >= wantedLevelThreshold)
             {
                 Game.Player.WantedLevel = 0;
+                ParupunteEnd();
             }
             else
             {
                 IncreasePlayerWantedLevel();
-            }
+                ReduceCounter = new ReduceCounter(20 * 1000);
+                AddProgressBar(ReduceCounter);
+                ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
 
-            ParupunteEnd();
+                OnFinishedAsObservable.Subscribe(_ =>
+                {
+                    Game.Player.WantedLevel = 0;
+                    core.DrawParupunteText("無罪放免", 1.0f);
+                });
+            }
         }
+
+        protected override void OnUpdate()
+        {
+            if (Game.Player.IsDead)
+            {
+                ParupunteEnd();
+            }
+        }
+
 
         private void IncreasePlayerWantedLevel()
         {
             var playerChar = Game.Player;
-            var MaxWantedLevel = Game.MaxWantedLevel;
-
-            if (MaxWantedLevel < playerChar.WantedLevel + 4)
-            {
-                playerChar.WantedLevel = MaxWantedLevel;
-            }
-            else
-            {
-                playerChar.WantedLevel = playerChar.WantedLevel + 4;
-            }
+            playerChar.WantedLevel = Game.MaxWantedLevel;
         }
     }
 }

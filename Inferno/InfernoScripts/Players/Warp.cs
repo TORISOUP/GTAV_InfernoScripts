@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GTA;
 using GTA.Math;
+using GTA.Native;
 using Inferno.InfernoScripts.InfernoCore.UI;
 using Inferno.Properties;
+using Inferno.Utilities;
 using LemonUI;
 using LemonUI.Menus;
 
@@ -15,18 +18,21 @@ namespace Inferno.InfernoScripts.Player
             CreateInputKeywordAsObservable("WarpToWaypoint","moveto")
                 .Subscribe(_ =>
                 {
-                    WarpTo();
+                    WarpToAsync().Forget();
                 });
         }
 
-        private void WarpTo()
+        private async ValueTask WarpToAsync()
         {
             var blip = GTA.World.WaypointBlip;
             if (blip == null)
             {
                 return;
             }
-
+            
+            Function.Call(Hash.REQUEST_COLLISION_AT_COORD, blip.Position.X, blip.Position.Y, blip.Position.Z);
+            await YieldAsync();
+            
             var targetHeight = GTA.World.GetGroundHeight(blip.Position);
             //地面ピッタリだと地面に埋まるので少し上空を指定する
             var targetPos = new Vector3(blip.Position.X, blip.Position.Y, targetHeight + 0.1f);
@@ -36,6 +42,9 @@ namespace Inferno.InfernoScripts.Player
             {
                 targetPos = tryPos;
             }
+            Function.Call(Hash.REQUEST_COLLISION_AT_COORD, targetPos.X, targetPos.Y, targetPos.Z);
+            await YieldAsync();
+
 
             var targetEntity = default(Entity);
 
@@ -54,7 +63,7 @@ namespace Inferno.InfernoScripts.Player
                 targetEntity = PlayerPed;
             }
 
-            targetEntity.Position = targetPos;
+            targetEntity.PositionNoOffset = targetPos;
             targetEntity.ApplyForce(new Vector3(0, 0, 1));
         }
 
@@ -71,7 +80,7 @@ namespace Inferno.InfernoScripts.Player
             menu.AddButton(
                 PlayerLocalize.WarpAction,
                 PlayerLocalize.WarpDescription,
-                _ => WarpTo()
+                _ => WarpToAsync().Forget()
             );
         }
     }

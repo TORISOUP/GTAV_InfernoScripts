@@ -72,14 +72,13 @@ namespace Inferno
             {
                 return;
             }
-
-            var playerVehicle = this.GetPlayerVehicle();
-
+            
             //プレイヤの周辺の市民
             var targetPeds = CachedPeds.Where(x => x.IsSafeExist()
                                                    && x.IsAlive
                                                    && x.IsInRangeOf(PlayerPed.Position, PlayerAroundDistance)
                                                    && x != PlayerPed
+                                                   && x.IsHuman
                                                    && !x.IsRequiredForMission()
                                                    && !_robbingPeds.Contains(x));
 

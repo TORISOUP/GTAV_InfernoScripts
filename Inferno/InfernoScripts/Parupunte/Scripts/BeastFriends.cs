@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GTA;
+using GTA.Math;
+using Inferno.ChaosMode;
 using Inferno.Utilities;
 
 namespace Inferno.InfernoScripts.Parupunte.Scripts
@@ -75,122 +77,57 @@ namespace Inferno.InfernoScripts.Parupunte.Scripts
                         PedHash.Rottweiler,
                         PedHash.Seagull,
                         PedHash.Shepherd,
-                        PedHash.Stingray,
                         PedHash.Westy
                     };
 
                 #endregion
             }
 
-            ReduceCounter = new ReduceCounter(10 * 1000);
-            AddProgressBar(ReduceCounter);
-            ReduceCounter.OnFinishedAsync.Subscribe(_ => ParupunteEnd());
-
-            SpawnToPedAsync(ActiveCancellationToken).Forget();
-            SpawnToVehicleAsync(ActiveCancellationToken).Forget();
+            CreateAsync(ActiveCancellationToken).Forget();
         }
 
-        private async ValueTask SpawnToVehicleAsync(CancellationToken ct)
+        private async ValueTask CreateAsync(CancellationToken ct)
         {
-            while (!ct.IsCancellationRequested)
+            try
             {
-                var centerPos = core.PlayerPed.Position;
-
-                var targetVehs = core.CachedVehicles.Where(x =>
-                    x.IsSafeExist() && x.IsAlive && x.IsInRangeOf(centerPos, 30) && !_setEntities.Contains(x.Handle) &&
-                    !x.Driver.IsSafeExist());
-
-                foreach (var veh in targetVehs)
+                var player = core.PlayerPed;
+                for (int i = 0; i < 100; i++)
                 {
-                    for (var i = 0; i < 4; i++)
+                    try
                     {
-                        var m = _animalsHash[Random.Next(_animalsHash.Length)];
-
-                        var seat = new[]
+                        var ped = GTA.World.CreatePed(GetModel(), player.Position.AroundRandom2D(50)
+                                                                  + player.Velocity + (Vector3.UnitY *
+                                                                      (float)Random.NextDouble() * 15f));
+                        if (ped.IsSafeExist())
                         {
-                            VehicleSeat.Driver, VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear
-                        }[i];
-                        var animal = veh.CreatePedOnSeat(seat, m);
+                            if (!ped.IsHuman)
+                            {
+                                ped.SetNotChaosPed(true);
+                            }
 
-                        if (!animal.IsSafeExist())
-                        {
-                            continue;
+                            ped.MarkAsNoLongerNeeded();
+                            ped.Task.FightAgainst(player, 30000);
+                            ped.IsInvincible = true;
+
                         }
-
-                        animal.MarkAsNoLongerNeeded();
-                        animal.MaxHealth = 10000;
-                        animal.Health = animal.MaxHealth;
-                        animal.Task.FightAgainst(core.PlayerPed);
-                        _setEntities.Add(animal.Handle);
-                        _setEntities.Add(veh.Handle);
                     }
-
-                    await Delay100MsAsync(ct);
+                    finally
+                    {
+                        await YieldAsync(ct);
+                    }
                 }
-
-                await DelaySecondsAsync(0.2f, ct);
+            }
+            finally
+            {
+                ParupunteEnd();
             }
         }
 
-        private async ValueTask SpawnToPedAsync(CancellationToken ct)
+
+        private Model GetModel()
         {
-            while (!ct.IsCancellationRequested)
-            {
-                var playerPos = core.PlayerPed.Position;
-
-                var targetPeds = core.CachedPeds.Where(x =>
-                    x.IsSafeExist() && x.IsHuman && x.IsAlive && x.IsInRangeOf(playerPos, 20) &&
-                    !_setEntities.Contains(x.Handle));
-
-                foreach (var ped in targetPeds)
-                {
-                    for (var i = 0; i < 3; i++)
-                    {
-                        var animal = SpawnPed(ped, i);
-
-                        if (!animal.IsSafeExist())
-                        {
-                            continue;
-                        }
-
-                        animal.MarkAsNoLongerNeeded();
-                        animal.MaxHealth = 10000;
-                        animal.Health = animal.MaxHealth;
-                        _setEntities.Add(animal.Handle);
-                        animal.Task.FightAgainst(ped);
-                        _setEntities.Add(ped.Handle);
-                    }
-
-                    await Delay100MsAsync(ct);
-                }
-
-                await DelaySecondsAsync(0.25f, ct);
-            }
-        }
-
-        /// <summary>
-        /// フレンズを召喚する
-        /// </summary>
-        private Ped SpawnPed(Ped targetPed, int index)
-        {
-            var m = _animalsHash[Random.Next(_animalsHash.Length)];
-
-            if (!targetPed.IsInVehicle())
-            {
-                var pos = targetPed.Position;
-                var spawnPosition = pos.AroundRandom2D(2 + (float)Random.NextDouble() * 15.0f);
-                return GTA.World.CreatePed(m, spawnPosition);
-            }
-
-            if (index >= 3)
-            {
-                return null;
-            }
-
-            var seat = new[] { VehicleSeat.Passenger, VehicleSeat.RightRear, VehicleSeat.LeftRear }[index];
-            var v = targetPed.CurrentVehicle;
-            _setEntities.Add(v.Handle);
-            return v.CreatePedOnSeat(seat, m);
+            var model = _animalsHash[Random.Next(0, _animalsHash.Length)];
+            return new Model(model);
         }
     }
 }

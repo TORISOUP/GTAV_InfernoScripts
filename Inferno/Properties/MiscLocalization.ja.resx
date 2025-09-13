@@ -17,4 +17,17 @@
     <data name="DisplayCoDDescription" xml:space="preserve">
         <value>プレイヤー死亡時に死因を表示します。</value>
     </data>
+    <data name="CutSceneTitle" xml:space="preserve">
+        <value>カオスカットシーン</value>
+    </data>
+    <data name="CutSceneDescription" xml:space="preserve">
+        <value>カットシーン中のキャラクターの動きをめちゃくちゃにします。
+※カットシーンによってはクラッシュすることがあります。</value>
+    </data>
+    <data name="CutSceneProbabillity" xml:space="preserve">
+        <value>キャラクター1人あたりのカオスになる確率。</value>
+    </data>
+    <data name="CutSceneFrequecy" xml:space="preserve">
+        <value>キャラクター1人あたりのカオスになる頻度。</value>
+    </data>
 </root>

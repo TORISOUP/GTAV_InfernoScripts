@@ -26,7 +26,7 @@ namespace Inferno
         protected override void Setup()
         {
             _config = LoadConfig<MeteorConfig>();
-            CreateInputKeywordAsObservable("Meteor","meteo")
+            CreateInputKeywordAsObservable("Meteor", "meteo")
                 .Subscribe(_ =>
                 {
                     IsActive = !IsActive;
@@ -37,13 +37,10 @@ namespace Inferno
                 .Where(x => x)
                 .Subscribe(_ =>
                 {
-                    var m = new Model(WeaponHash.RPG);
-                    m.Request();
+                    Function.Call(Hash.REQUEST_WEAPON_ASSET, WeaponHash.RPG, 31, 0);
                     MeteorLoopAsync(ActivationCancellationToken).Forget();
                     DebugLoopAsync(ActivationCancellationToken).Forget();
                 });
-
-           
         }
 
         private async ValueTask MeteorLoopAsync(CancellationToken ct)
@@ -195,7 +192,7 @@ namespace Inferno
 
                 var lenght = (PlayerPed.Position - position).Length();
                 // マーカー描画範囲内
-                if (lenght <= markerThreshold)
+                if (lenght <= markerThreshold && ShowCountDown)
                 {
                     var alpha = 150 * ((markerThreshold - lenght) / markerThreshold).Clamp(0, 1f);
 
@@ -209,7 +206,7 @@ namespace Inferno
                         false, true, 2, null, null, false);
                 }
 
-                NativeFunctions.CreateLight(position + Vector3.WorldUp, 255, 50, 50, 3f, 500f);
+                NativeFunctions.CreateLight(position + Vector3.WorldUp, 255, 10, 10, 3f, 400f);
 
 
                 await YieldAsync(ct);
@@ -279,6 +276,13 @@ namespace Inferno
                     _config.Probability = item.Value;
                 });
 
+            subMenu.AddCheckbox(
+                "Show CountDown",
+                MeteorLocalize.CountDown,
+              x=>x.Checked=  _config.ShowCountDown,
+                x => _config.ShowCountDown = x);
+            
+            
             // Debug
             {
                 var debugItem = new NativeCheckboxItem("Debug", _isDebug);
@@ -286,14 +290,14 @@ namespace Inferno
                 subMenu.Add(debugItem);
             }
 
-            subMenu.AddButton(InfernoCommon.DefaultValue,"", _ =>
+            subMenu.AddButton(InfernoCommon.DefaultValue, "", _ =>
             {
                 _config = LoadDefaultConfig<MeteorConfig>();
                 subMenu.Visible = false;
                 subMenu.Visible = true;
             });
 
-            subMenu.AddButton(InfernoCommon.SaveConf,  InfernoCommon.SaveConfDescription, _ =>
+            subMenu.AddButton(InfernoCommon.SaveConf, InfernoCommon.SaveConfDescription, _ =>
             {
                 SaveConfig(_config);
                 DrawText($"Saved to {ConfigFileName}");
@@ -336,6 +340,14 @@ namespace Inferno
                 set => _probability = value.Clamp(0, 100);
             }
 
+            [JsonProperty("ShowCountDown")]
+            public bool ShowCountDown
+            {
+                get => _showCountDown;
+                set => _showCountDown = value;
+            }
+
+            private bool _showCountDown = true;
             private int _radius = 30;
             private int _durationMillSeconds = 1000;
             private int _probability = 40;
@@ -348,7 +360,7 @@ namespace Inferno
             public override string ToString()
             {
                 return
-                    $"{nameof(Radius)}: {Radius}, {nameof(DurationMillSeconds)}: {DurationMillSeconds}, {nameof(Probability)}: {Probability}";
+                    $"{nameof(Radius)}: {Radius}, {nameof(DurationMillSeconds)}: {DurationMillSeconds}, {nameof(Probability)}: {Probability}, {nameof(ShowCountDown)}: {ShowCountDown}";
             }
         }
 
@@ -357,6 +369,8 @@ namespace Inferno
         private float Radius => _config?.Radius ?? 30;
         private float DurationMillSeconds => _config?.DurationMillSeconds ?? 1000;
         private int Probability => _config?.Probability ?? 25;
+        
+        private bool ShowCountDown => _config?.ShowCountDown ?? true;
 
         #endregion
     }

@@ -99,7 +99,7 @@ Yellow: Time remaining before explosion</value>
         <value>Getting out of the car while honking the horn activates the emergency ejection.</value>
     </data>
     <data name="EmergencyEscapePower" xml:space="preserve">
-        <value>Ejection power.</value>
+        <value>Ejection velocity.</value>
     </data>
     <data name="FloatingDescription" xml:space="preserve">
         <value>Holding down jump and sprint at the same time causes the player to fluff up and jump up.</value>

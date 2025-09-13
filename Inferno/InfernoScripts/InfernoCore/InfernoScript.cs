@@ -233,7 +233,7 @@ namespace Inferno
                     }
                     catch (Exception e)
                     {
-                        LogWrite(e.ToString());
+                        LogWrite($"{e}\n{e.StackTrace}");
                     }
 
                     try
