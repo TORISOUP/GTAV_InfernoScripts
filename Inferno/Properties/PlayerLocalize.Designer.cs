@@ -171,7 +171,7 @@ namespace Inferno.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ejection velocitty..
+        ///   Looks up a localized string similar to Ejection velocity..
         /// </summary>
         internal static string EmergencyEscapePower {
             get {
